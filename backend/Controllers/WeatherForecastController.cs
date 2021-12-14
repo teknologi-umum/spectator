@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Specatator.Controllers;
+namespace Spectator.Controllers;
 
 [ApiController]
 [Route("[controller]")]

@@ -1,6 +1,6 @@
-
-# Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,rider
-# Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore,rider
+﻿
+# Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,rider
+# Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore,dotnetcore,rider
 
 ### ASPNETCore ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -272,6 +272,15 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/
 
+### DotnetCore ###
+# .NET Core build folders
+bin/
+obj/
+
+# Common node modules locations
+/node_modules
+/wwwroot/node_modules
+
 ### Rider ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -348,4 +357,4 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-# End of https://www.toptal.com/developers/gitignore/api/aspnetcore,rider
+# End of https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,rider

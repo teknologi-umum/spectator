@@ -1,4 +1,4 @@
-namespace Specatator;
+namespace Spectator;
 
 public class WeatherForecast
 {

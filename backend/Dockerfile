@@ -5,16 +5,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Specatator.csproj", "./"]
-RUN dotnet restore "Specatator.csproj"
+COPY ["Spectator.csproj", "./"]
+RUN dotnet restore "Spectator.csproj"
 COPY . .
 WORKDIR "/src/"
-RUN dotnet build "Specatator.csproj" -c Release -o /app/build
+RUN dotnet build "Spectator.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Specatator.csproj" -c Release -o /app/publish
+RUN dotnet publish "Spectator.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Specatator.dll"]
+ENTRYPOINT ["dotnet", "Spectator.dll"]

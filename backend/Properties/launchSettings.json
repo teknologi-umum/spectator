@@ -4,17 +4,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:32703",
-      "sslPort": 44348
+      "applicationUrl": "http://localhost:6837",
+      "sslPort": 44308
     }
   },
   "profiles": {
-    "Specatator": {
+    "Spectator": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7147;http://localhost:5147",
+      "applicationUrl": "https://localhost:7027;http://localhost:5027",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
