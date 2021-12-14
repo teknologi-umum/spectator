@@ -37,13 +37,13 @@ export class PersonalInfo extends Component {
 
     constructor(props) {
         super(props);
-    
+
         this.state = {
           fields: {},
           errors: {},
         };
       }
-    
+
       handleValidation() {
         let fields = this.state.fields;
         let errors = {};
@@ -68,7 +68,7 @@ export class PersonalInfo extends Component {
             formIsValid = false;
             errors["programmingLanguage"] = "Cannot be empty";
           }
-        
+
           this.setState({ errors: errors });
           return formIsValid;
       }

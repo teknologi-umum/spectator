@@ -20,24 +20,24 @@ export class Q1 extends Component {
       intervalId: 0,
     };
   }
-  input = (event) => { 
+  input = (event) => {
     event.preventDefault();
     this.setState({ input: event.target.value });
-    localStorage.setItem('input', event.target.value) 
+    localStorage.setItem('input', event.target.value)
   };
-  
+
   userInput = (event) => {
     event.preventDefault();
     this.setState({ user_input: event.target.value });
   };
-  
-  language = (event) => {  
+
+  language = (event) => {
     event.preventDefault();
     this.setState({ language_id: event.target.value });
     localStorage.setItem('language_Id',event.target.value)
-   
+
   };
-  
+
   run = async (e) => {
     e.preventDefault();
     this.setState({button:e.target.name, countClick:this.state.countClick+1});
@@ -62,7 +62,7 @@ export class Q1 extends Component {
         }),
       }
     );
-    
+
     outputText.innerHTML += "Submission Created ...\n";
     const jsonResponse = await response.json();
     let jsonGetSolution = {
@@ -89,7 +89,7 @@ export class Q1 extends Component {
         jsonGetSolution = await getSolution.json();
       }
     }
-    
+
     if (jsonGetSolution.stdout) {
       const output = atob(jsonGetSolution.stdout);
       outputText.innerHTML = "";
@@ -107,7 +107,7 @@ export class Q1 extends Component {
 
   handleKeyDown = (event) => {
     console.log(event.key)
-    
+
     var currentText = event.target.value;
     var characterCount = currentText.length;
     console.log("character " + characterCount);
@@ -144,7 +144,7 @@ export class Q1 extends Component {
     console.log(currentTime);
 
   }
-  
+
   handleOnWheel = (event) => {
     if (event.deltaY<0) {
       console.log("Scroll up")
@@ -183,7 +183,7 @@ export class Q1 extends Component {
     this.setState({button:event.target.name, countClick:this.state.countClick+1});
     console.log("Click Submit");
   }
-  
+
   handleMouseMovement = (event) => {
 
     const newIntervalId = setInterval(() => {
@@ -194,7 +194,7 @@ export class Q1 extends Component {
         };
       });
     }, 1000);
-    
+
     this.setState(prevState => {
       return {
         ...prevState,
@@ -284,7 +284,7 @@ export class Q1 extends Component {
               <option value="62">Java</option>
               <option value="71">Python</option>
             </select>
-            
+
             <label htmlFor="solution ">
             <label htmlFor="tags" className="mr-1">
               <b className="heading">Code Here:</b>
@@ -332,7 +332,7 @@ export class Q1 extends Component {
               className="btn btn-success ml-2 mr-3"
               onClick={this.handleClickSave}
             >Submit
-            </button>   
+            </button>
             <br />
             <br />
             <div class="text-center">
@@ -364,13 +364,13 @@ export class Q1 extends Component {
           </div>
 
           <div>
-          
+
           </div>
         </div>
-        
+
       </>
     );
   }
 }
 
-export default (Q1);
+export default Q1;
