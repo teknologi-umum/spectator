@@ -1,0 +1,26 @@
+.arousal {
+    height: 100%;
+    width: 100%;
+}
+
+.caption {
+    display: block;
+    text-align: center;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+h4 {
+    text-align: center;
+    text-transform: uppercase;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+h5 {
+    text-align: left;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.container p {
+    text-align: justify;
+    font-family: "Lucida Console", "Courier New", monospace;
+}
