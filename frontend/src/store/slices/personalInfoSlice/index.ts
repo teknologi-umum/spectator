@@ -11,7 +11,7 @@ const initialState: InitialState = {
   programmingGrade: 0,
   programmingExp: 0,
   programmingExercise: 0,
-  programmingLanguage: "",
+  programmingLanguage: ""
 };
 
 export const personalInfoSlice = createSlice({
@@ -24,10 +24,10 @@ export const personalInfoSlice = createSlice({
     ) => {
       state = {
         ...state,
-        ...action.payload,
+        ...action.payload
       };
-    },
-  },
+    }
+  }
 });
 
 export const { recordPersonalInfo } = personalInfoSlice.actions;

@@ -20,10 +20,10 @@ const PersonalInfo2 = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm({
     defaultValues: personalInfo,
-    resolver: yupResolver(PersonalInfoSchema),
+    resolver: yupResolver(PersonalInfoSchema)
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {

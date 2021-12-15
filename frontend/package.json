@@ -5,7 +5,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint --fix --ignore-path .gitignore ."
+    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
+    "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx ."
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
