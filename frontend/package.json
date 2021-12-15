@@ -16,6 +16,7 @@
     "@fontsource/noto-sans": "^4.5.1",
     "@hookform/resolvers": "^2.8.5",
     "@reduxjs/toolkit": "^1.7.0",
+    "chakra-ui-steps": "^1.5.0",
     "firebase": "^9.6.1",
     "framer-motion": "^4.1.17",
     "react": "^17.0.2",

@@ -1,37 +1,12 @@
-html{
-  min-height: 100%
-}
-body {
+* {
+  padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: url("./bgimg.jpg") no-repeat;
-  background-size: 100%;
-  background-position: top;
-  background-repeat: no-repeat;
-  background-size: auto;
-  /* background-color: #95e8f3; */
-  min-height: 100%;
-}
-form{
-  padding: 20px;
-  margin-top:60px;
-}
-form button, form h5{
-  margin: 20px 0;
-}
-input[type=text]:not(.browser-default):focus:not([readonly]),
-input[type=email]:not(.browser-default):focus:not([readonly]),
-input[type=password]:not(.browser-default):focus:not([readonly]),
-textarea.materialize-textarea:focus:not([readonly]){
-  border-color: #ec407a;
-  box-shadow: none;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
 }
