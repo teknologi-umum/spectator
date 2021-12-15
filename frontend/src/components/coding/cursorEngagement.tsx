@@ -1,7 +1,7 @@
 export const mouseOverFunc = (str, isCode, cursorOverSections, highEngagementSections, middleEngagementSections, lowEngagementSections, enterTime) => {
     const duration = (new Date() - enterTime)/1000;
 
-    console.log('duration ----------> ', duration);
+    console.log("duration ----------> ", duration);
 
     // question (Average reading speed 300 wpm)
     // if length >= 3, then > 0.6 sec
@@ -46,7 +46,7 @@ export const mouseOverFunc = (str, isCode, cursorOverSections, highEngagementSec
             } else {
                 if (!highEngagementSections.includes(str) && !middleEngagementSections.includes(str)) {
                     middleEngagementSections.push(str);
-                    console.log('middle entry');
+                    console.log("middle entry");
                     if (lowEngagementSections.includes(str)) {
                         const index = lowEngagementSections.indexOf(str);
                         lowEngagementSections.splice(index, 1);
@@ -138,7 +138,7 @@ export const mouseOverFunc = (str, isCode, cursorOverSections, highEngagementSec
             }
         }
     }
-}
+};
 
 export const highlightedFunc = (str, highEngagementSections, middleEngagementSections, lowEngagementSections) => {
     if (!highEngagementSections.includes(str)) {
@@ -152,4 +152,4 @@ export const highlightedFunc = (str, highEngagementSections, middleEngagementSec
             middleEngagementSections.splice(index, 1);
         }
     }
-}
+};

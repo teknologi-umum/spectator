@@ -1,17 +1,13 @@
-import React from 'react'
+import React from "react";
 
 
 const Countdown = ({hoursMinSecs}) => {
-   
     const { hours = 0, minutes = 0, seconds = 60 } = hoursMinSecs;
     const [[hrs, mins, secs], setTime] = React.useState([hours, minutes, seconds]);
     
 
     const tick = () => {
-   
-        if (hrs === 0 && mins === 0 && secs === 0) 
-            reset()
-        else if (mins === 0 && secs === 0) {
+        if (hrs === 0 && mins === 0 && secs === 0) {reset();} else if (mins === 0 && secs === 0) {
             setTime([hrs - 1, 59, 59]);
         } else if (secs === 0) {
             setTime([hrs, mins - 1, 59]);
@@ -32,12 +28,11 @@ const Countdown = ({hoursMinSecs}) => {
     
     return (
         <div>
-            <p>{`${hrs.toString().padStart(2, '0')}:${mins
+            <p>{`${hrs.toString().padStart(2, "0")}:${mins
             .toString()
-            .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`}</p> 
+            .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`}</p> 
         </div>
     );
-
-}
+};
 
 export default Countdown;

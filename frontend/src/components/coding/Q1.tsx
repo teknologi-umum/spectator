@@ -4,26 +4,25 @@ import imgQ1 from "./imgQ1.png";
 import IdleTimer from "react-idle-timer";
 
 export class Q1 extends Component {
-
   constructor(props) {
     super(props);
-    this.idleTimer = null
-    this.handleOnIdle = this.handleOnIdle.bind(this)
-    this.keyDown = null
-    this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.idleTimer = null;
+    this.handleOnIdle = this.handleOnIdle.bind(this);
+    this.keyDown = null;
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.state = {
-      input: localStorage.getItem('input')||``,
-      output: ``,
-      language_id:localStorage.getItem('language_Id')|| 2,
-      user_input: ``,
+      input: localStorage.getItem("input")||"",
+      output: "",
+      language_id:localStorage.getItem("language_Id")|| 2,
+      user_input: "",
       count: 0,
-      intervalId: 0,
+      intervalId: 0
     };
   }
   input = (event) => {
     event.preventDefault();
     this.setState({ input: event.target.value });
-    localStorage.setItem('input', event.target.value)
+    localStorage.setItem("input", event.target.value);
   };
 
   userInput = (event) => {
@@ -34,15 +33,14 @@ export class Q1 extends Component {
   language = (event) => {
     event.preventDefault();
     this.setState({ language_id: event.target.value });
-    localStorage.setItem('language_Id',event.target.value)
-
+    localStorage.setItem("language_Id", event.target.value);
   };
 
   run = async (e) => {
     e.preventDefault();
     this.setState({button:e.target.name, countClick:this.state.countClick+1});
     console.log("Click Run");
-    let outputText = document.getElementById("output");
+    const outputText = document.getElementById("output");
     outputText.innerHTML = "";
     outputText.innerHTML += "Creating Submission ...\n";
     const response = await fetch(
@@ -53,13 +51,13 @@ export class Q1 extends Component {
           "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
           "x-rapidapi-key": "6e061ff853mshd93ec34cf96e638p1d4e48jsnbe918de0e2bb", // Get yours for free at https://rapidapi.com/judge0-official/api/judge0-ce/
           "content-type": "application/json",
-          accept: "application/json",
+          accept: "application/json"
         },
         body: JSON.stringify({
           source_code: this.state.input,
           stdin: this.state.user_input,
-          language_id: this.state.language_id,
-        }),
+          language_id: this.state.language_id
+        })
       }
     );
 
@@ -68,7 +66,7 @@ export class Q1 extends Component {
     let jsonGetSolution = {
       status: { description: "Queue" },
       stderr: null,
-      compile_output: null,
+      compile_output: null
     };
     while (
       jsonGetSolution.status.description !== "Accepted" &&
@@ -77,14 +75,14 @@ export class Q1 extends Component {
     ) {
       outputText.innerHTML = `Creating Submission ... \nSubmission Created ...\nChecking Submission Status\nstatus : ${jsonGetSolution.status.description}`;
       if (jsonResponse.token) {
-        let url = `https://judge0-ce.p.rapidapi.com/submissions/${jsonResponse.token}?base64_encoded=true`;
+        const url = `https://judge0-ce.p.rapidapi.com/submissions/${jsonResponse.token}?base64_encoded=true`;
         const getSolution = await fetch(url, {
           method: "GET",
           headers: {
             "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
             "x-rapidapi-key": "6e061ff853mshd93ec34cf96e638p1d4e48jsnbe918de0e2bb", // Get yours for free at https://rapidapi.com/judge0-official/api/judge0-ce/
-            "content-type": "application/json",
-          },
+            "content-type": "application/json"
+          }
         });
         jsonGetSolution = await getSolution.json();
       }
@@ -106,16 +104,16 @@ export class Q1 extends Component {
   };
 
   handleKeyDown = (event) => {
-    console.log(event.key)
+    console.log(event.key);
 
-    var currentText = event.target.value;
-    var characterCount = currentText.length;
+    const currentText = event.target.value;
+    const characterCount = currentText.length;
     console.log("character " + characterCount);
 
-    var wordcount = currentText.split(" ").length;
+    const wordcount = currentText.split(" ").length;
     console.log("word " + wordcount);
 
-    var delCount = 0;
+    let delCount = 0;
     if (event.code==="Backspace") {
       delCount++;
       console.log(delCount);
@@ -131,7 +129,7 @@ export class Q1 extends Component {
 
     const timestamp = Date.now()/1000;
     const date = new Date(timestamp * 1000);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
@@ -142,18 +140,17 @@ export class Q1 extends Component {
     const currentTime = "Hour " + hour + " : " + min.substr(-2) + " : " + sec.substr(-2);
     console.log(currentDay);
     console.log(currentTime);
-
-  }
+  };
 
   handleOnWheel = (event) => {
     if (event.deltaY<0) {
-      console.log("Scroll up")
+      console.log("Scroll up");
     } else {
-      console.log("Scroll down")
+      console.log("Scroll down");
     }
     const timestamp = Date.now()/1000;
     const date = new Date(timestamp * 1000);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
@@ -164,33 +161,32 @@ export class Q1 extends Component {
     const currentTime = "Hour " + hour + " : " + min.substr(-2) + " : " + sec.substr(-2);
     console.log(currentDay);
     console.log(currentTime);
-  }
+  };
 
   handleDelete = (event) => {
     event.preventDefault();
-    this.setState({delete:event.target.name, countDelete:this.state.countDelete+1})
-    console.log("Delete")
-  }
+    this.setState({delete:event.target.name, countDelete:this.state.countDelete+1});
+    console.log("Delete");
+  };
 
   handleClickSave = (event) => {
     event.preventDefault();
     this.setState({button:event.target.name, countClick:this.state.countClick+1});
     console.log("Click Save");
-  }
+  };
 
   handleClickSubmit = (event) => {
     event.preventDefault();
     this.setState({button:event.target.name, countClick:this.state.countClick+1});
     console.log("Click Submit");
-  }
+  };
 
   handleMouseMovement = (event) => {
-
     const newIntervalId = setInterval(() => {
       this.setState(prevState => {
         return {
           ...prevState,
-          count: prevState.count + 1,
+          count: prevState.count + 1
         };
       });
     }, 1000);
@@ -198,17 +194,17 @@ export class Q1 extends Component {
     this.setState(prevState => {
       return {
         ...prevState,
-        intervalId: newIntervalId,
+        intervalId: newIntervalId
       };
     });
 
     //console.log("screen x: " + event.screenX);
     //console.log("screen y: " + event.screenY);
 
-    var totalX = Math.abs(event.movementX);
-    var totalY = Math.abs(event.movementY);
-    var moveX = event.movementX;
-    var moveY = event.movementY;
+    let totalX = Math.abs(event.movementX);
+    let totalY = Math.abs(event.movementY);
+    let moveX = event.movementX;
+    let moveY = event.movementY;
     //console.log("SpeedX : " + totalX + "px/s");
     //console.log("SpeedY : " + totalY + "px/s");
     //console.log("MovementX : " + moveX + "px");
@@ -217,7 +213,7 @@ export class Q1 extends Component {
 
     const timestamp = Date.now()/1000;
     const date = new Date(timestamp * 1000);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
@@ -228,25 +224,24 @@ export class Q1 extends Component {
     const currentTime = "Hour " + hour + " : " + min.substr(-2) + " : " + sec.substr(-2);
     //console.log(currentDay);
     //console.log(currentTime);
-  }
+  };
 
   handleOnIdle = (event) => {
-    console.log("User is idle ")
-    console.log("total idle time ", this.idleTimer.getTotalIdleTime()/1000 + "s")
-    console.log("total active time ", this.idleTimer.getTotalActiveTime()/1000 + "s")
+    console.log("User is idle ");
+    console.log("total idle time ", this.idleTimer.getTotalIdleTime()/1000 + "s");
+    console.log("total active time ", this.idleTimer.getTotalActiveTime()/1000 + "s");
 
-    var time = this.idleTimer.getTotalIdleTime()/1000
-    var char = this.onKeyDown.characterCount
-    var wpm = (char/5)/time
-    console.log(wpm)
+    const time = this.idleTimer.getTotalIdleTime()/1000;
+    const char = this.onKeyDown.characterCount;
+    const wpm = char/5/time;
+    console.log(wpm);
     //this.wordcount = this.handleKeyDown.bind(this);
     //console.log(this.wordcount)
     //console.log(this.onKeyDown.characterCount)
     //console.log("Char per sec " + this.characterCount / (this.idleTimer.getTotalActiveTime()/1000))
-  }
+  };
 
   render() {
-
        return (
       <>
         <div className="row container-fluid"
@@ -254,7 +249,7 @@ export class Q1 extends Component {
         onMouseMove={this.handleMouseMovement}
         >
           <IdleTimer
-            ref={ref => {this.idleTimer = ref}}
+            ref={ref => {this.idleTimer = ref;}}
             timeout={3000}
             onIdle={this.handleOnIdle}
           />
@@ -263,7 +258,7 @@ export class Q1 extends Component {
           <label htmlFor="tags" className="mr-1">
               <b className="heading">Questions:</b>
             </label>
-            <div class="rounded square-lg questions">
+            <div className="rounded square-lg questions">
               <p>print the song twinkle twinkle little star by only using 2 variables</p>
               <img src={imgQ1} alt={imgQ1} max-width="50%" />
             </div>
@@ -299,13 +294,13 @@ export class Q1 extends Component {
               value={this.state.input}
               onKeyDown={this.handleKeyDown}
               onPaste={(e)=>{
-                e.preventDefault()
+                e.preventDefault();
                 return false;
               }} onCopy={(e)=>{
-                e.preventDefault()
+                e.preventDefault();
                 return false;
               }} onCut={(e)=>{
-                e.preventDefault()
+                e.preventDefault();
                 return false;
               }}
             ></textarea>
@@ -335,14 +330,14 @@ export class Q1 extends Component {
             </button>
             <br />
             <br />
-            <div class="text-center">
+            <div className="text-center">
               <div className="questionNo">
-                <button type="button" class="btn btn-outline-info" onClick={event =>  window.location.href='/Q1'}>1</button>&nbsp;&nbsp;
-                <button type="button" class="btn btn-outline-info" onClick={event =>  window.location.href='/Q2'}>2</button>&nbsp;&nbsp;
-                <button type="button" class="btn btn-outline-info" onClick={event =>  window.location.href='/Q3'}>3</button>&nbsp;&nbsp;
-                <button type="button" class="btn btn-outline-info" onClick={event =>  window.location.href='/Q4'}>4</button>&nbsp;&nbsp;
-                <button type="button" class="btn btn-outline-info" onClick={event =>  window.location.href='/Q5'}>5</button>&nbsp;&nbsp;
-                <button type="button" class="btn btn-outline-info" onClick={event =>  window.location.href='/Q6'}>6</button>&nbsp;&nbsp;
+                <button type="button" className="btn btn-outline-info" onClick={event => window.location.href="/Q1"}>1</button>&nbsp;&nbsp;
+                <button type="button" className="btn btn-outline-info" onClick={event => window.location.href="/Q2"}>2</button>&nbsp;&nbsp;
+                <button type="button" className="btn btn-outline-info" onClick={event => window.location.href="/Q3"}>3</button>&nbsp;&nbsp;
+                <button type="button" className="btn btn-outline-info" onClick={event => window.location.href="/Q4"}>4</button>&nbsp;&nbsp;
+                <button type="button" className="btn btn-outline-info" onClick={event => window.location.href="/Q5"}>5</button>&nbsp;&nbsp;
+                <button type="button" className="btn btn-outline-info" onClick={event => window.location.href="/Q6"}>6</button>&nbsp;&nbsp;
               </div>
             </div>
           </div>
