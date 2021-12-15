@@ -4,7 +4,7 @@ import type { InitialState } from "./types";
 const questionInit = {
   mark: 0,
   mouseEngagementScore: 0,
-  timeUsed: 0,
+  timeUsed: 0
 };
 
 const initialState: InitialState = {
@@ -18,7 +18,7 @@ const initialState: InitialState = {
   question4: questionInit,
   panas4: 0,
   question5: questionInit,
-  panas5: 0,
+  panas5: 0
 };
 
 export const questionSlice = createSlice({
@@ -57,8 +57,8 @@ export const questionSlice = createSlice({
     ) => {
       const { panas, score } = action.payload;
       state[panas] = score ?? 0;
-    },
-  },
+    }
+  }
 });
 
 export const { setNextQuestion, submitQuestion, submitPanas } =

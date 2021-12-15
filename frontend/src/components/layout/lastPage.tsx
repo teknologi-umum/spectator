@@ -1,12 +1,12 @@
-import React from 'react'
+import React from "react";
 
-const LastPage = () => (
+const LastPage = () => 
     <div className="container center">
         <form className="blue">
-            <p style={{ fontSize: '100px', color: "white" }}>Thank You</p>
+            <p style={{ fontSize: "100px", color: "white" }}>Thank You</p>
         </form>
-    </div>
-)
+    </div>;
+
 
 
 export default LastPage;

@@ -1,4 +1,4 @@
 export const recordPersonalInfo = (personalInfo) => ({
-    type: 'RECORD_PERSONAL_INFO',
+    type: "RECORD_PERSONAL_INFO",
     personalInfo
   });
