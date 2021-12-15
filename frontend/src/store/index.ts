@@ -6,8 +6,8 @@ const store = configureStore({
   devTools: true,
   reducer: {
     personalInfo: personalInfoReducer,
-    question: questionReducer,
-  },
+    question: questionReducer
+  }
 });
 
 export type RootState = ReturnType<typeof store.getState>;
