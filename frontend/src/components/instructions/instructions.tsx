@@ -1,12 +1,10 @@
-import React, {Component} from "react"
-import arousal from "./Arousal-copy.png"
-import "./instruction.css"
+import React, {Component} from "react";
+import arousal from "./Arousal-copy.png";
+import "./instruction.css";
 
 export class instructions extends Component {
-
     render() {
-
-        return(
+        return (
         <div className="container white">
             <h4> General Instructions</h4>
                 <p>
@@ -39,12 +37,12 @@ export class instructions extends Component {
 
             <p>p.s : this test will not affect your mark</p>
 
-            <button type="submit" className="btn btn-primary lighten-1 z-depth-0" onClick={event =>  window.location.href='/samtest'}>Submit</button>
+            <button type="submit" className="btn btn-primary lighten-1 z-depth-0" onClick={event => window.location.href="/samtest"}>Submit</button>
 
         </div>
 
-        )
+        );
     }
 }
 
-export default (instructions);
+export default instructions;
