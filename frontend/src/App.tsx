@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LastPage from "@/pages/LastPage";
 import Instructions from "@/pages/Instructions/Instructions";
 import SAMTest from "@/pages/SAMTest/SAMTest";
-// import CountDownTimer from "@/components/Countdown";
+import Countdown from "@/components/Countdown";
 import PersonalInfo from "@/pages/PersonalInfo";
 // import CodingTest from "@/pages/CodingTest";
 import Layout from "@/components/Layout";
@@ -12,7 +12,7 @@ const DURATION = 90 * 60; // 90 minutes
 export default function App() {
   return (
     <BrowserRouter>
-      {/* <CountDownTimer duration={DURATION} /> */}
+      <Countdown duration={DURATION} />
       <Layout>
         <Routes>
           <Route path="/">

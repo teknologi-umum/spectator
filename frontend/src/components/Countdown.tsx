@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { Box, Text } from "@chakra-ui/react";
 
 function toReadableTime(seconds: number): string {
   const s = Math.floor(seconds % 60);
-  const m = Math.floor(seconds / 60 % 60);
-  const h = Math.floor(seconds / (60 * 60) % 24);
+  const m = Math.floor((seconds / 60) % 60);
+  const h = Math.floor((seconds / (60 * 60)) % 24);
   return [h, m.toString().padStart(2, "0"), s.toString().padStart(2, "0")].join(
     ":"
   );
@@ -22,8 +23,24 @@ export default function Countdown({ duration }: CountdownProps) {
   });
 
   return (
-    <div>
-      <p>{toReadableTime(time)}</p>
-    </div>
+    <Box
+      position="fixed"
+      right="1rem"
+      top="1rem"
+      py="4"
+      px="6"
+      rounded="md"
+      bg="gray.700"
+    >
+      <Text
+        fontWeight="700"
+        fontSize="xl"
+        letterSpacing="wider"
+        fontFamily="Inter"
+        color="white"
+      >
+        {toReadableTime(time)}
+      </Text>
+    </Box>
   );
 }
