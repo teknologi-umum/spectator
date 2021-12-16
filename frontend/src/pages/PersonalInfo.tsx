@@ -46,60 +46,69 @@ export default function PersonalInfo() {
   }, [errors]);
 
   return (
-    <Flex minH="full" alignItems="center" justifyContent="center" bg="gray.100">
-      <Box
-        as="form"
-        onSubmit={handleSubmit(onSubmit)}
-        boxShadow="xl"
-        p="8"
-        rounded="md"
-        bg="white"
+    <Box
+      as="form"
+      onSubmit={handleSubmit(onSubmit)}
+      boxShadow="xl"
+      p="8"
+      rounded="md"
+      bg="white"
+      maxW="container.sm"
+      mx="auto"
+    >
+      <Heading size="lg" textAlign="center">
+        Personal Basic Info
+      </Heading>
+
+      <FormControl id="email" mt="6" isRequired>
+        <FormLabel>Student Number</FormLabel>
+        <Input type="text" {...register("stdNo")} autoComplete="off" />
+      </FormControl>
+
+      <FormControl id="email" mt="6" isRequired>
+        <FormLabel>How many years have you been doing programming?</FormLabel>
+        <Input
+          type="number"
+          {...register("programmingExp")}
+          autoComplete="off"
+        />
+      </FormControl>
+
+      <FormControl id="email" mt="6" isRequired>
+        <FormLabel>
+          How many hours in a week do you practice programming?
+        </FormLabel>
+        <Input
+          type="number"
+          {...register("programmingExercise")}
+          autoComplete="off"
+        />
+      </FormControl>
+
+      <FormControl id="email" mt="6" isRequired>
+        <FormLabel>
+          What programming languages are you familiar with (ex: Java, Python, C,
+          etc)
+        </FormLabel>
+        <Input
+          type="number"
+          {...register("programmingLanguage")}
+          autoComplete="off"
+        />
+      </FormControl>
+
+      <Button
+        colorScheme="blue"
+        mx="auto"
+        mt="6"
+        display="block"
+        onClick={() => {
+          // FIXME: proper navigation logic
+          navigate("/instructions");
+        }}
       >
-        <Heading size="lg" textAlign="center">
-          Personal Basic Info
-        </Heading>
-
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>Student Number</FormLabel>
-          <Input type="text" {...register("stdNo")} autoComplete="off" />
-        </FormControl>
-
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>How many years have you been doing programming?</FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExp")}
-            autoComplete="off"
-          />
-        </FormControl>
-
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            How many hours in a week do you practice programming?
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExercise")}
-            autoComplete="off"
-          />
-        </FormControl>
-
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            What programming languages are you familiar with (ex: Java, Python,
-            C, etc)
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingLanguage")}
-            autoComplete="off"
-          />
-        </FormControl>
-
-        <Button colorScheme="blue" mx="auto" mt="6" display="block">
-          Begin Test
-        </Button>
-      </Box>
-    </Flex>
+        Continue
+      </Button>
+    </Box>
   );
 }
