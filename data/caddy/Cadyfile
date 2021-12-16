@@ -1,3 +1,0 @@
-piston.spec.tu {
-  reverse_proxy localhost:
-}
