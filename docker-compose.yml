@@ -1,48 +1,62 @@
 services:
+  caddy:
+    image: caddy:2.4.6-alpine
+    restart: always
+    hostname: caddy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/caddy/Caddyfile:/etc/cady/Caddyfile
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - host_pub
+
   backend:
     build: ./backend/
     restart: always
+    hostname: be
     ports:
-      - 80:8080
-      - 443:8081
+      - 5000:80
+      - 5001:443
     depends_on:
       - minio
       - influx
       - piston
       - zipkin
-      - caddy
 
   frontend:
     build: ./frontend/
     restart: always
+    hostname: fe
     ports:
-      - 80:8218
+      - 5002:3000
     depends_on:
       - backend
       - minio
-      - caddy
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server --console-address ":9001"
-    container_name: minio_node
+    restart: always
+    hostname: minio_node
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     hostname: minio
     ports:
-      - 9000:9000
-    networks:
-      - host_pub
+      - 5003:9000
     volumes:
       - ./data/minio:/data1
 
   influx:
     image: influxdb:1.9.5-data-alpine
-    container_name: influx_node
+    hostname: influx_node
     restart: always
     ports:
-      - 8086:8086
+      - 5004:8086
     enviroment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
       DOCKER_INFLUXDB_INIT_PASSWORD: teknum
@@ -53,28 +67,19 @@ services:
 
   piston:
     image: ghcr.io/engineer-man/piston
-    container_name: piston_node
+    restart: always
+    hostname: piston_node
     ports:
-      - 2000:2000
+      - 5005:2000
     volumes:
       - ./data/piston:/piston
 
   zipkin:
-    container_name: zipkin_node
+    hostname: zipkin_node
     image: openzipkin/zipkin:latest
     restart: always
 
-  caddy:
-    image: caddy:2.4.6-alpine
-    restart: always
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./data/caddy/Caddyfile:/etc/cady/Caddyfile
-    networks: host_pub
-
 networks:
   host_pub:
-    driver: host
+    driver: "bridge"
 
