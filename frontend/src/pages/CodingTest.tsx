@@ -2,7 +2,6 @@ import {
   Badge,
   Box,
   Button,
-  Code,
   Flex,
   Grid,
   GridItem,
