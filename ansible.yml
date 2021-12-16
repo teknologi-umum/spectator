@@ -18,17 +18,29 @@
         name: docker
         enabled: true
         state: started
+    - name: check if the git directory exists
+      shell: ls -d /home/{{ ssh_username }}/spectator
+      register: directory_exists
     # abis itu ngecek ada running docker instance apa engga
+    - name: check current running docker containers
+      shell: docker
+      when: directory_exists.stdout.find('docker-compose.yml') != -1
+      register: docker_exists
     # kalo ada, kita matiin
     # lihat ini: https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html
     - name: stop current running docker container
-      # ini when nya gatau bener apa salah, dicoba aja, install ansible di laptopmu
-      when: docker ps | grep "spectator" !== ""
       shell:
         cmd: docker-compose down
         chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
+      when: docker_exists.stdout.find('running') != -1
     # abis stop docker container, cek directory yang store git reponya
     # ada apa engga. kalo udah ada, ya di delete.
+    - name: remove the old spectator directory
+      shell:
+        cmd: rm -rf /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
+        chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}
+      when: docker_exists.stdout.find('running') != -1
+
     - name: pull git repository
       git:
         clone: yes
