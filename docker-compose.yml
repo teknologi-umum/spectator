@@ -7,7 +7,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./data/caddy/Caddyfile:/etc/cady/Caddyfile
+      - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
       - backend
       - frontend
@@ -44,7 +44,7 @@ services:
     hostname: minio_node
     environment:
       MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
+      MINIO_ROOT_PASSWORD: "WaUd#D5Y!c9X"
     hostname: minio
     ports:
       - 5003:9000
@@ -54,12 +54,10 @@ services:
   influx:
     image: influxdb:1.9.5-data-alpine
     hostname: influx_node
-    restart: always
-    ports:
-      - 5004:8086
-    enviroment:
+    restart: always 
+    environment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
-      DOCKER_INFLUXDB_INIT_PASSWORD: teknum
+      DOCKER_INFLUXDB_INIT_PASSWORD: "Ud^TQKjxgsV9"
       DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
     volumes:
@@ -69,8 +67,6 @@ services:
     image: ghcr.io/engineer-man/piston
     restart: always
     hostname: piston_node
-    ports:
-      - 5005:2000
     volumes:
       - ./data/piston:/piston
 
