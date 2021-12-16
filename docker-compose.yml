@@ -1,23 +1,64 @@
 services:
   backend:
     build: ./backend/
+    restart: always
     depends_on:
       - minio
       - influx
       - piston
+      - zipkin
+      - caddy
+    networks:
+      - host_pub
+
   frontend:
     build: ./frontend/
+    restart: always
     depends_on:
       - backend
       - minio
+      - caddy
+    networks:
+      - host_pub
+
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server --console-address ":9001"
+    container_name: minio_node
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     hostname: minio
+    volumes:
+      - ./data/minio:/data1
+
   influx:
     image: influxdb:1.9.5-data-alpine
+    container_name: influx_node
+    restart: always
+    enviroment:
+      DOCKER_INFLUXDB_INIT_USERNAME: teknum
+      DOCKER_INFLUXDB_INIT_PASSWORD: teknum
+      DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
+      DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
+    volumes:
+      - ./data/influx:/var/lib/influxdb
+
   piston:
     image: ghcr.io/engineer-man/piston
+    container_name: piston_node
+    volumes:
+      - ./data/piston:/piston
+
+  zipkin:
+    container_name: zipkin_node
+    image: openzipkin/zipkin:latest
+    restart: always
+
+  caddy:
+    image: caddy:2.4.6-alpine
+
+networks:
+  host_pub:
+    driver: host
+
