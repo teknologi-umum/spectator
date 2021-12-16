@@ -2,24 +2,25 @@ services:
   backend:
     build: ./backend/
     restart: always
+    ports:
+      - 80:8080
+      - 443:8081
     depends_on:
       - minio
       - influx
       - piston
       - zipkin
       - caddy
-    networks:
-      - host_pub
 
   frontend:
     build: ./frontend/
     restart: always
+    ports:
+      - 80:8218
     depends_on:
       - backend
       - minio
       - caddy
-    networks:
-      - host_pub
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
@@ -29,6 +30,10 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     hostname: minio
+    ports:
+      - 9000:9000
+    networks:
+      - host_pub
     volumes:
       - ./data/minio:/data1
 
@@ -36,6 +41,8 @@ services:
     image: influxdb:1.9.5-data-alpine
     container_name: influx_node
     restart: always
+    ports:
+      - 8086:8086
     enviroment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
       DOCKER_INFLUXDB_INIT_PASSWORD: teknum
@@ -47,6 +54,8 @@ services:
   piston:
     image: ghcr.io/engineer-man/piston
     container_name: piston_node
+    ports:
+      - 2000:2000
     volumes:
       - ./data/piston:/piston
 
@@ -57,6 +66,13 @@ services:
 
   caddy:
     image: caddy:2.4.6-alpine
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/caddy/Caddyfile:/etc/cady/Caddyfile
+    networks: host_pub
 
 networks:
   host_pub:

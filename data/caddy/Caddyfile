@@ -1,0 +1,20 @@
+localhost/piston {
+  reverse_proxy localhost:2000
+}
+
+localhost/db {
+  reverse_proxy localhost:8086
+}
+
+localhost/minio{
+  reverse_proxy localhost:9000
+}
+
+localhost/ {
+  reverse_proxy localhost:8218
+}
+
+localhost/api {
+  reverse_proxi localhost:8081
+}
+
