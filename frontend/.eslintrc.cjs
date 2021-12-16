@@ -16,6 +16,11 @@ module.exports = {
     sourceType: "module"
   },
   plugins: ["react", "@typescript-eslint"],
+  settings: {
+    react: {
+      version: "17.0"
+    }
+  },
   rules: {
     // since we're using react 17
     "react/jsx-uses-react": "off",

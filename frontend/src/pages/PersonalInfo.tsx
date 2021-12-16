@@ -42,6 +42,7 @@ export default function PersonalInfo() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line
     console.log("errors", errors);
   }, [errors]);
 
