@@ -50,7 +50,6 @@ export default function SAMTest({ nextQuestion }: SAMTestProps) {
   const navigate = useNavigate();
   const [arousal, setArousal] = useState(0);
   const [pleasure, setPleasure] = useState(0);
-  const [dominance, setDominance] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
   function goto(kind: "next" | "prev") {
@@ -58,7 +57,7 @@ export default function SAMTest({ nextQuestion }: SAMTestProps) {
       setCurrentPage((prev) => (currentPage <= 0 ? prev : prev - 1));
     }
     if (kind === "next") {
-      setCurrentPage((prev) => (currentPage >= 2 ? prev : prev + 1));
+      setCurrentPage((prev) => (currentPage >= 1 ? prev : prev + 1));
     }
   }
 
@@ -123,21 +122,6 @@ export default function SAMTest({ nextQuestion }: SAMTestProps) {
                 Pleasure refer to how pleased are you generally in the meantime
               </Text>
               {getResponseOptions("pleasure", pleasure, setPleasure)}
-            </Box>
-          </Fade>
-        )}
-
-        {currentPage === 2 && (
-          <Fade in={currentPage === 2}>
-            <Box>
-              <Text fontWeight="bold" fontSize="xl">
-                How dominant are you now?
-              </Text>
-              <Text fontSize="lg">
-                Dominance refer to how dominant are you generally in the
-                meantime
-              </Text>
-              {getResponseOptions("dominance", dominance, setDominance)}
             </Box>
           </Fade>
         )}
