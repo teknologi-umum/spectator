@@ -2,9 +2,10 @@
   "name": "frontend",
   "version": "0.0.0",
   "scripts": {
+    "start": "vite preview",
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
+    "build:prod": "tsc --skipLibCheck && vite build",
     "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
     "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx ."
   },

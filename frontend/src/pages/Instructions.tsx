@@ -35,7 +35,7 @@ export default function Instructions() {
           asking your current emotion meanwhile the second SAM Test will be
           asking your emotion during programming test.
         </Text>
-        <Image src="/sam/arousal/arousal-copy.png" alt="arousal" my="2" />
+        <Image src="/sam/arousal/arousal-copy.png" alt="arousal" mt="2" />
         <Text as="label" fontSize="sm" lineHeight="8" color="gray.600">
           SAM Test Example
         </Text>
