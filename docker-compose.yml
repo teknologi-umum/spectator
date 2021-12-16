@@ -74,6 +74,10 @@ services:
     hostname: zipkin_node
     image: openzipkin/zipkin:latest
     restart: always
+    ports:
+      - 5004:9411
+    environment:
+      - STORAGE_TYPE=mem
 
 networks:
   host_pub:

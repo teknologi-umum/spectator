@@ -6,6 +6,14 @@ localhost/ {
   reverse_proxy localhost:5002
 }
 
+localhost/zipkin/ui {
+  reverse_proxy localhost:5004/zipkin
+}
+
+localhost/zipkin {
+  reverse_proxy localhost:5004
+}
+
 localhost/api {
   reverse_proxy localhost:5001
 }
