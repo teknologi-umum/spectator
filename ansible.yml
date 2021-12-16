@@ -1,6 +1,6 @@
 ---
 - name: Spectator Continuous Delivery
-  user: teknum
+  user: {{ lookup('env', 'SSH_USERNAME') }}
   host: spectator-dev
   become: yes
   vars:
@@ -8,11 +8,38 @@
     ssh_username: "{{ lookup('env', 'SSH_USERNAME') }}"
     ssh_key:      "{{ lookup('env', 'SSH_KEY') }}"
     git_token:    "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    git_user:     "{{ lookup('env', 'GITHUB_ACTOR') }}"
   tasks:
-    - name: connect to ssh
-      
+    - name: ping to server
+      ping:
+    # dibawah ini ngecek docker di sana udah nyala apa belom
     - name: docker enabled and running
       service:
         name: docker
         enabled: true
         state: started
+    # abis itu ngecek ada running docker instance apa engga
+    # kalo ada, kita matiin
+    # lihat ini: https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html
+    - name: stop current running docker container
+      # ini when nya gatau bener apa salah, dicoba aja, install ansible di laptopmu
+      when: docker ps | grep "spectator" !== ""
+      shell:
+        cmd: docker-compose down
+        chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
+    # abis stop docker container, cek directory yang store git reponya
+    # ada apa engga. kalo udah ada, ya di delete.
+    - name: pull git repository
+      git:
+        clone: yes
+        repo: https://{{ git_user }}:{{ git_token }}@github.com/teknologi-umum/spectator.git
+        dest: /home/{{ ssh_username }}/spectator
+    # kalo udah, jalanin dockernya
+    - name: build the docker container
+      shell:
+        cmd: docker-compose up --no-start
+        chdir: /home/{{ ssh_username }}/spectator
+    - name: start the docker container
+      shell:
+        cmd: docker-compose start
+        chdir: /home/{{ ssh_username }}/spectator

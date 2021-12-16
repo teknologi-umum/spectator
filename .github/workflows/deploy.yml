@@ -5,36 +5,36 @@ on:
     branches: ["master"]
 
 jobs:
-  backend:
-    name: Backend check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    services:
-      db:
-        image: influxdb:2.1
-        env:
-          DOCKER_INFLUXDB_INIT_USERNAME: teknum
-          DOCKER_INFLUXDB_INIT_PASSWORD: P@ssw0rd!
-          DOCKER_INFLUXDB_INIT_ORG: teknologi
-          DOCKER_INFLUXDB_INIT_BUCKET: spectator
-        ports:
-          - 8086:8086
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.100
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+  # backend:
+  #   name: Backend check
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   services:
+  #     db:
+  #       image: influxdb:2.1
+  #       env:
+  #         DOCKER_INFLUXDB_INIT_USERNAME: teknum
+  #         DOCKER_INFLUXDB_INIT_PASSWORD: P@ssw0rd!
+  #         DOCKER_INFLUXDB_INIT_ORG: teknologi
+  #         DOCKER_INFLUXDB_INIT_BUCKET: spectator
+  #       ports:
+  #         - 8086:8086
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v1
+  #       with:
+  #         dotnet-version: 6.0.100
+  #     - name: Restore dependencies
+  #       run: dotnet restore
+  #     - name: Build
+  #       run: dotnet build --no-restore
+  #     - name: Test
+  #       run: dotnet test --no-build --verbosity normal
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
@@ -54,10 +54,34 @@ jobs:
         run: npm run build
   deploy:
     name: Deploy
-    needs: [frontend, backend]
+    needs: [frontend]
     runs-on: ubuntu-latest
     container: python:3-buster
     timeout-minutes: 15
     steps:
+      - name: Add SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
       - name: Install ansible
-        run: python -m pip install --user ansible
+        run: >
+          sudo apt update
+          && sudo apt install -y software-properties-common
+          && sudo add-apt-repository --yes --update ppa:ansible/ansible
+          && sudo apt install -y ansible
+          && ansible --version
+          && ansible-playbook --version
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run ansible
+        run: >
+          ansible-playbook
+            -v
+            --inventory ${{ secrets.SSH_IP }}
+            --private-key ~/.ssh/id_ed25519
+            --user ${{ secrets.SSH_USERNAME }}
+            ansible.yml
+        env:
+          SSH_IP: ${{ secrets.SSH_IP }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}

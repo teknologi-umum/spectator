@@ -5,36 +5,36 @@ on:
     branches: ["*"]
 
 jobs:
-  backend:
-    name: Backend
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    services:
-      db:
-        image: influxdb:2.1
-        env:
-          DOCKER_INFLUXDB_INIT_USERNAME: teknum
-          DOCKER_INFLUXDB_INIT_PASSWORD: P@ssw0rd!
-          DOCKER_INFLUXDB_INIT_ORG: teknologi
-          DOCKER_INFLUXDB_INIT_BUCKET: spectator
-        ports:
-          - 8086:8086
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.100
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+  # backend:
+  #   name: Backend
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   services:
+  #     db:
+  #       image: influxdb:2.1
+  #       env:
+  #         DOCKER_INFLUXDB_INIT_USERNAME: teknum
+  #         DOCKER_INFLUXDB_INIT_PASSWORD: P@ssw0rd!
+  #         DOCKER_INFLUXDB_INIT_ORG: teknologi
+  #         DOCKER_INFLUXDB_INIT_BUCKET: spectator
+  #       ports:
+  #         - 8086:8086
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v1
+  #       with:
+  #         dotnet-version: 6.0.100
+  #     - name: Restore dependencies
+  #       run: dotnet restore
+  #     - name: Build
+  #       run: dotnet build --no-restore
+  #     - name: Test
+  #       run: dotnet test --no-build --verbosity normal
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
