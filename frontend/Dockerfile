@@ -1,6 +1,6 @@
 FROM node:16.13-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
 COPY . .
 
@@ -14,4 +14,4 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "./node_modules/sirv-cli/bin.js", "--port", "3000", "./dist" ]
