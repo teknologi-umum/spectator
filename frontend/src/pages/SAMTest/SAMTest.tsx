@@ -3,14 +3,7 @@ import { FormEvent, useState } from "react";
 //import Select from 'react-select';
 import "./samtest.css";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Fade,
-  Flex,
-  Heading,
-  Text
-} from "@chakra-ui/react";
+import { Box, Button, Fade, Flex, Heading, Text } from "@chakra-ui/react";
 
 function getResponseOptions(
   kind: string,
@@ -135,7 +128,7 @@ export default function SAMTest({ nextQuestion }: SAMTestProps) {
           >
             Previous
           </Button>
-          {currentPage === 2 ? (
+          {currentPage === 1 ? (
             <Button colorScheme="blue" variant="solid">
               Finish
             </Button>

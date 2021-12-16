@@ -1,12 +1,14 @@
-import React from "react";
+import { Box, Container, Heading } from "@chakra-ui/react";
 
-const LastPage = () => 
-    <div className="container center">
-        <form className="blue">
-            <p style={{ fontSize: "100px", color: "white" }}>Thank You</p>
-        </form>
-    </div>;
+export default function LastPage() {
+  return (
+    <Container>
+      <Box bg="white" shadow="md" p="6" rounded="md">
+        <Heading fontSize="4xl" textAlign="center" fontWeight="700">
+          Thank You!
+        </Heading>
+      </Box>
+    </Container>
+  );
+}
 
-
-
-export default LastPage;

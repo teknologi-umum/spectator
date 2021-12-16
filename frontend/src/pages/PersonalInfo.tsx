@@ -6,7 +6,6 @@ import { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import {
-  Flex,
   Box,
   FormControl,
   FormLabel,
@@ -56,7 +55,7 @@ export default function PersonalInfo() {
       maxW="container.sm"
       mx="auto"
     >
-      <Heading size="lg" textAlign="center">
+      <Heading size="lg" textAlign="center" fontWeight="700" color="gray.700">
         Personal Basic Info
       </Heading>
 
@@ -87,8 +86,7 @@ export default function PersonalInfo() {
 
       <FormControl id="email" mt="6" isRequired>
         <FormLabel>
-          What programming languages are you familiar with (ex: Java, Python, C,
-          etc)
+          What programming languages are you familiar with (ex: Java, Python, C)
         </FormLabel>
         <Input
           type="number"

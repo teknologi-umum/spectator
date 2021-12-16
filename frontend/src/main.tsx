@@ -7,7 +7,8 @@ import rootReducer from "./store/reducers/rootReducer";
 import { Provider } from "react-redux";
 import { ChakraProvider } from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
-import "@fontsource/inter";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
 import "@fontsource/noto-sans";
 
 const store = createStore(rootReducer);
@@ -15,7 +16,7 @@ const store = createStore(rootReducer);
 const theme = extendTheme({
   fonts: {
     heading: "Inter",
-    body: "Inter"
+    body: "Noto Sans"
   }
 });
 

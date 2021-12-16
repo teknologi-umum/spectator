@@ -6,7 +6,7 @@ export default function Instructions() {
   const navigate = useNavigate();
   return (
     <Container maxW="container.md" bg="white" p="6" rounded="md" shadow="md">
-      <Heading size="lg" textAlign="center" mb="4" fontWeight="semibold">
+      <Heading size="lg" textAlign="center" mb="4" color="gray.700">
         General Instructions
       </Heading>
       <Text fontSize="18" lineHeight="8" color="gray.700">
@@ -34,8 +34,8 @@ export default function Instructions() {
         emotion meanwhile the second SAM Test will be asking your emotion during
         programming test.
       </Text>
-      <Image className="arousal" src={arousal} alt={arousal} />
-      <Text as="label" fontSize="sm">
+      <Image src={arousal} alt={arousal} my="2" />
+      <Text as="label" fontSize="sm" lineHeight="8" color="gray.600">
         SAM Test Example
       </Text>
 
@@ -50,7 +50,7 @@ export default function Instructions() {
         allowed to left the page empty and go to the next question. You are
         allowed to go back to previous questions when there is still time left.
       </Text>
-      <Text as="label" fontSize="sm">
+      <Text as="label" fontSize="sm" lineHeight="8" color="gray.600">
         P.S: This test will not affect your mark
       </Text>
 
