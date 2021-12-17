@@ -1,20 +1,20 @@
 localhost/minio{
-  reverse_proxy localhost:9000
+  reverse_proxy minio:9000
 }
 
 localhost/ {
-  reverse_proxy localhost:3000
+  reverse_proxy frontend:3000
 }
 
 localhost/zipkin/ui {
-  reverse_proxy localhost:9411/zipkin
+  reverse_proxy zipkin:9411/zipkin
 }
 
 localhost/zipkin {
-  reverse_proxy localhost:9411
+  reverse_proxy zipkin:9411
 }
 
 localhost/api {
-  reverse_proxy localhost:80
+  reverse_proxy backend:80
 }
 
