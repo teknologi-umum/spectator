@@ -1,0 +1,73 @@
+services:
+  caddy:
+    image: caddy:2.4.6-alpine
+    restart: always
+    hostname: caddy
+    volumes:
+      - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - host_pub
+
+  backend:
+    build: ./backend/
+    restart: always
+    hostname: be
+    depends_on:
+      - minio
+      - influx
+      - piston
+      - zipkin
+
+  frontend:
+    build: ./frontend/
+    restart: always
+    hostname: fe
+    depends_on:
+      - backend
+      - minio
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+    command: server --console-address ":9001"
+    restart: always
+    hostname: minio_node
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: "WaUd#D5Y!c9X"
+    hostname: minio
+    volumes:
+      - ./data/minio:/data1
+
+  influx:
+    image: influxdb:1.9.5-data-alpine
+    hostname: influx_node
+    restart: always 
+    environment:
+      DOCKER_INFLUXDB_INIT_USERNAME: teknum
+      DOCKER_INFLUXDB_INIT_PASSWORD: "Ud^TQKjxgsV9"
+      DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
+      DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
+    volumes:
+      - ./data/influx:/var/lib/influxdb
+
+  piston:
+    image: ghcr.io/engineer-man/piston
+    restart: always
+    hostname: piston_node
+    volumes:
+      - ./data/piston:/piston
+
+  zipkin:
+    hostname: zipkin_node
+    image: openzipkin/zipkin:latest
+    restart: always
+    environment:
+      - STORAGE_TYPE=mem
+
+networks:
+  host_pub:
+    driver: "bridge"
+
