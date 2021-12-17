@@ -3,9 +3,6 @@ services:
     image: caddy:2.4.6-alpine
     restart: always
     hostname: caddy
-    ports:
-      - 80:80
-      - 443:443
     volumes:
       - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
@@ -18,9 +15,6 @@ services:
     build: ./backend/
     restart: always
     hostname: be
-    ports:
-      - 5000:80
-      - 5001:443
     depends_on:
       - minio
       - influx
@@ -31,8 +25,6 @@ services:
     build: ./frontend/
     restart: always
     hostname: fe
-    ports:
-      - 5002:3000
     depends_on:
       - backend
       - minio
@@ -46,8 +38,6 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: "WaUd#D5Y!c9X"
     hostname: minio
-    ports:
-      - 5003:9000
     volumes:
       - ./data/minio:/data1
 
@@ -74,8 +64,6 @@ services:
     hostname: zipkin_node
     image: openzipkin/zipkin:latest
     restart: always
-    ports:
-      - 5004:9411
     environment:
       - STORAGE_TYPE=mem
 
