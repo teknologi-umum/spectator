@@ -35,7 +35,7 @@ services:
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
-    command: server --console-address ":9001"
+    command: server /data --console-address ":9001"
     restart: always
     hostname: minio_node
     environment:
