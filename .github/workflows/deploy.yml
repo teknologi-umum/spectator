@@ -52,22 +52,43 @@ jobs:
         run: npm run lint:check
       - name: Build
         run: npm run build
+  configs:
+    name: Verify config
+    runs-on: ubuntu-latest
+    container: python:3-buster
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install docker-compose
+        run: >
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          && chmod +x /usr/local/bin/docker-compose
+          && docker-compose --version
+      - name: Install ansible-lint
+        run: >
+          pip install ansible
+          && pip3 install "ansible-lint[core,yamllint]"
+          && ansible-lint --version
+      - name: Lint docker-compose
+        run: docker-compose config
+      - name: Lint ansible
+        run: ansible-lint --version
+        run: ansible-lint -v -f rich ansible.yml
   deploy:
     name: Deploy
-    needs: [frontend]
+    needs: [configs, frontend]
     runs-on: ubuntu-latest
     container: python:3-buster
     timeout-minutes: 15
     steps:
       - name: Add SSH key
         run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+      - name: Add SSH IP address
+        run: echo "${{ secrets.SSH_IP }}" > inventory
       - name: Install ansible
         run: >
-          sudo apt update
-          && sudo apt install -y software-properties-common
-          && sudo add-apt-repository --yes --update ppa:ansible/ansible
-          && sudo apt install -y ansible
-          && ansible --version
+          pip install ansible
           && ansible-playbook --version
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -75,7 +96,7 @@ jobs:
         run: >
           ansible-playbook
             -v
-            --inventory ${{ secrets.SSH_IP }}
+            --inventory inventory
             --private-key ~/.ssh/id_ed25519
             --user ${{ secrets.SSH_USERNAME }}
             ansible.yml
@@ -84,4 +105,5 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
+          GITHUB_SHA: ${{ env.GITHUB_SHA }}
+          GITHUB_REF: ${{ env.GITHUB_REF }}
