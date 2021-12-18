@@ -1,14 +1,10 @@
-import personalInfoReducer from "./personalInfoReducer";
-import questionReducer from "./questionReducer";
+import personalInfoReducer from "@/store/reducers/personalInfoReducer";
+import questionReducer from "@/store/reducers/questionReducer";
 import { combineReducers } from "redux";
-// import { firestoreReducer } from 'redux-firestore'
-// import {firebaseReducer} from 'react-redux-firebase'
 
 const rootReducer = combineReducers({
-    personalInfo: personalInfoReducer,
-    question: questionReducer
-    // firestore: firestoreReducer,
-    // firebase: firebaseReducer
+  personalInfo: personalInfoReducer,
+  question: questionReducer
 });
 
 export default rootReducer;
