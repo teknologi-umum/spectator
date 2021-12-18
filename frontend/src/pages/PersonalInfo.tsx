@@ -1,4 +1,5 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";

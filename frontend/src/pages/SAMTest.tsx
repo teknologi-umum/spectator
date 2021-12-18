@@ -1,4 +1,5 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { Box, Button, Fade, Flex, Heading, Text } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import "@/styles/samtest.css";
