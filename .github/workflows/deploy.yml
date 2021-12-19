@@ -82,7 +82,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Add SSH key
-        run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan example.com >> ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          shh-add ~/.ssh/id_ed25519
       - name: Add SSH IP address
         run: echo "${{ secrets.SSH_IP }}" > inventory
       - name: Install ansible
@@ -106,3 +112,4 @@ jobs:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
           GITHUB_SHA: ${{ env.GITHUB_SHA }}
           GITHUB_REF: ${{ env.GITHUB_REF }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
