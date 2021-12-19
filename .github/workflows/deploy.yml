@@ -51,7 +51,7 @@ jobs:
       - name: Lint
         run: npm run lint:check
       - name: Build
-        run: npm run build
+        run: npm run build:prod
   configs:
     name: Verify config
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
           && pip3 install "ansible-lint[core,yamllint]"
           && ansible-lint --version
       - name: Lint docker-compose
-        run: docker-compose config
+        run: docker-compose --file docker-compose.yml config
       - name: Lint ansible
         run: ansible-lint -v -f rich ansible.yml
   deploy:
