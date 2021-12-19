@@ -73,7 +73,6 @@ jobs:
       - name: Lint docker-compose
         run: docker-compose config
       - name: Lint ansible
-        run: ansible-lint --version
         run: ansible-lint -v -f rich ansible.yml
   deploy:
     name: Deploy
