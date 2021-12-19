@@ -51,7 +51,7 @@ jobs:
       - name: Lint
         run: npm run lint:check
       - name: Build
-        run: npm run build
+        run: npm run build:prod
   devops:
     name: Verify config
     runs-on: ubuntu-latest
