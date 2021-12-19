@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="InfluxDB.Client" Version="3.2.0" />
+        <PackageReference Include="JWT" Version="8.7.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
