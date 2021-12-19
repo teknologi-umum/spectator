@@ -5,22 +5,20 @@ namespace Spectator.Events;
 
 public abstract class EventBase {
 	/// <summary>
-	/// This event constructor takes 3 things:
-	/// 1. type with a string value
-	/// 2. value with a string value
-	/// 3. unixTime with an integer value (must be in UNIX millisecond format)
+	/// Specifies a base event that could be implemented into something else.
 	/// </summary>
-	protected EventBase(User user, string type, string value, int unixTime) {
+	/// <param name="user">User that's doing the event</param>
+	/// <param name="type">The type of event the user's doing</param>
+	/// <param name="payload">The payload of the current event</param>
+	/// <param name="unixTime">The unix timestamp of the current event</param>
+	/// <exception cref="ArgumentException">Will throw an exception if the event type is not valid</exception>
+	protected EventBase(User user, string type, string payload, int unixTime) {
 		// TODO: Refactor this user from a User class.
 		User = user;
-		Type = type switch {
-			"keystroke" => EventType.Keystroke,
-			"mouse" => EventType.Mouse,
-			// I don't know if we should just throw an exception
-			// or if there's a better way to handle this.
-			_ => throw new Exception("Type is not identified")
-		};
-		Value = value;
+		Type = Enum.TryParse<EventType>(value: type, ignoreCase: true, result: out var eventType)
+			? eventType
+			: throw new ArgumentException($"Unidentified event type: {type}", nameof(type));
+		Value = payload;
 		Date = DateTimeOffset.FromUnixTimeMilliseconds(unixTime).UtcDateTime;
 	}
 
