@@ -1,0 +1,69 @@
+---
+- name: Spectator Continuous Delivery
+  user: "{{ lookup('env', 'SSH_USERNAME') }}"
+  hosts: all
+  become: true
+  vars:
+    ssh_ip: "{{ lookup('env', 'SSH_IP') }}"
+    ssh_username: "{{ lookup('env', 'SSH_USERNAME') }}"
+    git_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+    git_ref: "{{ lookup('env', 'GITHUB_REF') }}"
+    git_sha: "{{ lookup('env', 'GITHUB_SHA') }}"
+  tasks:
+    - name: ping to server
+      ping:
+    # We check if the server is up
+    - name: docker enabled and running
+      service:
+        name: docker
+        enabled: true
+        state: started
+    - name: check if the git directory exists
+      command:
+        cmd: ls /home/{{ ssh_username }}/spectator
+      changed_when: false
+      register: directory_exists
+    # We check if there's a running docker container
+    - name: check current running docker containers
+      command:
+        cmd: docker-compose ps
+        chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
+      when: directory_exists.stdout.find('docker-compose.yml') != -1
+      register: docker_exists
+    # If there is one, we stop it
+    # See: https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html
+    - name: stop current running docker container
+      command:
+        cmd: docker-compose down
+        chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
+      when:
+        - docker_exists is succeeded
+        - docker_exists.stdout is defined
+        - docker_exists.stdout.find('running') != -1
+    # After we stop the docker container, we check the directory that has the git repository
+    # If it's exists, we delete it
+    - name: remove the old spectator directory
+      file:
+        state: absent
+        path: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
+      when:
+        - directory_exists.stdout.find('docker-compose.yml') != -1
+
+    - name: pull git repository
+      git:
+        clone: true
+        repo: "https://{{ git_token }}@github.com/teknologi-umum/spectator.git"
+        dest: /home/{{ ssh_username }}/spectator
+        refspec: "{{ git_ref }}"
+        version: "{{ git_sha }}"
+    # Run the docker container
+    - name: build the docker container
+      command:
+        cmd: docker-compose up --no-start
+        chdir: /home/{{ ssh_username }}/spectator
+      changed_when: false
+    - name: start the docker container
+      command:
+        cmd: docker-compose start
+        chdir: /home/{{ ssh_username }}/spectator
+      changed_when: false
