@@ -15,7 +15,7 @@ builder.Services.AddScoped<InfluxDBClient>(_ => {
 	var token = System.Environment.GetEnvironmentVariable("INFLUX_TOKEN") ??
 	            throw new ArgumentNullException($"INFLUX_TOKEN must not be empty");
 	var dbUrl = System.Environment.GetEnvironmentVariable("INFLUX_URL") ??
-	                  throw new ArgumentNullException($"INFLUX_URL must not be empty");
+				throw new ArgumentNullException($"INFLUX_URL must not be empty");
 	return InfluxDBClientFactory.Create(dbUrl, token);
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -31,9 +31,7 @@ if (app.Environment.IsDevelopment()) {
 }
 
 // SAM test data
-app.MapGet("/sam-test", () => {
-	return "SAM test endpoint";
-});
+app.MapGet("/sam-test", () => "SAM test endpoint");
 
 // Get JWT through authorization header, parse it
 app.MapGet("/user", async (HttpContext r) => {
@@ -42,7 +40,7 @@ app.MapGet("/user", async (HttpContext r) => {
 		var jwToken = r.Request.Headers["authorization"].FirstOrDefault();
 
 		return Results.Ok(jwToken);
-	} catch (Exception e) {
+	} catch (Exception) {
 		return Results.Problem("Parsing JWT error");
 	}
 });

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Spectator.Events; 
 
 [ApiController]
-[Route("/event")]
+[Route("/events/")]
 public class EventHandlerController : Controller {
 	private readonly InfluxDBClient _db;
 	public EventHandlerController(InfluxDBClient db) {
@@ -17,7 +17,6 @@ public class EventHandlerController : Controller {
 	}
 
 	[HttpGet]
-	[Route("/")]
 	public IActionResult Index() {
 		return NotFound();
 	}
