@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine AS builder
+FROM golang:1.17-alpine AS builder
 RUN mkdir /app
 WORKDIR /app
 COPY . /app
@@ -10,5 +10,5 @@ RUN mkdir /app
 WORKDIR /app
 COPY --from=builder /app/uwoh /app/uwoh
 EXPOSE 4444
-HEALTHCHECK CMD curl --fail http://localhost:4000/ping || exit 1
-CMD ["/app/my-app"]
+HEALTHCHECK CMD curl --fail http://localhost:4444/ping || exit 1
+CMD ["/app/uwoh"]

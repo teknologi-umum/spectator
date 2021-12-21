@@ -54,6 +54,11 @@ func main() {
 		return
 	})
 
+	http.HandleFunc("/ping", func(w http.ResponseWritter, r *http.Request) {
+
+		return
+	})
+
 	potnum, ok := os.LookupEnv("PORT")
 	if ok {
 		http.ListenAndServe(":"+potnum, nil)
