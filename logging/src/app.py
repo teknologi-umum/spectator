@@ -12,8 +12,8 @@ app = FastAPI(
 
 client = connect()
 
-@app.post("/{path}", status_code=status.HTTP_200_OK)
-def collect(path: str, response: Response, payload: Payload = Body(None)):
+@app.post("/", status_code=status.HTTP_200_OK)
+def collect(response: Response, payload: Payload = Body(None)):
     token = payload.access_token
     if (not ACCESS_TOKEN) or token == ACCESS_TOKEN:
         data = payload.data

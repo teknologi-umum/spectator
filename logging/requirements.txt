@@ -1,5 +1,6 @@
 anyio==3.4.0
 asgiref==3.4.1
+attrs==21.2.0
 bracex==2.2.1
 certifi==2021.10.8
 cffi==1.15.0
@@ -7,6 +8,7 @@ ciso8601==2.2.0
 click==8.0.3
 colorama==0.4.4
 commonmark==0.9.1
+coverage==6.2
 cryptography==36.0.1
 enrich==1.2.6
 fastapi==0.70.1
@@ -14,14 +16,19 @@ h11==0.12.0
 httptools==0.3.0
 idna==3.3
 influxdb-client==1.24.0
+iniconfig==1.1.1
+Jinja2==3.0.3
 MarkupSafe==2.0.1
 packaging==21.3
 pathspec==0.9.0
 pip==21.3.1
+pluggy==1.0.0
+py==1.11.0
 pycparser==2.21
 pydantic==1.8.2
 Pygments==2.10.0
 pyparsing==3.0.6
+pytest==6.2.5
 python-dateutil==2.8.2
 python-dotenv==0.19.2
 pytz==2021.3
@@ -36,6 +43,7 @@ six==1.16.0
 sniffio==1.2.0
 starlette==0.16.0
 tenacity==8.0.1
+toml==0.10.2
 typing_extensions==4.0.1
 urllib3==1.26.7
 uvicorn==0.16.0
