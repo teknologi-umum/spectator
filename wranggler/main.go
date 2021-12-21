@@ -54,5 +54,10 @@ func main() {
 		return
 	})
 
-	http.ListenAndServe(":444", nil)
+	potnum, ok := os.LookupEnv("PORT")
+	if ok {
+		http.ListenAndServe(":"+potnum, nil)
+	} else {
+		http.ListenAndServe(":4444", nil)
+	}
 }
