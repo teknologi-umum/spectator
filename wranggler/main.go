@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -45,11 +46,49 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	http.HandleFunc("/sam-test", func(w http.ResponseWritter, r *http.Request) {
+	http.HandleFunc("/fun-fact", func(w http.ResponseWritter, r *http.Request) {
+
+		type Member struct {
+			MemId string "json:`member_id`"
+		}
+
+		var x Member
+
+		err := json.NewDecoder(r.Body).Decode(&x)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		wpm := make(chan int8)
+		delRate := make(chan float32)
+
+		go func() {
+
+		}()
+		// aggregate WPM
+
+		go func() {
+
+		}()
+		// aggregate Delete keys
+
+		var result = struct {
+			Wpm     int8
+			DelRate float32
+		}{
+			<-wpm,
+			<-delRate,
+		}
+
+		res, _ := json.Marshall(result)
+
+		w.Write(res)
+
 		return
 	})
 
-	http.HandleFunc("/sam-test", func(w http.ResponseWritter, r *http.Request) {
+	http.HandleFunc("/all-user-shit", func(w http.ResponseWritter, r *http.Request) {
 
 		return
 	})
