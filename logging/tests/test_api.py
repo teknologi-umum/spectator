@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
-def not_allowed():
+def test_not_allowed():
     response = client.get("/")
     assert response.status_code == 405
 

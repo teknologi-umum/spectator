@@ -16,19 +16,22 @@ def connect() -> InfluxDBClient :
         raise Exception("INFLUX_TOKEN was not set")
     if INFLUX_ORG == "":
         raise Exception("INFLUX_ORG was not set")
-    return InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN,
-                          org=INFLUX_ORG)
+    return InfluxDBClient(url=INFLUX_URL,
+                            token=INFLUX_TOKEN,
+                            org=INFLUX_ORG)
 
 def insert_log(client: InfluxDBClient, data: Data) -> bool:
     try:
         write_api = client.write_api(write_options=SYNCHRONOUS)
-        p = Point("log").tag("platform", data.platform).tag("level",
-                data.level).tag("language", data.language).tag("environment"
-                , data.environment).field("body",
-                json.dumps(data.body)).field("custom",
-                json.dumps(data.custom)).field("notifier",
-                json.dumps(data.notifier)).field("server",
-                json.dumps(data.server))
+        p = Point("log") \
+            .tag("platform", data.platform) \
+            .tag("level", data.level) \
+            .tag("language", data.language) \
+            .tag("environment", data.environment) \
+            .field("body", json.dumps(data.body)) \
+            .field("custom", json.dumps(data.custom)) \
+            .field("notifier", json.dumps(data.notifier)) \
+            .field("server", json.dumps(data.server))
         write_api.write(bucket="log", record=p)
         return True
     except:
