@@ -48,6 +48,8 @@ services:
     image: influxdb:2.1.1-alpine
     hostname: influx_node
     restart: always
+    ports:
+      - 8086:8086
     environment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
       DOCKER_INFLUXDB_INIT_PASSWORD: uTvfatC2sFhxEBpM5du%EUrB!BDmvTCP
@@ -74,4 +76,3 @@ services:
 networks:
   host_pub:
     driver: "bridge"
-
