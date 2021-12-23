@@ -1,13 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
-import SvgPlugin from 'vite-plugin-react-svg'
+import svgr from "@svgr/rollup";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    SvgPlugin(),
+    svgr({
+      memo: true
+    })
   ],
   resolve: {
     alias: {
