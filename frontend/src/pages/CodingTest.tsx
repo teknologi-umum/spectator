@@ -15,9 +15,12 @@ import { useSignalR } from "@/hooks";
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
   const connection = useSignalR("fake_hub_url");
-
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
+
+  const gray = useColorModeValue("gray.100", "gray.700");
+  const lightGray = useColorModeValue("gray.50", "gray.800");
+  const border = useColorModeValue("gray.200", "gray.600");
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");
 
@@ -27,7 +30,7 @@ export default function CodingTest() {
       h="full"
       gridTemplateColumns="1fr 1fr"
       gridTemplateRows="1fr 1fr"
-      bg="gray.100"
+      bg={gray}
       gap="2px"
     >
       <GridItem
@@ -35,7 +38,7 @@ export default function CodingTest() {
         colEnd={2}
         rowStart={1}
         rowEnd={3}
-        bg="gray.50"
+        bg={lightGray}
         position="relative"
         h="full"
         resize="horizontal"
@@ -45,18 +48,18 @@ export default function CodingTest() {
         <Box
           w="full"
           borderBottom="2px"
-          borderBottomColor="gray.200"
-          bg="white"
+          borderBottomColor={border}
+          bg={bg}
           maxH="full"
         >
           <Flex alignItems="center">
-            <Box borderRight="2px" borderRightColor="gray.200" p="4">
-              <Text fontWeight="bold" fontSize="lg" color="gray.700">
+            <Box borderRight="2px" borderRightColor={border} p="4">
+              <Text fontWeight="bold" fontSize="lg" color={fg}>
                 00:00:00
               </Text>
             </Box>
             <Box p="4">
-              <Text fontWeight="bold" fontSize="lg" color="gray.700">
+              <Text fontWeight="bold" fontSize="lg" color={fg}>
                 Twinkle Twinkle Little Star
               </Text>
             </Box>
@@ -80,7 +83,7 @@ export default function CodingTest() {
             Examples:
           </Text>
 
-          <Box as="pre" bg="gray.700" color="white" p="4" mt="4">
+          <Box as="pre" bg="gray.700" color={fg} p="4" mt="4">
             {`1 variable x: Never gonna give you up
 2 variable y: Never gonna run around and desert you
 3 variable z: Never gonna let you down
@@ -94,7 +97,7 @@ export default function CodingTest() {
             Output:
           </Text>
 
-          <Box as="pre" bg="gray.700" color="white" p="4" mt="4">
+          <Box as="pre" bg="gray.700" color={fg} p="4" mt="4">
             {`Never gonna give you up
 Never gonna let you down
 Never gonna run around and desert you
@@ -109,8 +112,8 @@ Never gonna run around and desert you
           gap="4"
           p="4"
           borderTop="2px"
-          borderTopColor="gray.200"
-          bg="white"
+          borderTopColor={border}
+          bg={bg}
         >
           <Button px="6" colorScheme="red">
             Surrender
@@ -123,10 +126,10 @@ Never gonna run around and desert you
           </Button>
         </Flex>
       </GridItem>
-      <GridItem colStart={2} colEnd={3} rowStart={1} rowEnd={2} bg="white">
+      <GridItem colStart={2} colEnd={3} rowStart={1} rowEnd={2} bg={bg}>
         <Heading>Codemirror</Heading>
       </GridItem>
-      <GridItem colStart={2} colEnd={3} rowStart={2} rowEnd={3} bg="white">
+      <GridItem colStart={2} colEnd={3} rowStart={2} rowEnd={3} bg={bg}>
         <Heading>Visible Test Cases</Heading>
       </GridItem>
     </Grid>
