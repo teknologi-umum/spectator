@@ -6,7 +6,8 @@ import {
   GridItem,
   Heading,
   Text,
-  useEventListener
+  useEventListener,
+  useColorModeValue
 } from "@chakra-ui/react";
 import { mouseClickHandler, mouseMoveHandler } from "@/events";
 import { useSignalR } from "@/hooks";
@@ -17,6 +18,8 @@ export default function CodingTest() {
 
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
   return (
     <Grid

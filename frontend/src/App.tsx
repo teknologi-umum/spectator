@@ -1,17 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Countdown from "@/components/Countdown";
 import PersonalInfo from "@/pages/PersonalInfo";
 import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
 import CodingTest from "@/pages/CodingTest";
 import ThemeButton from "./components/ThemeButton";
 
-const DURATION = 90 * 60; // 90 minutes
-
 function App() {
   return (
     <BrowserRouter>
-      <Countdown duration={DURATION} />
       <ThemeButton />
       <Routes>
         <Route path="/">
