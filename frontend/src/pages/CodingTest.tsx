@@ -6,11 +6,19 @@ import {
   Grid,
   GridItem,
   Heading,
-  Text
+  Text,
+  useEventListener
 } from "@chakra-ui/react";
+import { mouseClickHandler, mouseMoveHandler } from "@/events";
+import { useSignalR } from "@/hooks";
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
+  const connection = useSignalR("fake_hub_url");
+
+  useEventListener("click", mouseClickHandler(connection));
+  useEventListener("mousemove", mouseMoveHandler(connection));
+
   return (
     <Grid
       w="full"
