@@ -9,11 +9,26 @@ import {
   useEventListener,
   useColorModeValue
 } from "@chakra-ui/react";
-import { mouseClickHandler, mouseMoveHandler } from "@/events";
-import { useSignalR } from "@/hooks";
+import { useEffect, useState } from "react";
+
+function toReadableTime(seconds: number): string {
+  const s = Math.floor(seconds % 60);
+  const m = Math.floor((seconds / 60) % 60);
+  const h = Math.floor((seconds / (60 * 60)) % 24);
+  return [h, m.toString().padStart(2, "0"), s.toString().padStart(2, "0")].join(
+    ":"
+  );
+}
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
+  const [time, setTime] = useState(90 * 60); // 90 minutes
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  });
+
   const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
@@ -55,7 +70,7 @@ export default function CodingTest() {
           <Flex alignItems="center">
             <Box borderRight="2px" borderRightColor={border} p="4">
               <Text fontWeight="bold" fontSize="lg" color={fg}>
-                00:00:00
+                {toReadableTime(time)}
               </Text>
             </Box>
             <Box p="4">
