@@ -6,7 +6,6 @@
 [*]
 indent_style = space
 indent_size = 2
-end_of_line=lf
 # XAML files
 [*.xaml]
 indent_size = 4
@@ -247,6 +246,9 @@ dotnet_diagnostic.IDE0055.severity = warning
 
 # CA1822: Mark members as static
 dotnet_diagnostic.CA1822.severity = warning
+
+# RCS1036: Remove redundant empty line.
+dotnet_diagnostic.RCS1036.severity = warning
 
 [*.vb]
 # Modifier preferences

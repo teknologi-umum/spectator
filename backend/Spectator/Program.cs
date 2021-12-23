@@ -1,7 +1,5 @@
-
-using System;
+﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
@@ -62,8 +60,6 @@ app.MapGet("/user", async (HttpContext r) => {
 	}
 });
 
-
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -71,7 +67,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
 
 public class InfluxDBService {
 	private readonly string _token;
