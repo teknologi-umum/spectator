@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -8,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 )
 
 func main() {
@@ -37,6 +39,7 @@ func main() {
 	}
 
 	influxConn := influxdb2.NewClient(influxHost, influxToken)
+	defer influxConn.Close()
 
 	minioConn, err := minio.New(mhost, &minio.Options{
 		Creds:  credentials.NewStaticV4(maid, maidsex, ""),
@@ -46,7 +49,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	http.HandleFunc("/fun-fact", func(w http.ResponseWritter, r *http.Request) {
+	http.HandleFunc("/fun-fact", func(w http.ResponseWriter, r *http.Request) {
+		runtime.GOMAXPROCS(2)
 
 		type Member struct {
 			MemId string "json:`member_id`"
@@ -60,41 +64,67 @@ func main() {
 			return
 		}
 
+		queryAPI := influxConn.QueryAPI(influxOrg)
+
 		wpm := make(chan int8)
 		delRate := make(chan float32)
+		attempt := make(chan int8)
 
 		go func() {
+			// TODO:  ini buat ngambil nganu, jangan lupa result
+			_, err := queryAPI.Query(context.Background(), "from()")
+			if err != nil {
+				panic(err)
+			}
 
 		}()
 		// aggregate WPM
 
 		go func() {
+			// TODO:  ini buat ngambil nganu, jangan lupa result
+			_, err := queryAPI.Query(context.Background(), "from()")
+			if err != nil {
+				panic(err)
+			}
 
 		}()
 		// aggregate Delete keys
 
+		go func() {
+			// TODO:  ini buat ngambil nganu, jangan lupa result
+			_, err := queryAPI.Query(context.Background(), "from()")
+			if err != nil {
+				panic(err)
+			}
+
+		}()
+		// question attempt
+
 		var result = struct {
 			Wpm     int8
 			DelRate float32
+			Attempt int8
 		}{
 			<-wpm,
 			<-delRate,
+			<-attempt,
 		}
 
-		res, _ := json.Marshall(result)
+		res, _ := json.Marshal(result)
 
 		w.Write(res)
 
 		return
 	})
 
-	http.HandleFunc("/all-user-shit", func(w http.ResponseWritter, r *http.Request) {
+	http.HandleFunc("/all-user-shit", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: nanti ditanya lagi masih males
 
 		return
 	})
 
-	http.HandleFunc("/ping", func(w http.ResponseWritter, r *http.Request) {
-
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.
 		return
 	})
 
