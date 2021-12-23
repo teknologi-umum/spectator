@@ -4,10 +4,11 @@ import {
   Text,
   Container,
   Button,
-  Image,
+  Box,
   useColorModeValue
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
+import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 
 export default function Instructions() {
   const navigate = useNavigate();
@@ -47,7 +48,9 @@ export default function Instructions() {
           asking your current emotion meanwhile the second SAM Test will be
           asking your emotion during programming test.
         </Text>
-        <Image src="/sam/arousal/arousal.svg" alt="arousal" mt="2" />
+        <Box>
+          <Arousal width="full" height="100" viewBox="0 0 1240 140" />
+        </Box>
         <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>
           SAM Test Example
         </Text>
