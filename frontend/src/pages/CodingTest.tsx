@@ -10,6 +10,8 @@ import {
   useColorModeValue
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { useSignalR } from "@/hooks";
+import { mouseClickHandler, mouseMoveHandler } from "@/events";
 
 function toReadableTime(seconds: number): string {
   const s = Math.floor(seconds % 60);
