@@ -24,33 +24,41 @@
         {
           "name": "c++",
           "code": "void printLyrics() {\n    |\n}\n"
+        },
+        {
+          "name": "c",
+          "code": "void printLyrics() {\n    |\n}\n"
         }
       ]
     },
     {
       "id": 2,
       "title": "Temperature Converter",
-      "question": "Great! If you've arrived here. That means you've successfully prevented the star from falling down to earth. Wait a minute, the atmosphere suddenly feels cold. Oh shoot, apparently the shooting star broke the earth's atmosphere and the temperature dropped quickly.\n\nSince you're a curious person, you decided to find how much the temperature has dropped in Celcius, Fahrenheit, and Kelvin. Of course, since you're a smart person you don't want to calculate it manually. You decided to make a program to calculate them for you.\n\nYour current task is figure out how to convert a given temperature, which is in Celcius, and find its equivalent in Fahrenheit and Kelvin. Should be easy enough, right?\n\nInput: ``` calculateTemperature(100) ```\n\nExpected output: ``` Celsius = 100 Fahrenheit = 212.0 Kelvin = 373.15 ```\n\nPseudocode example: ``` defn calculateTemperature(celcius)\n  fahrenheit = celcius -> fahrenheit\n  kelvin = celcius -> kelvin\n  print(Celcius = celcius)\n  print(Fahrenheit = celcius)\n  print(Kelvin = celcius)\nend ```\n\nConstraints:\n  - The input is always an integer\n  - The input will never exceeds 1000\n  - The input will never be negative\n\n\nGood luck!",
+      "question": "Great! If you've arrived here. That means you've successfully prevented the star from falling down to earth. Wait a minute, the atmosphere suddenly feels cold. Oh shoot, apparently the shooting star broke the earth's atmosphere and the temperature dropped quickly.\n\nSince you're a curious person, you decided to find how much the temperature has dropped in Celcius, Fahrenheit, and Kelvin. Of course, since you're a smart person you don't want to calculate it manually. You decided to make a program to calculate them for you.\n\nYour current task is figure out how to convert a given temperature, which is in Celcius, and find its equivalent in Fahrenheit or Kelvin. Should be easy enough, right?\n\nInput: ``` calculateTemperature(100, \"Celcius\", \"Fahrenheit\") calculateTemperature(212, \"Fahrenheit\", \"Kelvin\") ```\n\nExpected output: ``` 212 373 ```\n\nPseudocode example: ``` defn calculateTemperature(temperature, from, to)\n  if (from == \"celcius\") and (to == \"fahrenheit\") then\n    return celcius -> fahrenheit\n  else if (from == \"fahrenheit\") and (to == \"celcius\") then\n    return fahrenheit -> celcius\n  ...\nend ```\n\nConstraints:\n  - The input is always an integer\n  - The input will never exceeds 1000\n  - The input will never be negative\n\n\nGood luck!",
       "languages": [
         {
           "name": "python",
-          "code": "def calculateTemperature(celcius: int) -> None:\n  |\n"
+          "code": "def calculateTemperature(temp: int, from: str, to: str) -> int:\n  |\n"
         },
         {
           "name": "java",
-          "code": "class Temperature {\n  public void calculateTemperature(int celcius) {\n    |\n  }\n}\n"
+          "code": "class Temperature {\n  public void calculateTemperature(int temp, String from, String to) {\n    |\n  }\n}\n"
         },
         {
           "name": "javascript",
-          "code": "function calculateTemperature(celcius) {\n    |\n}\n"
+          "code": "function calculateTemperature(temp, from, to) {\n    |\n}\n"
         },
         {
           "name": "php",
-          "code": "function calculateTemperature(int celcius) {\n    |\n}\n"
+          "code": "function calculateTemperature(int temp, string from, string to): int {\n    |\n}\n"
         },
         {
           "name": "c++",
-          "code": "void calculateTemperature(int celcius) {\n    |\n}\n"
+          "code": "#include <stdio.h>\n\nint calculateTemperature(int temp, std::string from, std::string to) {\n    |\n}\n"
+        },
+        {
+          "name": "c",
+          "code": "int calculateTemperature(int temp, char[] from, char[] to) {\n    |\n}\n"
         }
       ]
     },
@@ -77,6 +85,10 @@
         },
         {
           "name": "c++",
+          "code": "int isSameNumber(int a, int b) {\n    return |\n}\n"
+        },
+        {
+          "name": "c",
           "code": "int isSameNumber(int a, int b) {\n    return |\n}\n"
         }
       ]
@@ -105,6 +117,10 @@
         {
           "name": "c++",
           "code": "int findHeaterPower(int input) {\n    |\n}\n"
+        },
+        {
+          "name": "c",
+          "code": "int findHeaterPower(int input) {\n    |\n}\n"
         }
       ]
     },
@@ -132,6 +148,10 @@
         {
           "name": "c++",
           "code": "void makeDiamond(int height) {\n    |\n}\n"
+        },
+        {
+          "name": "c",
+          "code": "void makeDiamond(int height) {\n    |\n}\n"
         }
       ]
     },
@@ -158,6 +178,10 @@
         },
         {
           "name": "c++",
+          "code": "void makePyramid(int height) {\n    |\n}\n"
+        },
+        {
+          "name": "c",
           "code": "void makePyramid(int height) {\n    |\n}\n"
         }
       ]
