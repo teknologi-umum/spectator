@@ -1,6 +1,14 @@
 import { useState } from "react";
 import type { FormEvent, FunctionComponent, SVGProps } from "react";
-import { Box, Button, Fade, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Fade,
+  Flex,
+  Heading,
+  Text,
+  useColorModeValue
+} from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import "@/styles/samtest.css";
 
@@ -23,11 +31,6 @@ import { ReactComponent as Pleasure6 } from "@/images/pleasure/pleasure-6.svg";
 import { ReactComponent as Pleasure7 } from "@/images/pleasure/pleasure-7.svg";
 import { ReactComponent as Pleasure8 } from "@/images/pleasure/pleasure-8.svg";
 import { ReactComponent as Pleasure9 } from "@/images/pleasure/pleasure-9.svg";
-
-interface theme {
-  background: any;
-  color: any;
-}
 
 function getResponseOptions(
   icons: FunctionComponent<SVGProps<SVGSVGElement>>[],
@@ -57,15 +60,12 @@ function getResponseOptions(
   );
 }
 
-interface theme {
-  background: any;
-  color: any;
-}
-
-export default function SAMTest({ background, color }: theme) {
+export default function SAMTest() {
   const [arousal, setArousal] = useState(0);
   const [pleasure, setPleasure] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -91,13 +91,11 @@ export default function SAMTest({ background, color }: theme) {
         shadow="lg"
         maxW="1300"
         mx="auto"
-        bg={background}
+        bg={bg}
       >
         <Box display="inline-block">
-          <Heading size="lg" color="gray.700" textAlign="center" mb="8">
-            <Text textAlign="center" color={color}>
-              Self Assessment Manikin Test (SAM Test)
-            </Text>
+          <Heading size="lg" color={fg} textAlign="center" mb="8">
+            Self Assessment Manikin Test (SAM Test)
           </Heading>
 
           {currentPage === 0 && (
@@ -167,18 +165,13 @@ export default function SAMTest({ background, color }: theme) {
                 >
                   Previous
                 </Button>
-                <Button
-                  backgroundColor="blue.400"
-                  color="white"
-                  variant="solid"
-                >
+                <Button colorScheme="blue" variant="solid">
                   Finish
                 </Button>
               </>
             ) : (
               <Button
-                backgroundColor="blue.400"
-                color="white"
+                colorScheme="blue"
                 variant="solid"
                 onClick={() => goto("next")}
               >

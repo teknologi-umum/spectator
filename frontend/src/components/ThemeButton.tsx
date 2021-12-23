@@ -1,11 +1,11 @@
-import { Box, Button, useColorMode } from "@chakra-ui/react";
-
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { Button, useColorMode } from "@chakra-ui/react";
 
 export default function ThemeButton() {
-  const { toggleColorMode } = useColorMode()
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Button position="fixed" onClick={toggleColorMode}>
-      Toggle mode
+    <Button position="fixed" left="4" top="4" onClick={toggleColorMode}>
+      {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
     </Button>
-  )
+  );
 }

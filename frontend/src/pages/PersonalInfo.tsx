@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useColorModeValue } from "@chakra-ui/react";
 import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
@@ -23,15 +24,12 @@ interface FormValues {
   programmingLanguage: string;
 }
 
-interface theme {
-  background: any,
-  color: any
-}
-
-export default function PersonalInfo({background, color}: theme) {
+export default function PersonalInfo() {
   const dispatch = useAppDispatch();
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
   const {
     register,
@@ -60,23 +58,25 @@ export default function PersonalInfo({background, color}: theme) {
         boxShadow="xl"
         p="8"
         rounded="md"
-        background="white"
         maxW="container.sm"
         mx="auto"
-        backgroundColor={background}
+        bg={bg}
+        color={fg}
       >
-        <Heading size="lg" textAlign="center" fontWeight="700" color={color}>
+        <Heading size="lg" textAlign="center" fontWeight="700">
           Personal Basic Info
         </Heading>
 
-        <Box backgroundColor={background}>
+        <Box>
           <FormControl id="email" mt="6" isRequired>
             <FormLabel>Student Number</FormLabel>
             <Input type="text" {...register("stdNo")} autoComplete="off" />
           </FormControl>
 
           <FormControl id="email" mt="6" isRequired>
-            <FormLabel>How many years have you been doing programming?</FormLabel>
+            <FormLabel>
+              How many years have you been doing programming?
+            </FormLabel>
             <Input
               type="number"
               {...register("programmingExp")}
@@ -97,11 +97,11 @@ export default function PersonalInfo({background, color}: theme) {
 
           <FormControl id="email" mt="6" isRequired>
             <FormLabel>
-              What programming languages are you familiar with (ex: Java, Python,
-              C)
+              What programming languages are you familiar with (ex: Java,
+              Python, C)
             </FormLabel>
             <Input
-              type="number"
+              type="text"
               {...register("programmingLanguage")}
               autoComplete="off"
             />
@@ -109,11 +109,10 @@ export default function PersonalInfo({background, color}: theme) {
         </Box>
 
         <Button
-          backgroundColor="blue.400"
+          colorScheme="blue"
           mx="auto"
           mt="6"
           display="block"
-          color="white"
           onClick={() => {
             // FIXME: proper navigation logic
             navigate("/instructions");

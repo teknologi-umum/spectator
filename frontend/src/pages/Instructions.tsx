@@ -1,21 +1,25 @@
 import { useNavigate } from "react-router-dom";
-import { Heading, Text, Container, Button, Image, useColorModeValue } from "@chakra-ui/react";
+import {
+  Heading,
+  Text,
+  Container,
+  Button,
+  Image,
+  useColorModeValue
+} from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 
-interface theme {
-  background: any,
-  color: any
-}
-
-export default function Instructions({background, color}: theme) {
+export default function Instructions() {
   const navigate = useNavigate();
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
-  const textColor = useColorModeValue("gray.600", "gray.400")
+  const textColor = useColorModeValue("gray.600", "gray.400");
 
   return (
     <Layout>
-      <Container maxW="container.md" bg={background} p="6" rounded="md" shadow="md">
-        <Heading size="lg" textAlign="center" mb="4" color={color}>
+      <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
+        <Heading size="lg" textAlign="center" mb="4" color={fg}>
           General Instructions
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
@@ -27,7 +31,7 @@ export default function Instructions({background, color}: theme) {
           part you have to answer the questions and finish it within 90 minutes.
         </Text>
 
-        <Heading size="md" mt="6" mb="4" color={color}>
+        <Heading size="md" mt="6" mb="4" color={fg}>
           1. SAM Test
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
@@ -48,7 +52,7 @@ export default function Instructions({background, color}: theme) {
           SAM Test Example
         </Text>
 
-        <Heading size="md" mt="6" mb="4" color={color}>
+        <Heading size="md" mt="6" mb="4" color={fg}>
           2. Programming Test
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
@@ -66,8 +70,7 @@ export default function Instructions({background, color}: theme) {
 
         <Button
           type="submit"
-          backgroundColor="blue.400"
-          color="white"
+          colorScheme="blue"
           onClick={() => navigate("/sam-test")}
           display="block"
           mx="auto"

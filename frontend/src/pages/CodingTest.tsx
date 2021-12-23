@@ -1,5 +1,4 @@
 import {
-  Badge,
   Box,
   Button,
   Flex,
@@ -69,17 +68,19 @@ export default function CodingTest() {
           </Text>
 
           <Text fontSize="16" lineHeight="6" mt="4">
-            String a : Twinkle twinkle little star \nHow I wonder what you are <br /> String b : Up above the world so high \nLike a diamond in the sky
+            String a : Twinkle twinkle little star \nHow I wonder what you are{" "}
+            <br /> String b : Up above the world so high \nLike a diamond in the
+            sky
           </Text>
-          
+
           <Text fontSize="16" lineHeight="6" mt="4">
             Examples:
           </Text>
 
           <Box as="pre" bg="gray.700" color="white" p="4" mt="4">
-{`1 variable x: Never gonna give you up
+            {`1 variable x: Never gonna give you up
 2 variable y: Never gonna run around and desert you
-3 variable z: Never gonna let you down 
+3 variable z: Never gonna let you down
 4 call x
 5 call z
 6 call y
@@ -90,14 +91,12 @@ export default function CodingTest() {
             Output:
           </Text>
 
-          <Box as="pre" bg="gray.700" color="white" p="4" mt="4">{`Never gonna give you up
-Never gonna let you down 
+          <Box as="pre" bg="gray.700" color="white" p="4" mt="4">
+            {`Never gonna give you up
+Never gonna let you down
 Never gonna run around and desert you
 `}
           </Box>
-
-          
-
         </Box>
         <Flex
           w="full"
