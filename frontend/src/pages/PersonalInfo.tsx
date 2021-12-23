@@ -23,7 +23,12 @@ interface FormValues {
   programmingLanguage: string;
 }
 
-export default function PersonalInfo() {
+interface theme {
+  background: any,
+  color: any
+}
+
+export default function PersonalInfo({background, color}: theme) {
   const dispatch = useAppDispatch();
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
@@ -55,56 +60,60 @@ export default function PersonalInfo() {
         boxShadow="xl"
         p="8"
         rounded="md"
-        bg="white"
+        background="white"
         maxW="container.sm"
         mx="auto"
+        backgroundColor={background}
       >
-        <Heading size="lg" textAlign="center" fontWeight="700" color="gray.700">
+        <Heading size="lg" textAlign="center" fontWeight="700" color={color}>
           Personal Basic Info
         </Heading>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>Student Number</FormLabel>
-          <Input type="text" {...register("stdNo")} autoComplete="off" />
-        </FormControl>
+        <Box backgroundColor={background}>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>Student Number</FormLabel>
+            <Input type="text" {...register("stdNo")} autoComplete="off" />
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>How many years have you been doing programming?</FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExp")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>How many years have you been doing programming?</FormLabel>
+            <Input
+              type="number"
+              {...register("programmingExp")}
+              autoComplete="off"
+            />
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            How many hours in a week do you practice programming?
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExercise")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>
+              How many hours in a week do you practice programming?
+            </FormLabel>
+            <Input
+              type="number"
+              {...register("programmingExercise")}
+              autoComplete="off"
+            />
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            What programming languages are you familiar with (ex: Java, Python,
-            C)
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingLanguage")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>
+              What programming languages are you familiar with (ex: Java, Python,
+              C)
+            </FormLabel>
+            <Input
+              type="number"
+              {...register("programmingLanguage")}
+              autoComplete="off"
+            />
+          </FormControl>
+        </Box>
 
         <Button
-          colorScheme="blue"
+          backgroundColor="blue.400"
           mx="auto"
           mt="6"
           display="block"
+          color="white"
           onClick={() => {
             // FIXME: proper navigation logic
             navigate("/instructions");

@@ -1,16 +1,24 @@
 import { useNavigate } from "react-router-dom";
-import { Heading, Text, Container, Button, Image } from "@chakra-ui/react";
+import { Heading, Text, Container, Button, Image, useColorModeValue } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 
-export default function Instructions() {
+interface theme {
+  background: any,
+  color: any
+}
+
+export default function Instructions({background, color}: theme) {
   const navigate = useNavigate();
+
+  const textColor = useColorModeValue("gray.600", "gray.400")
+
   return (
     <Layout>
-      <Container maxW="container.md" bg="white" p="6" rounded="md" shadow="md">
-        <Heading size="lg" textAlign="center" mb="4" color="gray.700">
+      <Container maxW="container.md" bg={background} p="6" rounded="md" shadow="md">
+        <Heading size="lg" textAlign="center" mb="4" color={color}>
           General Instructions
         </Heading>
-        <Text fontSize="18" lineHeight="8" color="gray.600">
+        <Text fontSize="18" lineHeight="8" color={textColor}>
           This experiment contains of two part. The first part is SAM Test and
           the second part is coding test. SAM Test is a self assessment test to
           measure your emotion. This test contains three question that will
@@ -19,10 +27,10 @@ export default function Instructions() {
           part you have to answer the questions and finish it within 90 minutes.
         </Text>
 
-        <Heading size="md" mt="6" mb="4" color="gray.700">
+        <Heading size="md" mt="6" mb="4" color={color}>
           1. SAM Test
         </Heading>
-        <Text fontSize="18" lineHeight="8" color="gray.600">
+        <Text fontSize="18" lineHeight="8" color={textColor}>
           In this part there will be three question that you are required to
           answer by clicking one out of nine images available. The images
           represent how do you feel about the question. The image that is
@@ -35,15 +43,15 @@ export default function Instructions() {
           asking your current emotion meanwhile the second SAM Test will be
           asking your emotion during programming test.
         </Text>
-        <Image src="/sam/arousal/arousal-copy.png" alt="arousal" mt="2" />
-        <Text as="label" fontSize="sm" lineHeight="8" color="gray.600">
+        <Image src="/sam/arousal/arousal.svg" alt="arousal" mt="2" />
+        <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>
           SAM Test Example
         </Text>
 
-        <Heading size="md" mt="6" mb="4" color="gray.700">
+        <Heading size="md" mt="6" mb="4" color={color}>
           2. Programming Test
         </Heading>
-        <Text fontSize="18" lineHeight="8" color="gray.700">
+        <Text fontSize="18" lineHeight="8" color={textColor}>
           In this part there will be six programming questions that you are
           required to answer within 90 minutes by using java programming
           language. You are not allowed to search the answer somewhere else or
@@ -52,13 +60,14 @@ export default function Instructions() {
           question. You are allowed to go back to previous questions when there
           is still time left.
         </Text>
-        <Text as="label" fontSize="sm" lineHeight="8" color="gray.600">
+        <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>
           P.S: This test will not affect your mark
         </Text>
 
         <Button
           type="submit"
-          colorScheme="blue"
+          backgroundColor="blue.400"
+          color="white"
           onClick={() => navigate("/sam-test")}
           display="block"
           mx="auto"

@@ -1,13 +1,20 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Box, Button, Fade, Flex, Heading, Text } from "@chakra-ui/react";
+import { background, Box, Button, Fade, Flex, Heading, Text } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import "@/styles/samtest.css";
+
+import MyIcon from './assets/arousal-1.svg'
+
+interface theme {
+  background: any,
+  color: any
+}
 
 function getResponseOptions(
   kind: string,
   state: number,
-  setState: React.Dispatch<React.SetStateAction<number>>
+  setState: React.Dispatch<React.SetStateAction<number>>,
 ) {
   return (
     <Flex wrap="wrap" gap="4" mt="4">
@@ -31,11 +38,17 @@ function getResponseOptions(
             />
           </label>
         ))}
+
     </Flex>
   );
 }
 
-export default function SAMTest() {
+interface theme {
+  background: any,
+  color: any
+}
+
+export default function SAMTest({background, color}: theme) {
   const [arousal, setArousal] = useState(0);
   const [pleasure, setPleasure] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -64,11 +77,11 @@ export default function SAMTest() {
         shadow="lg"
         maxW="1300"
         mx="auto"
-        bg="white"
+        bg={background}
       >
         <Box display="inline-block">
           <Heading size="lg" color="gray.700" textAlign="center" mb="8">
-            Self Assessment Manikin Test (SAM Test)
+            <Text textAlign="center" color={color}>Self Assessment Manikin Test (SAM Test)</Text>
           </Heading>
 
           {currentPage === 0 && (
@@ -109,13 +122,18 @@ export default function SAMTest() {
                 >
                   Previous
                 </Button>
-                <Button colorScheme="blue" variant="solid">
+                <Button 
+                  backgroundColor="blue.400"
+                  color="white" 
+                  variant="solid"
+                >
                   Finish
                 </Button>
               </>
             ) : (
               <Button
-                colorScheme="blue"
+                backgroundColor="blue.400"
+                color="white"
                 variant="solid"
                 onClick={() => goto("next")}
               >
