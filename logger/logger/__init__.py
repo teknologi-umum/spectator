@@ -1,8 +1,10 @@
 import os
 from fastapi import FastAPI, Body, status, HTTPException, Response
-from influx import connect, insert_log
-from payload import Payload
+from .influx import connect, insert_log
+from .payload import Payload
 from dotenv import load_dotenv, dotenv_values
+
+__version__ = '0.1.0'
 
 load_dotenv(dotenv_path=".env")
 
@@ -34,4 +36,5 @@ def collect(response: Response, payload: Payload = Body(None)):
             return { status: "failed" }
     else:
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail="access_token is required")
+
 
