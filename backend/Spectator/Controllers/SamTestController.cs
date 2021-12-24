@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,10 +18,10 @@ public class SamTestController : ControllerBase {
 		_service = service;
 	}
 
-    // Write dummy data to teknum1 bucket -> /SamTest/WriteTest
+	// Write dummy data to teknum1 bucket -> /SamTest/WriteTest
 	[HttpGet("WriteTest")]
-	public dynamic WriteTest() {
-		 _service.Write(write => {
+	public string WriteTest() {
+		_service.Write(write => {
 			write.WritePoint("teknum1",
 			"teknum1",
 			 PointData.Measurement("testmesurement")
@@ -31,14 +31,14 @@ public class SamTestController : ControllerBase {
 			);
 		});
 
-        return "Write OK";
+		return "Write OK";
 	}
 
-    // TODO: Read SAM test -> /SamTest/ReadTest
-    [HttpGet("ReadTest")]
-	public dynamic ReadTEst() {
-        return "Write OK";
+	// TODO: Read SAM test -> /SamTest/ReadTest
+	[HttpGet("ReadTest")]
+	public string ReadTEst() {
+		return "Write OK";
 	}
 
-    
+
 }
