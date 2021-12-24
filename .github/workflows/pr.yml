@@ -62,9 +62,7 @@ jobs:
         with:
           poetry-version: "1.1.12"
       - name: Install dependencies
-        run: >
-          poetry config virtualenvs.create true \
-          && poetry install
+        run: poetry install
       - name: Run lint
         run: poetry run pylint logger
       - name: Run test
