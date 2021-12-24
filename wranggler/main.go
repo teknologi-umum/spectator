@@ -5,10 +5,18 @@ import (
 	"net/http"
 	"os"
 
+	"context"
+	"encoding/json"
+
 	"github.com/go-chi/chi/v5"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+
+	"log"
+	"net/http"
+	"os"
+	"runtime"
 )
 
 func main() {
@@ -51,6 +59,20 @@ func main() {
 	r.Get("/ping", Ping)
 	r.Post("/fun-fact", FunFact)
 	r.Post("/generate", GenerateFile)
+	http.HandleFunc("/fun-fact", func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
+	http.HandleFunc("/all-user-shit", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: nanti ditanya lagi masih males
+
+		return
+	})
+
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.
+		return
+	})
 
 	potnum, ok := os.LookupEnv("PORT")
 	if ok {

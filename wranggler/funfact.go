@@ -1,44 +1,76 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
+	"runtime"
 )
 
 func FunFact(w http.ResponseWriter, r *http.Request) {
+  runtime.GOMAXPROCS(2)
 
-	var x Member
+  type Member struct {
+    MemId string "json:`member_id`"
+  }
 
-	err := json.NewDecoder(r.Body).Decode(&x)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+  var x Member
 
-	wpm := make(chan int8)
-	delRate := make(chan float32)
+  err := json.NewDecoder(r.Body).Decode(&x)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
+  }
 
-	go func() {
+  queryAPI := influxConn.QueryAPI(influxOrg)
 
-	}()
-	// aggregate WPM
+  wpm := make(chan int8)
+  delRate := make(chan float32)
+  attempt := make(chan int8)
 
-	go func() {
+  go func() {
+    // TODO:  ini buat ngambil nganu, jangan lupa result
+    _, err := queryAPI.Query(context.Background(), "from()")
+    if err != nil {
+      panic(err)
+    }
 
-	}()
-	// aggregate Delete keys
+  }()
+  // aggregate WPM
 
-	var result = struct {
-		Wpm     int8
-		DelRate float32
-	}{
-		<-wpm,
-		<-delRate,
-	}
+  go func() {
+    // TODO:  ini buat ngambil nganu, jangan lupa result
+    _, err := queryAPI.Query(context.Background(), "from()")
+    if err != nil {
+      panic(err)
+    }
 
-	res, _ := json.Marshal(result)
+  }()
+  // aggregate Delete keys
 
-	w.Write(res)
+  go func() {
+    // TODO:  ini buat ngambil nganu, jangan lupa result
+    _, err := queryAPI.Query(context.Background(), "from()")
+    if err != nil {
+      panic(err)
+    }
 
-	return
+  }()
+  // question attempt
+
+  var result = struct {
+    Wpm     int8
+    DelRate float32
+    Attempt int8
+  }{
+    <-wpm,
+    <-delRate,
+    <-attempt,
+  }
+
+  res, _ := json.Marshal(result)
+
+  w.Write(res)
+
+  return
 }
