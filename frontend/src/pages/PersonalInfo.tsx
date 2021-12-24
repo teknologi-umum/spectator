@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useColorModeValue } from "@chakra-ui/react";
 import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
@@ -27,6 +28,8 @@ export default function PersonalInfo() {
   const dispatch = useAppDispatch();
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
   const {
     register,
@@ -55,50 +58,55 @@ export default function PersonalInfo() {
         boxShadow="xl"
         p="8"
         rounded="md"
-        bg="white"
         maxW="container.sm"
         mx="auto"
+        bg={bg}
+        color={fg}
       >
-        <Heading size="lg" textAlign="center" fontWeight="700" color="gray.700">
+        <Heading size="lg" textAlign="center" fontWeight="700">
           Personal Basic Info
         </Heading>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>Student Number</FormLabel>
-          <Input type="text" {...register("stdNo")} autoComplete="off" />
-        </FormControl>
+        <Box>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>Student Number</FormLabel>
+            <Input type="text" {...register("stdNo")} autoComplete="off" />
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>How many years have you been doing programming?</FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExp")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>
+              How many years have you been doing programming?
+            </FormLabel>
+            <Input
+              type="number"
+              {...register("programmingExp")}
+              autoComplete="off"
+            />
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            How many hours in a week do you practice programming?
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExercise")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>
+              How many hours in a week do you practice programming?
+            </FormLabel>
+            <Input
+              type="number"
+              {...register("programmingExercise")}
+              autoComplete="off"
+            />
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            What programming languages are you familiar with (ex: Java, Python,
-            C)
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingLanguage")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl id="email" mt="6" isRequired>
+            <FormLabel>
+              What programming languages are you familiar with (ex: Java,
+              Python, C)
+            </FormLabel>
+            <Input
+              type="text"
+              {...register("programmingLanguage")}
+              autoComplete="off"
+            />
+          </FormControl>
+        </Box>
 
         <Button
           colorScheme="blue"

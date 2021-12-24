@@ -11,12 +11,26 @@ body,
   height: 100%;
 }
 
-*::-webkit-scrollbar {
-  width: 0.5rem;
-  background-color: #edf2f7;
+@media (prefers-color-scheme: white) {
+  *::-webkit-scrollbar {
+    width: 0.5rem;
+    background-color: var(--chakra-colors-gray-50);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    width: 0.5rem;
+    background-color: var(--chakra-colors-gray-100);
+  }
 }
 
-*::-webkit-scrollbar-thumb {
-  width: 0.5rem;
-  background-color: #cbd5e0;
+@media (prefers-color-scheme: dark) {
+  *::-webkit-scrollbar {
+    width: 0.5rem;
+    background-color: var(--chakra-colors-gray-700);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    width: 0.5rem;
+    background-color: var(--chakra-colors-gray-600);
+  }
 }
