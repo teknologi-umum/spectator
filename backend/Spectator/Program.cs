@@ -34,9 +34,8 @@ if (app.Environment.IsDevelopment()) {
 	app.UseSwaggerUI();
 }
 
-
 // SAM test data
-app.MapGet("/sam-test", async (InfluxDBService service) => {
+app.MapGet("/sam-test", (InfluxDBService service) => {
 	service.Write(write => {
 		write.WritePoint("teknum1",
 		"teknum1",
@@ -49,7 +48,7 @@ app.MapGet("/sam-test", async (InfluxDBService service) => {
 });
 
 // Get JWT through authorization header, parse it
-app.MapGet("/user", async (HttpContext r) => {
+app.MapGet("/user", (HttpContext r) => {
 	try {
 		// TODO: parse JWT to user information
 		var jwToken = r.Request.Headers["authorization"].FirstOrDefault();

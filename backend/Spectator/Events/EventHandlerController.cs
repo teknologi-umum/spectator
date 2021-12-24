@@ -1,12 +1,7 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using InfluxDB.Client;
-using InfluxDB.Client.Api.Domain;
-using InfluxDB.Client.Writes;
+﻿using InfluxDB.Client;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Spectator.Events; 
+namespace Spectator.Events;
 
 [ApiController]
 [Route("/events/")]

@@ -1,4 +1,4 @@
-﻿namespace Spectator.Events; 
+﻿namespace Spectator.Events;
 
 public enum EventType {
 	Keystroke,

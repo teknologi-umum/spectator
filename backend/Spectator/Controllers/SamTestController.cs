@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Spectator.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class SamTestController : ControllerBase {
-	InfluxDBService _service;
+	private readonly InfluxDBService _service;
 
 	public SamTestController(InfluxDBService service) {
 		_service = service;
@@ -39,6 +35,4 @@ public class SamTestController : ControllerBase {
 	public string ReadTEst() {
 		return "Write OK";
 	}
-
-
 }

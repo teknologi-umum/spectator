@@ -1,7 +1,7 @@
 ﻿using System;
 using Spectator.Users;
 
-namespace Spectator.SAM; 
+namespace Spectator.SAM;
 
 public class Sam {
 	/// <summary>
@@ -27,7 +27,7 @@ public class Sam {
 		CreatedAt = createdAt;
 		UpdatedAt = updatedAt;
 	}
-	
+
 	public User User { get; set; }
 	public ConditionType Condition { get; set; }
 	public int ArousedLevel { get; set; }

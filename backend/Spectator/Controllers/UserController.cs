@@ -7,8 +7,7 @@ namespace Spectator.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase {
-	InfluxDBService _service;
-	HttpContext _context;
+	private readonly InfluxDBService _service;
 
 	public UserController(InfluxDBService service) {
 		_service = service;

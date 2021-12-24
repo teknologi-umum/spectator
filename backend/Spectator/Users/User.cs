@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Spectator.Users; 
+namespace Spectator.Users;
 
 public abstract class User {
 	/// <summary>
@@ -20,8 +20,8 @@ public abstract class User {
 		string familiarLanguage,
 		bool finishedTest = false,
 		DateTime createdAt = default,
-		DateTime updatedAt = default) 
-	{
+		DateTime updatedAt = default
+	) {
 		StudentNumber = studentNumber;
 		YearsOfExperience = yearsOfExperience;
 		HoursOfPractice = hoursOfPractice;
@@ -33,7 +33,7 @@ public abstract class User {
 
 	public string StudentNumber { get; init; }
 	public int YearsOfExperience { get; set; }
-	public int HoursOfPractice { get; set;  }
+	public int HoursOfPractice { get; set; }
 	public string FamiliarLanguage { get; set; }
 	public DateTime CreatedAt { get; init; }
 	public DateTime UpdatedAt { get; set; }

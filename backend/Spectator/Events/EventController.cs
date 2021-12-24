@@ -4,14 +4,14 @@ using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 
-namespace Spectator.Events; 
+namespace Spectator.Events;
 
 public class EventController {
 	private readonly InfluxDBClient _db;
 	public EventController(InfluxDBClient db) {
 		_db = db;
 	}
-	
+
 	public async Task AddAsync(EventBase e, CancellationToken cancellationToken) {
 		var builder = PointData.Measurement("event")
 			.Tag("type", e.Type.ToString())
