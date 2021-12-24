@@ -58,10 +58,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install Poetry
-        run: >
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - \
-          && export PATH=$HOME/.poetry/bin:$PATH \
-          && poetry --version
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: "1.1.12"
       - name: Install dependencies
         run: >
           poetry config virtualenvs.create true \
