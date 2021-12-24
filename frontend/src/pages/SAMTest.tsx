@@ -1,5 +1,5 @@
-import { FC, SVGProps, useState } from "react";
-import type { FormEvent } from "react";
+import { useState } from "react";
+import type { FC, SVGProps, FormEvent } from "react";
 import {
   Box,
   Button,
