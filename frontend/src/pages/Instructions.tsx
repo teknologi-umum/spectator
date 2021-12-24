@@ -49,7 +49,7 @@ export default function Instructions() {
           asking your emotion during programming test.
         </Text>
         <Box>
-          <Arousal width="full" height="100" viewBox="0 0 1240 140" />
+          <Arousal width="100%" height="100" viewBox="0 0 1240 140" />
         </Box>
         <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>
           SAM Test Example
