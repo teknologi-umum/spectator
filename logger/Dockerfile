@@ -22,4 +22,4 @@ RUN poetry config virtualenvs.create false && \
 
 EXPOSE 8000
 
-CMD [ "uvicorn", "--port", "8080", "--host", "0.0.0.0", "--app-dir", "src", "app:app"]
+CMD [ "uvicorn", "--port", "8080", "--app-dir", "logger", "__init__:app"]
