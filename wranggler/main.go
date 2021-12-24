@@ -57,9 +57,11 @@ func main() {
 		log.Fatalln("MINIO_SECRET_KEY envar missing")
 	}
 
+	// Create InfluxDB instance
 	influxConn := influxdb2.NewClient(influxHost, influxToken)
 	defer influxConn.Close()
 
+	// Create Minio instance
 	minioConn, err := minio.New(minioHost, &minio.Options{
 		Creds:  credentials.NewStaticV4(minioID, minioSecret, ""),
 		Secure: true,
