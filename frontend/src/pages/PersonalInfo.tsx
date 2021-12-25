@@ -16,6 +16,7 @@ import {
   Button
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
+import ThemeButton from "@/components/ThemeButton";
 
 interface FormValues {
   stdNo: string;
@@ -52,6 +53,7 @@ export default function PersonalInfo() {
 
   return (
     <Layout>
+      <ThemeButton position="fixed" />
       <Box
         as="form"
         onSubmit={handleSubmit(onSubmit)}
