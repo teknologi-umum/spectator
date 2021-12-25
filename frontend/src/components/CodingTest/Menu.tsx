@@ -37,7 +37,7 @@ export default function Menu({ bg, fg, time }: MenuProps) {
         px="4"
         rounded="md"
       >
-        <Text fontWeight="bold" fontSize="lg">
+        <Text fontWeight="bold" fontSize="xl">
           {toReadableTime(time)}
         </Text>
       </Flex>
