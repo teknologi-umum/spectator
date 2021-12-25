@@ -92,7 +92,6 @@ export default function Editor({ bg }: EditorProps) {
               height="20rem"
               extensions={[highlightTheme, lineNumbers(), ...LANGUAGES]}
               theme={theme}
-              lang="javascript"
             />
           </TabPanel>
         </TabPanels>

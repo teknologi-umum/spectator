@@ -38,6 +38,7 @@ export function getEditorTheme(mode: "dark" | "light") {
   const isDarkMode = mode === "dark";
 
   const c = {
+    gray: isDarkMode ? theme.colors.gray[400] : theme.colors.gray[600],
     bg: isDarkMode ? theme.colors.gray[700] : theme.colors.white,
     bgDarker: isDarkMode ? theme.colors.blue[800] : theme.colors.blue[50],
     caret: isDarkMode ? theme.colors.gray[200] : theme.colors.gray[700]
@@ -53,14 +54,24 @@ export function getEditorTheme(mode: "dark" | "light") {
       },
       ".cm-content": {
         lineHeight: "1.625em",
-        verticalAlign: "center",
-        backgroundColor: c.bg
+        verticalAlign: "center"
+      },
+      "&.cm-focused .cm-selectionBackground": {
+        background: c.bgDarker
+      },
+      ".cm-selectionBackground": {
+        background: c.bgDarker
       },
       ".cm-cursor": {
-        borderLeft: `1.25px solid ${c.caret}`
+        borderLeft: `1.25px solid ${c.caret}`,
+        backgroundColor: c.gray
+      },
+      ".cm-gutters": {
+        border: "none"
       },
       ".cm-gutter": {
-        backgroundColor: c.bg
+        backgroundColor: c.bg,
+        color: c.gray
       },
       ".cm-gutterElement.cm-activeLineGutter": {
         backgroundColor: c.bgDarker
