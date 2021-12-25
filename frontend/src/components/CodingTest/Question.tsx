@@ -13,7 +13,6 @@ import {
 interface QuestionProps {
   bg: string;
   fg: string;
-  border: string;
   codeBg: string;
   time: number;
 }
@@ -68,9 +67,6 @@ export default function Question({ bg, fg, codeBg }: QuestionProps) {
                 color={fg}
                 p="4"
                 mt="4"
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="gray.200"
                 rounded="sm"
               >
                 {`1 variable x: Never gonna give you up

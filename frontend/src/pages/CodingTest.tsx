@@ -22,10 +22,9 @@ export default function CodingTest() {
   useEventListener("mousemove", mouseMoveHandler(connection));
 
   const gray = useColorModeValue("gray.100", "gray.800");
-  const border = useColorModeValue("gray.200", "gray.600");
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");
-  const codeBg = useColorModeValue("gray.200", "gray.700");
+  const codeBg = useColorModeValue("gray.200", "gray.800");
 
   return (
     <Grid
@@ -38,7 +37,7 @@ export default function CodingTest() {
       p="3"
     >
       <Menu bg={bg} fg={fg} time={time} />
-      <Question bg={bg} border={border} fg={fg} time={time} codeBg={codeBg} />
+      <Question bg={bg} fg={fg} time={time} codeBg={codeBg} />
       <Editor bg={bg} />
       <Scratchpad bg={bg} />
     </Grid>
