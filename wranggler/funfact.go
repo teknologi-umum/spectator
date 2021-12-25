@@ -60,11 +60,25 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// TODO:  ini buat ngambil nganu, jangan lupa result
-	_, err := queryAPI.Query(ctx, "from()")
+	result, err := queryAPI.Query(ctx, `
+		from(bucket: "spectator")
+			|> range(start: -1d)
+			|> filter(fn: (r) => r["_measurement"] == "coding_event")
+			|> filter(fn: (r) => r["_event"] == "keystroke")
+			|> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+			|> aggregateWindow(
+					every: 1m,
+					fn: (tables=<-, column) => tables |> count()
+		  )
+			|> yield(name: "count")
+	`)
 	if err != nil {
 		// FIXME: seharusnya jangan panic
 		panic(err)
 	}
+
+	result.Next()
+	keytotal := result.Record().Value().(int64)
 
 	// Cara calculate WPM:
 	// SELECT semua KeystrokeEvent, group by TIME, each TIME itu 1 menit
@@ -77,7 +91,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	// terus return ke channel hasil average dari semua menit yang ada
 
 	// Return the result here
-	result <- 42
+	result <- 0
 }
 
 func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID string, result chan int8) {
@@ -104,18 +118,43 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string, result chan float64) {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	// aggregate Delete keys
 	// TODO:  ini buat ngambil nganu, jangan lupa result
-	_, err := queryAPI.Query(ctx, "from()")
+	result, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator")
+  |> range(start: -1d)
+  |> filter(fn: (r) => r["_measurement"] == "coding_event")
+  |> filter(fn: (r) => r["_event"] == "keystroke")
+  |> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+  |> filter(fn: (r) =>(r["_value"] == "backspace" or r["_value"] == "delete"))
+  |> count()
+  |> yield(name: "count")`)
+
 	if err != nil {
-		// FIXME: seharusnya jangan panic
 		panic(err)
 	}
+
+	result.Next()
+	delTot := result.Record().Value().(int64)
+
+	result, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
+  |> range(start: -1d)
+  |> filter(fn: (r) => r["_measurement"] == "coding_event")
+  |> filter(fn: (r) => r["_event"] == "keystroke")
+  |> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+	|> count()
+  |> yield(name: "count")`)
+
+	if err != nil {
+		panic(err)
+	}
+
+	result.Next()
+	tot := result.Record().Value().(int64)
+
+	result <- (float64(delTot) / float64(tot))
 
 	// SELECT semua KeystrokeEvent WHERE value = delete OR value = backspace
 	// terus jumlahin
 	// dah gitu doang.
 
 	// Return the result here
-	result <- 0.3
 }
