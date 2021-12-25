@@ -19,12 +19,6 @@ class Data(BaseModel):
     body: Optional[dict] = None
     timestamp: Optional[datetime] = datetime.utcnow()
 
-    def string(self) -> str:
-        """
-        a stringer to the Data class
-        """
-        return f"[{self.timestamp} ]#{self.request_id} on {self.application} - {self.message}"
-
 class Payload(BaseModel):
     """
     Payload is the request body payload schema

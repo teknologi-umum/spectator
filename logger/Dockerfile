@@ -1,25 +1,26 @@
-FROM python:3.9.6-alpine
+FROM python:3.9.9-slim-buster
 
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE 1
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONFAULTHANDLER=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100 \
+  POETRY_VERSION=1.1.12
 
-RUN apk update && \
-    apk add curl musl-dev openssl-dev libffi-dev && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y netcat gcc curl musl-dev openssl libffi-dev && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
-
-ENV PATH="${PATH}:/root/.poetry/bin"
 
 WORKDIR /app
 
 COPY . .
 
-RUN poetry config virtualenvs.create false && \
+RUN pip install "poetry==$POETRY_VERSION" && \
+    poetry config virtualenvs.in-project true && \
     poetry install --no-dev
 
 EXPOSE 8000
 
-CMD [ "uvicorn", "--port", "8080", "--app-dir", "logger", "__init__:app"]
+CMD [ "poetry", "run", "uvicorn", "--port", "8080", "--app-dir", "logger", "app:app" ]

@@ -18,12 +18,12 @@ def connect() -> InfluxDBClient:
     """
     simply returns an InfluxDB client instance
     """
-    if INFLUX_URL == "":
-        raise Exception("INFLUX_URL was not set")
-    if INFLUX_TOKEN == "":
-        raise Exception("INFLUX_TOKEN was not set")
-    if INFLUX_ORG == "":
-        raise Exception("INFLUX_ORG was not set")
+    if INFLUX_URL in ("", None):
+        raise EnvironmentError("INFLUX_URL was not set")
+    if INFLUX_TOKEN in ("", None):
+        raise EnvironmentError("INFLUX_TOKEN was not set")
+    if INFLUX_ORG == ("", None):
+        raise EnvironmentError("INFLUX_ORG was not set")
     return InfluxDBClient(url=INFLUX_URL,
                             debug=None,
                             token=INFLUX_TOKEN,
@@ -34,9 +34,9 @@ def insert_log(client: InfluxDBClient, data: Data) -> bool:
     insert a log into the InfluxDB, synchronously.
     no fancy stuff.
     """
-    print("writing into influx")
+    print("[insert_log] writing into influx")
     write_api = client.write_api(write_options=SYNCHRONOUS)
-    point = Point("log") \
+    point = Point(data.level) \
         .tag("request_id", data.request_id) \
         .tag("level", data.level) \
         .tag("application", data.application) \
@@ -46,7 +46,7 @@ def insert_log(client: InfluxDBClient, data: Data) -> bool:
         .field("message", data.message) \
         .time(data.timestamp)
     write_api.write(bucket="log", record=point)
-    print("written into influx")
+    print("[insert_log] written into influx")
     return True
 
 def check_bucket(client: InfluxDBClient) -> None:
@@ -68,6 +68,8 @@ def check_bucket(client: InfluxDBClient) -> None:
     return None
 
 def check_connection(client: InfluxDBClient):
-    """Check that the InfluxDB is running."""
+    """
+    Check that the InfluxDB is running.
+    """
     res = client.api_client.call_api("/ping", "GET")
     return res
