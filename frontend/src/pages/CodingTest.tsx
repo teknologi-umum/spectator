@@ -1,11 +1,11 @@
-import {
-  Grid,
-  useEventListener,
-  useColorModeValue
-} from "@chakra-ui/react";
+import { Grid, useEventListener, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useSignalR } from "@/hooks";
-import { mouseClickHandler, mouseMoveHandler } from "@/events";
+import {
+  keystrokeHandler,
+  mouseClickHandler,
+  mouseMoveHandler
+} from "@/events";
 import { Question, Editor, Menu, Scratchpad } from "@/components/CodingTest";
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
@@ -20,6 +20,8 @@ export default function CodingTest() {
   const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
+  useEventListener("keydown", keystrokeHandler(connection));
+  useEventListener("contextmenu", (e) => e.preventDefault());
 
   const gray = useColorModeValue("gray.100", "gray.800");
   const bg = useColorModeValue("white", "gray.700");
