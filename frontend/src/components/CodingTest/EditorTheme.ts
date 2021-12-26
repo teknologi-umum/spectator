@@ -52,8 +52,9 @@ export function getEditorTheme({
 
   return EditorView.theme(
     {
-      ".cm-editor": {
-        backgroundColor: c.bg
+      "&.cm-editor": {
+        backgroundColor: c.bg,
+        height: "100%"
       },
       "&.cm-editor.cm-focused": {
         outline: "none"
@@ -61,7 +62,8 @@ export function getEditorTheme({
       ".cm-content": {
         lineHeight: "1.625em",
         verticalAlign: "center",
-        fontSize: fontSize + "px"
+        fontSize: fontSize + "px",
+        height: "100%"
       },
       "&.cm-focused .cm-selectionBackground": {
         background: c.bgDarker

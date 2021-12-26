@@ -52,18 +52,17 @@ export default function Editor({ bg }: EditorProps) {
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
-      <Tabs>
+      <Tabs h="full">
         <TabList>
           <Tab>Your Solution</Tab>
         </TabList>
-        <TabPanels>
-          <TabPanel p="2">
+        <TabPanels h="full">
+          <TabPanel p="2" h="full" position="relative">
             <CodeMirror
               value={PLACEHOLDER}
-              minHeight="10rem"
-              maxHeight="20rem"
               extensions={[highlightTheme, lineNumbers(), ...LANGUAGES]}
               theme={theme}
+              style={{ height: "calc(100% - 2.75rem)" }}
             />
           </TabPanel>
         </TabPanels>

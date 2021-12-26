@@ -17,6 +17,10 @@ body,
   width: 1rem;
 }
 
+*::-webkit-scrollbar-corner {
+  background-color: rgba(0, 0, 0, 0);
+}
+
 *::-webkit-scrollbar-thumb {
   border: 0.3rem solid rgba(0, 0, 0, 0);
   background-clip: padding-box;

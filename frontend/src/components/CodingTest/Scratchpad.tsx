@@ -19,19 +19,20 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
-      <Tabs isLazy>
+      <Tabs isLazy h="full">
         <TabList>
           <Tab>Scratchpad</Tab>
           <Tab>Output</Tab>
         </TabList>
 
-        <TabPanels>
-          <TabPanel p="2">
+        <TabPanels h="full">
+          <TabPanel p="2" h="full">
             <CodeMirror
               value=""
               height="8rem"
               extensions={[highlightTheme, lineNumbers()]}
               theme={theme}
+              style={{ height: "calc(100% - 2.75rem)" }}
             />
           </TabPanel>
           <TabPanel p="2">
