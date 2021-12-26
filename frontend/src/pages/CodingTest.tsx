@@ -1,12 +1,19 @@
-import { Grid, useEventListener, useColorModeValue } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { useSignalR } from "@/hooks";
+import { Editor, Menu, Question, Scratchpad } from "@/components/CodingTest";
 import {
   keystrokeHandler,
   mouseClickHandler,
   mouseMoveHandler
 } from "@/events";
-import { Question, Editor, Menu, Scratchpad } from "@/components/CodingTest";
+import { useSignalR } from "@/hooks";
+import {
+  Box,
+  theme,
+  useColorModeValue,
+  useEventListener
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
+import "react-reflex/styles.css";
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
@@ -29,19 +36,43 @@ export default function CodingTest() {
   const codeBg = useColorModeValue("gray.200", "gray.800");
 
   return (
-    <Grid
-      w="full"
-      h="full"
-      gridTemplateColumns="1fr 1fr"
-      gridTemplateRows="2.5rem 1fr 1fr"
-      bg={gray}
-      gap="3"
-      p="3"
-    >
+    <Box w="full" h="full" bg={gray} gap="3" p="3">
       <Menu bg={bg} fg={fg} time={time} />
-      <Question bg={bg} fg={fg} time={time} codeBg={codeBg} />
-      <Editor bg={bg} />
-      <Scratchpad bg={bg} />
-    </Grid>
+      <Box h="calc(100% - 3.5rem)">
+        <ReflexContainer orientation="vertical">
+          <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
+            <Question bg={bg} fg={fg} time={time} codeBg={codeBg} />
+          </ReflexElement>
+
+          <ReflexSplitter
+            style={{
+              backgroundColor: "transparent",
+              width: theme.space[3],
+              border: "none"
+            }}
+          />
+
+          <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
+            <ReflexContainer orientation="horizontal">
+              <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
+                <Editor bg={bg} />
+              </ReflexElement>
+
+              <ReflexSplitter
+                style={{
+                  backgroundColor: "transparent",
+                  height: theme.space[3],
+                  border: "none"
+                }}
+              />
+
+              <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
+                <Scratchpad bg={bg} />
+              </ReflexElement>
+            </ReflexContainer>
+          </ReflexElement>
+        </ReflexContainer>
+      </Box>
+    </Box>
   );
 }

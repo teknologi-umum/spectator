@@ -1,6 +1,6 @@
 import {
   Box,
-  GridItem,
+  Flex,
   Heading,
   Tab,
   TabList,
@@ -18,17 +18,13 @@ interface QuestionProps {
 }
 export default function Question({ bg, fg, codeBg }: QuestionProps) {
   return (
-    <GridItem
-      colStart={1}
-      colEnd={2}
-      rowStart={2}
-      rowEnd={4}
-      bg={bg}
+    <Flex
+      direction="column"
+      flex="1"
       position="relative"
+      bg={bg}
+      minW="80"
       h="full"
-      resize="horizontal"
-      display="flex"
-      flexDir="column"
       rounded="md"
       shadow="md"
     >
@@ -61,14 +57,7 @@ export default function Question({ bg, fg, codeBg }: QuestionProps) {
                 Examples:
               </Text>
 
-              <Box
-                as="pre"
-                bg={codeBg}
-                color={fg}
-                p="4"
-                mt="4"
-                rounded="sm"
-              >
+              <Box as="pre" bg={codeBg} color={fg} p="4" mt="4" rounded="sm">
                 {`1 variable x: Never gonna give you up
 2 variable y: Never gonna run around and desert you
 3 variable z: Never gonna let you down
@@ -95,6 +84,6 @@ Never gonna run around and desert you
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </GridItem>
+    </Flex>
   );
 }

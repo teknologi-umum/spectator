@@ -1,11 +1,11 @@
 import {
   Heading,
-  GridItem,
   Tabs,
   TabList,
   TabPanels,
   Tab,
-  TabPanel
+  TabPanel,
+  Box
 } from "@chakra-ui/react";
 import CodeMirror from "@uiw/react-codemirror";
 import { lineNumbers } from "@codemirror/gutter";
@@ -18,15 +18,7 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
 
   return (
-    <GridItem
-      colStart={2}
-      colEnd={3}
-      rowStart={3}
-      rowEnd={4}
-      bg={bg}
-      rounded="md"
-      shadow="md"
-    >
+    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs>
         <TabList>
           <Tab>Scratchpad</Tab>
@@ -47,6 +39,6 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </GridItem>
+    </Box>
   );
 }

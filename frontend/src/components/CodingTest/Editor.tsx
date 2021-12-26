@@ -1,11 +1,4 @@
-import {
-  GridItem,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel
-} from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror from "@uiw/react-codemirror";
 import { lineNumbers } from "@codemirror/gutter";
 import { javascript } from "@codemirror/lang-javascript";
@@ -72,15 +65,7 @@ export default function Editor({ bg }: EditorProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
 
   return (
-    <GridItem
-      colStart={2}
-      colEnd={3}
-      rowStart={2}
-      rowEnd={3}
-      bg={bg}
-      rounded="md"
-      shadow="md"
-    >
+    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs>
         <TabList>
           <Tab>Your Solution</Tab>
@@ -89,13 +74,14 @@ export default function Editor({ bg }: EditorProps) {
           <TabPanel p="2">
             <CodeMirror
               value={PLACEHOLDER}
-              height="20rem"
+              minHeight="10rem"
+              maxHeight="20rem"
               extensions={[highlightTheme, lineNumbers(), ...LANGUAGES]}
               theme={theme}
             />
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </GridItem>
+    </Box>
   );
 }

@@ -1,4 +1,4 @@
-import { Button, Flex, GridItem, Select, Text } from "@chakra-ui/react";
+import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import ThemeButton from "../ThemeButton";
 
 function toReadableTime(seconds: number): string {
@@ -19,15 +19,7 @@ interface MenuProps {
 }
 export default function Menu({ bg, fg, time }: MenuProps) {
   return (
-    <GridItem
-      colStart={1}
-      colEnd={3}
-      rowStart={1}
-      rowEnd={2}
-      display="flex"
-      justifyContent="stretch"
-      gap="2"
-    >
+    <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
       <Flex
         bg={bg}
         color={fg}
@@ -42,7 +34,7 @@ export default function Menu({ bg, fg, time }: MenuProps) {
         </Text>
       </Flex>
       <ThemeButton position="relative" />
-      <Flex alignItems="center" gap="2" w="14rem">
+      <Flex alignItems="center" gap="3" w="14rem">
         <Select bg={bg} textTransform="capitalize" w="8rem" border="none">
           {LANGUAGES.map((lang, idx) => (
             <option
@@ -68,7 +60,7 @@ export default function Menu({ bg, fg, time }: MenuProps) {
             ))}
         </Select>
       </Flex>
-      <Flex alignItems="center" gap="2" ml="auto">
+      <Flex alignItems="center" gap="3" ml="auto">
         <Button px="4" colorScheme="red" h="full">
           Surrender
         </Button>
@@ -76,6 +68,6 @@ export default function Menu({ bg, fg, time }: MenuProps) {
           Submit
         </Button>
       </Flex>
-    </GridItem>
+    </Flex>
   );
 }
