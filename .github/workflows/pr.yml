@@ -35,6 +35,43 @@ jobs:
   #       run: dotnet build --no-restore
   #     - name: Test
   #       run: dotnet test --no-build --verbosity normal
+  logger:
+    name: Logger
+    runs-on: ubuntu-latest
+    container: python:3.9.6-buster
+    timeout-minutes: 10
+    services:
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: log
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
+        ports:
+          - 8086:8086
+    defaults:
+      run:
+        working-directory: ./logger
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: "1.1.12"
+      - name: Install dependencies
+        run: poetry install
+      - name: Run lint
+        run: poetry run pylint logger
+      - name: Run test
+        run: poetry run pytest
+        env:
+          ACCESS_TOKEN: testing
+          INFLUX_URL: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: testing
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
