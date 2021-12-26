@@ -1,4 +1,5 @@
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
+import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
 
 function toReadableTime(seconds: number): string {
@@ -27,9 +28,11 @@ export default function Menu({ bg, fg, time }: MenuProps) {
         alignItems="center"
         h="full"
         px="4"
+        gap="2"
         rounded="md"
       >
-        <Text fontWeight="bold" fontSize="xl">
+        <TimeIcon />
+        <Text fontWeight="medium" fontSize="lg">
           {toReadableTime(time)}
         </Text>
       </Flex>
