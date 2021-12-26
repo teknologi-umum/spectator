@@ -3,24 +3,27 @@ package main
 import (
 	"context"
 	"fmt"
-
-	"github.com/influxdata/influxdb-client-go/v2/domain"
 )
 
 func (d *Dependency) PrepareBucket(ctx context.Context) error {
 	bucketsAPI := d.DB.BucketsAPI()
-	bucket, err := bucketsAPI.FindBucketByName(ctx, "log")
-	if err != nil {
+	_, err := bucketsAPI.FindBucketByName(ctx, "log")
+	if err != nil && err.Error() != "bucket 'log' not found" {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
-	if !bucket.CreatedAt.IsZero() {
-		return nil
+	if err != nil && err.Error() == "bucket 'log' not found" {
+		organizationAPI := d.DB.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, d.Org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, "log")
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
 	}
 
-	_, err = bucketsAPI.CreateBucketWithName(ctx, &domain.Organization{Name: d.Org}, "log")
-	if err != nil {
-		return fmt.Errorf("creating bucket: %v", err)
-	}
 	return nil
 }

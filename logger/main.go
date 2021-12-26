@@ -15,8 +15,8 @@ import (
 )
 
 type Dependency struct {
-	DB  		influxdb2.Client
-	Org 		string
+	DB          influxdb2.Client
+	Org         string
 	AccessToken string
 }
 
@@ -41,15 +41,29 @@ func main() {
 		log.Fatal("ACCESS_TOKEN environment variable must be set")
 	}
 
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		port = "3000"
+	}
+
 	db := influxdb2.NewClient(influxURL, influxToken)
 	defer db.Close()
 
 	deps := Dependency{
-		DB:  db,
-		Org: influxOrganization,
+		DB:          db,
+		Org:         influxOrganization,
 		AccessToken: accessToken,
 	}
 
+	// Prepare the log bucket
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	err := deps.PrepareBucket(ctx)
+	if err != nil {
+		log.Fatalf("preparing bucket: %v", err)
+	}
+
+	// Create server mux
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -88,29 +102,30 @@ func main() {
 		}
 	})
 
+	// Create server instance
 	server := http.Server{
 		Handler:      mux,
 		ReadTimeout:  time.Second * 30,
 		WriteTimeout: time.Second * 30,
 		IdleTimeout:  time.Second * 5,
-		Addr:         ":5000",
+		Addr:         ":" + port,
 	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	
-	go func(){
+
+	go func() {
 		log.Println("Starting server")
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}
 		log.Println("Server closed")
 	}()
-	log.Printf("Logger service running on http://%s", server.Addr)
+	log.Printf("Logger service running on http://localhost:%s", server.Addr)
 
 	<-done
 	log.Printf("Server shutdown...")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {

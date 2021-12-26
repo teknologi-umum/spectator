@@ -20,7 +20,7 @@ type Data struct {
 	Application string                 `json:"application" msgpack:"application"`
 	Message     string                 `json:"message" msgpack:"message"`
 	Body        map[string]interface{} `json:"body" msgpack:"body"`
-	Level string `json:"level" msgpack:"level"`
+	Level       string                 `json:"level" msgpack:"level"`
 	Environment string                 `json:"environment" msgpack:"environment"`
 	Language    string                 `json:"language" msgpack:"language"`
 	Timestamp   time.Time              `json:"timestamp" msgpack:"timestamp"`
@@ -30,7 +30,7 @@ func (d *Dependency) ValidatePayload(p Payload) error {
 	if p.AccessToken != d.AccessToken {
 		return fmt.Errorf("access token must be provided")
 	}
-	
+
 	var missing []string
 	if p.Data.RequestID == "" {
 		missing = append(missing, "request_id")
@@ -45,7 +45,7 @@ func (d *Dependency) ValidatePayload(p Payload) error {
 	}
 
 	if len(missing) == 0 {
-		return  nil
+		return nil
 	}
 
 	return fmt.Errorf("%s must be provided", strings.Join(missing, ", "))
@@ -94,18 +94,18 @@ func (d *Dependency) InsertLog(w http.ResponseWriter, r *http.Request) error {
 }
 
 type queries struct {
-	Level string
-	RequestID string
+	Level       string
+	RequestID   string
 	Application string
-	TimeFrom time.Time
-	TimeTo time.Time
+	TimeFrom    time.Time
+	TimeTo      time.Time
 }
 
 func (d *Dependency) ReadLogs(w http.ResponseWriter, r *http.Request) error {
 	urlQuery := r.URL.Query()
 	query := queries{
-		Level: urlQuery.Get("level"),
-		RequestID: urlQuery.Get("request_id"),
+		Level:       urlQuery.Get("level"),
+		RequestID:   urlQuery.Get("request_id"),
 		Application: urlQuery.Get("application"),
 	}
 
@@ -130,28 +130,30 @@ func (d *Dependency) ReadLogs(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	var contentType string
+	if r.Header.Get("accept") == "" {
+		contentType = "application/json"
+	}
+
 	var data []byte
-	switch r.Header.Get("accept") {
+	switch contentType {
 	case "application/msgpack":
 		data, err = msgpack.Marshal(logs)
 		if err != nil {
 			return err
 		}
 	default:
-		data, err = json.Marshal(data)
+		data, err = json.Marshal(logs)
 		if err != nil {
 			return err
 		}
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("content-type", r.Header.Get("accept"))
+	w.Header().Set("content-type", contentType)
 	_, err = w.Write(data)
 	if err != nil {
 		return err
 	}
 	return nil
-
-	return nil
 }
-
