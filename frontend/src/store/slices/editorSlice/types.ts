@@ -1,6 +1,6 @@
-type Languages = "java" | "javascript" | "php" | "python" | "c++" | "c";
+export type Languages = "java" | "javascript" | "php" | "python" | "c++" | "c";
 
-interface Solution {
+export interface Solution {
   language: Languages;
   code: string;
 }

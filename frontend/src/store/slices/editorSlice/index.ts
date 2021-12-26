@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { InitialState } from "./types";
+import type { InitialState, Languages } from "./types";
 
 const initialState: InitialState = {
   currentLanguage: "javascript",
@@ -13,14 +13,14 @@ export const editorSlice = createSlice({
   initialState,
   reducers: {
     changeFontSize: (state, action: PayloadAction<number>) => {
-      state = {
-        ...state,
-        fontSize: action.payload
-      };
+      state.fontSize = action.payload;
+    },
+    changeCurrentLanguage: (state, action: PayloadAction<string>) => {
+      state.currentLanguage = action.payload as Languages;
     }
   }
 });
 
-export const { changeFontSize } = editorSlice.actions;
+export const { changeFontSize, changeCurrentLanguage } = editorSlice.actions;
 
 export default editorSlice.reducer;

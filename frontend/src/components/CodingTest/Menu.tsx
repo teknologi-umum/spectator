@@ -1,8 +1,11 @@
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
-import { changeFontSize } from "@/store/slices/editorSlice";
-import { useAppDispatch } from "@/store";
+import {
+  changeFontSize,
+  changeCurrentLanguage
+} from "@/store/slices/editorSlice";
+import { useAppDispatch, useAppSelector } from "@/store";
 
 function toReadableTime(seconds: number): string {
   const s = Math.floor(seconds % 60);
@@ -23,6 +26,7 @@ interface MenuProps {
 
 export default function Menu({ bg, fg, time }: MenuProps) {
   const dispatch = useAppDispatch();
+  const { fontSize } = useAppSelector((state) => state.editor);
 
   return (
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
@@ -43,7 +47,16 @@ export default function Menu({ bg, fg, time }: MenuProps) {
       </Flex>
       <ThemeButton position="relative" />
       <Flex alignItems="center" gap="3" w="14rem">
-        <Select bg={bg} textTransform="capitalize" w="8rem" border="none">
+        <Select
+          bg={bg}
+          textTransform="capitalize"
+          w="8rem"
+          border="none"
+          onChange={(e) => {
+            const language = e.currentTarget.value;
+            dispatch(changeCurrentLanguage(language));
+          }}
+        >
           {LANGUAGES.map((lang, idx) => (
             <option
               key={idx}
@@ -59,22 +72,26 @@ export default function Menu({ bg, fg, time }: MenuProps) {
           textTransform="capitalize"
           w="6rem"
           border="none"
+          value={fontSize}
           onChange={(e) => {
             const fontSize = parseInt(e.currentTarget.value);
             dispatch(changeFontSize(fontSize));
           }}
         >
-          {Array(6)
+          {Array(9)
             .fill(0)
-            .map((_, idx: number) => (
-              <option
-                key={idx}
-                value={idx + 12}
-                style={{ textTransform: "capitalize" }}
-              >
-                {idx + 12}px
-              </option>
-            ))}
+            .map((_, idx: number) => {
+              const fontSize = idx + 12;
+              return (
+                <option
+                  key={idx}
+                  value={fontSize}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {fontSize}px
+                </option>
+              );
+            })}
         </Select>
       </Flex>
       <Flex alignItems="center" gap="3" ml="auto">

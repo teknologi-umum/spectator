@@ -34,7 +34,13 @@ export function getHighlightTheme(mode: "dark" | "light") {
   ]).extension;
 }
 
-export function getEditorTheme(mode: "dark" | "light") {
+export function getEditorTheme({
+  mode,
+  fontSize
+}: {
+  mode: "dark" | "light";
+  fontSize: number;
+}) {
   const isDarkMode = mode === "dark";
 
   const c = {
@@ -55,7 +61,7 @@ export function getEditorTheme(mode: "dark" | "light") {
       ".cm-content": {
         lineHeight: "1.625em",
         verticalAlign: "center",
-        fontSize: "2rem"
+        fontSize: fontSize + "px"
       },
       "&.cm-focused .cm-selectionBackground": {
         background: c.bgDarker
@@ -71,7 +77,7 @@ export function getEditorTheme(mode: "dark" | "light") {
         border: "none",
         backgroundColor: c.bg,
         color: c.gray,
-        fontSize: "2rem"
+        fontSize: fontSize + "px"
       },
       ".cm-gutterElement.cm-activeLineGutter": {
         backgroundColor: c.bgDarker
