@@ -1,6 +1,8 @@
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
+import { changeFontSize } from "@/store/slices/editorSlice";
+import { useAppDispatch } from "@/store";
 
 function toReadableTime(seconds: number): string {
   const s = Math.floor(seconds % 60);
@@ -18,7 +20,10 @@ interface MenuProps {
   fg: string;
   time: number;
 }
+
 export default function Menu({ bg, fg, time }: MenuProps) {
+  const dispatch = useAppDispatch();
+
   return (
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
       <Flex
@@ -49,7 +54,16 @@ export default function Menu({ bg, fg, time }: MenuProps) {
             </option>
           ))}
         </Select>
-        <Select bg={bg} textTransform="capitalize" w="6rem" border="none">
+        <Select
+          bg={bg}
+          textTransform="capitalize"
+          w="6rem"
+          border="none"
+          onChange={(e) => {
+            const fontSize = parseInt(e.currentTarget.value);
+            dispatch(changeFontSize(fontSize));
+          }}
+        >
           {Array(6)
             .fill(0)
             .map((_, idx: number) => (

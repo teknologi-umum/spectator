@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { personalInfoReducer, questionReducer } from "./slices";
+import { personalInfoReducer, questionReducer, editorReducer } from "./slices";
 
 const store = configureStore({
   devTools: true,
   reducer: {
     personalInfo: personalInfoReducer,
-    question: questionReducer
+    question: questionReducer,
+    editor: editorReducer
   }
 });
 
