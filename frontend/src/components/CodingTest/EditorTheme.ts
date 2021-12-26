@@ -54,7 +54,8 @@ export function getEditorTheme(mode: "dark" | "light") {
       },
       ".cm-content": {
         lineHeight: "1.625em",
-        verticalAlign: "center"
+        verticalAlign: "center",
+        fontSize: "2rem"
       },
       "&.cm-focused .cm-selectionBackground": {
         background: c.bgDarker
@@ -69,7 +70,8 @@ export function getEditorTheme(mode: "dark" | "light") {
       ".cm-gutters": {
         border: "none",
         backgroundColor: c.bg,
-        color: c.gray
+        color: c.gray,
+        fontSize: "2rem"
       },
       ".cm-gutterElement.cm-activeLineGutter": {
         backgroundColor: c.bgDarker

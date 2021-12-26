@@ -31,13 +31,6 @@ export function mouseMoveHandler(connection: unknown) {
       timestamp: Date.now()
     };
 
-    try {
-      await emit(connection, data);
-    } catch (err) {
-      // TODO(elianiva): pake logging?
-      console.error(err);
-    }
-
     // only emit if it's actully moving
     const direction = calculateDirection(e);
     if (direction) {
@@ -46,13 +39,6 @@ export function mouseMoveHandler(connection: unknown) {
         value: JSON.stringify({ direction }),
         timestamp: Date.now()
       };
-
-      try {
-        await emit(connection, data);
-      } catch (err) {
-        // TODO(elianiva): pake logging?
-        console.error(err);
-      }
     }
   };
 }`;
