@@ -19,7 +19,7 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
-      <Tabs>
+      <Tabs isLazy>
         <TabList>
           <Tab>Scratchpad</Tab>
           <Tab>Output</Tab>

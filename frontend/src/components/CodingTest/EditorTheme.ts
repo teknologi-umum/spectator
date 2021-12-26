@@ -67,9 +67,7 @@ export function getEditorTheme(mode: "dark" | "light") {
         backgroundColor: c.gray
       },
       ".cm-gutters": {
-        border: "none"
-      },
-      ".cm-gutter": {
+        border: "none",
         backgroundColor: c.bg,
         color: c.gray
       },

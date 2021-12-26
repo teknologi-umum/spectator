@@ -28,7 +28,7 @@ export default function Question({ bg, fg, codeBg }: QuestionProps) {
       rounded="md"
       shadow="md"
     >
-      <Tabs h="full">
+      <Tabs h="full" isLazy>
         <TabList>
           <Tab>Prompt</Tab>
           <Tab>Your Result</Tab>
