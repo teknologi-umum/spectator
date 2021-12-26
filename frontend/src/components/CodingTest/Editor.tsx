@@ -57,7 +57,7 @@ export default function Editor({ bg }: EditorProps) {
           <Tab>Your Solution</Tab>
         </TabList>
         <TabPanels h="full">
-          <TabPanel p="2" h="full" position="relative">
+          <TabPanel p="2" h="full" position="relative" tabIndex={-1}>
             <CodeMirror
               value={PLACEHOLDER}
               extensions={[highlightTheme, lineNumbers(), ...LANGUAGES]}

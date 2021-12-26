@@ -26,7 +26,7 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
         </TabList>
 
         <TabPanels h="full">
-          <TabPanel p="2" h="full">
+          <TabPanel p="2" h="full" tabIndex={-1}>
             <CodeMirror
               value=""
               height="8rem"
@@ -35,7 +35,7 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
               style={{ height: "calc(100% - 2.75rem)" }}
             />
           </TabPanel>
-          <TabPanel p="2">
+          <TabPanel p="2" tabIndex={-1}>
             <Heading>Sandbox</Heading>
           </TabPanel>
         </TabPanels>

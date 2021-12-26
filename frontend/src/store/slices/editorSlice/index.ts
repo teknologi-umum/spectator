@@ -4,7 +4,7 @@ import type { InitialState, Languages } from "./types";
 const initialState: InitialState = {
   currentLanguage: "javascript",
   code: "",
-  fontSize: 16,
+  fontSize: 14,
   solutions: []
 };
 
