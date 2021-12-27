@@ -13,7 +13,7 @@ import ThemeButton from "@/components/ThemeButton";
 
 export default function Instructions() {
   const navigate = useNavigate();
-  const bg = useColorModeValue("white", "gray.700");
+  const bg = useColorModeValue("white", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100");
 
   const textColor = useColorModeValue("gray.600", "gray.400");

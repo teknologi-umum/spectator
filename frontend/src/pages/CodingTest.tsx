@@ -22,8 +22,8 @@ export default function CodingTest() {
   useEventListener("keydown", keystrokeHandler(connection));
   useEventListener("contextmenu", (e) => e.preventDefault());
 
-  const gray = useColorModeValue("gray.100", "gray.800");
-  const bg = useColorModeValue("white", "gray.700");
+  const gray = useColorModeValue("gray.100", "gray.900");
+  const bg = useColorModeValue("white", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100");
 
   return (

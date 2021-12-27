@@ -1,6 +1,6 @@
 import { EditorView } from "@codemirror/view";
 import { tags, HighlightStyle } from "@codemirror/highlight";
-import { theme } from "@chakra-ui/react";
+import theme from "@/styles/themes"
 
 export function getHighlightTheme(mode: "dark" | "light") {
   const isDarkMode = mode === "dark";
@@ -45,8 +45,8 @@ export function getEditorTheme({
 
   const c = {
     gray: isDarkMode ? theme.colors.gray[400] : theme.colors.gray[600],
-    bg: isDarkMode ? theme.colors.gray[700] : theme.colors.white,
-    bgDarker: isDarkMode ? theme.colors.blue[800] : theme.colors.blue[50],
+    bg: isDarkMode ? theme.colors.gray[800] : theme.colors.white,
+    bgDarker: isDarkMode ? theme.colors.gray[700] : theme.colors.blue[50],
     caret: isDarkMode ? theme.colors.gray[200] : theme.colors.gray[700]
   };
 

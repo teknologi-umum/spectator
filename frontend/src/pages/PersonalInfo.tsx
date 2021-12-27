@@ -29,7 +29,7 @@ export default function PersonalInfo() {
   const dispatch = useAppDispatch();
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
-  const bg = useColorModeValue("white", "gray.700");
+  const bg = useColorModeValue("white", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100");
 
   const {

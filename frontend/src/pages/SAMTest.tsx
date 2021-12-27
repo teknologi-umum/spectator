@@ -50,7 +50,7 @@ export default function SAMTest() {
   const [arousal, setArousal] = useState(0);
   const [pleasure, setPleasure] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const bg = useColorModeValue("white", "gray.700");
+  const bg = useColorModeValue("white", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100");
 
   function goto(kind: "next" | "prev") {
