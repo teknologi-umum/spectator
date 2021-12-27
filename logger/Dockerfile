@@ -1,25 +1,10 @@
-FROM python:3.9.6-alpine
-
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE 1
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED 1
-
-RUN apk update && \
-    apk add curl musl-dev openssl-dev libffi-dev && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
-
-ENV PATH="${PATH}:/root/.poetry/bin"
-
+FROM golang:1.17.5-alpine AS builder
 WORKDIR /app
-
 COPY . .
+RUN go mod download && go build .
 
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-dev
+FROM alpine
+WORKDIR /app
+COPY --from=builder /app/logger .
+RUN ["./logger"]
 
-EXPOSE 8000
-
-CMD [ "uvicorn", "--port", "8080", "--app-dir", "logger", "__init__:app"]

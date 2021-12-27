@@ -38,7 +38,7 @@ jobs:
   logger:
     name: Logger
     runs-on: ubuntu-latest
-    container: python:3.9.6-buster
+    container: golang:1.17.5-buster
     timeout-minutes: 10
     services:
       db:
@@ -57,16 +57,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: "1.1.12"
-      - name: Install dependencies
-        run: poetry install
-      - name: Run lint
-        run: poetry run pylint logger
+      - name: Build test
+        run: go build .
       - name: Run test
-        run: poetry run pytest
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic
         env:
           ACCESS_TOKEN: testing
           INFLUX_URL: http://db:8086/

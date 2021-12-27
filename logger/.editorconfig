@@ -2,10 +2,12 @@ root = false
 
 [*]
 end_of_line = lf
-indent_size = 4
-indent_style = space
-tab_width = 4
 charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
+trim_trailing_whitespace = false
+insert_final_newline = false
 max_line_length = 80
+
+[*.go]
+indent_size = 4
+indent_style = tabs
+tab_width = 4

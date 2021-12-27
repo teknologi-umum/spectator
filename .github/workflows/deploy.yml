@@ -35,6 +35,37 @@ jobs:
   #       run: dotnet build --no-restore
   #     - name: Test
   #       run: dotnet test --no-build --verbosity normal
+  logger:
+    name: Logger
+    runs-on: ubuntu-latest
+    container: golang:1.17.5-buster
+    timeout-minutes: 10
+    services:
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: log
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
+        ports:
+          - 8086:8086
+    defaults:
+      run:
+        working-directory: ./logger
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build test
+        run: go build .
+      - name: Run test
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic
+        env:
+          ACCESS_TOKEN: testing
+          INFLUX_URL: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: testing
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
