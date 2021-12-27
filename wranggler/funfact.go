@@ -26,7 +26,7 @@ func (d *Dependency) FunFact(w http.ResponseWriter, r *http.Request) {
 	// Read about buffered channel vs non-buffered channels
 	wpm := make(chan int8, 1)
 	deletionRate := make(chan float64, 1)
-	attempt := make(chan int8, 1)
+	attempt := make(chan []int8, 1)
 
 	// Run all the calculate function concurently
 	go d.CalculateWordsPerMinute(r.Context(), member.ID, wpm)
@@ -36,7 +36,7 @@ func (d *Dependency) FunFact(w http.ResponseWriter, r *http.Request) {
 	var result = struct {
 		Wpm          int8    `json:"wpm"`
 		DeletionRate float64 `json:"deletion_rate"`
-		Attempt      int8    `json:"attempt"`
+		Attempt      []int8  `json:"attempt"`
 	}{
 		<-wpm,
 		<-deletionRate,
@@ -60,7 +60,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// TODO:  ini buat ngambil nganu, jangan lupa result
-	result, err := queryAPI.Query(context.TODO(), `
+	result, err := queryAPI.Query(ctx, `
 		from(bucket: "spectator")
 			|> range(start: -1d)
 			|> filter(fn: (r) => r["_measurement"] == "coding_event")
@@ -77,7 +77,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 		panic(err)
 	}
 
-	var wpmTot, keyTot = 0, 0
+	var wpmTotal, keyTotal = 0, 0
 	for result.Next() {
 		keytotal := result.Record().Value().(int64)
 		wpmTot += keytotal / 5
@@ -98,7 +98,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	result <- int8(wpmTot / keyTot)
 }
 
-func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID string, result chan int8) {
+func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID string, result chan []int8) {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// number of question submission attempts
@@ -109,8 +109,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 		|> filter(fn: (r) => r["_measurement"] == "coding_event")
 		|> filter(fn: (r) => r["_event"] == "coding_attempted")
 		|> filter(fn: (r) => r["_actor"] == "`+memberID+`")
-		|> group(columns: "question_id")
-		|> group()
+		|> group(columns: ["question_id"])
 		|> count()
 	`)
 	if err != nil {
@@ -118,13 +117,15 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 		panic(err)
 	}
 
+	// FIXME: the result not array , the reasou UNKNOW
+
 	// terus langsung return hasilnya
 	// tapi bisa juga di group per question, jadi
 	// misalnya untuk question #1, dia ada 5 attempt, question #2 ada 10 attempt
 	// and so on so forth.
 
 	// Return the result here
-	result <- 42
+	result <- []int8{}
 }
 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string, result chan float64) {

@@ -22,6 +22,14 @@ type Point struct {
 	Value string `json:"v"`
 }
 
+type Submission struct {
+	Type           string `json:"t"`
+	Event          string `json:"e"`
+	Actor          string `json:"a"`
+	QuestionNumber string `json:"q"`
+	Value          string `json:"v"`
+}
+
 func TestShit(t *testing.T) {
 	x := `
 [
@@ -42,6 +50,23 @@ func TestShit(t *testing.T) {
 	{"t": "coding_event","e": "mouse_movement","a":"4","v":"2"}
 ]`
 
+	y := `[ 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"3","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"4","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"1","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"1","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"1","q":"2","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"1","q":"3","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"3","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"1","v": "false"}, 
+	{"t": "test_event","e": "submission_attempt","a":"2","q":"1","v": "false"}
+]
+`
+
 	batch := []Point{}
 	err := json.Unmarshal([]byte(x), &batch)
 	if err != nil {
@@ -52,8 +77,18 @@ func TestShit(t *testing.T) {
 		t.Errorf("batch empty")
 	}
 
-	const token = "phfWkBfHL7xj975z6GrXtH-UUFW0NIdLKa5o2IZLamNNk9GZr3x69jz1xDXfOX1ktXDvkBFlD4dPIHewmByxPg=="
-	const bucket = "spectator2"
+	batchY := []Submission{}
+	err = json.Unmarshal([]byte(y), &batchY)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(batchY) == 0 {
+		t.Errorf("BatchY Empty")
+	}
+
+	const token = "l5fi5YuUJlBjq0EeLYLYqf-7jz7tGCq-QNGWGbWA8sME5pEFtCW1RUHk4oVChYcGNA9g92BQVLeL6pCk-NAmkA=="
+	const bucket = "spectator"
 	const org = "teknum"
 
 	//	minioHost, ok := os.LookupEnv("MINIO_HOST")
@@ -105,31 +140,34 @@ func TestShit(t *testing.T) {
 
 		writeAPI.WritePoint(influxdb2.NewPointWithMeasurement(item.Type).AddTag("_event", item.Event).AddTag("_actor", item.Actor).AddField("value", item.Value).SetTime(time.Now()))
 	}
+	for _, item := range batchY {
+		writeAPI.WritePoint(influxdb2.NewPointWithMeasurement(item.Type).AddTag("_event", item.Event).AddTag("_actor", item.Actor).AddTag("question_number", item.QuestionNumber).AddField("value", item.Value).SetTime(time.Now()))
+	}
 
 	// Flush writes
 	writeAPI.Flush()
 
-	result, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator2")
+	result, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator")
   |> range(start: -1d)
   |> filter(fn: (r) => r["_measurement"] == "coding_event")
   |> filter(fn: (r) => r["_event"] == "keystroke")
-  |> filter(fn: (r) => r["_actor"] == "1")
+  |> filter(fn: (r) => r["_actor"] == "2")
   |> filter(fn: (r) =>(r["_value"] == "backspace" or r["_value"] == "delete"))
   |> count()
   |> yield(name: "count")`)
 
-	if err != nil {
+	if err != nil || result == nil {
 		t.Error(err)
 	}
 
 	result.Next()
 	delTot := result.Record().Value().(int64)
 
-	result, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator2")
+	result, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
   |> range(start: -1d)
   |> filter(fn: (r) => r["_measurement"] == "coding_event")
   |> filter(fn: (r) => r["_event"] == "keystroke")
-  |> filter(fn: (r) => r["_actor"] == "1")
+  |> filter(fn: (r) => r["_actor"] == "2")
 	|> count()
   |> yield(name: "count")`)
 
@@ -141,5 +179,23 @@ func TestShit(t *testing.T) {
 	tot := result.Record().Value().(int64)
 
 	fmt.Println((float64(delTot) / float64(tot)))
+
+	result, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
+		|> range(start: -1d)
+		|> filter(fn: (r) => r["_measurement"] == "test_event")
+		|> filter(fn: (r) => r["_event"] == "submission_attempt")
+		|> filter(fn: (r) => r["_actor"] == "2")
+		|> group(columns: ["question_id"])
+		|> count()
+	`)
+	if err != nil {
+		// FIXME: seharusnya jangan panic
+		panic(err)
+	}
+
+	// why the result isn't array
+	for result.Next() {
+		fmt.Println(result.Record())
+	}
 
 }
