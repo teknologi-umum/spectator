@@ -1,5 +1,4 @@
 import {
-  Badge,
   Box,
   Button,
   Flex,
@@ -7,17 +6,40 @@ import {
   GridItem,
   Heading,
   Text,
-  useEventListener
+  useEventListener,
+  useColorModeValue
 } from "@chakra-ui/react";
-import { mouseClickHandler, mouseMoveHandler } from "@/events";
+import { useEffect, useState } from "react";
 import { useSignalR } from "@/hooks";
+import { mouseClickHandler, mouseMoveHandler } from "@/events";
+
+function toReadableTime(seconds: number): string {
+  const s = Math.floor(seconds % 60);
+  const m = Math.floor((seconds / 60) % 60);
+  const h = Math.floor((seconds / (60 * 60)) % 24);
+  return [h, m.toString().padStart(2, "0"), s.toString().padStart(2, "0")].join(
+    ":"
+  );
+}
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
-  const connection = useSignalR("fake_hub_url");
+  const [time, setTime] = useState(90 * 60); // 90 minutes
 
+  useEffect(() => {
+    const timer = setInterval(() => setTime((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  });
+
+  const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
+
+  const gray = useColorModeValue("gray.100", "gray.700");
+  const lightGray = useColorModeValue("gray.50", "gray.800");
+  const border = useColorModeValue("gray.200", "gray.600");
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
   return (
     <Grid
@@ -25,7 +47,7 @@ export default function CodingTest() {
       h="full"
       gridTemplateColumns="1fr 1fr"
       gridTemplateRows="1fr 1fr"
-      bg="gray.100"
+      bg={gray}
       gap="2px"
     >
       <GridItem
@@ -33,7 +55,7 @@ export default function CodingTest() {
         colEnd={2}
         rowStart={1}
         rowEnd={3}
-        bg="gray.50"
+        bg={lightGray}
         position="relative"
         h="full"
         resize="horizontal"
@@ -42,115 +64,62 @@ export default function CodingTest() {
       >
         <Box
           w="full"
-          p="4"
           borderBottom="2px"
-          borderBottomColor="gray.200"
-          bg="white"
+          borderBottomColor={border}
+          bg={bg}
           maxH="full"
         >
-          <Heading fontSize="lg" color="gray.700" display="inline">
-            Day 1: Sonar Sweep
-          </Heading>
-          <Badge colorScheme="green" fontWeight="bold" ml="2">
-            Easy
-          </Badge>
+          <Flex alignItems="center">
+            <Box borderRight="2px" borderRightColor={border} p="4">
+              <Text fontWeight="bold" fontSize="lg" color={fg}>
+                {toReadableTime(time)}
+              </Text>
+            </Box>
+            <Box p="4">
+              <Text fontWeight="bold" fontSize="lg" color={fg}>
+                Twinkle Twinkle Little Star
+              </Text>
+            </Box>
+          </Flex>
         </Box>
         <Box p="6" maxH="calc(100% - 8rem)" overflowY="auto" flex="1">
           <Text fontSize="16" lineHeight="6">
-            You&apos;re minding your own business on a ship at sea when the
-            overboard alarm goes off! You rush to see if you can help.
-            Apparently, one of the Elves tripped and accidentally sent the
-            sleigh keys flying into the ocean!
+            Questions:
+          </Text>
+          <Text fontSize="16" lineHeight="6">
+            Print twinkle twinkle little star lyrics by using 2 variables
           </Text>
 
           <Text fontSize="16" lineHeight="6" mt="4">
-            Before you know it, you&apos;re inside a submarine the Elves keep
-            ready for situations like this. It&apos;s covered in Christmas
-            lights (because of course it is), and it even has an experimental
-            antenna that should be able to track the keys if you can boost its
-            signal strength high enough; there&apos;s a little meter that
-            indicates the antenna&apos;s signal strength by displaying 0-50
-            stars.
+            String a : Twinkle twinkle little star \nHow I wonder what you are{" "}
+            <br /> String b : Up above the world so high \nLike a diamond in the
+            sky
           </Text>
 
           <Text fontSize="16" lineHeight="6" mt="4">
-            Your instincts tell you that in order to save Christmas, you&apos;ll
-            need to get all fifty stars by December 25th.
+            Examples:
           </Text>
+
+          <Box as="pre" bg="gray.700" color={fg} p="4" mt="4">
+            {`1 variable x: Never gonna give you up
+2 variable y: Never gonna run around and desert you
+3 variable z: Never gonna let you down
+4 call x
+5 call z
+6 call y
+`}
+          </Box>
 
           <Text fontSize="16" lineHeight="6" mt="4">
-            Collect stars by solving puzzles. Two puzzles will be made available
-            on each day in the Advent calendar; the second puzzle is unlocked
-            when you complete the first. Each puzzle grants one star. Good luck!
+            Output:
           </Text>
 
-          <Text fontSize="16" lineHeight="6" mt="4">
-            As the submarine drops below the surface of the ocean, it
-            automatically performs a sonar sweep of the nearby sea floor. On a
-            small screen, the sonar sweep report (your puzzle input) appears:
-            each line is a measurement of the sea floor depth as the sweep looks
-            further and further away from the submarine.
-          </Text>
-
-          <Text fontSize="16" lineHeight="6" mt="4">
-            For example, suppose you had the following report:
-          </Text>
-
-          <Box as="pre" bg="gray.700" color="white" p="4" mt="4">{`199
-200
-208
-210
-200
-207
-240
-269
-260
-263`}</Box>
-
-          <Text fontSize="16" lineHeight="6" mt="4">
-            This report indicates that, scanning outward from the submarine, the
-            sonar sweep found depths of 199, 200, 208, 210, and so on.
-          </Text>
-
-          <Text fontSize="16" lineHeight="6" mt="4">
-            The first order of business is to figure out how quickly the depth
-            increases, just so you know what you&apos;re dealing with - you
-            never know if the keys will get carried into deeper water by an
-            ocean current or a fish or something.
-          </Text>
-
-          <Text fontSize="16" lineHeight="6" mt="4">
-            To do this, count the number of times a depth measurement increases
-            from the previous measurement. (There is no measurement before the
-            first measurement.) In the example above, the changes are as
-            follows:
-          </Text>
-
-          <Box
-            as="pre"
-            bg="gray.700"
-            color="white"
-            p="4"
-            mt="4"
-          >{`199 (N/A - no previous measurement)
-200 (increased)
-208 (increased)
-210 (increased)
-200 (decreased)
-207 (increased)
-240 (increased)
-269 (increased)
-260 (decreased)
-263 (increased)`}</Box>
-
-          <Text fontSize="16" lineHeight="6" mt="4">
-            In this example, there are 7 measurements that are larger than the
-            previous measurement.
-          </Text>
-
-          <Text fontSize="16" lineHeight="6" mt="4">
-            How many measurements are larger than the previous measurement?
-          </Text>
+          <Box as="pre" bg="gray.700" color={fg} p="4" mt="4">
+            {`Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+`}
+          </Box>
         </Box>
         <Flex
           w="full"
@@ -160,8 +129,8 @@ export default function CodingTest() {
           gap="4"
           p="4"
           borderTop="2px"
-          borderTopColor="gray.200"
-          bg="white"
+          borderTopColor={border}
+          bg={bg}
         >
           <Button px="6" colorScheme="red">
             Surrender
@@ -174,10 +143,10 @@ export default function CodingTest() {
           </Button>
         </Flex>
       </GridItem>
-      <GridItem colStart={2} colEnd={3} rowStart={1} rowEnd={2} bg="white">
+      <GridItem colStart={2} colEnd={3} rowStart={1} rowEnd={2} bg={bg}>
         <Heading>Codemirror</Heading>
       </GridItem>
-      <GridItem colStart={2} colEnd={3} rowStart={2} rowEnd={3} bg="white">
+      <GridItem colStart={2} colEnd={3} rowStart={2} rowEnd={3} bg={bg}>
         <Heading>Visible Test Cases</Heading>
       </GridItem>
     </Grid>
