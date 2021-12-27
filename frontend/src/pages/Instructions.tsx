@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
+import ThemeButton from "@/components/ThemeButton";
 
 export default function Instructions() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function Instructions() {
 
   return (
     <Layout>
+      <ThemeButton position="fixed"/>
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
           General Instructions

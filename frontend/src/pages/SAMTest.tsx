@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import "@/styles/samtest.css";
+import ThemeButton from "@/components/ThemeButton";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -67,6 +68,7 @@ export default function SAMTest() {
 
   return (
     <Layout>
+      <ThemeButton position="fixed" />
       <Box
         as="form"
         onSubmit={handleSubmit}
