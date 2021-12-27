@@ -11,19 +11,11 @@ import {
   useColorModeValue,
   useEventListener
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
-  const [time, setTime] = useState(90 * 60); // 90 minutes
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime((prev) => prev - 1), 1000);
-    return () => clearInterval(timer);
-  });
-
   const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
@@ -33,15 +25,14 @@ export default function CodingTest() {
   const gray = useColorModeValue("gray.100", "gray.800");
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");
-  const codeBg = useColorModeValue("gray.200", "gray.800");
 
   return (
     <Box w="full" h="full" bg={gray} gap="3" p="3">
-      <Menu bg={bg} fg={fg} time={time} />
+      <Menu bg={bg} fg={fg} />
       <Box h="calc(100% - 3.5rem)">
         <ReflexContainer orientation="vertical">
           <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-            <Question bg={bg} fg={fg} time={time} codeBg={codeBg} />
+            <Question bg={bg} fg={fg} />
           </ReflexElement>
 
           <ReflexSplitter

@@ -1,12 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { personalInfoReducer, editorReducer } from "./slices";
+import { personalInfoReducer, editorReducer, questionReducer } from "./slices";
+
+// see: https://vitejs.dev/guide/env-and-mode.html#modes
+const isDev = import.meta.env.MODE === "development";
 
 const store = configureStore({
-  devTools: true,
+  devTools: isDev,
   reducer: {
     personalInfo: personalInfoReducer,
-    editor: editorReducer
+    editor: editorReducer,
+    question: questionReducer
   }
 });
 

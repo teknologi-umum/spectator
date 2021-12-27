@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
@@ -6,6 +7,7 @@ import {
   changeCurrentLanguage
 } from "@/store/slices/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
+import { prevQuestion, nextQuestion } from "@/store/slices/questionSlice";
 
 function toReadableTime(seconds: number): string {
   const s = Math.floor(seconds % 60);
@@ -16,17 +18,22 @@ function toReadableTime(seconds: number): string {
   );
 }
 
-const LANGUAGES = ["javascript", "java", "php", "python", "c++"];
+const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
   bg: string;
   fg: string;
-  time: number;
 }
 
-export default function Menu({ bg, fg, time }: MenuProps) {
+export default function Menu({ bg, fg }: MenuProps) {
+  const [time, setTime] = useState(90 * 60); // 90 minutes
   const dispatch = useAppDispatch();
-  const { fontSize } = useAppSelector((state) => state.editor);
+  const { fontSize, currentLanguage } = useAppSelector((state) => state.editor);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  });
 
   return (
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
@@ -52,6 +59,7 @@ export default function Menu({ bg, fg, time }: MenuProps) {
           textTransform="capitalize"
           w="8rem"
           border="none"
+          value={currentLanguage}
           onChange={(e) => {
             const language = e.currentTarget.value;
             dispatch(changeCurrentLanguage(language));
@@ -63,7 +71,7 @@ export default function Menu({ bg, fg, time }: MenuProps) {
               value={lang}
               style={{ textTransform: "capitalize" }}
             >
-              {lang}
+              {lang === "cpp" ? "C++" : lang}
             </option>
           ))}
         </Select>
@@ -95,10 +103,39 @@ export default function Menu({ bg, fg, time }: MenuProps) {
         </Select>
       </Flex>
       <Flex alignItems="center" gap="3" ml="auto">
-        <Button px="4" colorScheme="red" h="full">
+        <Button
+          px="4"
+          colorScheme="red"
+          h="full"
+          onClick={() => {
+            // TODO(elianiva): implement proper surrender logic properly
+            //                 it's now temporarily used for previous question
+            //                 to make testing easier
+            dispatch(prevQuestion());
+          }}
+        >
           Surrender
         </Button>
-        <Button px="4" colorScheme="blue" h="full">
+        <Button
+          px="4"
+          colorScheme="blue"
+          variant="outline"
+          h="full"
+          onClick={() => {
+            // TODO(elianiva): send the code to backend for execution
+          }}
+        >
+          Test
+        </Button>
+        <Button
+          px="4"
+          colorScheme="blue"
+          h="full"
+          onClick={() => {
+            // TODO(elianiva): only allow to continue when they have the correct answer
+            dispatch(nextQuestion());
+          }}
+        >
           Submit
         </Button>
       </Flex>

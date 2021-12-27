@@ -28,7 +28,6 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
         <TabPanels h="full">
           <TabPanel p="2" h="full" tabIndex={-1}>
             <CodeMirror
-              value=""
               height="8rem"
               extensions={[highlightTheme, lineNumbers()]}
               theme={theme}
