@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
-import store from "@/store";
+import { store, persistor } from "@/store";
 import App from "@/App";
 import "@fontsource/mulish/400.css";
 import "@fontsource/mulish/600.css";
@@ -24,7 +25,9 @@ ReactDOM.render(
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider theme={theme}>
       <Provider store={store}>
-        <App />
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
       </Provider>
     </ChakraProvider>
   </React.StrictMode>,
