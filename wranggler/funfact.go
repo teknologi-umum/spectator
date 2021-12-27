@@ -60,7 +60,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// TODO:  ini buat ngambil nganu, jangan lupa result
-	result, err := queryAPI.Query(ctx, `
+	result, err := queryAPI.Query(context.TODO(), `
 		from(bucket: "spectator")
 			|> range(start: -1d)
 			|> filter(fn: (r) => r["_measurement"] == "coding_event")
@@ -77,8 +77,12 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 		panic(err)
 	}
 
-	result.Next()
-	keytotal := result.Record().Value().(int64)
+	var wpmTot, keyTot = 0, 0
+	for result.Next() {
+		keytotal := result.Record().Value().(int64)
+		wpmTot += keytotal / 5
+		keyTot += 1
+	}
 
 	// Cara calculate WPM:
 	// SELECT semua KeystrokeEvent, group by TIME, each TIME itu 1 menit
@@ -91,7 +95,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	// terus return ke channel hasil average dari semua menit yang ada
 
 	// Return the result here
-	result <- 0
+	result <- int8(wpmTot / keyTot)
 }
 
 func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID string, result chan int8) {
@@ -100,7 +104,15 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 	// number of question submission attempts
 	// TODO:  ini buat ngambil nganu, jangan lupa result
 	// SELECT COUNT(_time) FROM spectator WHERE _type = "coding_attempted"
-	_, err := queryAPI.Query(ctx, "from()")
+	result, err := queryAPI.Query(ctx, `from(bucket: "spectator")
+		|> range(start: -1d)
+		|> filter(fn: (r) => r["_measurement"] == "coding_event")
+		|> filter(fn: (r) => r["_event"] == "coding_attempted")
+		|> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+		|> group(columns: "question_id")
+		|> group()
+		|> count()
+	`)
 	if err != nil {
 		// FIXME: seharusnya jangan panic
 		panic(err)
