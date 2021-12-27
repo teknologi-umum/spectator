@@ -44,10 +44,11 @@ jobs:
       db:
         image: influxdb:2.1
         env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
           DOCKER_INFLUXDB_INIT_USERNAME: root
           DOCKER_INFLUXDB_INIT_PASSWORD: password
           DOCKER_INFLUXDB_INIT_ORG: teknologi
-          DOCKER_INFLUXDB_INIT_BUCKET: log
+          DOCKER_INFLUXDB_INIT_BUCKET: public
           DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
         ports:
           - 8086:8086
