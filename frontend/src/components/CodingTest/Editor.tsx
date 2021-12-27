@@ -38,7 +38,6 @@ export default function Editor({ bg }: EditorProps) {
         <TabPanels h="full">
           <TabPanel p="2" h="full" position="relative" tabIndex={-1}>
             <CodeMirror
-              lang="python"
               value={questions[currentQuestion].templates[currentLanguage]}
               extensions={[
                 highlightTheme,
