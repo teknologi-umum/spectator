@@ -32,11 +32,11 @@ func (d *Dependency) ValidatePayload(p Payload) error {
 	}
 
 	var missing []string
-	if p.Data.RequestID == "" {
+	if p.Data.RequestID == "" || strings.Contains(p.Data.RequestID, ",") {
 		missing = append(missing, "request_id")
 	}
 
-	if p.Data.Application == "" {
+	if p.Data.Application == "" || strings.Contains(p.Data.Application, ",") {
 		missing = append(missing, "application")
 	}
 
@@ -48,7 +48,7 @@ func (d *Dependency) ValidatePayload(p Payload) error {
 		return nil
 	}
 
-	return fmt.Errorf("%s must be provided", strings.Join(missing, ", "))
+	return fmt.Errorf("proper %s must be provided", strings.Join(missing, ", "))
 }
 
 func (d *Dependency) InsertLog(w http.ResponseWriter, r *http.Request) error {

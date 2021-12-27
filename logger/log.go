@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -26,6 +28,12 @@ func (d *Dependency) writeIntoLog(ctx context.Context, p Payload) error {
 		p.Data.Timestamp = time.Now()
 	}
 
+	// convert body into json as influxdb doesnt accept map
+	bodyBytes, err := json.Marshal(p.Data.Body)
+	if err != nil {
+		return fmt.Errorf("marshalling json: %v", err)
+	}
+
 	// recovering here in case of any error
 	defer func() {
 		r := recover()
@@ -43,8 +51,8 @@ func (d *Dependency) writeIntoLog(ctx context.Context, p Payload) error {
 		},
 		map[string]interface{}{
 			"language": p.Data.Language,
-			"message":  p.Data.Message,
-			"body":     p.Data.Body,
+			"message":  hex.EncodeToString([]byte(p.Data.Message)),
+			"body":     hex.EncodeToString(bodyBytes),
 		},
 		p.Data.Timestamp,
 	)
@@ -121,18 +129,37 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]Data, error
 			return []Data{}, err
 		}
 
-		table, err := strconv.Atoi(unmarshaledRow["table"].(string))
+		tableStr, ok := unmarshaledRow["table"].(string)
+		if !ok {
+			continue
+		}
+
+		table, err := strconv.Atoi(tableStr)
 		if err != nil {
 			return []Data{}, err
 		}
 		if table == lastTableIndex {
 			switch unmarshaledRow["_field"].(string) {
 			case "body":
-				temp.Body = unmarshaledRow["_value"].(map[string]interface{})
+				bodyJSON := unmarshaledRow["_value"].(string)
+				bodyBytes, err := hex.DecodeString(bodyJSON)
+				if err != nil {
+					return []Data{}, err
+				}
+				body := make(map[string]interface{}, 100)
+				err = json.Unmarshal(bodyBytes, &body)
+				if err != nil {
+					return []Data{}, err
+				}
+				temp.Body = body
 			case "language":
 				temp.Language = unmarshaledRow["_value"].(string)
 			case "message":
-				temp.Message = unmarshaledRow["_value"].(string)
+				messageBytes, err := hex.DecodeString(unmarshaledRow["_value"].(string))
+				if err != nil {
+					return []Data{}, err
+				}
+				temp.Message = string(messageBytes)
 			}
 		} else {
 			// clear the last temp, but check if its less than zero
@@ -160,6 +187,8 @@ func unmarshalInfluxRow(row string) (map[string]interface{}, error) {
 	// because csv.NewReader() accepts io.Reader, we'll create one from strings pkg
 	input := strings.NewReader(row)
 	reader := csv.NewReader(input)
+	reader.LazyQuotes = true
+	reader.TrimLeadingSpace = true
 	records, err := reader.Read()
 	if err != nil {
 		return map[string]interface{}{}, fmt.Errorf("reading row value to csv: %v", err)
