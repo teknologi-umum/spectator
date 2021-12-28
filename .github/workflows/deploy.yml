@@ -128,10 +128,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Add SSH IP address
         run: echo "${{ secrets.SSH_IP }}" >> inventory
-      - name: Check append result
-        run: cat inventory
-      - name: Check if ansible detects it
-        run: ansible servers --inventory inventory --list-hosts -vvvv
+      - name: SSH Keyscan
+        run: ssh-keyscan -H ${{ secrets.SSH_IP }} >> ~/.ssh/known_hosts
       - name: Run ansible
         env:
           SSH_IP: ${{ secrets.SSH_IP }}
