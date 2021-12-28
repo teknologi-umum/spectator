@@ -9,6 +9,8 @@ import { python } from "@codemirror/lang-python";
 import { useCodemirrorTheme } from "@/hooks";
 import { questions } from "@/data/questions.json";
 import { useAppSelector } from "@/store";
+import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
+import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -26,8 +28,12 @@ interface EditorProps {
 
 export default function Editor({ bg }: EditorProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const { currentQuestion } = useAppSelector((state) => state.question);
-  const { currentLanguage } = useAppSelector((state) => state.editor);
+  const { currentQuestion } = useAppSelector<QuestionState>(
+    (state) => state.question
+  );
+  const { currentLanguage } = useAppSelector<EditorState>(
+    (state) => state.editor
+  );
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">

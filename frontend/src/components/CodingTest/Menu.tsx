@@ -8,8 +8,11 @@ import {
 } from "@/store/slices/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { prevQuestion, nextQuestion } from "@/store/slices/questionSlice";
+import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
+import type { InitialState as JwtState } from "@/store/slices/jwtSlice/types";
 
-function toReadableTime(seconds: number): string {
+function toReadableTime(ms: number): string {
+  const seconds = ms / 1000;
   const s = Math.floor(seconds % 60);
   const m = Math.floor((seconds / 60) % 60);
   const h = Math.floor((seconds / (60 * 60)) % 24);
@@ -26,14 +29,23 @@ interface MenuProps {
 }
 
 export default function Menu({ bg, fg }: MenuProps) {
-  const [time, setTime] = useState(90 * 60); // 90 minutes
   const dispatch = useAppDispatch();
-  const { fontSize, currentLanguage } = useAppSelector((state) => state.editor);
+  const { fontSize, currentLanguage } = useAppSelector<EditorState>(
+    (state) => state.editor
+  );
+
+  const {
+    jwtPayload: { exp, iat }
+  } = useAppSelector<JwtState>((state) => state.jwt);
+  const [time, setTime] = useState(iat + exp - Date.now());
 
   useEffect(() => {
-    const timer = setInterval(() => setTime((prev) => prev - 1), 1000);
+    const timer = setInterval(() => {
+      setTime((prev) => prev - 1000);
+    }, 1000);
+
     return () => clearInterval(timer);
-  });
+  }, []);
 
   return (
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">

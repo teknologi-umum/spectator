@@ -15,6 +15,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { questions } from "@/data/questions.json";
 import { useAppSelector } from "@/store";
+import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 
 interface QuestionProps {
   bg: string;
@@ -23,7 +24,9 @@ interface QuestionProps {
 
 export default function Question({ bg, fg }: QuestionProps) {
   const codeBg = useColorModeValue("gray.200", "gray.800");
-  const { currentQuestion } = useAppSelector((state) => state.question);
+  const { currentQuestion } = useAppSelector<QuestionState>(
+    (state) => state.question
+  );
 
   return (
     <Flex
