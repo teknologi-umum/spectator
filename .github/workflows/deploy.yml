@@ -121,7 +121,7 @@ jobs:
           known_hosts: ${{ secrets.SSH_IP }}
           if_key_exists: replace
       - name: Add SSH IP address
-        run: echo "${{ secrets.SSH_IP }}" > inventory
+        run: echo "${{ secrets.SSH_IP }}" >> inventory
       - name: Install ansible
         run: >
           pip install ansible
