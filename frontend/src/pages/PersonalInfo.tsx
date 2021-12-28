@@ -74,7 +74,8 @@ export default function PersonalInfo() {
         </Heading>
 
         <Box>
-          <FormControl id="email" mt="6" isInvalid={errors.stdNo !== undefined}>
+          {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
+          <FormControl id="email" mt="6" isInvalid={Boolean(errors.stdNo)}>
             <FormLabel>Student Number</FormLabel>
             <Input type="text" {...register("stdNo")} autoComplete="off" />
             <FormErrorMessage>{errors?.stdNo?.message}!</FormErrorMessage>
@@ -83,7 +84,7 @@ export default function PersonalInfo() {
           <FormControl
             id="email"
             mt="6"
-            isInvalid={errors.programmingExp !== undefined}
+            isInvalid={Boolean(errors.programmingExp)}
           >
             <FormLabel>
               How many years have you been doing programming?
@@ -101,7 +102,7 @@ export default function PersonalInfo() {
           <FormControl
             id="email"
             mt="6"
-            isInvalid={errors.programmingExercise !== undefined}
+            isInvalid={Boolean(errors.programmingExercise)}
           >
             <FormLabel>
               How many hours in a week do you practice programming?
@@ -119,7 +120,7 @@ export default function PersonalInfo() {
           <FormControl
             id="email"
             mt="6"
-            isInvalid={errors.programmingLanguage !== undefined}
+            isInvalid={Boolean(errors.programmingLanguage)}
           >
             <FormLabel>
               What programming languages are you familiar with (ex: Java,
