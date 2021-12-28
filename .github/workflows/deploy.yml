@@ -121,7 +121,9 @@ jobs:
           known_hosts: ${{ secrets.SSH_IP }}
           if_key_exists: replace
       - name: Add SSH IP address
-        run: echo "${{ secrets.SSH_IP }}" >> inventory
+        env:
+          SSH_IP: ${{ secrets.SSH_IP }}
+        run: echo "$SSH_IP" >> inventory
       - name: Check inventory result
         run: cat inventory
       - name: Install ansible
@@ -133,13 +135,6 @@ jobs:
       - name: Check if ansible detects it
         run: ansible servers --inventory inventory --list-hosts -vvvv
       - name: Run ansible
-        run: >
-          ansible-playbook
-          -v
-          --inventory inventory
-          --private-key ~/.ssh/id_ed25519
-          --user ${{ secrets.SSH_USERNAME }}
-          ansible.yml
         env:
           SSH_IP: ${{ secrets.SSH_IP }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -147,3 +142,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
+        run: >
+          ansible-playbook
+          -v
+          --inventory inventory
+          --private-key ~/.ssh/id_ed25519
+          --user ${{ secrets.SSH_USERNAME }}
+          ansible.yml
