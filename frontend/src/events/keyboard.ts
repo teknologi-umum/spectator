@@ -1,4 +1,5 @@
 import { emit } from "@/events/emitter";
+import type { CodingEventKeystroke } from "./types";
 
 const F_KEYS: Record<string, boolean> = {
   F1: true,
@@ -15,38 +16,49 @@ const F_KEYS: Record<string, boolean> = {
   F12: true
 };
 
-export function keystrokeHandler(connection: unknown) {
+export function keystrokeHandler(connection: unknown, questionNumber: number) {
   return async (e: KeyboardEvent) => {
-    // based on:
-    // https://github.com/teknologi-umum/spectator/blob/25879b9b599790d45dee83892974a28ff40abd9c/backend/Spectator.RepositoryDALs/Internals/EventMapper.cs#L78-L84
-    const payload = {
-      keyChar: e.key,
-      key: e.keyCode,
+    const data: CodingEventKeystroke = {
+      // TODO(elianiva): revisit session_id
+      session_id: "TBD",
+      type: "coding_event_keystroke",
+      question_number: questionNumber,
+      key_char: e.key,
+      key_code: e.keyCode,
       shift: e.shiftKey,
       alt: e.altKey,
       control: e.ctrlKey,
       meta: e.metaKey,
-      unrelated: F_KEYS[e.key]
+      unrelated_key: F_KEYS[e.key],
+      time: new Date(Date.now())
     };
-
-    const data = { event: "keyboard", timestamp: Date.now() };
 
     // ignore if it's triggered from codemirror because we it has separate
     // listener
     if ((e.target as HTMLDivElement).classList[0] === "cm-content") {
       // everything INSIDE the editor is always related except F-keys
-      payload.unrelated ||= false;
+      data.unrelated_key ||= false;
 
       // don't allow pressing F-keys inside the editor
       if (F_KEYS[e.key]) e.preventDefault();
 
-      await emit(connection, { ...data, value: JSON.stringify(payload) });
+      try {
+        await emit(connection, data);
+      } catch (err) {
+        // TODO(elianiva): replace with proper logging
+        console.error(err);
+      }
       return;
     }
 
     // everything OUTSIDE the editor is always unrelated
-    payload.unrelated = true;
-    await emit(connection, { ...data, value: JSON.stringify(payload) });
+    data.unrelated_key = true;
+    try {
+      await emit(connection, data);
+    } catch (err) {
+      // TODO(elianiva): replace with proper logging
+      console.error(err);
+    }
 
     // don't allow to do anything outside of the code editor
     e.preventDefault();
