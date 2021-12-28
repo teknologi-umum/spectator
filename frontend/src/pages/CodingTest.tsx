@@ -14,12 +14,13 @@ import {
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 
-// TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 export default function CodingTest() {
   const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
   useEventListener("keydown", keystrokeHandler(connection));
+
+  // disable right click
   useEventListener("contextmenu", (e) => e.preventDefault());
 
   const gray = useColorModeValue("gray.100", "gray.800");

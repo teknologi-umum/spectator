@@ -1,6 +1,6 @@
 import { emit } from "@/events/emitter";
 
-const UNRELATED_KEYS: Record<string, boolean> = {
+const F_KEYS: Record<string, boolean> = {
   F1: true,
   F2: true,
   F3: true,
@@ -12,53 +12,43 @@ const UNRELATED_KEYS: Record<string, boolean> = {
   F9: true,
   F10: true,
   F11: true,
-  F12: true,
-  Meta: true,
-  Alt: true,
-  Ctrl: true
-};
-
-const SHORTCUT_KEYS: Record<string, boolean> = {
-  // save dialog
-  s: true,
-  // print dialog
-  p: true,
-  // bookmark
-  d: true,
-  // close window
-  w: true,
-  // copy and paste
-  c: true,
-  v: true
+  F12: true
 };
 
 export function keystrokeHandler(connection: unknown) {
   return async (e: KeyboardEvent) => {
-    const isPressingModifier = e.ctrlKey || e.altKey || e.shiftKey || e.metaKey;
-
-    const data = {
-      event: "keyboard",
-      value: JSON.stringify({
-        key: isPressingModifier
-          ? // TODO(elianiva): is there any better way to do this?
-            [
-              e.ctrlKey && "Ctrl",
-              e.altKey && "Alt",
-              e.shiftKey && "Shift",
-              e.metaKey && "MetaKey",
-              // exclude modifier because we already include them above
-              !["Control", "Meta", "Shift", "Alt"].includes(e.key) && e.key
-            ].filter(Boolean)
-          : e.key,
-        unrelated: UNRELATED_KEYS[e.key] || isPressingModifier
-      }),
-      timestamp: Date.now()
+    // based on:
+    // https://github.com/teknologi-umum/spectator/blob/25879b9b599790d45dee83892974a28ff40abd9c/backend/Spectator.RepositoryDALs/Internals/EventMapper.cs#L78-L84
+    const payload = {
+      keyChar: e.key,
+      key: e.keyCode,
+      shift: e.shiftKey,
+      alt: e.altKey,
+      control: e.ctrlKey,
+      meta: e.metaKey,
+      unrelated: F_KEYS[e.key]
     };
 
-    await emit(connection, data);
+    const data = { event: "keyboard", timestamp: Date.now() };
 
-    if (UNRELATED_KEYS[e.key] || (e.ctrlKey && SHORTCUT_KEYS[e.key])) {
-      e.preventDefault();
+    // ignore if it's triggered from codemirror because we it has separate
+    // listener
+    if ((e.target as HTMLDivElement).classList[0] === "cm-content") {
+      // everything INSIDE the editor is always related except F-keys
+      payload.unrelated ||= false;
+
+      // don't allow pressing F-keys inside the editor
+      if (F_KEYS[e.key]) e.preventDefault();
+
+      await emit(connection, { ...data, value: JSON.stringify(payload) });
+      return;
     }
+
+    // everything OUTSIDE the editor is always unrelated
+    payload.unrelated = true;
+    await emit(connection, { ...data, value: JSON.stringify(payload) });
+
+    // don't allow to do anything outside of the code editor
+    e.preventDefault();
   };
 }
