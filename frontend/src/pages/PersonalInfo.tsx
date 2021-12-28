@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
+import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
 
 interface FormValues {
   stdNo: string;
@@ -27,7 +28,9 @@ interface FormValues {
 
 export default function PersonalInfo() {
   const dispatch = useAppDispatch();
-  const personalInfo = useAppSelector((state) => state.personalInfo);
+  const personalInfo = useAppSelector<PersonalInfoState>(
+    (state) => state.personalInfo
+  );
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");

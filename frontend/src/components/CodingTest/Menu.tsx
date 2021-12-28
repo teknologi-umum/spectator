@@ -10,6 +10,8 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { prevQuestion, nextQuestion } from "@/store/slices/questionSlice";
 import { useNavigate } from "react-router-dom";
 import { finishSession } from "@/store/slices/jwtSlice";
+import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
+import type { InitialState as JwtState } from "@/store/slices/jwtSlice/types";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -31,12 +33,14 @@ interface MenuProps {
 export default function Menu({ bg, fg }: MenuProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { fontSize, currentLanguage } = useAppSelector((state) => state.editor);
+  const { fontSize, currentLanguage } = useAppSelector<EditorState>(
+    (state) => state.editor
+  );
 
   const {
     jwtPayload: { exp }
-  } = useAppSelector((state) => state.jwt);
-  const [time, setTime] = useState(exp - Date.now());
+  } = useAppSelector<JwtState>((state) => state.jwt);
+  const [time, setTime] = useState((exp as number) - Date.now());
 
   useEffect(() => {
     const timer = setInterval(() => {
