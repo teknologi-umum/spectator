@@ -1,5 +1,5 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Select, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Button, useColorMode, useColorModeValue } from "@chakra-ui/react";
 
 interface ThemeButtonProps {
   position: "fixed" | "relative";

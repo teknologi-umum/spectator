@@ -105,7 +105,8 @@ export default function Menu({ bg, fg }: MenuProps) {
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
           px="4"
-          colorScheme="red"
+          background="red.500"
+          color="white"
           h="full"
           onClick={() => {
             // TODO(elianiva): implement proper surrender logic properly
@@ -129,8 +130,9 @@ export default function Menu({ bg, fg }: MenuProps) {
         </Button>
         <Button
           px="4"
-          colorScheme="blue"
+          background="blue.500"
           h="full"
+          color="white"
           onClick={() => {
             // TODO(elianiva): only allow to continue when they have the correct answer
             dispatch(nextQuestion());

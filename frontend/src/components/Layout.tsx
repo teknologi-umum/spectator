@@ -1,4 +1,4 @@
-import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react";
+import { Box, useColorModeValue } from "@chakra-ui/react";
 import type { FC } from "react";
 
 const Layout: FC = ({ children }) => {
