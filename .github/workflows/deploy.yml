@@ -144,6 +144,6 @@ jobs:
           ansible-playbook
           -v
           --inventory inventory
-          --private-key ~/.ssh/id_ed25519
+          --private-key /root/.ssh/id_ed25519
           --user ${{ secrets.SSH_USERNAME }}
           ansible.yml
