@@ -1,6 +1,6 @@
 import { EditorView } from "@codemirror/view";
 import { tags, HighlightStyle } from "@codemirror/highlight";
-import theme from "@/styles/themes"
+import theme from "@/styles/themes";
 
 export function getHighlightTheme(mode: "dark" | "light") {
   const isDarkMode = mode === "dark";

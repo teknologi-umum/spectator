@@ -5,8 +5,6 @@ interface ThemeButtonProps {
   position: "fixed" | "relative";
 }
 
-const THEME = ['light', 'dark', 'darker']
-
 export default function ThemeButton({ position }: ThemeButtonProps) {
   const { colorMode, toggleColorMode } = useColorMode();
   const bg = useColorModeValue("white", "gray.800");

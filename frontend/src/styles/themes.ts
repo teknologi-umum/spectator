@@ -1,13 +1,11 @@
-import { extendTheme } from "@chakra-ui/react"
+import { extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({
   initialColorMode: "light",
   useSystemColorMode: true,
   fonts: {
-    fonts: {
-      heading: "Mulish",
-      body: "Mulish"
-    },
+    heading: "Mulish",
+    body: "Mulish"
   },
   colors: {
     white: "#FFFFFF",
@@ -20,7 +18,7 @@ const theme = extendTheme({
       400: "#A0AEC0",
       300: "#CBD5E0",
       200: "#E2E8F0",
-      100: "#EDF2F7",
+      100: "#EDF2F7"
     },
     blue: {
       700: "#2C5282",
@@ -41,6 +39,6 @@ const theme = extendTheme({
       300: "#F6AD55"
     }
   }
-})
+});
 
-export default theme
+export default theme;
