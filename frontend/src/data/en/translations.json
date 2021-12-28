@@ -16,27 +16,27 @@
     },
     "personal_info": {
       "student_number": "Student Number",
-      "programming_years": "How many years have you been doing programming?",
+      "programming_years": "How many years have you been programming?",
       "programming_practice": "How many hours in a week do you practice programming?",
       "programming_experience": "What programming languages are you familiar with? (ex: Java, Python, C)"
     },
     "instructions": {
       "title": "General Instructions",
-      "overview": "This experiment contains of two part. The first part is SAM Test and the second part is Programming Test. SAM Test is a Self Assessment Test to measure your emotion. SAM test contains two question that will assess your emotion and will take time less than 5 minutes. The second test is Programming Test that consist of six programming questions. In this part you have to answer the questions and finish it within 90 minutes.",
-      "sam_test": "In this part there will be two questions that you are required to answer by clicking one out of nine images available. The images represent how do you feel about the question. The image that is located on the far left indicates that you are very disagree with the statement and the image on the far right indicates that you are very agree with the statement meanwhile whe 5th image indicates that you are neutral towards the statement. You are required to fill this test two times. The first is before you take the test and the second test is after you finish programming test. The first SAM Test will be asking your current emotion meanwhile the second SAM Test will be asking your emotion during programming test.",
+      "overview": "This experiment consists of two part. The first part is SAM Test and the second part is Programming Test. SAM Test is a Self Assessment Test to measure your emotion. SAM test contains two question that will assess your emotion and will take time less than 5 minutes. The second test is Programming Test that consist of six programming questions. In this part you have to answer the questions and finish it within 90 minutes.",
+      "sam_test": "In this part there will be two questions to which you are required to answer by clicking one out of nine available images. These images represent how you feel about the questions. The image that is located to the far left indicates that you strongly disagree with the statement and the image on the far right indicates that you are strongly agree with the statement meanwhile whe 5th image indicates that you are neutral towards the statement. You are required to fill this test two times. The first test will be conducted before you take the test and the second test will be conducted after you finish programming test. The first SAM Test will assess your current emotion meanwhile the second SAM Test will assess your emotion during programming test.",
       "sam_test_label": "SAM Test Example",
       "sam_test_label_2": "P.S: This test will not affect your mark",
-      "programming_test": "In this part there will be six programming questions that you are required to answer within 90 minutes by using one of six programming languages. You are not allowed to search the answer somewhere else or get help from other people. If you are not able to answer the questions, you are allowed to left the page empty and go to the next question. You are allowed to go back to previous questions when there is still time left."
+      "programming_test": "In this part there will be six programming questions to which you are required to answer within 90 minutes using one of six programming languages. You are not allowed to search the answer somewhere else or get help from other people. You are allowed to leave the page empty and proceed to the next question. You are allowed to go back to previous questions while there is still time."
     },
     "sam_test": {
-      "aroused_title": "How aroused are you now?",
-      "aroused_body": "Arousal refer to how aroused are you generally in the meantime.",
-      "pleasure_title": "How pleased are you now?",
-      "pleasure_body": "Pleasure refer to how aroused are you generally in the meantime."
+      "aroused_title": "How aroused are you right now?",
+      "aroused_body": "Arousal refers to how aroused are you generally in the meantime.",
+      "pleasure_title": "How pleased are you right now?",
+      "pleasure_body": "Pleasure refers to how aroused are you generally in the meantime."
     },
     "confirmation": {
       "title": "Confirmation",
-      "body": "In this programming test, ALL of your mouse and keyboard activity will be recorded for data collecting purpose. We will also need the camera permission to record your movement. By pressing the confirm button, you're fully agree with these conditions and given us your permissions."
+      "body": "In this programming test, ALL of your mouse and keyboard activities will be recorded for data collecting purpose. We will also ask for the camera permission to record your movement. By pressing the confirm button, you fully agree with these conditions and give us your permissions."
     }
   }
 }
