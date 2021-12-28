@@ -131,11 +131,11 @@ jobs:
       - name: Run ansible
         run: >
           ansible-playbook
-            -v
-            --inventory inventory
-            --private-key ~/.ssh/id_ed25519
-            --user ${{ secrets.SSH_USERNAME }}
-            ansible.yml
+          -v
+          --inventory inventory
+          --private-key ~/.ssh/id_ed25519
+          --user ${{ secrets.SSH_USERNAME }}
+          playbook ansible.yml
         env:
           SSH_IP: ${{ secrets.SSH_IP }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
