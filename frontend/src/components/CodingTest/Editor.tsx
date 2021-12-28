@@ -7,7 +7,8 @@ import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { useCodemirrorTheme } from "@/hooks";
-import { questions } from "@/data/questions.json";
+// TODO: this should be automatically inferred (en/id) when we have proper i18n
+import { questions } from "@/data/en/questions.json";
 import { useAppSelector } from "@/store";
 import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
