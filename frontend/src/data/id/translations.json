@@ -11,7 +11,7 @@
       "prompt": "Pertanyaan",
       "your_result": "Hasil Kamu",
       "your_solution": "Solusi Kamu",
-      "scratchpad": "Scratchpad",
+      "scratchpad": "Corat Coret",
       "output": "Output"
     },
     "personal_info": {
@@ -29,8 +29,8 @@
       "programming_test": "Dalam bagian ini akan ada 6 pertanyaan tentang pemrograman yang harus kamu jawab dalam waktu 90 menit menggunakan salah satu dari 6 bahasa pemrograman. Kamu dilarang mencari jawaban dari manapun atau bantuan dari orang lain. Apabila kamu merasa tidak mampu untuk menjawab, kamu diperbolehkan untuk meninggalkan halaman dengan jawaban kosong dan menuju pertanyaan selanjutnya. Kamu diperbolehkan untuk kembali ke pertanyaan sebelumnya apabila masih ada waktu yang tersisa."
     },
     "sam_test": {
-      "aroused_title": "Seberapa tergugah perasaan kamu sekarang?",
-      "aroused_body": "Gugahan mengarah pada seberapa tergugah perasaanmu saat ini.",
+      "aroused_title": "Seberapa antusias perasaan kamu sekarang?",
+      "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat ini.",
       "pleasure_title": "Seberapa puas perasaan kamu sekarang?",
       "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat ini."
     },
