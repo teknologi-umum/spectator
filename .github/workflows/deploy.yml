@@ -120,18 +120,16 @@ jobs:
           name: id_ed25519
           known_hosts: ${{ secrets.SSH_IP }}
           if_key_exists: replace
-      - name: Add SSH IP address
-        env:
-          SSH_IP: ${{ secrets.SSH_IP }}
-        run: echo "$SSH_IP" >> inventory
-      - name: Check inventory result
-        run: cat inventory
       - name: Install ansible
         run: >
           pip install ansible
           && ansible-playbook --version
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Add SSH IP address
+        run: echo "${{ secrets.SSH_IP }}" >> inventory
+      - name: Check append result
+        run: cat inventory
       - name: Check if ansible detects it
         run: ansible servers --inventory inventory --list-hosts -vvvv
       - name: Run ansible
