@@ -1,7 +1,7 @@
 ---
 - name: Spectator Continuous Delivery
   user: "{{ lookup('env', 'SSH_USERNAME') }}"
-  hosts: server
+  hosts: servers
   become: true
   vars:
     ssh_ip: "{{ lookup('env', 'SSH_IP') }}"

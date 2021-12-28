@@ -122,6 +122,10 @@ jobs:
           if_key_exists: replace
       - name: Add SSH IP address
         run: echo "${{ secrets.SSH_IP }}" >> inventory
+      - name: Check inventory result
+        run: cat inventory
+      - name: Check if ansible detects it
+        run: ansible servers --inventory inventory --list-hosts -vvvv
       - name: Install ansible
         run: >
           pip install ansible
@@ -131,7 +135,7 @@ jobs:
       - name: Run ansible
         run: >
           ansible-playbook
-          -vvv
+          -v
           --inventory inventory
           --private-key ~/.ssh/id_ed25519
           --user ${{ secrets.SSH_USERNAME }}
