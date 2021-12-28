@@ -108,7 +108,7 @@ jobs:
         run: ansible-lint -v -f rich ansible.yml
   deploy:
     name: Deploy
-    needs: [configs, frontend]
+    needs: [configs, frontend, logger]
     runs-on: ubuntu-latest
     container: python:3-buster
     timeout-minutes: 15
@@ -131,7 +131,7 @@ jobs:
       - name: Run ansible
         run: >
           ansible-playbook
-          -v
+          -vvv
           --inventory inventory
           --private-key ~/.ssh/id_ed25519
           --user ${{ secrets.SSH_USERNAME }}
@@ -143,4 +143,3 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
