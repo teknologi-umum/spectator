@@ -3,7 +3,11 @@ import type { InitialState } from "./types";
 
 const initialState: InitialState = {
   jwt: "",
-  jwtPayload: {},
+  jwtPayload: {
+    studentNumber: "",
+    iat: 0,
+    exp: 0
+  },
   hasFinished: false
 };
 
