@@ -2,7 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  ColorModeScript,
+  Heading
+} from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
 import { store, persistor } from "@/store";
 import App from "@/App";
@@ -25,9 +30,17 @@ ReactDOM.render(
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider theme={theme}>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
+        {navigator.cookieEnabled ? (
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+          </PersistGate>
+        ) : (
+          <Box>
+            <Heading textAlign="center" mt="4">
+              This app needs cookie access to work properly.
+            </Heading>
+          </Box>
+        )}
       </Provider>
     </ChakraProvider>
   </React.StrictMode>,
