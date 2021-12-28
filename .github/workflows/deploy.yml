@@ -124,14 +124,14 @@ jobs:
         run: echo "${{ secrets.SSH_IP }}" >> inventory
       - name: Check inventory result
         run: cat inventory
-      - name: Check if ansible detects it
-        run: ansible servers --inventory inventory --list-hosts -vvvv
       - name: Install ansible
         run: >
           pip install ansible
           && ansible-playbook --version
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Check if ansible detects it
+        run: ansible servers --inventory inventory --list-hosts -vvvv
       - name: Run ansible
         run: >
           ansible-playbook
