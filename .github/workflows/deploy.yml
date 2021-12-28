@@ -113,14 +113,13 @@ jobs:
     container: python:3-buster
     timeout-minutes: 15
     steps:
-      - name: Add SSH key
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan "${{ secrets.SSH_IP }}" >> ~/.ssh/known_hosts
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
-          ssh-add ~/.ssh/id_ed25519
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_ed25519
+          known_hosts: ${{ secrets.SSH_IP }}
+          if_key_exists: replace
       - name: Add SSH IP address
         run: echo "${{ secrets.SSH_IP }}" > inventory
       - name: Install ansible
