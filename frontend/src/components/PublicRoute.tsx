@@ -9,11 +9,11 @@ export default function PublicRoute({ children }: { children: JSX.Element }) {
   const timeLeft = jwtPayload.exp + jwtPayload.iat - Date.now();
   const hasExpired = timeLeft < 0;
 
-  if (jwt && !hasExpired) {
+  if (jwt !== "" && !hasExpired) {
     return <Navigate to="/coding-test" />;
   }
 
-  if (jwt && hasFinished) {
+  if (jwt !== "" && hasFinished) {
     return <Navigate to="/fun-fact" />;
   }
 
