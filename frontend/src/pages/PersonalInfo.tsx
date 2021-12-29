@@ -52,6 +52,10 @@ function PersonalInfo() {
   };
 
   useEffect(() => {
+    document.title = "Personal Info | Spectator";
+  }, []);
+
+  useEffect(() => {
     // eslint-disable-next-line
     console.log("errors", errors);
   }, [errors]);

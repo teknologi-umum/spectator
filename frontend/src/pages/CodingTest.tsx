@@ -12,6 +12,7 @@ import {
   useColorModeValue,
   useEventListener
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 
@@ -26,6 +27,10 @@ function CodingTest() {
   const gray = useColorModeValue("gray.100", "gray.800");
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");
+
+  useEffect(() => {
+    document.title = "Coding Test | Spectator";
+  }, []);
 
   return (
     <Box w="full" h="full" bg={gray} gap="3" p="3">
