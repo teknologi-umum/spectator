@@ -1,6 +1,7 @@
 import { emit } from "@/events/emitter";
+import type { CodingEventKeystroke } from "./types";
 
-const UNRELATED_KEYS: Record<string, boolean> = {
+const F_KEYS: Record<string, boolean> = {
   F1: true,
   F2: true,
   F3: true,
@@ -12,53 +13,54 @@ const UNRELATED_KEYS: Record<string, boolean> = {
   F9: true,
   F10: true,
   F11: true,
-  F12: true,
-  Meta: true,
-  Alt: true,
-  Ctrl: true
+  F12: true
 };
 
-const SHORTCUT_KEYS: Record<string, boolean> = {
-  // save dialog
-  s: true,
-  // print dialog
-  p: true,
-  // bookmark
-  d: true,
-  // close window
-  w: true,
-  // copy and paste
-  c: true,
-  v: true
-};
-
-export function keystrokeHandler(connection: unknown) {
+export function keystrokeHandler(connection: unknown, questionNumber: number) {
   return async (e: KeyboardEvent) => {
-    const isPressingModifier = e.ctrlKey || e.altKey || e.shiftKey || e.metaKey;
-
-    const data = {
-      event: "keyboard",
-      value: JSON.stringify({
-        key: isPressingModifier
-          ? // TODO(elianiva): is there any better way to do this?
-            [
-              e.ctrlKey && "Ctrl",
-              e.altKey && "Alt",
-              e.shiftKey && "Shift",
-              e.metaKey && "MetaKey",
-              // exclude modifier because we already include them above
-              !["Control", "Meta", "Shift", "Alt"].includes(e.key) && e.key
-            ].filter(Boolean)
-          : e.key,
-        unrelated: UNRELATED_KEYS[e.key] || isPressingModifier
-      }),
-      timestamp: Date.now()
+    const data: CodingEventKeystroke = {
+      // TODO(elianiva): revisit session_id
+      session_id: "TBD",
+      type: "coding_event_keystroke",
+      question_number: questionNumber,
+      key_char: e.key,
+      key_code: e.keyCode,
+      shift: e.shiftKey,
+      alt: e.altKey,
+      control: e.ctrlKey,
+      meta: e.metaKey,
+      unrelated_key: false,
+      time: new Date(Date.now())
     };
 
-    await emit(connection, data);
+    // ignore if it's triggered from codemirror because we it has separate
+    // listener
+    if ((e.target as HTMLDivElement).classList[0] === "cm-content") {
+      // everything INSIDE the editor is always related except F-keys
+      data.unrelated_key = F_KEYS[e.key] !== undefined;
 
-    if (UNRELATED_KEYS[e.key] || (e.ctrlKey && SHORTCUT_KEYS[e.key])) {
-      e.preventDefault();
+      // don't allow pressing F-keys inside the editor
+      if (F_KEYS[e.key]) e.preventDefault();
+
+      try {
+        await emit(connection, data);
+      } catch (err) {
+        // TODO(elianiva): replace with proper logging
+        console.error(err);
+      }
+      return;
     }
+
+    // everything OUTSIDE the editor is always unrelated
+    data.unrelated_key = true;
+    try {
+      await emit(connection, data);
+    } catch (err) {
+      // TODO(elianiva): replace with proper logging
+      console.error(err);
+    }
+
+    // don't allow to do anything outside of the code editor
+    e.preventDefault();
   };
 }

@@ -15,13 +15,21 @@ import {
 import { useEffect } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
+import { useAppSelector } from "@/store";
+import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 
-// TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
 function CodingTest() {
+  const { currentQuestion } = useAppSelector<QuestionState>(
+    (state) => state.question
+  );
+
   const connection = useSignalR("fake_hub_url");
-  useEventListener("click", mouseClickHandler(connection));
-  useEventListener("mousemove", mouseMoveHandler(connection));
-  useEventListener("keydown", keystrokeHandler(connection));
+
+  useEventListener("mousedown", mouseClickHandler(connection, currentQuestion));
+  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestion));
+  useEventListener("keydown", keystrokeHandler(connection, currentQuestion));
+
+  // disable right click
   useEventListener("contextmenu", (e) => e.preventDefault());
 
   const gray = useColorModeValue("gray.100", "gray.800");
