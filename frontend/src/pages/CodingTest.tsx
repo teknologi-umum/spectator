@@ -4,6 +4,7 @@ import {
   mouseClickHandler,
   mouseMoveHandler
 } from "@/events";
+import { withProtected } from "@/hoc";
 import { useSignalR } from "@/hooks";
 import {
   Box,
@@ -15,7 +16,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
-export default function CodingTest() {
+function CodingTest() {
   const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
@@ -67,3 +68,5 @@ export default function CodingTest() {
     </Box>
   );
 }
+
+export default withProtected(CodingTest);
