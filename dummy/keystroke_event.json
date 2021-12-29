@@ -9,7 +9,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": false,
-    "modifier": ""
+    "modifier": false
   },
   {
     "session_id": "a12",
@@ -21,7 +21,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": false,
-    "modifier": ""
+    "modifier": false
   },
   {
     "session_id": "a12",
@@ -33,31 +33,31 @@
     "alt": false,
     "control": false,
     "unrelated_key": false,
-    "modifier": ""
+    "modifier": false
   },
   {
     "session_id": "a12",
     "type": "coding_event_keystroke",
     "question_number": "1",
-    "key_char": "",
-    "key_code": "",
+    "key_char": false,
+    "key_code": false,
     "shift": true,
     "alt": false,
     "control": false,
     "unrelated_key": true,
-    "modifier": ""
+    "modifier": false
   },
   {
     "session_id": "a12",
     "type": "coding_event_keystroke",
     "question_number": "1",
-    "key_char": "",
-    "key_code": "",
+    "key_char": false,
+    "key_code": false,
     "shift": true,
     "alt": false,
     "control": false,
     "unrelated_key": true,
-    "modifier": ""
+    "modifier": false
   },
   {
     "session_id": "a12",
@@ -69,6 +69,6 @@
     "alt": false,
     "control": true,
     "unrelated_key": false,
-    "modifier": ""
+    "modifier": false
   }
 ]
