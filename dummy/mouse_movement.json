@@ -1,0 +1,42 @@
+[
+  {
+    "session_id": "a",
+    "type": "coding_event_mousemove",
+    "question_number": 1,
+    "direction": "up",
+    "x_position": 234,
+    "y_position": 123,
+    "window_width": 1447,
+    "window_height": 1024
+  },
+  {
+    "session_id": "a91",
+    "type": "coding_event_mousemove",
+    "question_number": 1,
+    "direction": "up",
+    "x_position": 234,
+    "y_position": 123,
+    "window_width": 1447,
+    "window_height": 1024
+  },
+  {
+    "session_id": "a32",
+    "type": "coding_event_mousemove",
+    "question_number": 1,
+    "direction": "up",
+    "x_position": 234,
+    "y_position": 123,
+    "window_width": 1447,
+    "window_height": 1024
+  },
+  {
+    "session_id": "a21",
+    "type": "coding_event_mousemove",
+    "question_number": 1,
+    "direction": "up",
+    "x_position": 234,
+    "y_position": 123,
+    "window_width": 1447,
+    "window_height": 1024
+  }
+]

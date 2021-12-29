@@ -1,7 +1,8 @@
 import Layout from "@/components/Layout";
+import { withFinal } from "@/hoc";
 import { Heading } from "@chakra-ui/react";
 
-export default function FunFact() {
+function FunFact() {
   return (
     <Layout>
       <Heading>
@@ -10,3 +11,5 @@ export default function FunFact() {
     </Layout>
   );
 }
+
+export default withFinal(FunFact);

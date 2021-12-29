@@ -4,6 +4,7 @@ import {
   mouseClickHandler,
   mouseMoveHandler
 } from "@/events";
+import { withProtected } from "@/hoc";
 import { useSignalR } from "@/hooks";
 import {
   Box,
@@ -16,10 +17,11 @@ import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 
-export default function CodingTest() {
+function CodingTest() {
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
   );
+
   const connection = useSignalR("fake_hub_url");
 
   useEventListener("mousedown", mouseClickHandler(connection, currentQuestion));
@@ -74,3 +76,5 @@ export default function CodingTest() {
     </Box>
   );
 }
+
+export default withProtected(CodingTest);
