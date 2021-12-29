@@ -30,6 +30,15 @@ type Submission struct {
 	Value          string `json:"v"`
 }
 
+type PersonalInfo struct {
+	Type              string `json:"type"`
+	SessionID         string `json:"session_id"`
+	StudentNumber     string `json:"student_number"`
+	HoursOfPractice   string `json:"hours_of_practice"`
+	YearsOfExperience string `json:"years_of_experience"`
+	FamiliarLanguages string `json:"familiar_languages"`
+}
+
 func TestShit(t *testing.T) {
 	x := `
 [
