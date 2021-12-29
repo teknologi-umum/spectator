@@ -29,7 +29,7 @@ export function keystrokeHandler(connection: unknown, questionNumber: number) {
       alt: e.altKey,
       control: e.ctrlKey,
       meta: e.metaKey,
-      unrelated_key: F_KEYS[e.key],
+      unrelated_key: false,
       time: new Date(Date.now())
     };
 
@@ -37,7 +37,7 @@ export function keystrokeHandler(connection: unknown, questionNumber: number) {
     // listener
     if ((e.target as HTMLDivElement).classList[0] === "cm-content") {
       // everything INSIDE the editor is always related except F-keys
-      data.unrelated_key ||= false;
+      data.unrelated_key = F_KEYS[e.key] !== undefined;
 
       // don't allow pressing F-keys inside the editor
       if (F_KEYS[e.key]) e.preventDefault();
