@@ -9,7 +9,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": false,
-    "modifier": false
+    "meta": false
   },
   {
     "session_id": "a12",
@@ -21,7 +21,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": false,
-    "modifier": false
+    "meta": false
   },
   {
     "session_id": "a12",
@@ -33,7 +33,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": false,
-    "modifier": false
+    "meta": false
   },
   {
     "session_id": "a12",
@@ -45,7 +45,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": true,
-    "modifier": false
+    "meta": false
   },
   {
     "session_id": "a12",
@@ -57,7 +57,7 @@
     "alt": false,
     "control": false,
     "unrelated_key": true,
-    "modifier": false
+    "meta": false
   },
   {
     "session_id": "a12",
@@ -69,6 +69,6 @@
     "alt": false,
     "control": true,
     "unrelated_key": false,
-    "modifier": false
+    "meta": false
   }
 ]
