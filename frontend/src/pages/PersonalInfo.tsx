@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useColorModeValue } from "@chakra-ui/react";
+import { FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
 import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
@@ -41,7 +41,8 @@ export default function PersonalInfo() {
     formState: { errors }
   } = useForm({
     defaultValues: personalInfo,
-    resolver: yupResolver(PersonalInfoSchema)
+    resolver: yupResolver(PersonalInfoSchema),
+    reValidateMode: "onBlur"
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
@@ -73,12 +74,18 @@ export default function PersonalInfo() {
         </Heading>
 
         <Box>
-          <FormControl id="email" mt="6" isRequired>
+          {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
+          <FormControl id="email" mt="6" isInvalid={errors.stdNo !== undefined}>
             <FormLabel>Student Number</FormLabel>
             <Input type="text" {...register("stdNo")} autoComplete="off" />
+            <FormErrorMessage>{errors?.stdNo?.message}!</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="email" mt="6" isRequired>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.programmingExp !== undefined}
+          >
             <FormLabel>
               How many years have you been doing programming?
             </FormLabel>
@@ -87,9 +94,16 @@ export default function PersonalInfo() {
               {...register("programmingExp")}
               autoComplete="off"
             />
+            <FormErrorMessage>
+              {errors?.programmingExp?.message}!
+            </FormErrorMessage>
           </FormControl>
 
-          <FormControl id="email" mt="6" isRequired>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.programmingExercise !== undefined}
+          >
             <FormLabel>
               How many hours in a week do you practice programming?
             </FormLabel>
@@ -98,9 +112,16 @@ export default function PersonalInfo() {
               {...register("programmingExercise")}
               autoComplete="off"
             />
+            <FormErrorMessage>
+              {errors?.programmingExercise?.message}!
+            </FormErrorMessage>
           </FormControl>
 
-          <FormControl id="email" mt="6" isRequired>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.programmingLanguage !== undefined}
+          >
             <FormLabel>
               What programming languages are you familiar with (ex: Java,
               Python, C)
@@ -110,6 +131,9 @@ export default function PersonalInfo() {
               {...register("programmingLanguage")}
               autoComplete="off"
             />
+            <FormErrorMessage>
+              {errors?.programmingLanguage?.message}!
+            </FormErrorMessage>
           </FormControl>
         </Box>
 
@@ -117,11 +141,8 @@ export default function PersonalInfo() {
           colorScheme="blue"
           mx="auto"
           mt="6"
+          type="submit"
           display="block"
-          onClick={() => {
-            // FIXME: proper navigation logic
-            navigate("/instructions");
-          }}
         >
           Continue
         </Button>
