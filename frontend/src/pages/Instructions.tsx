@@ -10,8 +10,9 @@ import {
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
+import { withPublic } from "@/hoc";
 
-export default function Instructions() {
+function Instructions() {
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");
@@ -87,3 +88,5 @@ export default function Instructions() {
     </Layout>
   );
 }
+
+export default withPublic(Instructions);
