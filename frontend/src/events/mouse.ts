@@ -29,7 +29,7 @@ export function mouseMoveHandler(connection: unknown, questionNumber: number) {
   return async (e: MouseEvent) => {
     // only emit if it's actually moving
     const direction = calculateDirection(e);
-    if (!direction) return;
+    if (direction === null) return;
 
     const data: CodingEventMouseMove = {
       // TODO(elianiva): revisit session_id
