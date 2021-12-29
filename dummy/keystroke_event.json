@@ -1,0 +1,74 @@
+[
+  {
+    "session_id": "a12",
+    "type": "coding_event_keystroke",
+    "question_number": "1",
+    "key_char": "A",
+    "key_code": "41",
+    "shift": false,
+    "alt": false,
+    "control": false,
+    "unrelated_key": false,
+    "modifier": ""
+  },
+  {
+    "session_id": "a12",
+    "type": "coding_event_keystroke",
+    "question_number": "2",
+    "key_char": "a",
+    "key_code": "72",
+    "shift": false,
+    "alt": false,
+    "control": false,
+    "unrelated_key": false,
+    "modifier": ""
+  },
+  {
+    "session_id": "a12",
+    "type": "coding_event_keystroke",
+    "question_number": "2",
+    "key_char": "b",
+    "key_code": "73",
+    "shift": false,
+    "alt": false,
+    "control": false,
+    "unrelated_key": false,
+    "modifier": ""
+  },
+  {
+    "session_id": "a12",
+    "type": "coding_event_keystroke",
+    "question_number": "1",
+    "key_char": "",
+    "key_code": "",
+    "shift": true,
+    "alt": false,
+    "control": false,
+    "unrelated_key": true,
+    "modifier": ""
+  },
+  {
+    "session_id": "a12",
+    "type": "coding_event_keystroke",
+    "question_number": "1",
+    "key_char": "",
+    "key_code": "",
+    "shift": true,
+    "alt": false,
+    "control": false,
+    "unrelated_key": true,
+    "modifier": ""
+  },
+  {
+    "session_id": "a12",
+    "type": "coding_event_keystroke",
+    "question_number": "1",
+    "key_char": "c",
+    "key_code": "74",
+    "shift": false,
+    "alt": false,
+    "control": true,
+    "unrelated_key": false,
+    "modifier": ""
+  }
+]
