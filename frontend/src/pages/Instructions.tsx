@@ -20,7 +20,7 @@ export default function Instructions() {
 
   return (
     <Layout>
-      <ThemeButton position="fixed"/>
+      <ThemeButton position="fixed" />
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
           General Instructions
