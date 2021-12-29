@@ -118,6 +118,10 @@ export default function Menu({ bg, fg }: MenuProps) {
         <Button
           px="4"
           background="red.500"
+          opacity="60%"
+          _hover={{
+            opacity: "100%"
+          }}
           color="white"
           h="full"
           onClick={() => {
@@ -134,6 +138,11 @@ export default function Menu({ bg, fg }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
+          _hover={{
+            bg: "blue.600",
+            borderColor: "white",
+            color: "white"
+          }}
           onClick={() => {
             // TODO(elianiva): send the code to backend for execution
           }}

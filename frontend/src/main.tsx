@@ -9,7 +9,6 @@ import {
   Heading
 } from "@chakra-ui/react";
 import theme from "@/styles/themes";
-import { extendTheme } from "@chakra-ui/react";
 import { store, persistor } from "@/store";
 import App from "@/App";
 import "@fontsource/mulish/400.css";

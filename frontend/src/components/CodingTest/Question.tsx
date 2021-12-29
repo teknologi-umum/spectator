@@ -9,13 +9,13 @@ import {
   TabPanels,
   Tabs,
   Text,
-  UnorderedList,
-  useColorModeValue
+  UnorderedList
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import { questions } from "@/data/questions.json";
 import { useAppSelector } from "@/store";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
+import { useColorModeValue } from "@/hooks/";
 
 interface QuestionProps {
   bg: string;
@@ -23,7 +23,7 @@ interface QuestionProps {
 }
 
 export default function Question({ bg, fg }: QuestionProps) {
-  const codeBg = useColorModeValue("gray.200", "gray.800");
+  const codeBg = useColorModeValue("gray.200", "gray.500", "gray.800");
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
   );

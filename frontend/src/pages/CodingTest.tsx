@@ -4,11 +4,10 @@ import {
   mouseClickHandler,
   mouseMoveHandler
 } from "@/events";
-import { useSignalR } from "@/hooks";
+import { useColorModeValue, useSignalR } from "@/hooks";
 import {
   Box,
   theme,
-  useColorModeValue,
   useEventListener
 } from "@chakra-ui/react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
@@ -22,9 +21,9 @@ export default function CodingTest() {
   useEventListener("keydown", keystrokeHandler(connection));
   useEventListener("contextmenu", (e) => e.preventDefault());
 
-  const gray = useColorModeValue("gray.100", "gray.900");
-  const bg = useColorModeValue("white", "gray.800");
-  const fg = useColorModeValue("gray.800", "gray.100");
+  const gray = useColorModeValue("gray.100", "gray.700", "gray.900");
+  const bg = useColorModeValue("white", "gray.700", "gray.800");
+  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
 
   return (
     <Box w="full" h="full" bg={gray} gap="3" p="3">

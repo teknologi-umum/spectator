@@ -15,6 +15,7 @@ export default function Instructions() {
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100");
+  const fgDarker = useColorModeValue("gray.700", "gray.400");
 
   const textColor = useColorModeValue("gray.600", "gray.400");
 
@@ -50,7 +51,7 @@ export default function Instructions() {
           asking your current emotion meanwhile the second SAM Test will be
           asking your emotion during programming test.
         </Text>
-        <Box>
+        <Box color={fgDarker}>
           <Arousal width="100%" height="100" viewBox="0 0 1240 140" />
         </Box>
         <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>

@@ -15,7 +15,8 @@ import {
   personalInfoReducer,
   editorReducer,
   questionReducer,
-  jwtReducer
+  jwtReducer,
+  appReducer
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
@@ -32,7 +33,8 @@ const rootReducer = combineReducers({
   personalInfo: personalInfoReducer,
   editor: editorReducer,
   question: questionReducer,
-  jwt: jwtReducer
+  jwt: jwtReducer,
+  app: appReducer
 });
 
 const store = configureStore({

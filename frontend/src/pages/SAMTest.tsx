@@ -14,7 +14,6 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useColorModeValue,
   useDisclosure
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
@@ -24,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { getJwt } from "@/utils/generateFakeJwt";
 import { useAppDispatch } from "@/store";
 import { setJwt } from "@/store/slices/jwtSlice";
+import { useColorModeValue } from "@/hooks/";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -65,9 +65,10 @@ export default function SAMTest() {
   const [arousal, setArousal] = useState(0);
   const [pleasure, setPleasure] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const bg = useColorModeValue("white", "gray.800");
-  const fg = useColorModeValue("gray.800", "gray.100");
-
+  const bg = useColorModeValue("white", "gray.700", "gray.800");
+  const fg = useColorModeValue("gray.700", "gray.100", "gray.200");
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
+  
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
       setCurrentPage((prev) => (currentPage <= 0 ? prev : prev - 1));
@@ -107,15 +108,17 @@ export default function SAMTest() {
                   <Text fontWeight="bold" fontSize="xl" mb="2">
                     How aroused are you now?
                   </Text>
-                  <Text fontSize="lg" mb="4">
+                  <Text color={fgDarker} fontSize="lg" mb="4">
                     Arousal refer to how aroused are you generally in the
                     meantime
                   </Text>
-                  {getResponseOptions(
-                    Object.values(ICONS.arousal),
-                    arousal,
-                    setArousal
-                  )}
+                  <Box color={fgDarker}>
+                    {getResponseOptions(
+                      Object.values(ICONS.arousal),
+                      arousal,
+                      setArousal
+                    )}
+                  </Box>
                 </Box>
               </Fade>
             )}
@@ -130,11 +133,13 @@ export default function SAMTest() {
                     Pleasure refer to how pleased are you generally in the
                     meantime
                   </Text>
-                  {getResponseOptions(
-                    Object.values(ICONS.pleasure),
-                    pleasure,
-                    setPleasure
-                  )}
+                  <Box color={fgDarker}>
+                    {getResponseOptions(
+                      Object.values(ICONS.pleasure),
+                      pleasure,
+                      setPleasure
+                    )}
+                  </Box>
                 </Box>
               </Fade>
             )}
