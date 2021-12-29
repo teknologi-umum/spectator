@@ -5,11 +5,11 @@ import type { InitialState as JwtState } from "@/store/slices/jwtSlice/types";
 export default function FinalRoute({ children }: { children: JSX.Element }) {
   const { jwt, hasFinished } = useAppSelector<JwtState>((state) => state.jwt);
 
-  if (!jwt) {
+  if (jwt === "") {
     return <Navigate to="/" />;
   }
 
-  if (jwt && !hasFinished) {
+  if (jwt !== "" && !hasFinished) {
     return <Navigate to="/coding-test" />;
   }
 

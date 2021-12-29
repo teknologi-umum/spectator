@@ -21,7 +21,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     }, timeLeft);
   }, []);
 
-  if (!jwt || hasExpired) {
+  if (jwt === "" || hasExpired) {
     return <Navigate to="/" />;
   }
 
