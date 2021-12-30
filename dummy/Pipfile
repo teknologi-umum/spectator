@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 influxdb-client = {extras = ["ciso"], version = "*"}
+python-dotenv = "*"
 
 [dev-packages]
 
