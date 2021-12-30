@@ -63,7 +63,7 @@ func main() {
 
 	// Create Minio instance
 	minioConn, err := minio.New(minioHost, &minio.Options{
-		Creds:  credentials.NewStaticV4(minioID, minioSecret, ""),
+		Creds:  credentials.NewStaticV4(minioID, minioSecret, "spectator"),
 		Secure: true,
 	})
 	if err != nil {

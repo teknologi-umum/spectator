@@ -19,7 +19,7 @@ func (d *Dependency) FunFact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := strconv.ParseInt(member.ID, 10, 64); err == nil {
+	if _, err := strconv.ParseInt(member.ID, 10, 64); err != nil {
 		http.Error(w, "member_id is empty", http.StatusBadRequest)
 		return
 	}
@@ -76,9 +76,8 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	res, err := queryAPI.Query(ctx, `
 		from(bucket: "spectator")
 			|> range(start: -1d)
-			|> filter(fn: (r) => r["_measurement"] == "coding_event")
-			|> filter(fn: (r) => r["_event"] == "keystroke")
-			|> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+			|> filter(fn: (r) => r["event"] == "coding_event_keystroke")
+			|> filter(fn: (r) => r["session_id"] == "`+memberID+`")
 			|> aggregateWindow(
 					every: 1m,
 					fn: (tables=<-, column) => tables |> count()
@@ -119,9 +118,8 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 	// SELECT COUNT(_time) FROM spectator WHERE _type = "coding_attempted"
 	_, err := queryAPI.Query(ctx, `from(bucket: "spectator")
 		|> range(start: -1d)
-		|> filter(fn: (r) => r["_measurement"] == "coding_event")
-		|> filter(fn: (r) => r["_event"] == "coding_attempted")
-		|> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+		|> filter(fn: (r) => r["type"] == "code_test_attempt")
+		|> filter(fn: (r) => r["session_id"] == "`+memberID+`")
 		|> group(columns: ["question_id"])
 		|> count()
 	`)
@@ -147,10 +145,16 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string,
 	// TODO:  ini buat ngambil nganu, jangan lupa result
 	res, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator")
   |> range(start: -1d)
-  |> filter(fn: (r) => r["_measurement"] == "coding_event")
-  |> filter(fn: (r) => r["_event"] == "keystroke")
-  |> filter(fn: (r) => r["_actor"] == "`+memberID+`")
-  |> filter(fn: (r) =>(r["_value"] == "backspace" or r["_value"] == "delete"))
+  |> filter(fn: (r) => r["type"] == "coding_event_keystroke")
+  |> filter(fn: (r) => r["session_id"] == "`+memberID+`")
+  |> filter(fn: (r) => (r["key_char"] == "backspace" or r["key_char"] == "delete"))
+	|> filter(fn: (r) => not(
+		(r["_field"] == "shift" and r["_value"] == true) or 
+		(r["_field"] == "alt" and r["_value"] == true) or
+		(r["_field"] == "control" and r["_value"] == true) or
+		(r["_field"] == "meta" and r["_value"] == true) or 
+		(r["_field"] == "unrelatedkey" and r["_value"] == true)
+	)
   |> count()
   |> yield(name: "count")`)
 
@@ -163,9 +167,15 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string,
 
 	res, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
   |> range(start: -1d)
-  |> filter(fn: (r) => r["_measurement"] == "coding_event")
-  |> filter(fn: (r) => r["_event"] == "keystroke")
-  |> filter(fn: (r) => r["_actor"] == "`+memberID+`")
+  |> filter(fn: (r) => r["type"] == "coding_event_keystroke")
+  |> filter(fn: (r) => r["session_id"] == "`+memberID+`")
+	|> filter(fn: (r) => not(
+		(r["_field"] == "shift" and r["_value"] == true) or 
+		(r["_field"] == "alt" and r["_value"] == true) or
+		(r["_field"] == "control" and r["_value"] == true) or
+		(r["_field"] == "meta" and r["_value"] == true) or 
+		(r["_field"] == "unrelatedkey" and r["_value"] == true)
+	)
 	|> count()
   |> yield(name: "count")`)
 

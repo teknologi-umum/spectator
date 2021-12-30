@@ -24,6 +24,7 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 
 	if _, err := strconv.ParseInt(member.ID, 10, 64); err != nil {
 		http.Error(w, "member_id is empty", http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -44,9 +45,10 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 	// keystroke and mouse
 	_, err = queryAPI.Query(ctx, `
 	from(bucket:"spectator") 
-	|> filter(fn : (r) => r."session_id" == "`+member.ID+` and 
-		((r."type" == "coding_keystroke_event") or
-		(r."type" == "coding_mouse_movement"))
+	|> filter(fn : (r) => r["session_id"] == "`+member.ID+` and (
+		(r["type"] == "coding_event_mouseclick") or 
+		(r["type"] == "coding_event_movemove") or 
+		(r["type"] == "coding_event_mouseclick"))
 	`)
 	if err != nil {
 		// we send a http request to the logger service
@@ -56,7 +58,11 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// coding test result
-	_, err = queryAPI.Query(ctx, "from()")
+	_, err = queryAPI.Query(ctx, `
+	from(bucket:"spectator")
+	|> filter(fn: (r) => r["session_id"] == "`+member.ID+`")
+	|> fliter(fn: (r) => r["type"] == "code_submission")
+	`)
 	if err != nil {
 		// we send a http request to the logger service
 		// for now, we'll just do this:
@@ -65,7 +71,12 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// user
-	_, err = queryAPI.Query(ctx, "from()")
+	_, err = queryAPI.Query(ctx, `
+	from(bucket:"spectator")
+	|> filter(fn: (r) => r["session_id"] == "`+member.ID+`")
+	|> filter(fn: (r) => (r["event"] == "sam_test_before") or 
+		(r["event"] == "personal_info"))
+	`)
 	if err != nil {
 		// we send a http request to the logger service
 		// for now, we'll just do this:

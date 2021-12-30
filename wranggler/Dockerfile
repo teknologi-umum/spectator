@@ -3,7 +3,7 @@ RUN mkdir /app
 WORKDIR /app
 COPY . /app
 RUN go mod tidy
-RUN go build -o /app/uwoh main.go
+RUN go build -o /app/uwoh main.go ping.go file.go funfact.go
 
 FROM alpine
 RUN mkdir /app
