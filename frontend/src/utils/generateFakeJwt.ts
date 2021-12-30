@@ -11,7 +11,7 @@ export function getJwt(): string {
       iat: Date.now(),
       // ideally this should be 90 minutes, but for testing purpose a minute
       // is enough
-      exp: 90 * 60 * 1000
+      exp: 60 * 1000
     })
   );
 

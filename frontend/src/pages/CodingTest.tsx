@@ -33,7 +33,7 @@ function CodingTest() {
   useEventListener("scroll", scrollHandler(connection, currentQuestion));
 
   // disable right click
-  // useEventListener("contextmenu", (e) => e.preventDefault());
+  useEventListener("contextmenu", (e) => e.preventDefault());
 
   const gray = useColorModeValue("gray.100", "gray.800");
   const bg = useColorModeValue("white", "gray.700");
