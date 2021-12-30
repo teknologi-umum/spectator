@@ -40,6 +40,13 @@ def main():
         users = json.load(f)
         # TODO: do a for loop to write the personal user
 
+    with open("generated/events.json") as f:
+        events = json.load(f)
+        # TODO: do a for loop to write the events
+        # might as well use batch write
+        # see this: https://github.com/influxdata/influxdb-client-python#batching
+        # the idiomatic way maybe is by calling "with client.write_api() as write_api"
+
 
 if __name__ == "__main__":
     main()
