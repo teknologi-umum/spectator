@@ -1,0 +1,15 @@
+*/*/*
+*.pkg.tar.gz
+!*/*/metadata.json
+!*/*/build.sh
+!*/*/environment
+!*/*/run
+!*/*/compile
+!*/*/test.*
+
+java/
+gcc/
+node/
+pascal/
+php/
+python/
