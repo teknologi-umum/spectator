@@ -22,13 +22,12 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate for empty memberID first
-	if member.ID == "" {
-		http.Error(w, "member_id is empty", http.StatusBadRequest)
-		return
+	if _, err := strconv.ParseInt(member.ID, 10, 64); err != nil {
+		http.Error(w, "member_id is empty", http.StatusInternalServerError)
 	}
 
 	w.WriteHeader(http.StatusOK)
+
 	_, err = w.Write([]byte("OK"))
 	if err != nil {
 		// handle http write error here
@@ -41,6 +40,31 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 
 	// Now we fetch all the data with the _actor being member.ID
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
+
+	// keystroke and mouse
+	_, err = queryAPI.Query(ctx, `
+	from(bucket:"spectator") 
+	|> filter(fn : (r) => r."session_id" == "`+member.ID+` and 
+		((r."type" == "coding_keystroke_event") or
+		(r."type" == "coding_mouse_movement"))
+	`)
+	if err != nil {
+		// we send a http request to the logger service
+		// for now, we'll just do this:
+		log.Println(err)
+		return
+	}
+
+	// coding test result
+	_, err = queryAPI.Query(ctx, "from()")
+	if err != nil {
+		// we send a http request to the logger service
+		// for now, we'll just do this:
+		log.Println(err)
+		return
+	}
+
+	// user
 	_, err = queryAPI.Query(ctx, "from()")
 	if err != nil {
 		// we send a http request to the logger service

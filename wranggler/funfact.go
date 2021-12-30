@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"golang.org/x/sync/errgroup"
 	"net/http"
+	"strconv"
 )
 
 // FunFact is the handler for generating fun fact about the user
@@ -18,8 +19,7 @@ func (d *Dependency) FunFact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate for empty memberID first
-	if member.ID == "" {
+	if _, err := strconv.ParseInt(member.ID, 10, 64); err == nil {
 		http.Error(w, "member_id is empty", http.StatusBadRequest)
 		return
 	}
