@@ -36,7 +36,7 @@ export default function Question({ bg, fg, onScroll }: QuestionProps) {
       flex="1"
       position="relative"
       bg={bg}
-      minW="10"
+      minW="80"
       h="full"
       rounded="md"
       shadow="md"
