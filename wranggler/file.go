@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"reflect"
@@ -22,7 +23,7 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := strconv.ParseInt(member.ID, 10, 64); err != nil {
+	if _, err := uuid.Parse(member.ID); err != nil {
 		http.Error(w, "member_id is empty", http.StatusInternalServerError)
 		return
 	}
