@@ -12,6 +12,7 @@ import { questions } from "@/data/questions.json";
 import { useAppSelector } from "@/store";
 import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
+import type { UIEventHandler } from "react";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -25,9 +26,10 @@ const LANGUAGES = {
 
 interface EditorProps {
   bg: string;
+  onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-export default function Editor({ bg }: EditorProps) {
+export default function Editor({ bg, onScroll }: EditorProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
@@ -72,6 +74,7 @@ export default function Editor({ bg }: EditorProps) {
               ]}
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
+              onScroll={onScroll}
             />
           </TabPanel>
         </TabPanels>

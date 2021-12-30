@@ -2,7 +2,8 @@ import { Editor, Menu, Question, Scratchpad } from "@/components/CodingTest";
 import {
   keystrokeHandler,
   mouseClickHandler,
-  mouseMoveHandler
+  mouseMoveHandler,
+  scrollHandler
 } from "@/events";
 import { withProtected } from "@/hoc";
 import { useSignalR } from "@/hooks";
@@ -29,6 +30,8 @@ function CodingTest() {
   useEventListener("mousemove", mouseMoveHandler(connection, currentQuestion));
   useEventListener("keydown", keystrokeHandler(connection, currentQuestion));
 
+  useEventListener("scroll", scrollHandler(connection, currentQuestion));
+
   // disable right click
   useEventListener("contextmenu", (e) => e.preventDefault());
 
@@ -46,7 +49,11 @@ function CodingTest() {
       <Box h="calc(100% - 3.5rem)">
         <ReflexContainer orientation="vertical">
           <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-            <Question bg={bg} fg={fg} />
+            <Question
+              bg={bg}
+              fg={fg}
+              onScroll={scrollHandler(connection, currentQuestion)}
+            />
           </ReflexElement>
 
           <ReflexSplitter
@@ -60,7 +67,10 @@ function CodingTest() {
           <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
             <ReflexContainer orientation="horizontal">
               <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                <Editor bg={bg} />
+                <Editor
+                  bg={bg}
+                  onScroll={scrollHandler(connection, currentQuestion)}
+                />
               </ReflexElement>
 
               <ReflexSplitter
@@ -72,7 +82,10 @@ function CodingTest() {
               />
 
               <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                <Scratchpad bg={bg} />
+                <Scratchpad
+                  bg={bg}
+                  onScroll={scrollHandler(connection, currentQuestion)}
+                />
               </ReflexElement>
             </ReflexContainer>
           </ReflexElement>
