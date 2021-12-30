@@ -1,0 +1,5 @@
+services:
+  worker:
+    build: ./wranggler
+    restart: on-failure:3
+    environment: []
