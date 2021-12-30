@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"golang.org/x/sync/errgroup"
 	"net/http"
 )
 
@@ -29,9 +30,22 @@ func (d *Dependency) FunFact(w http.ResponseWriter, r *http.Request) {
 	attempt := make(chan []int8, 1)
 
 	// Run all the calculate function concurently
-	go d.CalculateWordsPerMinute(r.Context(), member.ID, wpm)
-	go d.CalculateDeletionRate(r.Context(), member.ID, deletionRate)
-	go d.CalculateSubmissionAttempts(r.Context(), member.ID, attempt)
+	errs, ctx := errgroup.WithContext(r.Context())
+	errs.Go(func() error {
+		return d.CalculateWordsPerMinute(ctx, member.ID, wpm)
+	})
+	errs.Go(func() error {
+		return d.CalculateDeletionRate(ctx, member.ID, deletionRate)
+	})
+	errs.Go(func() error {
+		return d.CalculateSubmissionAttempts(ctx, member.ID, attempt)
+	})
+
+	err = errs.Wait()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	var result = struct {
 		Wpm          int8    `json:"wpm"`
@@ -56,11 +70,10 @@ func (d *Dependency) FunFact(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID string, result chan int8) {
+func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID string, result chan int8) error {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	// TODO:  ini buat ngambil nganu, jangan lupa result
-	result, err := queryAPI.Query(ctx, `
+	res, err := queryAPI.Query(ctx, `
 		from(bucket: "spectator")
 			|> range(start: -1d)
 			|> filter(fn: (r) => r["_measurement"] == "coding_event")
@@ -73,15 +86,14 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 			|> yield(name: "count")
 	`)
 	if err != nil {
-		// FIXME: seharusnya jangan panic
-		panic(err)
+		return err
 	}
 
 	var wpmTotal, keyTotal = 0, 0
-	for result.Next() {
-		keytotal := result.Record().Value().(int64)
-		wpmTot += keytotal / 5
-		keyTot += 1
+	for res.Next() {
+		keytotal := res.Record().Value().(int64)
+		wpmTotal += int(keytotal) / 5
+		keyTotal += 1
 	}
 
 	// Cara calculate WPM:
@@ -95,16 +107,17 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, memberID strin
 	// terus return ke channel hasil average dari semua menit yang ada
 
 	// Return the result here
-	result <- int8(wpmTot / keyTot)
+	result <- int8(wpmTotal / keyTotal)
+	return nil
 }
 
-func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID string, result chan []int8) {
+func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID string, result chan []int8) error {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// number of question submission attempts
 	// TODO:  ini buat ngambil nganu, jangan lupa result
 	// SELECT COUNT(_time) FROM spectator WHERE _type = "coding_attempted"
-	result, err := queryAPI.Query(ctx, `from(bucket: "spectator")
+	_, err := queryAPI.Query(ctx, `from(bucket: "spectator")
 		|> range(start: -1d)
 		|> filter(fn: (r) => r["_measurement"] == "coding_event")
 		|> filter(fn: (r) => r["_event"] == "coding_attempted")
@@ -113,8 +126,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 		|> count()
 	`)
 	if err != nil {
-		// FIXME: seharusnya jangan panic
-		panic(err)
+		return err
 	}
 
 	// FIXME: the result not array , the reasou UNKNOW
@@ -126,13 +138,14 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, memberID s
 
 	// Return the result here
 	result <- []int8{}
+	return nil
 }
 
-func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string, result chan float64) {
+func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string, result chan float64) error {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// TODO:  ini buat ngambil nganu, jangan lupa result
-	result, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator")
+	res, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator")
   |> range(start: -1d)
   |> filter(fn: (r) => r["_measurement"] == "coding_event")
   |> filter(fn: (r) => r["_event"] == "keystroke")
@@ -142,13 +155,13 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string,
   |> yield(name: "count")`)
 
 	if err != nil {
-		panic(err)
+		return (err)
 	}
 
-	result.Next()
-	delTot := result.Record().Value().(int64)
+	res.Next()
+	delTot := res.Record().Value().(int64)
 
-	result, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
+	res, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
   |> range(start: -1d)
   |> filter(fn: (r) => r["_measurement"] == "coding_event")
   |> filter(fn: (r) => r["_event"] == "keystroke")
@@ -157,11 +170,11 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string,
   |> yield(name: "count")`)
 
 	if err != nil {
-		panic(err)
+		return (err)
 	}
 
-	result.Next()
-	tot := result.Record().Value().(int64)
+	res.Next()
+	tot := res.Record().Value().(int64)
 
 	result <- (float64(delTot) / float64(tot))
 
@@ -170,4 +183,5 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, memberID string,
 	// dah gitu doang.
 
 	// Return the result here
+	return nil
 }

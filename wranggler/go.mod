@@ -6,6 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.0
 	github.com/influxdata/influxdb-client-go/v2 v2.6.0
 	github.com/minio/minio-go/v7 v7.0.18
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 )
 
 require (
