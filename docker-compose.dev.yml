@@ -17,7 +17,7 @@ services:
     hostname: be
     environment:
       INFLUX_URL: http://influx:8086
-      INFLUX_TOKEN: H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
+      INFLUX_TOKEN: "H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH"
       S3_URL: http://minio:9000
     depends_on:
       - minio
@@ -40,7 +40,7 @@ services:
     hostname: minio_node
     environment:
       MINIO_ROOT_USER: teknum
-      MINIO_ROOT_PASSWORD: SHvcoM3&EucRA3yxVmw55&&Jt5YxxkF
+      MINIO_ROOT_PASSWORD: "SHvcoM3&EucRA3yxVmw55&&Jt5YxxkF"
     volumes:
       - ./data/minio:/data
 
@@ -50,10 +50,10 @@ services:
     restart: always
     environment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
-      DOCKER_INFLUXDB_INIT_PASSWORD: uTvfatC2sFhxEBpM5du%EUrB!BDmvTCP
+      DOCKER_INFLUXDB_INIT_PASSWORD: "uTvfatC2sFhxEBpM5du%EUrB!BDmvTCP"
       DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH"
     volumes:
       - ./data/influx:/var/lib/influxdb
 

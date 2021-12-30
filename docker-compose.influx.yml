@@ -19,9 +19,9 @@ services:
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
-      DOCKER_INFLUXDB_INIT_PASSWORD: uTvfatC2sFhxEBpM5du%EUrB!BDmvTCP
+      DOCKER_INFLUXDB_INIT_PASSWORD: "uTvfatC2sFhxEBpM5du%EUrB!BDmvTCP"
       DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH"
     volumes:
       - ./data/influx:/var/lib/influxdb
