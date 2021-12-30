@@ -16,6 +16,9 @@ EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Frontend", "frontend\Frontend.esproj", "{74A2B184-34A7-4C47-A752-988FA547A7E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proto", "proto", "{FABA1F5B-0E99-44F4-ACB0-9B343544F589}"
+	ProjectSection(SolutionItems) = preProject
+		proto\.editorconfig = proto\.editorconfig
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C027A280-5DCC-43BA-9C35-3ECCF3DE13A3}"
 	ProjectSection(SolutionItems) = preProject
@@ -34,9 +37,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.DomainModels", "b
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.Primitives", "backend\Spectator.Primitives\Spectator.Primitives.csproj", "{F3E7C7BF-26EA-4219-9202-F814D3743A38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.Repositories", "backend\Spectator.Repositories\Spectator.Repositories.csproj", "{A118EDA4-58FE-404B-9D89-F90872788A8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.Repositories", "backend\Spectator.Repositories\Spectator.Repositories.csproj", "{A118EDA4-58FE-404B-9D89-F90872788A8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.RepositoryDALs", "backend\Spectator.RepositoryDALs\Spectator.RepositoryDALs.csproj", "{EFAEC6A9-47F1-4D1F-9A97-5F98FCD7D6AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.RepositoryDALs", "backend\Spectator.RepositoryDALs\Spectator.RepositoryDALs.csproj", "{EFAEC6A9-47F1-4D1F-9A97-5F98FCD7D6AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.Protos", "proto\Spectator.Protos\Spectator.Protos.csproj", "{41BBAAA6-7178-48A9-86A4-4D36730E4BB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF9CC5FA-4267-483B-9EAD-5387522C54EA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.Observables", "backend\Spectator.Observables\Spectator.Observables.csproj", "{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.DomainServices", "backend\Spectator.DomainServices\Spectator.DomainServices.csproj", "{C415276D-6E0C-4A79-AD48-834F8B85A09D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +84,18 @@ Global
 		{EFAEC6A9-47F1-4D1F-9A97-5F98FCD7D6AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFAEC6A9-47F1-4D1F-9A97-5F98FCD7D6AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFAEC6A9-47F1-4D1F-9A97-5F98FCD7D6AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41BBAAA6-7178-48A9-86A4-4D36730E4BB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41BBAAA6-7178-48A9-86A4-4D36730E4BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41BBAAA6-7178-48A9-86A4-4D36730E4BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41BBAAA6-7178-48A9-86A4-4D36730E4BB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +108,9 @@ Global
 		{F3E7C7BF-26EA-4219-9202-F814D3743A38} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 		{A118EDA4-58FE-404B-9D89-F90872788A8D} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 		{EFAEC6A9-47F1-4D1F-9A97-5F98FCD7D6AF} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
+		{41BBAAA6-7178-48A9-86A4-4D36730E4BB0} = {FABA1F5B-0E99-44F4-ACB0-9B343544F589}
+		{AEC5EE3D-A0AD-493A-B451-FD1F59B29610} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
+		{C415276D-6E0C-4A79-AD48-834F8B85A09D} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81F0BD7D-03EB-40C0-9294-14F7F07A81F0}

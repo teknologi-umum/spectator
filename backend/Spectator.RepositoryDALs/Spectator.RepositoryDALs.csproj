@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="InfluxDB.Client" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="RG.Ninja" Version="1.0.8" />
   </ItemGroup>
 
