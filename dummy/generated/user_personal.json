@@ -1,0 +1,42 @@
+[
+  {
+    "familiar_language": "javascript c++ python",
+    "hours_of_practice": 0,
+    "session_id": "qvzmys",
+    "student_number": "37735232",
+    "type": "personal_info",
+    "years_of_experience": 89
+  },
+  {
+    "familiar_language": "javascript",
+    "hours_of_practice": 1,
+    "session_id": "rpagja",
+    "student_number": "94816814",
+    "type": "personal_info",
+    "years_of_experience": 101
+  },
+  {
+    "familiar_language": " c c++",
+    "hours_of_practice": 3,
+    "session_id": "zxqqdu",
+    "student_number": "42380850",
+    "type": "personal_info",
+    "years_of_experience": 79
+  },
+  {
+    "familiar_language": "c# python",
+    "hours_of_practice": 3,
+    "session_id": "lhhigt",
+    "student_number": "14959144",
+    "type": "personal_info",
+    "years_of_experience": 54
+  },
+  {
+    "familiar_language": "c# php python",
+    "hours_of_practice": 3,
+    "session_id": "xqlvxg",
+    "student_number": "90656269",
+    "type": "personal_info",
+    "years_of_experience": 119
+  }
+]
