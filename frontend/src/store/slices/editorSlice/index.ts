@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { InitialState, Languages, Solution } from "./types";
+import type { InitialState, Languages, Solution, ScratchPad } from "./types";
 
 const initialState: InitialState = {
   currentLanguage: "javascript",
   fontSize: 14,
-  solutions: []
+  solutions: [],
+  scratchPads: []
 };
 
 export const editorSlice = createSlice({
@@ -22,13 +23,31 @@ export const editorSlice = createSlice({
         (solution) => solution.questionNo === action.payload.questionNo
       );
 
-      if (idx > -1) state.solutions[idx] = action.payload;
-      else state.solutions.concat(action.payload);
+      if (idx > -1) {
+        state.solutions[idx] = action.payload;
+      } else {
+        state.solutions = state.solutions.concat(action.payload);
+      }
+    },
+    setScratchPad: (state, action: PayloadAction<ScratchPad>) => {
+      const idx = state.scratchPads.findIndex(
+        (solution) => solution.questionNo === action.payload.questionNo
+      );
+
+      if (idx > -1) {
+        state.scratchPads[idx] = action.payload;
+      } else {
+        state.scratchPads = state.scratchPads.concat(action.payload);
+      }
     }
   }
 });
 
-export const { changeFontSize, changeCurrentLanguage, setSolution } =
-  editorSlice.actions;
+export const {
+  changeFontSize,
+  changeCurrentLanguage,
+  setSolution,
+  setScratchPad
+} = editorSlice.actions;
 
 export default editorSlice.reducer;

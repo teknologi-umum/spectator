@@ -37,34 +37,53 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
   );
-  const { currentLanguage } = useAppSelector<EditorState>(
+  const { solutions, currentLanguage } = useAppSelector<EditorState>(
     (state) => state.editor
   );
   // memoized the question
-  const stringifiedQuestion = useMemo(() => {
+  const stringifiedBoilerplate = useMemo(() => {
     return JSON.stringify(
       questions[currentQuestion].templates[currentLanguage]
     );
   }, [currentQuestion, currentLanguage]);
 
-  const [innerCode, setInnerCode] = useState(stringifiedQuestion);
-  const debouncedInnerCode = useDebounce(innerCode, 1000);
+  const [code, setCode] = useState("");
+  const debouncedCode = useDebounce(code, 1000);
+
+  // at first render, we have to check if the data of current solution
+  // already persisted. If so, we assign it with setCode.
+  // else, we assign it with stringifiedBoilerplate and dispatch to persist store at the same time
+  useEffect(() => {
+    const currentSolution = solutions.find(
+      (solution) => solution.questionNo === currentQuestion
+    );
+
+    if (currentSolution !== undefined) {
+      setCode(currentSolution.code);
+    } else {
+      setCode(stringifiedBoilerplate);
+      dispatch(
+        setSolution({
+          questionNo: currentQuestion,
+          language: currentLanguage,
+          code: stringifiedBoilerplate
+        })
+      );
+    }
+  }, []);
 
   useEffect(() => {
-    // need further discussion about scratchPad payload since
-    // editor and scratchpad are two separate components
     dispatch(
       setSolution({
         questionNo: currentQuestion,
         language: currentLanguage,
-        code: JSON.stringify(debouncedInnerCode),
-        scratchPad: ""
+        code: JSON.stringify(debouncedCode)
       })
     );
-  }, [debouncedInnerCode]);
+  }, [debouncedCode]);
 
   function handleChange(value: string) {
-    setInnerCode(JSON.stringify(value));
+    setCode(JSON.stringify(value));
   }
 
   return (
@@ -76,7 +95,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
         <TabPanels h="full">
           <TabPanel p="2" h="full" position="relative" tabIndex={-1}>
             <CodeMirror
-              value={innerCode ? JSON.parse(innerCode) : ""}
+              value={code ? JSON.parse(code) : ""}
               extensions={[
                 highlightTheme,
                 lineNumbers(),

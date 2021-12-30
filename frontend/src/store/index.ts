@@ -24,7 +24,7 @@ const isDev = import.meta.env.MODE === "development";
 const persistConfig = {
   key: "root",
   version: 1,
-  whitelist: ["jwt", "editor"],
+  whitelist: ["editor", "jwt"],
   storage
 };
 
