@@ -45,12 +45,66 @@ def generate_user() -> dict[str, any]:
         " ".join(random.sample(languages, k=random.randint(1,3)))
     )
     return user.asdict()
-    
+
+class KeystrokeEvent():
+    session_id: str
+    type: str
+    question_number: int
+    key_char: str
+    key_code: str
+    shift: bool
+    alt: bool
+    control: bool
+    unrelated_key: bool
+    meta: bool
+
+    def __init__(self,type: str,question_number: int, key_char: str, key_code: str, shift: bool,alt: bool,control: bool,unrelated_key: bool,meta: bool):
+        self.type = type
+        self.session_id = session_id
+        self.question_number = question_number
+        self.key_char = key_char
+        self.key_code = key_code
+        self.shift = shift
+        self.alt = alt 
+        self.control = control
+        self.unrelated_key = unrelated_key
+        self.meta = meta 
+
+    def asdict(self):
+        return {
+            "type": self.type,
+            "session_id": self.session_id,
+            "question_number": self.question_number,
+            "key_char": self.key_char,
+            "key_code": self.key_code,
+            "shift": self.shift,
+            "alt": self.alt,
+            "control": self.control,
+            "unrelated_key": self.unrelated_key,
+            "meta": self.meta
+        }
+
+def generate_keystroke() -> dict[str,any]:
+    letters = string.ascii_lowercase
+    numbers = string.digits
+    keystroke = KeystrokeEvent(
+        "coding_event_keystroke",
+        "".join(random.choice(letters) for _ in range(6)),
+        random.choice(numbers),
+        "".join(random.choice(letters) for _ in range(1)),
+        "".join(random.choice(numbers) for _ in range(2)),
+        random.choice([True,False]),
+        random.choice([True,False]),
+        random.choice([True,False]),
+        random.choice([True,False])
+    )
+    return keystroke.asdict()
+
 def write_into_file(filename: str, data):
     with open("generated/" + filename, "w") as f:
         data = json.dumps(data, sort_keys=True, indent=2, ensure_ascii=False)
         f.write(data)
-        
+
 def main():
     users: list[dict[str, any]] = []
     
