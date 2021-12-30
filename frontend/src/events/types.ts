@@ -68,7 +68,7 @@ export interface CodingEventMouseMove {
   type: "coding_event_mousemove";
   question_number: number;
   // Fields
-  direction: Direction
+  direction: Direction;
   x_position: number;
   y_position: number;
   window_width: number;

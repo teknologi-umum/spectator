@@ -11,6 +11,7 @@ import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
 import { withPublic } from "@/hoc";
+import { useEffect } from "react";
 
 function Instructions() {
   const navigate = useNavigate();
@@ -18,6 +19,10 @@ function Instructions() {
   const fg = useColorModeValue("gray.800", "gray.100");
 
   const textColor = useColorModeValue("gray.600", "gray.400");
+
+  useEffect(() => {
+    document.title = "Instructions | Spectator";
+  }, []);
 
   return (
     <Layout>

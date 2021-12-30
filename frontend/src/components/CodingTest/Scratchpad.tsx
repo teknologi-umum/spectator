@@ -10,11 +10,13 @@ import {
 import CodeMirror from "@uiw/react-codemirror";
 import { lineNumbers } from "@codemirror/gutter";
 import { useCodemirrorTheme } from "@/hooks";
+import type { UIEventHandler } from "react";
 
 interface ScratchpadProps {
   bg: string;
+  onScroll: UIEventHandler<HTMLDivElement>;
 }
-export default function Scratchpad({ bg }: ScratchpadProps) {
+export default function Scratchpad({ bg, onScroll }: ScratchpadProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
 
   return (
@@ -32,6 +34,7 @@ export default function Scratchpad({ bg }: ScratchpadProps) {
               extensions={[highlightTheme, lineNumbers()]}
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
+              onScroll={onScroll}
             />
           </TabPanel>
           <TabPanel p="2" tabIndex={-1}>
