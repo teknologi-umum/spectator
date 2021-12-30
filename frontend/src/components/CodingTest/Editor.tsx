@@ -9,10 +9,12 @@ import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { useCodemirrorTheme } from "@/hooks";
 import { questions } from "@/data/questions.json";
-import { useAppSelector } from "@/store";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { setSolution } from "@/store/slices/editorSlice";
 import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
-import type { UIEventHandler } from "react";
+import { UIEventHandler, useEffect, useState, useMemo } from "react";
+import { useDebounce } from "@/hooks";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -30,6 +32,7 @@ interface EditorProps {
 }
 
 export default function Editor({ bg, onScroll }: EditorProps) {
+  const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
@@ -37,6 +40,32 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const { currentLanguage } = useAppSelector<EditorState>(
     (state) => state.editor
   );
+  // memoized the question
+  const stringifiedQuestion = useMemo(() => {
+    return JSON.stringify(
+      questions[currentQuestion].templates[currentLanguage]
+    );
+  }, [currentQuestion, currentLanguage]);
+
+  const [innerCode, setInnerCode] = useState(stringifiedQuestion);
+  const debouncedInnerCode = useDebounce(innerCode, 1000);
+
+  useEffect(() => {
+    // need further discussion about scratchPad payload since
+    // editor and scratchpad are two separate components
+    dispatch(
+      setSolution({
+        questionNo: currentQuestion,
+        language: currentLanguage,
+        code: JSON.stringify(debouncedInnerCode),
+        scratchPad: ""
+      })
+    );
+  }, [debouncedInnerCode]);
+
+  function handleChange(value: string) {
+    setInnerCode(JSON.stringify(value));
+  }
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
@@ -47,7 +76,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
         <TabPanels h="full">
           <TabPanel p="2" h="full" position="relative" tabIndex={-1}>
             <CodeMirror
-              value={questions[currentQuestion].templates[currentLanguage]}
+              value={innerCode ? JSON.parse(innerCode) : ""}
               extensions={[
                 highlightTheme,
                 lineNumbers(),
@@ -75,6 +104,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
               onScroll={onScroll}
+              onChange={handleChange}
             />
           </TabPanel>
         </TabPanels>

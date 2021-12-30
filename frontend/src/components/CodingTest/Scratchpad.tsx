@@ -12,18 +12,18 @@ import { lineNumbers } from "@codemirror/gutter";
 import { useCodemirrorTheme } from "@/hooks";
 import type { UIEventHandler } from "react";
 
-interface ScratchpadProps {
+interface ScratchPadProps {
   bg: string;
   onScroll: UIEventHandler<HTMLDivElement>;
 }
-export default function Scratchpad({ bg, onScroll }: ScratchpadProps) {
+export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs isLazy h="full">
         <TabList>
-          <Tab>Scratchpad</Tab>
+          <Tab>Scratch Pad</Tab>
           <Tab>Output</Tab>
         </TabList>
 

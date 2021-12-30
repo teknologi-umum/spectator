@@ -1,4 +1,4 @@
-import { Editor, Menu, Question, Scratchpad } from "@/components/CodingTest";
+import { Editor, Menu, Question, ScratchPad } from "@/components/CodingTest";
 import {
   keystrokeHandler,
   mouseClickHandler,
@@ -33,7 +33,7 @@ function CodingTest() {
   useEventListener("scroll", scrollHandler(connection, currentQuestion));
 
   // disable right click
-  useEventListener("contextmenu", (e) => e.preventDefault());
+  // useEventListener("contextmenu", (e) => e.preventDefault());
 
   const gray = useColorModeValue("gray.100", "gray.800");
   const bg = useColorModeValue("white", "gray.700");
@@ -82,7 +82,7 @@ function CodingTest() {
               />
 
               <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                <Scratchpad
+                <ScratchPad
                   bg={bg}
                   onScroll={scrollHandler(connection, currentQuestion)}
                 />
