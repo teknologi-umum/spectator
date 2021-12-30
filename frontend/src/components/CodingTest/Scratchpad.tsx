@@ -52,13 +52,13 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
     dispatch(
       setScratchPad({
         questionNo: currentQuestion,
-        value: JSON.stringify(debouncedValue)
+        value: debouncedValue
       })
     );
   }, [debouncedValue]);
 
   function handleChange(value: string) {
-    setValue(JSON.stringify(value));
+    setValue(value);
   }
 
   return (
@@ -72,7 +72,7 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
         <TabPanels h="full">
           <TabPanel p="2" h="full" tabIndex={-1}>
             <CodeMirror
-              value={value ? JSON.parse(value) : ""}
+              value={value}
               height="8rem"
               extensions={[highlightTheme, lineNumbers()]}
               theme={theme}

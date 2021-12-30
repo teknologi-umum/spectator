@@ -41,10 +41,8 @@ export default function Editor({ bg, onScroll }: EditorProps) {
     (state) => state.editor
   );
   // memoized the question
-  const stringifiedBoilerplate = useMemo(() => {
-    return JSON.stringify(
-      questions[currentQuestion].templates[currentLanguage]
-    );
+  const boilerplate = useMemo(() => {
+    return questions[currentQuestion].templates[currentLanguage];
   }, [currentQuestion, currentLanguage]);
 
   const [code, setCode] = useState("");
@@ -52,7 +50,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
-  // else, we assign it with stringifiedBoilerplate and dispatch to persist store at the same time
+  // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
     const currentSolution = solutions.find(
       (solution) => solution.questionNo === currentQuestion
@@ -61,29 +59,29 @@ export default function Editor({ bg, onScroll }: EditorProps) {
     if (currentSolution !== undefined) {
       setCode(currentSolution.code);
     } else {
-      setCode(stringifiedBoilerplate);
+      setCode(boilerplate);
       dispatch(
         setSolution({
           questionNo: currentQuestion,
           language: currentLanguage,
-          code: stringifiedBoilerplate
+          code: boilerplate
         })
       );
     }
-  }, []);
+  }, [currentQuestion]);
 
   useEffect(() => {
     dispatch(
       setSolution({
         questionNo: currentQuestion,
         language: currentLanguage,
-        code: JSON.stringify(debouncedCode)
+        code: debouncedCode
       })
     );
   }, [debouncedCode]);
 
   function handleChange(value: string) {
-    setCode(JSON.stringify(value));
+    setCode(value);
   }
 
   return (
@@ -95,7 +93,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
         <TabPanels h="full">
           <TabPanel p="2" h="full" position="relative" tabIndex={-1}>
             <CodeMirror
-              value={code ? JSON.parse(code) : ""}
+              value={code}
               extensions={[
                 highlightTheme,
                 lineNumbers(),
