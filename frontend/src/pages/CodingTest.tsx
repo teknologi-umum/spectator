@@ -5,6 +5,7 @@ import {
   mouseMoveHandler
 } from "@/events";
 import { useColorModeValue, useSignalR } from "@/hooks";
+import { withProtected } from "@/hoc";
 import {
   Box,
   theme,
@@ -14,24 +15,25 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 
 // TODO: ini soal ambil dari json atau sejenisnya, jangan langsung tulis disini
-export default function CodingTest() {
+function CodingTest() {
   const connection = useSignalR("fake_hub_url");
   useEventListener("click", mouseClickHandler(connection));
   useEventListener("mousemove", mouseMoveHandler(connection));
   useEventListener("keydown", keystrokeHandler(connection));
   useEventListener("contextmenu", (e) => e.preventDefault());
 
-  const gray = useColorModeValue("gray.100", "gray.700", "gray.900");
+  const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
   return (
     <Box w="full" h="full" bg={gray} gap="3" p="3">
-      <Menu bg={bg} fg={fg} />
+      <Menu bg={bg} fg={fg} fgDarker={fgDarker} />
       <Box h="calc(100% - 3.5rem)">
         <ReflexContainer orientation="vertical">
           <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-            <Question bg={bg} fg={fg} />
+            <Question bg={bg} fg={fg} fgDarker={fgDarker} />
           </ReflexElement>
 
           <ReflexSplitter
@@ -66,3 +68,5 @@ export default function CodingTest() {
     </Box>
   );
 }
+
+export default withProtected(CodingTest);

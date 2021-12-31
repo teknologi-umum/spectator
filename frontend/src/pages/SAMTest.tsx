@@ -24,6 +24,7 @@ import { getJwt } from "@/utils/generateFakeJwt";
 import { useAppDispatch } from "@/store";
 import { setJwt } from "@/store/slices/jwtSlice";
 import { useColorModeValue } from "@/hooks/";
+import { withPublic } from "@/hoc";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -58,7 +59,7 @@ function getResponseOptions(
   );
 }
 
-export default function SAMTest() {
+function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -66,7 +67,7 @@ export default function SAMTest() {
   const [pleasure, setPleasure] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const bg = useColorModeValue("white", "gray.700", "gray.800");
-  const fg = useColorModeValue("gray.700", "gray.100", "gray.200");
+  const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   
   function goto(kind: "next" | "prev") {
@@ -105,7 +106,7 @@ export default function SAMTest() {
             {currentPage === 0 && (
               <Fade in={currentPage === 0}>
                 <Box>
-                  <Text fontWeight="bold" fontSize="xl" mb="2">
+                  <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     How aroused are you now?
                   </Text>
                   <Text color={fgDarker} fontSize="lg" mb="4">
@@ -126,10 +127,10 @@ export default function SAMTest() {
             {currentPage === 1 && (
               <Fade in={currentPage === 1}>
                 <Box>
-                  <Text fontWeight="bold" fontSize="xl" mb="2">
+                  <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     How pleased are you now?
                   </Text>
-                  <Text fontSize="lg">
+                  <Text color={fgDarker} fontSize="lg">
                     Pleasure refer to how pleased are you generally in the
                     meantime
                   </Text>
@@ -211,3 +212,5 @@ export default function SAMTest() {
     </>
   );
 }
+
+export default withPublic(SAMTest);

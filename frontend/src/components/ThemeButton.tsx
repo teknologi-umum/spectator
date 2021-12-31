@@ -10,12 +10,11 @@ interface ThemeButtonProps {
 
 const THEME = ["light", "dimmed", "dark"];
 
-
 export default function ThemeButton({ position }: ThemeButtonProps) {
   const { setColorMode } = useColorMode();
+  
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
-
 
   return (
     <Box 
@@ -28,11 +27,19 @@ export default function ThemeButton({ position }: ThemeButtonProps) {
       <Select
         onChange={(e:FormEvent<HTMLSelectElement>) => setColorMode(e.currentTarget.value as Theme)}
         bg={bg}
+        textTransform="capitalize"
+        w="8rem"
+        border="none"
         color={fg}
       >
         {
           THEME.map((val, idx) => (
-            <option key={idx} value={val}>{val}</option>
+            <option 
+              key={idx} 
+              value={val}
+            >
+              {val}
+            </option>
           ))
         }
       </Select>

@@ -24,11 +24,12 @@ function toReadableTime(ms: number): string {
 const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
-  bg: string;
-  fg: string;
+  bg:         string;
+  fg:         string;
+  fgDarker:   string;
 }
 
-export default function Menu({ bg, fg }: MenuProps) {
+export default function Menu({ bg, fg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
   const { fontSize, currentLanguage } = useAppSelector<EditorState>(
     (state) => state.editor
@@ -51,7 +52,7 @@ export default function Menu({ bg, fg }: MenuProps) {
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
       <Flex
         bg={bg}
-        color={fg}
+        color={fgDarker}
         justifyContent="center"
         alignItems="center"
         h="full"
@@ -67,6 +68,7 @@ export default function Menu({ bg, fg }: MenuProps) {
       <ThemeButton position="relative" />
       <Flex alignItems="center" gap="3" w="14rem">
         <Select
+          color={fgDarker}
           bg={bg}
           textTransform="capitalize"
           w="8rem"
@@ -88,6 +90,7 @@ export default function Menu({ bg, fg }: MenuProps) {
           ))}
         </Select>
         <Select
+          color={fgDarker}
           bg={bg}
           textTransform="capitalize"
           w="6rem"

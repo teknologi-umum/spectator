@@ -18,12 +18,13 @@ import type { InitialState as QuestionState } from "@/store/slices/questionSlice
 import { useColorModeValue } from "@/hooks/";
 
 interface QuestionProps {
-  bg: string;
-  fg: string;
+  bg:         string;
+  fg:         string;
+  fgDarker:   string;
 }
 
-export default function Question({ bg, fg }: QuestionProps) {
-  const codeBg = useColorModeValue("gray.200", "gray.500", "gray.800");
+export default function Question({ bg, fg, fgDarker }: QuestionProps) {
+  const codeBg = useColorModeValue("gray.200", "gray.500", "gray.700");
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
   );
@@ -42,8 +43,8 @@ export default function Question({ bg, fg }: QuestionProps) {
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
         <TabList>
-          <Tab>Prompt</Tab>
-          <Tab>Your Result</Tab>
+          <Tab color={fgDarker}>Prompt</Tab>
+          <Tab color={fgDarker}>Your Result</Tab>
         </TabList>
 
         <TabPanels h="full">
@@ -55,7 +56,7 @@ export default function Question({ bg, fg }: QuestionProps) {
               <ReactMarkdown
                 components={{
                   p: ({ children }) => (
-                    <Text fontSize="16" lineHeight="6" color={fg} py="2">
+                    <Text fontSize="16" lineHeight="6" color={fgDarker} py="2">
                       {children}
                     </Text>
                   ),

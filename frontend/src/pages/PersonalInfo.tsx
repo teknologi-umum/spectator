@@ -19,6 +19,7 @@ import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
 import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
 import { useColorModeValue } from "@/hooks/";
+import { withPublic } from "@/hoc";
 
 interface FormValues {
   stdNo: string;
@@ -27,7 +28,7 @@ interface FormValues {
   programmingLanguage: string;
 }
 
-export default function PersonalInfo() {
+function PersonalInfo() {
   const dispatch = useAppDispatch();
   const personalInfo = useAppSelector<PersonalInfoState>(
     (state) => state.personalInfo
@@ -153,3 +154,5 @@ export default function PersonalInfo() {
     </Layout>
   );
 }
+
+export default withPublic(PersonalInfo);

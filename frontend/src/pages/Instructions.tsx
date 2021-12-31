@@ -5,19 +5,20 @@ import {
   Container,
   Button,
   Box,
-  useColorModeValue
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
+import { withPublic } from "@/hoc";
+import { useColorModeValue } from "@/hooks";
 
-export default function Instructions() {
+function Instructions() {
   const navigate = useNavigate();
-  const bg = useColorModeValue("white", "gray.800");
-  const fg = useColorModeValue("gray.800", "gray.100");
-  const fgDarker = useColorModeValue("gray.700", "gray.400");
+  const bg = useColorModeValue("white", "gray.700", "gray.800");
+  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
-  const textColor = useColorModeValue("gray.600", "gray.400");
+  const textColor = useColorModeValue("gray.600", "gray.400", "gray.400");
 
   return (
     <Layout>
@@ -88,3 +89,5 @@ export default function Instructions() {
     </Layout>
   );
 }
+
+export default withPublic(Instructions);

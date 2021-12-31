@@ -1,26 +1,29 @@
 import { getEditorTheme, getHighlightTheme } from "@/components/CodingTest";
 import { useAppSelector } from "@/store";
-import { useColorMode } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
+import type { InitialState as ThemeState } from "@/store/slices/appSlice/types";
+import { useColorMode } from ".";
 
 export function useCodemirrorTheme() {
   const { fontSize } = useAppSelector<EditorState>((state) => state.editor);
+  const { currentTheme } = useAppSelector<ThemeState>((state) => state.app)
   const { colorMode } = useColorMode();
   const [theme, setTheme] = useState(
-    getEditorTheme({ mode: colorMode, fontSize })
+    getEditorTheme({ mode: currentTheme, fontSize })
   );
+
   const [highlightTheme, setHighlightTheme] = useState(
-    getHighlightTheme(colorMode)
+    getHighlightTheme(currentTheme)
   );
 
   useEffect(() => {
-    setTheme(getEditorTheme({ mode: colorMode, fontSize }));
-  }, [colorMode, fontSize]);
+    setTheme(getEditorTheme({ mode: currentTheme, fontSize }));
+  }, [currentTheme, fontSize]);
 
   useEffect(() => {
-    setHighlightTheme(getHighlightTheme(colorMode));
-  }, [colorMode, fontSize]);
+    setHighlightTheme(getHighlightTheme(currentTheme));
+  }, [currentTheme, fontSize]);
 
   return [theme, highlightTheme];
 }
