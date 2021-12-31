@@ -3,7 +3,7 @@ import { tags, HighlightStyle } from "@codemirror/highlight";
 import theme from "@/styles/themes";
 
 export function getHighlightTheme(mode: "light" | "dimmed" | "dark") {
-  const isDarkMode = mode
+  const isDarkMode = mode;
 
   const c = {
     light: {
@@ -59,8 +59,7 @@ export function getEditorTheme({
   mode: "light" | "dimmed" | "dark";
   fontSize: number;
 }) {
-
-  const isDarkMode = mode
+  const isDarkMode = mode;
 
   const c = {
     light: {
@@ -73,13 +72,13 @@ export function getEditorTheme({
       gray: theme.colors.gray[400],
       bg: theme.colors.gray[700],
       bgDarker: theme.colors.gray[700],
-      caret: theme.colors.gray[200],
+      caret: theme.colors.gray[200]
     },
     dark: {
       gray: theme.colors.gray[400],
       bg: theme.colors.gray[800],
       bgDarker: theme.colors.gray[700],
-      caret: theme.colors.gray[200],
+      caret: theme.colors.gray[200]
     }
   };
 
@@ -120,6 +119,6 @@ export function getEditorTheme({
       ".cm-line.cm-activeLine": {
         backgroundColor: c[isDarkMode].bgDarker
       }
-    },
+    }
   );
 }

@@ -18,9 +18,9 @@ import type { InitialState as QuestionState } from "@/store/slices/questionSlice
 import { useColorModeValue } from "@/hooks/";
 
 interface QuestionProps {
-  bg:         string;
-  fg:         string;
-  fgDarker:   string;
+  bg: string;
+  fg: string;
+  fgDarker: string;
 }
 
 export default function Question({ bg, fg, fgDarker }: QuestionProps) {

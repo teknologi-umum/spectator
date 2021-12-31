@@ -4,7 +4,7 @@ import {
   Text,
   Container,
   Button,
-  Box,
+  Box
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";

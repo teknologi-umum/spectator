@@ -7,7 +7,7 @@ import { useColorMode } from ".";
 
 export function useCodemirrorTheme() {
   const { fontSize } = useAppSelector<EditorState>((state) => state.editor);
-  const { currentTheme } = useAppSelector<ThemeState>((state) => state.app)
+  const { currentTheme } = useAppSelector<ThemeState>((state) => state.app);
   const { colorMode } = useColorMode();
   const [theme, setTheme] = useState(
     getEditorTheme({ mode: currentTheme, fontSize })

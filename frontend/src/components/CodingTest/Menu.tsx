@@ -24,9 +24,9 @@ function toReadableTime(ms: number): string {
 const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
-  bg:         string;
-  fg:         string;
-  fgDarker:   string;
+  bg: string;
+  fg: string;
+  fgDarker: string;
 }
 
 export default function Menu({ bg, fg, fgDarker }: MenuProps) {
