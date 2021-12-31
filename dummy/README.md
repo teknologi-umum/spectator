@@ -21,3 +21,10 @@ To generate user personal info (including their session) and the events, do:
 ```sh
 pipenv run python3 generate.py
 ```
+
+Then, we shall insert the generated data into the InfluxDB database.
+```sh
+pipenv run python3 inserter.py
+```
+
+Enjoy!
