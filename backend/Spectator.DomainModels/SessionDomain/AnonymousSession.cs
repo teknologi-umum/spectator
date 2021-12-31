@@ -1,5 +1,5 @@
 ﻿using System;
-using Spectator.DomainModels.EventDomain;
+using Spectator.DomainEvents.SessionDomain;
 using Spectator.DomainModels.UserDomain;
 
 namespace Spectator.DomainModels.SessionDomain {

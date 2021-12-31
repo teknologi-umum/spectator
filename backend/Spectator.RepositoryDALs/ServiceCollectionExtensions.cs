@@ -15,7 +15,7 @@ namespace Spectator.RepositoryDALs {
 				);
 			});
 			services.AddSingleton<IDomainObjectMapper, DomainObjectMapper>();
-			services.AddTransient<IEventRepository, EventRepositoryDAL>();
+			services.AddTransient<ISessionEventRepository, SessionEventRepositoryDAL>();
 			return services;
 		}
 	}

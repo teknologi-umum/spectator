@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RG.ProtobufConverters.Json;
 using Spectator.Hubs;
+using Spectator.JwtAuthentication;
 using Spectator.RepositoryDALs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,10 @@ builder.Services.Setup(services => {
 
 	// Add SignalR
 	services.AddSignalR().AddJsonProtocol(options => options.PayloadSerializerOptions = ProtobufJsonConverter.Options);
+
+	// Add authentication & authorization
+	services.AddJwtBearerAuthentication();
+	services.AddJwtBearerAuthorization();
 });
 
 // Build app

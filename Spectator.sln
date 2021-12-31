@@ -48,9 +48,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.Observables", "backend\Spectator.Observables\Spectator.Observables.csproj", "{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.Observables", "backend\Spectator.Observables\Spectator.Observables.csproj", "{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.DomainServices", "backend\Spectator.DomainServices\Spectator.DomainServices.csproj", "{C415276D-6E0C-4A79-AD48-834F8B85A09D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.DomainServices", "backend\Spectator.DomainServices\Spectator.DomainServices.csproj", "{C415276D-6E0C-4A79-AD48-834F8B85A09D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.JwtAuthentication", "backend\Spectator.JwtAuthentication\Spectator.JwtAuthentication.csproj", "{72BE4D8B-C0D4-41EA-8EF8-B90AABE3D550}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.DomainEvents", "backend\Spectator.DomainEvents\Spectator.DomainEvents.csproj", "{5BD6E2B1-71C2-4ECC-8E63-08F08D88D407}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,6 +100,14 @@ Global
 		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C415276D-6E0C-4A79-AD48-834F8B85A09D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72BE4D8B-C0D4-41EA-8EF8-B90AABE3D550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72BE4D8B-C0D4-41EA-8EF8-B90AABE3D550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72BE4D8B-C0D4-41EA-8EF8-B90AABE3D550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72BE4D8B-C0D4-41EA-8EF8-B90AABE3D550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD6E2B1-71C2-4ECC-8E63-08F08D88D407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD6E2B1-71C2-4ECC-8E63-08F08D88D407}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD6E2B1-71C2-4ECC-8E63-08F08D88D407}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD6E2B1-71C2-4ECC-8E63-08F08D88D407}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +123,8 @@ Global
 		{41BBAAA6-7178-48A9-86A4-4D36730E4BB0} = {FABA1F5B-0E99-44F4-ACB0-9B343544F589}
 		{AEC5EE3D-A0AD-493A-B451-FD1F59B29610} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 		{C415276D-6E0C-4A79-AD48-834F8B85A09D} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
+		{72BE4D8B-C0D4-41EA-8EF8-B90AABE3D550} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
+		{5BD6E2B1-71C2-4ECC-8E63-08F08D88D407} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81F0BD7D-03EB-40C0-9294-14F7F07A81F0}

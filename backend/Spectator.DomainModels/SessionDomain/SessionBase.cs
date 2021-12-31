@@ -4,7 +4,7 @@ namespace Spectator.DomainModels.SessionDomain {
 	public abstract record SessionBase {
 		public Guid Id { get; }
 		public DateTimeOffset CreatedAt { get; }
-		public DateTimeOffset UpdatedAt { get; }
+		public DateTimeOffset UpdatedAt { get; protected init; }
 
 		public SessionBase(
 			Guid id,
