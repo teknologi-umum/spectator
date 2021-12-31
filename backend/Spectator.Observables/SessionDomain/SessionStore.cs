@@ -4,7 +4,7 @@ using Spectator.DomainModels.SessionDomain;
 using Spectator.Observables.Redux;
 
 namespace Spectator.Observables.SessionDomain {
-	public record SessionStore() : Store<SessionBase?, SessionEventBase>(
+	public record SessionStore(SessionBase InitialValue) : Store<SessionBase, SessionEventBase>(
 		reducer: (state, @event) => state switch {
 			null => @event switch {
 				SessionStartedEvent e => AnonymousSession.From(e),
@@ -24,10 +24,10 @@ namespace Spectator.Observables.SessionDomain {
 				ExamForfeitedEvent e => s.Apply(e),
 				SolutionAcceptedEvent e => s.Apply(e),
 				SolutionRejectedEvent e => s.Apply(e),
-				_ => throw new NotImplementedException()
+				_ => throw new InvalidProgramException("Unhandled event")
 			},
-			_ => throw new NotImplementedException()
+			_ => throw new InvalidProgramException("Unhandled event")
 		},
-		initialValue: null
+		initialValue: InitialValue
 	);
 }

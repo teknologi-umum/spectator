@@ -82,7 +82,7 @@ namespace Spectator.RepositoryDALs.Internals {
 						control: (bool)fluxRecord.GetValueByKey("ctrl")
 					);
 				} else {
-					throw new NotImplementedException($"Unhandled parameter type {parameterType}");
+					throw new InvalidProgramException($"Unhandled parameter type {parameterType}");
 				}
 			}
 
@@ -117,7 +117,7 @@ namespace Spectator.RepositoryDALs.Internals {
 						.Field("shift", cki.Modifiers.HasFlag(ConsoleModifiers.Shift))
 						.Field("alt", cki.Modifiers.HasFlag(ConsoleModifiers.Alt))
 						.Field("ctrl", cki.Modifiers.HasFlag(ConsoleModifiers.Control)),
-					_ => throw new NotImplementedException($"Unhandled property type {value.GetType()}")
+					_ => throw new InvalidProgramException($"Unhandled property type {value.GetType()}")
 				};
 			}
 

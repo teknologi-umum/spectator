@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using RG.ProtobufConverters.Json;
 using Spectator.Hubs;
 using Spectator.JwtAuthentication;
+using Spectator.Observables;
 using Spectator.RepositoryDALs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,7 @@ builder.Services.Setup(services => {
 
 	// Add application layers
 	services.AddRepositoryDALs();
+	services.AddObservables();
 
 	// Add MVC
 	services.AddControllers();
