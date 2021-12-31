@@ -1,4 +1,4 @@
-import { Editor, Menu, Question, Scratchpad } from "@/components/CodingTest";
+import { Editor, Menu, Question, ScratchPad } from "@/components/CodingTest";
 import {
   keystrokeHandler,
   mouseClickHandler,
@@ -82,7 +82,7 @@ function CodingTest() {
               />
 
               <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                <Scratchpad
+                <ScratchPad
                   bg={bg}
                   onScroll={scrollHandler(connection, currentQuestion)}
                 />
