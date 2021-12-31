@@ -72,6 +72,7 @@ export default function Menu({ bg, fg }: MenuProps) {
             const language = e.currentTarget.value;
             dispatch(changeCurrentLanguage(language));
           }}
+          data-testid="editor-language-select"
         >
           {LANGUAGES.map((lang, idx) => (
             <option
@@ -93,6 +94,7 @@ export default function Menu({ bg, fg }: MenuProps) {
             const fontSize = parseInt(e.currentTarget.value);
             dispatch(changeFontSize(fontSize));
           }}
+          data-testid="editor-fontsize-select"
         >
           {Array(9)
             .fill(0)

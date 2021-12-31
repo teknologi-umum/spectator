@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, useColorModeValue } from "@chakra-ui/react";
 import type { FC } from "react";
 
