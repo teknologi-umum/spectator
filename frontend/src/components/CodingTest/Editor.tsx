@@ -11,8 +11,6 @@ import { useCodemirrorTheme } from "@/hooks";
 import { questions } from "@/data/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
-import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
-import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 import { UIEventHandler, useEffect, useState, useMemo } from "react";
 import { useDebounce } from "@/hooks";
 
@@ -34,10 +32,8 @@ interface EditorProps {
 export default function Editor({ bg, onScroll }: EditorProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const { currentQuestion } = useAppSelector<QuestionState>(
-    (state) => state.question
-  );
-  const { solutions, currentLanguage } = useAppSelector<EditorState>(
+  const { currentQuestion } = useAppSelector((state) => state.question);
+  const { solutions, currentLanguage } = useAppSelector(
     (state) => state.editor
   );
   // memoized the question

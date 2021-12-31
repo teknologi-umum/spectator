@@ -15,7 +15,8 @@ import {
   personalInfoReducer,
   editorReducer,
   questionReducer,
-  jwtReducer
+  jwtReducer,
+  sideBarReducer
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
@@ -24,7 +25,7 @@ const isDev = import.meta.env.MODE === "development";
 const persistConfig = {
   key: "root",
   version: 1,
-  whitelist: ["editor", "jwt"],
+  whitelist: ["editor", "question", "jwt"],
   storage
 };
 
@@ -32,7 +33,8 @@ const rootReducer = combineReducers({
   personalInfo: personalInfoReducer,
   editor: editorReducer,
   question: questionReducer,
-  jwt: jwtReducer
+  jwt: jwtReducer,
+  sideBar: sideBarReducer
 });
 
 const store = configureStore({
@@ -48,7 +50,7 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
 
 // nanti ini yang bakalan dipake di semua app, bukan `useDispatch` dan `useSelector`

@@ -8,8 +8,6 @@ import {
 } from "@/store/slices/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { prevQuestion, nextQuestion } from "@/store/slices/questionSlice";
-import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
-import type { InitialState as JwtState } from "@/store/slices/jwtSlice/types";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -30,13 +28,11 @@ interface MenuProps {
 
 export default function Menu({ bg, fg }: MenuProps) {
   const dispatch = useAppDispatch();
-  const { fontSize, currentLanguage } = useAppSelector<EditorState>(
-    (state) => state.editor
-  );
+  const { fontSize, currentLanguage } = useAppSelector((state) => state.editor);
 
   const {
     jwtPayload: { exp, iat }
-  } = useAppSelector<JwtState>((state) => state.jwt);
+  } = useAppSelector((state) => state.jwt);
   const [time, setTime] = useState(iat + exp - Date.now());
 
   useEffect(() => {

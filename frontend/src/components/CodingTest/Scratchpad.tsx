@@ -12,8 +12,6 @@ import { lineNumbers } from "@codemirror/gutter";
 import { useCodemirrorTheme, useDebounce } from "@/hooks";
 import { UIEventHandler, useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store";
-import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
-import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 import { setScratchPad } from "@/store/slices/editorSlice";
 
 interface ScratchPadProps {
@@ -23,10 +21,8 @@ interface ScratchPadProps {
 export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const { currentQuestion } = useAppSelector<QuestionState>(
-    (state) => state.question
-  );
-  const { scratchPads } = useAppSelector<EditorState>((state) => state.editor);
+  const { currentQuestion } = useAppSelector((state) => state.question);
+  const { scratchPads } = useAppSelector((state) => state.editor);
 
   const [value, setValue] = useState("");
   const debouncedValue = useDebounce(value, 1000);
