@@ -25,7 +25,7 @@ services:
 #      - piston
 #      - zipkin
 
-frontend:
+  frontend:
     build: ./frontend/
     restart: always
     hostname: fe
