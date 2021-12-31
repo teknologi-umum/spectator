@@ -22,9 +22,6 @@ module.exports = {
     }
   },
   rules: {
-    // since we're using react 17
-    "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off",
     "no-extra-parens": "off"
   }
 };

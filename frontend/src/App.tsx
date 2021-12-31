@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PersonalInfo from "@/pages/PersonalInfo";
 import Instructions from "@/pages/Instructions";

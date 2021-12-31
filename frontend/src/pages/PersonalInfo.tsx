@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
 import type { SubmitHandler } from "react-hook-form";
@@ -6,7 +7,6 @@ import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import {
   Box,
   FormControl,
