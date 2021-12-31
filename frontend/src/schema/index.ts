@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 const transformRequired = (_?: string, origin?: string) => {
-  if (origin === "undefined" || Number.isNaN(origin)) {
+  if (origin === undefined || origin === "" || Number.isNaN(origin)) {
     return undefined;
   }
   return Number(origin);

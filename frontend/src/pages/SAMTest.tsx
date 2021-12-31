@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FC, SVGProps, FormEvent } from "react";
 import {
   Box,
@@ -82,6 +82,10 @@ function SAMTest() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
   }
+
+  useEffect(() => {
+    document.title = "SAM Test | Spectator";
+  }, []);
 
   return (
     <>

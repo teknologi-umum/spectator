@@ -1,6 +1,6 @@
 // see: https://codepen.io/ronnygunawan/pen/wvrojXg
 // obviously i'm not smart enough to figure these out
-enum Direction {
+export enum Direction {
   STOP = "stop",
   UP = "up",
   LEFT = "left",

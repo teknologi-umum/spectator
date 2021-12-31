@@ -1,5 +1,6 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { keymap } from "@uiw/react-codemirror";
+import { defaultKeymap } from "@codemirror/commands";
 import { lineNumbers } from "@codemirror/gutter";
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
@@ -11,6 +12,7 @@ import { questions } from "@/data/questions.json";
 import { useAppSelector } from "@/store";
 import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
+import type { UIEventHandler } from "react";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -24,9 +26,10 @@ const LANGUAGES = {
 
 interface EditorProps {
   bg: string;
+  onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-export default function Editor({ bg }: EditorProps) {
+export default function Editor({ bg, onScroll }: EditorProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
@@ -48,10 +51,30 @@ export default function Editor({ bg }: EditorProps) {
               extensions={[
                 highlightTheme,
                 lineNumbers(),
-                LANGUAGES[currentLanguage]
+                LANGUAGES[currentLanguage],
+                keymap.of([
+                  ...defaultKeymap,
+                  {
+                    key: "Ctrl-c",
+                    run: () => {
+                      /* noop */
+                      return true;
+                    },
+                    preventDefault: true
+                  },
+                  {
+                    key: "Ctrl-v",
+                    run: () => {
+                      /* noop */
+                      return true;
+                    },
+                    preventDefault: true
+                  }
+                ])
               ]}
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
+              onScroll={onScroll}
             />
           </TabPanel>
         </TabPanels>

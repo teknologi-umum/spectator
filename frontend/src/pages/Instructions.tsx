@@ -11,6 +11,7 @@ import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
 import { withPublic } from "@/hoc";
 import { useColorModeValue } from "@/hooks";
+import { useEffect } from "react";
 
 function Instructions() {
   const navigate = useNavigate();
@@ -19,6 +20,10 @@ function Instructions() {
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
   const textColor = useColorModeValue("gray.600", "gray.400", "gray.400");
+
+  useEffect(() => {
+    document.title = "Instructions | Spectator";
+  }, []);
 
   return (
     <Layout>

@@ -1,0 +1,34 @@
+[
+  {
+    "type": "personal_info",
+    "session_id": "a12",
+    "student_number": "en2mpm",
+    "hours_of_practice": 0,
+    "years_of_experience": 0,
+    "familiar_languages": "c"
+  },
+  {
+    "type": "personal_info",
+    "session_id": "a91",
+    "student_number": "xp32m",
+    "hours_of_practice": 0,
+    "years_of_experience": 0,
+    "familiar_languages": "java"
+  },
+  {
+    "type": "personal_info",
+    "session_id": "a32",
+    "student_number": "rpm2db",
+    "hours_of_practice": 0,
+    "years_of_experience": 0,
+    "familiar_languages": ""
+  },
+  {
+    "type": "personal_info",
+    "session_id": "a21",
+    "student_number": "yarn2",
+    "hours_of_practice": 0,
+    "years_of_experience": 0,
+    "familiar_languages": "js"
+  }
+]
