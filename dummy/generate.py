@@ -15,7 +15,7 @@ no much need for verbosity in this one.
 from datetime import datetime, timedelta
 import json
 import random
-from model_event import generate_event_keystroke, generate_event_mouseclick, generate_event_mousemove
+from model_event import generate_event_keystroke, generate_event_mouseclick, generate_event_mousemove, generate_event_window_sized
 from model_user import generate_user
 from utils import random_date
 
@@ -49,7 +49,7 @@ def main():
 
         for _ in range(random.randint(200, 500)):
             # Generate random number between 1 to 3
-            rand = random.randint(1, 3)
+            rand = random.randint(1, 4)
             if rand == 1:
                 # Generate a keystroke event
                 event = generate_event_keystroke(current_session, date_start, date_ends)
@@ -58,6 +58,11 @@ def main():
             elif rand == 2:
                 # Generate a mouse move event
                 event = generate_event_mousemove(current_session, date_start, date_ends)
+                current_events.append(event)
+                continue
+            elif rand == 3:
+                # Generate a window resize event
+                event = generate_event_window_sized(current_session, date_start, date_ends)
                 current_events.append(event)
                 continue
             else:

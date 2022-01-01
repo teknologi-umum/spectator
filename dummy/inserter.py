@@ -103,24 +103,44 @@ def main():
                         .field("meta", event["meta"]) \
                         .field("unrelated_key", event["unrelated_key"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
+
+                    write_client.write(
+                        bucket="input_events",
+                        org=influx_org,
+                        record=point,
+                    )
                 elif event["type"] == "coding_event_mousemove":
                     point = point.field("direction", event["direction"]) \
-                        .field("x_position", event["x_position"]) \
-                        .field("y_position", event["y_position"]) \
-                        .field("window_width", event["window_width"]) \
-                        .field("window_height", event["window_height"]) \
+                        .field("x", event["x"]) \
+                        .field("y", event["y"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
+
+                    write_client.write(
+                        bucket="input_events",
+                        org=influx_org,
+                        record=point,
+                    )
                 elif event["type"] == "coding_event_mouseclick":
                     point = point.field("right_click", event["right_click"]) \
                         .field("left_click", event["left_click"]) \
                         .field("middle_click", event["middle_click"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
 
-                write_client.write(
-                    bucket="input_events",
-                    org=influx_org,
-                    record=point,
-                )
+                    write_client.write(
+                        bucket="input_events",
+                        org=influx_org,
+                        record=point,
+                    )
+                elif event["type"] == "window_sized":
+                    point = point.field("width", event["width"]) \
+                        .field("height", event["height"]) \
+                        .time(event["time"], write_precision=WritePrecision.S)
+
+                    write_client.write(
+                        bucket="input_events",
+                        org=influx_org,
+                        record=point,
+                    )
 
     print("Done. Please don't do anything until this scripts exists itself.")
 

@@ -5,7 +5,7 @@ from utils import random_date
 class EventKeystroke:
     session_id: str
     type: str
-    question_number: str
+    question_number: int
     key_char: str
     key_code: str
     shift: bool
@@ -15,7 +15,7 @@ class EventKeystroke:
     unrelated_key: bool
     _time: int
 
-    def __init__(self, session_id: str, question_number: str, key_char: str,
+    def __init__(self, session_id: str, question_number: int, key_char: str,
                  key_code: str, shift: bool, alt: bool, control: bool, meta: bool,
                  unrelated_key: bool, time: int) -> None:
         self.type = "coding_event_keystroke"
@@ -48,7 +48,7 @@ class EventKeystroke:
 class EventMouseMove:
     session_id: str
     type: str
-    question_number: str
+    question_number: int
     # direction: "up" | "down" | "left" | "right"
     direction: str
     x_position: int
@@ -57,17 +57,14 @@ class EventMouseMove:
     window_height: int
     _time: int
 
-    def __init__(self, session_id: str, question_number: str, direction: str,
-                 x_position: int, y_position: int, window_width: int, window_height: int,
-                 time: int) -> None:
+    def __init__(self, session_id: str, question_number: int, direction: str,
+                 x_position: int, y_position: int, time: int) -> None:
         self.type = "coding_event_mousemove"
         self.session_id = session_id
         self.question_number = question_number
         self.direction = direction
         self.x_position = x_position
         self.y_position = y_position
-        self.window_height = window_height
-        self.window_width = window_width
         self._time = time
 
     def asdict(self):
@@ -76,10 +73,8 @@ class EventMouseMove:
             "session_id": self.session_id,
             "question_number": self.question_number,
             "direction": self.direction,
-            "x_position": self.x_position,
-            "y_position": self.y_position,
-            "window_height": self.window_height,
-            "window_width": self.window_width,
+            "x": self.x_position,
+            "y": self.y_position,
             "time": self._time
         }
 
@@ -110,6 +105,33 @@ class EventMouseClick:
             "right_click": self.right_click,
             "left_click": self.left_click,
             "middle_click": self.middle_click,
+            "time": self._time
+        }
+
+class EventWindowSized:
+    session_id: str
+    type: str
+    question_number: int
+    width: int
+    height: int
+    _time: int
+
+    def __init__(self, session_id: str, question_number: int, width: int,
+                 height: int, time: int) -> None:
+        self.type = "window_sized"
+        self.session_id = session_id
+        self.question_number = question_number
+        self.width = width
+        self.height = height
+        self._time = time
+
+    def asdict(self):
+        return {
+            "type": self.type,
+            "session_id": self.session_id,
+            "question_number": self.question_number,
+            "width": self.width,
+            "height": self.height,
             "time": self._time
         }
 
@@ -153,7 +175,7 @@ def generate_event_mousemove(session_id: str, date_start: datetime, date_ends: d
     time = random_date(date_start, date_ends)
 
     return (EventMouseMove(session_id, question_number, direction, x_position,
-                           y_position, window_width, window_height, time)).asdict()
+                           y_position, time)).asdict()
 
 def generate_event_mouseclick(session_id: str, date_start: datetime, date_ends: datetime) -> dict[str, any]:
     """Generate an EventMouseClick class with random values.
@@ -173,3 +195,20 @@ def generate_event_mouseclick(session_id: str, date_start: datetime, date_ends: 
 
     return (EventMouseClick(session_id, question_number, right_click, left_click,
                             middle_click, time)).asdict()
+
+def generate_event_window_sized(session_id: str, date_start: datetime, date_ends: datetime) -> dict[str, any]:
+    """Generate an EventWindowSized class with random values.
+
+    Args:
+        date_start (datetime): [description]
+        date_ends (datetime): [description]
+
+    Returns:
+        dict[str, any]: [description]
+    """
+    question_number = random.randint(1, 6)
+    width = random.randint(400, 1920)
+    height = random.randint(200, 1080)
+    time = random_date(date_start, date_ends)
+
+    return (EventWindowSized(session_id, question_number, width, height, time)).asdict()
