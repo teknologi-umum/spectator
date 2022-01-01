@@ -32,7 +32,7 @@ func (d *Dependency) GenerateFile(ctx context.Context, in *pb.Member) (*pb.Empty
 func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
 	// TODO: Send this data into the Logging service.
-	defer func(){
+	defer func() {
 		r := recover()
 		if r != nil {
 			log.Println(r.(error))

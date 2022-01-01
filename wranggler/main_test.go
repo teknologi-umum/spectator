@@ -55,7 +55,7 @@ const bufSize = 1024 * 1024
 var lis *bufconn.Listener
 
 func bufDialer(context.Context, string) (net.Conn, error) {
-    return lis.Dial()
+	return lis.Dial()
 }
 
 func TestMain(m *testing.M) {
@@ -114,13 +114,13 @@ func TestMain(m *testing.M) {
 	}
 
 	lis = bufconn.Listen(bufSize)
-    s := grpc.NewServer()
-    pb.RegisterWorkerServer(s, &worker.Dependency{DB: db, Bucket: bucket, DBOrganization: influxOrg})
-    go func() {
-        if err := s.Serve(lis); err != nil {
-            log.Fatalf("Server exited with error: %v", err)
-        }
-    }()
+	s := grpc.NewServer()
+	pb.RegisterWorkerServer(s, &worker.Dependency{DB: db, Bucket: bucket, DBOrganization: influxOrg})
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("Server exited with error: %v", err)
+		}
+	}()
 
 	os.Exit(m.Run())
 }

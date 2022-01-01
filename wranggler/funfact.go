@@ -41,7 +41,7 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	}
 
 	var result = struct {
-		Wpm          uint32    `json:"wpm"`
+		Wpm          uint32  `json:"wpm"`
 		DeletionRate float32 `json:"deletion_rate"`
 		Attempt      uint32  `json:"attempt"`
 	}{
@@ -51,8 +51,8 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	}
 
 	return &pb.FunFactResponse{
-		WordsPerMinute: result.Wpm,
-		DeletionRate: result.DeletionRate,
+		WordsPerMinute:     result.Wpm,
+		DeletionRate:       result.DeletionRate,
 		SubmissionAttempts: result.Attempt,
 	}, nil
 }
@@ -60,24 +60,26 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan uint32) error {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	res, err := queryAPI.Query(ctx, `
-		from(bucket: "spectator")
-			|> range(start: -1d)
-			|> filter(fn: (r) => r["event"] == "coding_event_keystroke")
-			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-			|> aggregateWindow(
-					every: 1m,
-					fn: (tables=<-, column) => tables |> count()
-		  )
-			|> yield(name: "count")
-	`)
+	rows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "spectator")
+		|> range(start: -1d)
+		|> filter(fn: (r) => r["event"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> aggregateWindow(
+				every: 1m,
+				fn: (tables=<-, column) => tables |> count()
+			)
+		|> yield(name: "count")`,
+	)
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 
 	var wpmTotal, keyTotal = 0, 0
-	for res.Next() {
-		keytotal := res.Record().Value().(int64)
+	for rows.Next() {
+		keytotal := rows.Record().Value().(int64)
 		wpmTotal += int(keytotal) / 5
 		keyTotal += 1
 	}
@@ -103,13 +105,15 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	// number of question submission attempts
 	// TODO:  ini buat ngambil nganu, jangan lupa result
 	// SELECT COUNT(_time) FROM spectator WHERE _type = "coding_attempted"
-	_, err := queryAPI.Query(ctx, `from(bucket: "spectator")
-		|> range(start: -1d)
+	_, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketSessionEvents+`")
+		|> range(start: 0)
 		|> filter(fn: (r) => r["type"] == "code_test_attempt")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> group(columns: ["question_id"])
-		|> count()
-	`)
+		|> count()`,
+	)
 	if err != nil {
 		return err
 	}
@@ -127,53 +131,64 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 }
 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float32) error {
+	var deletionTotal int64
+	var totalKeystrokes int64
+
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// TODO:  ini buat ngambil nganu, jangan lupa result
-	res, err := queryAPI.Query(context.TODO(), `from(bucket: "spectator")
-  |> range(start: -1d)
-  |> filter(fn: (r) => r["type"] == "coding_event_keystroke")
-  |> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-  |> filter(fn: (r) => (r["key_char"] == "backspace" or r["key_char"] == "delete"))
-	|> filter(fn: (r) => not(
-		(r["_field"] == "shift" and r["_value"] == true) or
-		(r["_field"] == "alt" and r["_value"] == true) or
-		(r["_field"] == "control" and r["_value"] == true) or
-		(r["_field"] == "meta" and r["_value"] == true) or
-		(r["_field"] == "unrelatedkey" and r["_value"] == true)
+	deletionRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketInputEvents+`")
+		|> range(start: -1d)
+		|> filter(fn: (r) => r["type"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => (r["key_char"] == "backspace" or r["key_char"] == "delete"))
+		|> filter(fn: (r) => not(
+			(r["_field"] == "shift" and r["_value"] == true) or
+			(r["_field"] == "alt" and r["_value"] == true) or
+			(r["_field"] == "control" and r["_value"] == true) or
+			(r["_field"] == "meta" and r["_value"] == true) or
+			(r["_field"] == "unrelatedkey" and r["_value"] == true)
+		)
+		|> count()
+		|> yield(name: "count")`,
 	)
-  |> count()
-  |> yield(name: "count")`)
+	if err != nil {
+		return err
+	}
+	defer deletionRows.Close()
 
+	for deletionRows.Next() {
+		deletionTotal = deletionRows.Record().Value().(int64)
+	}
+
+	keystrokeTotalRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketInputEvents+`")
+		|> range(start: -1d)
+		|> filter(fn: (r) => r["type"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => not(
+			(r["_field"] == "shift" and r["_value"] == true) or
+			(r["_field"] == "alt" and r["_value"] == true) or
+			(r["_field"] == "control" and r["_value"] == true) or
+			(r["_field"] == "meta" and r["_value"] == true) or
+			(r["_field"] == "unrelatedkey" and r["_value"] == true)
+		)
+			|> count()
+		|> yield(name: "count")`,
+	)
 	if err != nil {
 		return (err)
 	}
+	defer keystrokeTotalRows.Close()
 
-	res.Next()
-	delTot := res.Record().Value().(int64)
-
-	res, err = queryAPI.Query(context.TODO(), `from(bucket: "spectator")
-  |> range(start: -1d)
-  |> filter(fn: (r) => r["type"] == "coding_event_keystroke")
-  |> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-	|> filter(fn: (r) => not(
-		(r["_field"] == "shift" and r["_value"] == true) or
-		(r["_field"] == "alt" and r["_value"] == true) or
-		(r["_field"] == "control" and r["_value"] == true) or
-		(r["_field"] == "meta" and r["_value"] == true) or
-		(r["_field"] == "unrelatedkey" and r["_value"] == true)
-	)
-	|> count()
-  |> yield(name: "count")`)
-
-	if err != nil {
-		return (err)
+	for keystrokeTotalRows.Next() {
+		totalKeystrokes = keystrokeTotalRows.Record().Value().(int64)
 	}
 
-	res.Next()
-	tot := res.Record().Value().(int64)
-
-	result <- (float32(delTot) / float32(tot))
+	result <- (float32(deletionTotal) / float32(totalKeystrokes))
 
 	// SELECT semua KeystrokeEvent WHERE value = delete OR value = backspace
 	// terus jumlahin
