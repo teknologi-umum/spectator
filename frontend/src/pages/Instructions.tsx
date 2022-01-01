@@ -10,17 +10,23 @@ import {
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
+import { withPublic } from "@/hoc";
+import { useEffect } from "react";
 
-export default function Instructions() {
+function Instructions() {
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700");
   const fg = useColorModeValue("gray.800", "gray.100");
 
   const textColor = useColorModeValue("gray.600", "gray.400");
 
+  useEffect(() => {
+    document.title = "Instructions | Spectator";
+  }, []);
+
   return (
     <Layout>
-      <ThemeButton position="fixed"/>
+      <ThemeButton position="fixed" />
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
           General Instructions
@@ -87,3 +93,5 @@ export default function Instructions() {
     </Layout>
   );
 }
+
+export default withPublic(Instructions);

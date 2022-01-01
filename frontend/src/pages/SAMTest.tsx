@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FC, SVGProps, FormEvent } from "react";
 import {
   Box,
@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { getJwt } from "@/utils/generateFakeJwt";
 import { useAppDispatch } from "@/store";
 import { setJwt } from "@/store/slices/jwtSlice";
+import { withPublic } from "@/hoc";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -58,7 +59,7 @@ function getResponseOptions(
   );
 }
 
-export default function SAMTest() {
+function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -80,6 +81,10 @@ export default function SAMTest() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
   }
+
+  useEffect(() => {
+    document.title = "SAM Test | Spectator";
+  }, []);
 
   return (
     <>
@@ -206,3 +211,5 @@ export default function SAMTest() {
     </>
   );
 }
+
+export default withPublic(SAMTest);

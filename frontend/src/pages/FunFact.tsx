@@ -1,7 +1,13 @@
 import Layout from "@/components/Layout";
+import { withFinal } from "@/hoc";
 import { Heading } from "@chakra-ui/react";
+import { useEffect } from "react";
 
-export default function FunFact() {
+function FunFact() {
+  useEffect(() => {
+    document.title = "Fun Fact | Spectator";
+  }, []);
+
   return (
     <Layout>
       <Heading>
@@ -10,3 +16,5 @@ export default function FunFact() {
     </Layout>
   );
 }
+
+export default withFinal(FunFact);

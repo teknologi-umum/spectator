@@ -7,7 +7,8 @@
     "build": "tsc && vite build",
     "build:prod": "tsc --skipLibCheck && vite build",
     "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
-    "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx ."
+    "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
+    "format": "prettier --write --ignore-path .gitignore ."
   },
   "dependencies": {
     "sirv-cli": "^1.0.14"
@@ -39,6 +40,7 @@
     "eslint": "^8.4.1",
     "eslint-plugin-react": "^7.27.1",
     "framer-motion": "^4.1.17",
+    "prettier": "^2.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.22.1",
