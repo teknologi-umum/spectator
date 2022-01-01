@@ -25,7 +25,7 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const { scratchPads } = useAppSelector((state) => state.editor);
 
   const [value, setValue] = useState("");
-  const debouncedValue = useDebounce(value, 1000);
+  const debouncedValue = useDebounce(value, 500);
 
   useEffect(() => {
     const currentScratchPad = scratchPads.find(

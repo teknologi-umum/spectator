@@ -43,14 +43,16 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   }, [currentQuestion, currentLanguage]);
 
   const [code, setCode] = useState("");
-  const debouncedCode = useDebounce(code, 1000);
+  const debouncedCode = useDebounce(code, 500);
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
     const currentSolution = solutions.find(
-      (solution) => solution.questionNo === currentQuestion
+      (solution) =>
+        solution.questionNo === currentQuestion &&
+        solution.language === currentLanguage
     );
 
     if (currentSolution !== undefined) {
@@ -65,7 +67,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
         })
       );
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, currentLanguage]);
 
   useEffect(() => {
     dispatch(
