@@ -1,11 +1,10 @@
 ﻿using System;
 
 namespace Spectator.DomainEvents.InputDomain {
-	public record MouseScrolledEvent(
+	public record WindowSizedEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,
-		int X,
-		int Y,
-		int Delta
+		int Width,
+		int Height
 	) : InputEventBase(SessionId, Timestamp);
 }

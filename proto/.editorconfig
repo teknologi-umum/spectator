@@ -1,4 +1,4 @@
-﻿# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
 ###############################
 # Core EditorConfig Options   #
 ###############################
@@ -264,3 +264,7 @@ indent_size = 4
 [*.sql]
 indent_style = tab
 indent_size = 2
+
+[*.proto]
+indent_style = tab
+indent_size = 4

@@ -1,4 +1,4 @@
-﻿syntax = "proto3";
+syntax = "proto3";
 
 option csharp_namespace = "Spectator.Protos.Session";
 
@@ -13,7 +13,7 @@ service SessionService {
 	rpc StartExam (EmptyRequest) returns (Exam);
 	rpc ResumeExam (EmptyRequest) returns (Exam);
 	rpc EndExam (EmptyRequest) returns (ExamResult);
-	rpc SubmitSolution (Solution) returns (SubmissionResult);
+	rpc SubmitSolution (SubmissionRequest) returns (SubmissionResult);
 	rpc SubmitAfterCodeSAM (SAM) returns (EmptyReply);
 }
 
@@ -28,7 +28,7 @@ message PersonalInfo {
 	string student_number = 1;
 	int32 years_of_experience = 2;
 	int32 hours_of_practice = 3;
-	repeated enums.Language familiar_languages = 4;
+	string familiar_languages = 4;
 }
 
 message SAM {
@@ -55,16 +55,16 @@ message ExamResult {
 	repeated int32 answered_question_numbers = 2;
 }
 
-message Solution {
+message SubmissionRequest {
 	int32 question_number = 1;
 	enums.Language language = 2;
-	string code = 3;
+	string solution = 3;
 	string scratch_pad = 4;
 }
 
 message SubmissionResult {
 	bool accepted = 1;
-	string message = 2;
+	string error_message = 2;
 	string console_output = 3;
 }
 

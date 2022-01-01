@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Spectator.Repositories;
 using Spectator.RepositoryDALs.Internals;
+using Spectator.RepositoryDALs.Mapper;
 
 namespace Spectator.RepositoryDALs {
 	public static class ServiceCollectionExtensions {

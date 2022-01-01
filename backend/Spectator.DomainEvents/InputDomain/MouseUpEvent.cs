@@ -1,4 +1,6 @@
-﻿namespace Spectator.DomainEvents.InputDomain {
+﻿using System;
+
+namespace Spectator.DomainEvents.InputDomain {
 	public record MouseUpEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,

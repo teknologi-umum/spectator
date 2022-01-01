@@ -5,11 +5,13 @@ namespace Spectator.Protos.HubInterfaces {
 	public interface ISessionHub {
 		Task<SessionReply> StartSessionAsync();
 		Task SubmitPersonalInfoAsync(PersonalInfo personalInfo);
-		Task SubmitBeforeCodeSAMAsync(SAM sam);
+		Task SubmitBeforeExamSAMAsync(SAM sam);
 		Task<Exam> StartExamAsync();
 		Task<Exam> ResumeExamAsync();
 		Task<ExamResult> EndExamAsync();
-		Task<SubmissionResult> SubmitSolutionAsync(Solution solution);
-		Task SubmitAfterCodeSAM(SAM sam);
+		Task<ExamResult> PassDeadlineAsync();
+		Task<ExamResult> ForfeitExamAsync();
+		Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest submissionRequest);
+		Task SubmitAfterExamSAM(SAM sam);
 	}
 }

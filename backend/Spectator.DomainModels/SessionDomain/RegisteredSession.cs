@@ -110,8 +110,10 @@ namespace Spectator.DomainModels.SessionDomain {
 				UpdatedAt = @event.Timestamp,
 				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, new Submission(
 					QuestionNumber: @event.QuestionNumber,
+					Language: @event.Language,
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
+					ErrorMessage: @event.ErrorMessage,
 					ConsoleOutput: @event.ConsoleOutput,
 					Accepted: true
 				))
@@ -132,8 +134,10 @@ namespace Spectator.DomainModels.SessionDomain {
 				UpdatedAt = @event.Timestamp,
 				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, new Submission(
 					QuestionNumber: @event.QuestionNumber,
+					Language: @event.Language,
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
+					ErrorMessage: @event.ErrorMessage,
 					ConsoleOutput: @event.ConsoleOutput,
 					Accepted: false
 				))

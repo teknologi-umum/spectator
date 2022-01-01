@@ -14,14 +14,25 @@ namespace Spectator.Observables.SessionDomain {
 			}
 		}
 
-		public bool TryAdd(SessionBase session, [NotNullWhen(true)] out SessionStore? sessionStore) {
+		public bool TryAdd(SessionBase session) {
 			lock (_gate) {
 				if (_storeById.ContainsKey(session.Id)) {
-					sessionStore = null;
 					return false;
 				}
-				sessionStore = new SessionStore(session);
+				var sessionStore = new SessionStore(session);
 				_storeById.Add(session.Id, sessionStore);
+				return true;
+			}
+		}
+
+		public bool TryAdd(SessionStore sessionStore) {
+			if (sessionStore.State == null) return false;
+			lock (_gate) {
+				var sessionId = sessionStore.State.Id;
+				if (_storeById.ContainsKey(sessionId)) {
+					return false;
+				}
+				_storeById.Add(sessionId, sessionStore);
 				return true;
 			}
 		}

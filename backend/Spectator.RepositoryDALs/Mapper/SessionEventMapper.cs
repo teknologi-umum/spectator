@@ -7,7 +7,7 @@ using RG.Ninja;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.Primitives;
 
-namespace Spectator.RepositoryDALs.Internals {
+namespace Spectator.RepositoryDALs.Mapper {
 	internal record SessionEventMapper(
 		Type Type,
 		string FluxTypeName,
@@ -97,7 +97,7 @@ namespace Spectator.RepositoryDALs.Internals {
 			var pointData = PointData
 				.Measurement("event")
 				.Tag("type", FluxTypeName)
-				.Tag("session_id", @event.SessionId.ToString("N"))
+				.Tag("session_id", @event.SessionId.ToString())
 				.Timestamp(@event.Timestamp, WritePrecision.Ns);
 
 			foreach (var fluxProperty in FluxProperties) {

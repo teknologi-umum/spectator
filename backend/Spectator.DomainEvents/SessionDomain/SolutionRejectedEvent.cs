@@ -1,4 +1,5 @@
-﻿using Spectator.Primitives;
+﻿using System;
+using Spectator.Primitives;
 
 namespace Spectator.DomainEvents.SessionDomain {
 	public record SolutionRejectedEvent(
@@ -8,6 +9,7 @@ namespace Spectator.DomainEvents.SessionDomain {
 		Language Language,
 		string Solution,
 		string ScratchPad,
+		string? ErrorMessage,
 		string ConsoleOutput
 	) : SessionEventBase(SessionId, Timestamp);
 }

@@ -1,4 +1,6 @@
-﻿namespace Spectator.DomainEvents.SessionDomain {
+﻿using System;
+
+namespace Spectator.DomainEvents.SessionDomain {
 	public abstract record SessionEventBase(
 		Guid SessionId,
 		DateTimeOffset Timestamp

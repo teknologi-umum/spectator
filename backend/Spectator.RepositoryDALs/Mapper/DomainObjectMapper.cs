@@ -4,7 +4,7 @@ using InfluxDB.Client.Core.Flux.Domain;
 using InfluxDB.Client.Writes;
 using Spectator.DomainEvents.SessionDomain;
 
-namespace Spectator.RepositoryDALs.Internals {
+namespace Spectator.RepositoryDALs.Mapper {
 	internal class DomainObjectMapper : IDomainObjectMapper {
 		private static readonly Dictionary<Type, SessionEventMapper> SESSION_EVENT_MAPPER_BY_TYPE = new();
 		private static readonly object SESSION_EVENT_MAPPERS_GATE = new();

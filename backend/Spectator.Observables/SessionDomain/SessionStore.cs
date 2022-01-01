@@ -29,5 +29,7 @@ namespace Spectator.Observables.SessionDomain {
 			_ => throw new InvalidProgramException("Unhandled event")
 		},
 		initialValue: InitialValue
-	);
+	) {
+		public SessionStore(SessionStartedEvent initialEvent) : this(AnonymousSession.From(initialEvent)) { }
+	}
 }

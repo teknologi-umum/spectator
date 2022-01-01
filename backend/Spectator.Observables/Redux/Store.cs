@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Subjects;
 using Spectator.DomainEvents;
 
@@ -10,14 +11,19 @@ namespace Spectator.Observables.Redux {
 
 		public TState State => _subject.Value;
 
-		public Store(Reducer<TState, TEvent> reducer, TState initialValue) {
+		public Store(Reducer<TState, TEvent> reducer, TState initialValue, IEnumerable<TEvent>? initialEvents = null) {
+			if (initialEvents != null) {
+				foreach (var @event in initialEvents) {
+					initialValue = reducer.Invoke(initialValue, @event);
+				}
+			}
 			_subject = new BehaviorSubject<TState>(initialValue);
 			_reducer = reducer;
 		}
 
 		public IDisposable Subscribe(IObserver<TState> observer) => _subject.Subscribe(observer);
 
-		public TEvent Dispatch(TEvent @event) {
+		public virtual TEvent Dispatch(TEvent @event) {
 			var newValue = _reducer.Invoke(_subject.Value, @event);
 			_subject.OnNext(newValue);
 			return @event;
