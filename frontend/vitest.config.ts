@@ -6,7 +6,8 @@ import { resolve } from "path";
 export default defineConfig({
   test: {
     global: true,
-    environment: "jsdom"
+    environment: "jsdom",
+    api: true
   },
   resolve: {
     alias: {
