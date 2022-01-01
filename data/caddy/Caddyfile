@@ -1,24 +1,19 @@
-{
-    ocsp_stapling off
+localhost {
+  tls admin@teknologiumum.com
+  ocsp_stapling off
+  header {
+    # enable HSTS
+    Strict-Transport-Security max-age=31536000;
+
+    # disable clients from sniffing the media type
+    X-Content-Type-Options nosniff
+
+    # clickjacking protection
+    X-Frame-Options DENY
+  }
+
+  #proxy_pass /api/ backend:80
+  #proxy_pass /bucket/ minio:9000
+  proxy_pass * frontend:3000
 }
 
-#localhost/minio{
-#  reverse_proxy minio:9000
-#}
-
-localhost/ {
-  reverse_proxy frontend:3000
-}
-
-#localhost/zipkin/ui {
-#  reverse_proxy zipkin:9411/zipkin
-#}
-#
-#localhost/zipkin {
-#  reverse_proxy zipkin:9411
-#}
-#
-#localhost/api {
-#  reverse_proxy backend:80
-#}
-#
