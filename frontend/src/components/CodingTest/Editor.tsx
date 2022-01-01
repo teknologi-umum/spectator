@@ -8,7 +8,8 @@ import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { useCodemirrorTheme } from "@/hooks";
-import { questions } from "@/data/questions.json";
+// TODO: this should be automatically inferred (en/id) when we have proper i18n
+import { questions } from "@/data/en/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
 import { UIEventHandler, useEffect, useState, useMemo } from "react";
