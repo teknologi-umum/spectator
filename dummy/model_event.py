@@ -82,19 +82,19 @@ class EventMouseClick:
     session_id: str
     type: str
     question_number: str
-    right_click: bool
-    left_click: bool
-    middle_click: bool
+    button: str
+    x_position: int
+    y_position: int
     _time: int
 
-    def __init__(self, session_id: str, question_number: str, right_click: bool,
-                 left_click: bool, middle_click: bool, time: int) -> None:
+    def __init__(self, session_id: str, question_number: str, button: str,
+                 x_position: int, y_position: int, time: int) -> None:
         self.type = "coding_event_mouseclick"
         self.session_id = session_id
         self.question_number = question_number
-        self.right_click = right_click
-        self.left_click = left_click
-        self.middle_click = middle_click
+        self.x_position = x_position
+        self.y_position = y_position
+        self.button = button
         self._time = time
 
     def asdict(self):
@@ -102,9 +102,9 @@ class EventMouseClick:
             "type": self.type,
             "session_id": self.session_id,
             "question_number": self.question_number,
-            "right_click": self.right_click,
-            "left_click": self.left_click,
-            "middle_click": self.middle_click,
+            "button": self.button,
+            "x": self.x_position,
+            "y": self.y_position,
             "time": self._time
         }
 
@@ -188,13 +188,15 @@ def generate_event_mouseclick(session_id: str, date_start: datetime, date_ends: 
         dict[str, any]: [description]
     """
     question_number = random.randint(1, 6)
-    right_click = random.choice([True, False])
-    left_click = random.choice([True, False])
-    middle_click = random.choice([True, False])
+    window_height = random.randint(0, 1080)
+    window_width = random.randint(0, 1920)
+    x_position = random.randint(0, window_width)
+    y_position = random.randint(0, window_height)
+    button = random.choice(["left", "middle", "right"])
     time = random_date(date_start, date_ends)
 
-    return (EventMouseClick(session_id, question_number, right_click, left_click,
-                            middle_click, time)).asdict()
+    return (EventMouseClick(session_id, question_number, button, x_position,
+                            y_position, time)).asdict()
 
 def generate_event_window_sized(session_id: str, date_start: datetime, date_ends: datetime) -> dict[str, any]:
     """Generate an EventWindowSized class with random values.
