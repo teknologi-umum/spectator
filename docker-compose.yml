@@ -76,4 +76,3 @@ services:
 networks:
   host_pub:
     driver: "bridge"
-

@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+option csharp_namespace = "Spectator.Protos.Session";
+
+package session;
+
+import "enums.proto";
+
+service SessionService {
+	rpc StartSession (EmptyRequest) returns (SessionReply);
+	rpc SubmitPersonalInfo (PersonalInfo) returns (EmptyReply);
+	rpc SubmitBeforeCodeSAM (SAM) returns (EmptyReply);
+	rpc StartExam (EmptyRequest) returns (Exam);
+	rpc ResumeExam (EmptyRequest) returns (Exam);
+	rpc EndExam (EmptyRequest) returns (ExamResult);
+	rpc SubmitSolution (SubmissionRequest) returns (SubmissionResult);
+	rpc SubmitAfterCodeSAM (SAM) returns (EmptyReply);
+}
+
+message StartSessionRequest {
+}
+
+message SessionReply {
+	string access_token = 1;
+}
+
+message PersonalInfo {
+	string student_number = 1;
+	int32 years_of_experience = 2;
+	int32 hours_of_practice = 3;
+	string familiar_languages = 4;
+}
+
+message SAM {
+	int32 aroused_level = 1;
+	int32 pleased_level = 2;
+}
+
+message Question {
+	int32 question_number = 1;
+	string title = 2;
+	string instruction = 3;
+	repeated enums.Language allowed_languages = 4;
+	string boilerplate = 5;
+}
+
+message Exam {
+	int64 deadline = 1;
+	repeated Question questions = 2;
+	repeated int32 answered_question_numbers = 3;
+}
+
+message ExamResult {
+	int64 duration = 1;
+	repeated int32 answered_question_numbers = 2;
+}
+
+message SubmissionRequest {
+	int32 question_number = 1;
+	enums.Language language = 2;
+	string solution = 3;
+	string scratch_pad = 4;
+}
+
+message SubmissionResult {
+	bool accepted = 1;
+	string error_message = 2;
+	string console_output = 3;
+}
+
+message EmptyRequest {
+}
+
+message EmptyReply {
+}

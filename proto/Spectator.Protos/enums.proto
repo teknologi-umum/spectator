@@ -1,0 +1,15 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Spectator.Protos.Enums";
+
+package enums;
+
+enum Language {
+	UNDEFINED = 0;
+	C = 1;
+	CPP = 2;
+	PHP = 3;
+	JAVASCRIPT = 4;
+	JAVA = 5;
+	PYTHON = 6;
+}
