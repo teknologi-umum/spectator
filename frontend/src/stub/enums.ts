@@ -5,32 +5,32 @@
  * @generated from protobuf enum enums.Language
  */
 export enum Language {
-    /**
-     * @generated from protobuf enum value: UNDEFINED = 0;
-     */
-    UNDEFINED = 0,
-    /**
-     * @generated from protobuf enum value: C = 1;
-     */
-    C = 1,
-    /**
-     * @generated from protobuf enum value: CPP = 2;
-     */
-    CPP = 2,
-    /**
-     * @generated from protobuf enum value: PHP = 3;
-     */
-    PHP = 3,
-    /**
-     * @generated from protobuf enum value: JAVASCRIPT = 4;
-     */
-    JAVASCRIPT = 4,
-    /**
-     * @generated from protobuf enum value: JAVA = 5;
-     */
-    JAVA = 5,
-    /**
-     * @generated from protobuf enum value: PYTHON = 6;
-     */
-    PYTHON = 6
+  /**
+   * @generated from protobuf enum value: UNDEFINED = 0;
+   */
+  UNDEFINED = 0,
+  /**
+   * @generated from protobuf enum value: C = 1;
+   */
+  C = 1,
+  /**
+   * @generated from protobuf enum value: CPP = 2;
+   */
+  CPP = 2,
+  /**
+   * @generated from protobuf enum value: PHP = 3;
+   */
+  PHP = 3,
+  /**
+   * @generated from protobuf enum value: JAVASCRIPT = 4;
+   */
+  JAVASCRIPT = 4,
+  /**
+   * @generated from protobuf enum value: JAVA = 5;
+   */
+  JAVA = 5,
+  /**
+   * @generated from protobuf enum value: PYTHON = 6;
+   */
+  PYTHON = 6
 }

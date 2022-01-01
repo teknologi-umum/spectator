@@ -20,102 +20,207 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  * @generated from protobuf service session.SessionService
  */
 export interface ISessionServiceClient {
-    /**
-     * @generated from protobuf rpc: StartSession(session.EmptyRequest) returns (session.SessionReply);
-     */
-    startSession(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, SessionReply>;
-    /**
-     * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
-     */
-    submitPersonalInfo(input: PersonalInfo, options?: RpcOptions): UnaryCall<PersonalInfo, EmptyReply>;
-    /**
-     * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
-     */
-    submitBeforeCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply>;
-    /**
-     * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
-     */
-    startExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, Exam>;
-    /**
-     * @generated from protobuf rpc: ResumeExam(session.EmptyRequest) returns (session.Exam);
-     */
-    resumeExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, Exam>;
-    /**
-     * @generated from protobuf rpc: EndExam(session.EmptyRequest) returns (session.ExamResult);
-     */
-    endExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, ExamResult>;
-    /**
-     * @generated from protobuf rpc: SubmitSolution(session.Solution) returns (session.SubmissionResult);
-     */
-    submitSolution(input: Solution, options?: RpcOptions): UnaryCall<Solution, SubmissionResult>;
-    /**
-     * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
-     */
-    submitAfterCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply>;
+  /**
+   * @generated from protobuf rpc: StartSession(session.EmptyRequest) returns (session.SessionReply);
+   */
+  startSession(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, SessionReply>;
+  /**
+   * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
+   */
+  submitPersonalInfo(
+    input: PersonalInfo,
+    options?: RpcOptions
+  ): UnaryCall<PersonalInfo, EmptyReply>;
+  /**
+   * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
+   */
+  submitBeforeCodeSAM(
+    input: SAM,
+    options?: RpcOptions
+  ): UnaryCall<SAM, EmptyReply>;
+  /**
+   * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
+   */
+  startExam(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, Exam>;
+  /**
+   * @generated from protobuf rpc: ResumeExam(session.EmptyRequest) returns (session.Exam);
+   */
+  resumeExam(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, Exam>;
+  /**
+   * @generated from protobuf rpc: EndExam(session.EmptyRequest) returns (session.ExamResult);
+   */
+  endExam(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, ExamResult>;
+  /**
+   * @generated from protobuf rpc: SubmitSolution(session.Solution) returns (session.SubmissionResult);
+   */
+  submitSolution(
+    input: Solution,
+    options?: RpcOptions
+  ): UnaryCall<Solution, SubmissionResult>;
+  /**
+   * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
+   */
+  submitAfterCodeSAM(
+    input: SAM,
+    options?: RpcOptions
+  ): UnaryCall<SAM, EmptyReply>;
 }
 /**
  * @generated from protobuf service session.SessionService
  */
-export class SessionServiceClient implements ISessionServiceClient, ServiceInfo {
-    typeName = SessionService.typeName;
-    methods = SessionService.methods;
-    options = SessionService.options;
-    constructor(private readonly _transport: RpcTransport) {
-    }
-    /**
-     * @generated from protobuf rpc: StartSession(session.EmptyRequest) returns (session.SessionReply);
-     */
-    startSession(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, SessionReply> {
-        const method = this.methods[0], opt = this._transport.mergeOptions(options);
-        return stackIntercept<EmptyRequest, SessionReply>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
-     */
-    submitPersonalInfo(input: PersonalInfo, options?: RpcOptions): UnaryCall<PersonalInfo, EmptyReply> {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
-        return stackIntercept<PersonalInfo, EmptyReply>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
-     */
-    submitBeforeCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply> {
-        const method = this.methods[2], opt = this._transport.mergeOptions(options);
-        return stackIntercept<SAM, EmptyReply>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
-     */
-    startExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, Exam> {
-        const method = this.methods[3], opt = this._transport.mergeOptions(options);
-        return stackIntercept<EmptyRequest, Exam>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ResumeExam(session.EmptyRequest) returns (session.Exam);
-     */
-    resumeExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, Exam> {
-        const method = this.methods[4], opt = this._transport.mergeOptions(options);
-        return stackIntercept<EmptyRequest, Exam>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: EndExam(session.EmptyRequest) returns (session.ExamResult);
-     */
-    endExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, ExamResult> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
-        return stackIntercept<EmptyRequest, ExamResult>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SubmitSolution(session.Solution) returns (session.SubmissionResult);
-     */
-    submitSolution(input: Solution, options?: RpcOptions): UnaryCall<Solution, SubmissionResult> {
-        const method = this.methods[6], opt = this._transport.mergeOptions(options);
-        return stackIntercept<Solution, SubmissionResult>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
-     */
-    submitAfterCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply> {
-        const method = this.methods[7], opt = this._transport.mergeOptions(options);
-        return stackIntercept<SAM, EmptyReply>("unary", this._transport, method, opt, input);
-    }
+export class SessionServiceClient
+  implements ISessionServiceClient, ServiceInfo
+{
+  typeName = SessionService.typeName;
+  methods = SessionService.methods;
+  options = SessionService.options;
+  constructor(private readonly _transport: RpcTransport) {}
+  /**
+   * @generated from protobuf rpc: StartSession(session.EmptyRequest) returns (session.SessionReply);
+   */
+  startSession(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, SessionReply> {
+    const method = this.methods[0],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<EmptyRequest, SessionReply>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
+   */
+  submitPersonalInfo(
+    input: PersonalInfo,
+    options?: RpcOptions
+  ): UnaryCall<PersonalInfo, EmptyReply> {
+    const method = this.methods[1],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<PersonalInfo, EmptyReply>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
+   */
+  submitBeforeCodeSAM(
+    input: SAM,
+    options?: RpcOptions
+  ): UnaryCall<SAM, EmptyReply> {
+    const method = this.methods[2],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<SAM, EmptyReply>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
+   */
+  startExam(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, Exam> {
+    const method = this.methods[3],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<EmptyRequest, Exam>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: ResumeExam(session.EmptyRequest) returns (session.Exam);
+   */
+  resumeExam(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, Exam> {
+    const method = this.methods[4],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<EmptyRequest, Exam>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: EndExam(session.EmptyRequest) returns (session.ExamResult);
+   */
+  endExam(
+    input: EmptyRequest,
+    options?: RpcOptions
+  ): UnaryCall<EmptyRequest, ExamResult> {
+    const method = this.methods[5],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<EmptyRequest, ExamResult>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: SubmitSolution(session.Solution) returns (session.SubmissionResult);
+   */
+  submitSolution(
+    input: Solution,
+    options?: RpcOptions
+  ): UnaryCall<Solution, SubmissionResult> {
+    const method = this.methods[6],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<Solution, SubmissionResult>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
+   */
+  submitAfterCodeSAM(
+    input: SAM,
+    options?: RpcOptions
+  ): UnaryCall<SAM, EmptyReply> {
+    const method = this.methods[7],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<SAM, EmptyReply>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
 }
