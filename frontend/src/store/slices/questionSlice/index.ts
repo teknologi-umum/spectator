@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import type { InitialState } from "./types";
 
 const initialState: InitialState = {
-  currentQuestion: 0
+  currentQuestion: 0,
+  results: []
 };
 
 export const questionSlice = createSlice({
@@ -19,10 +21,14 @@ export const questionSlice = createSlice({
     nextQuestion: (state) => {
       if (state.currentQuestion >= 5) return;
       state.currentQuestion += 1;
+    },
+    setQuestion: (state, action: PayloadAction<number>) => {
+      state.currentQuestion = action.payload;
     }
   }
 });
 
-export const { prevQuestion, nextQuestion } = questionSlice.actions;
+export const { prevQuestion, nextQuestion, setQuestion } =
+  questionSlice.actions;
 
 export default questionSlice.reducer;

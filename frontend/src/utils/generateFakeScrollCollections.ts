@@ -8,7 +8,7 @@
 //    we can use setTimeout that cleared each time user scrolling.
 //    if the user stop scrolling within 1 secs, just pushToCollection.
 //    after that just calculate the length of collections member array.
-//    The problem is, when if the user scrolling on Y axis towards the positive number from its initial point,
+//    The problem is, if the user scrolling on Y axis towards the positive number from its initial point,
 //    once the user going to negative, is that count as 2 scrolls?
 
 // 2. Scroll Distance, still no idea
