@@ -9,9 +9,10 @@
     "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
     "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
     "format": "prettier --write --ignore-path .gitignore .",
-    "test:coverage": "vitest --coverage",
+    "test:coverage": "vitest run --coverage",
     "test:open": "vitest --open",
-    "test": "vitest"
+    "test:watch": "vitest",
+    "test": "vitest run"
   },
   "dependencies": {
     "sirv-cli": "^1.0.14"
