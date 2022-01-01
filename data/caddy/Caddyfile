@@ -1,3 +1,7 @@
+{
+    ocsp_stapling off
+}
+
 #localhost/minio{
 #  reverse_proxy minio:9000
 #}
