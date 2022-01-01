@@ -1,32 +1,33 @@
 package main_test
 
 import (
-	"net/http"
-	"net/http/httptest"
-	main "rori"
+	"context"
 	"testing"
+	"time"
+
+	pb "worker/proto"
+
+	"google.golang.org/grpc"
 )
 
 // TestPing will test the ping handler for this worker.
 func TestPing(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-	dependencies := &main.Dependency{}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
-	defer func() {
-		r := recover()
-		if r != nil {
-			t.Fatal("panicked!", r)
-		}
-	}()
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	if err != nil {
+		t.Errorf("an error was thrown: %v", err)
+	}
+	defer conn.Close()
 
-	dependencies.Ping(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Errorf("expecting http status response of %d, got: %d", http.StatusOK, rec.Code)
+	client := pb.NewWorkerClient(conn)
+	response, err := client.Ping(ctx, &pb.EmptyRequest{})
+	if err != nil {
+		t.Errorf("an error was thrown: %v", err)
 	}
 
-	if rec.Body.String() != "Hello world" {
-		t.Errorf("expecting http respohsne body of \"Hello world\", got: %s", rec.Body.String())
+	if response.GetStatus() != "pass" {
+		t.Errorf("the response was not as expected: %v", response.Status)
 	}
 }
