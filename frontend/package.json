@@ -8,7 +8,6 @@
     "build:prod": "tsc --skipLibCheck && vite build",
     "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
     "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
-    "format": "prettier --write --ignore-path .gitignore .",
     "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto"
   },
   "dependencies": {
