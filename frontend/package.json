@@ -12,9 +12,11 @@
     "test:coverage": "vitest run --coverage",
     "test:open": "vitest --open",
     "test:watch": "vitest",
-    "test": "vitest run"
+    "test": "vitest run",
+    "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto"
   },
   "dependencies": {
+    "@protobuf-ts/runtime-rpc": "^2.1.0",
     "sirv-cli": "^1.0.14"
   },
   "devDependencies": {
@@ -30,6 +32,7 @@
     "@emotion/styled": "^11.6.0",
     "@fontsource/mulish": "^4.5.2",
     "@hookform/resolvers": "^2.8.5",
+    "@protobuf-ts/plugin": "^2.1.0",
     "@reduxjs/toolkit": "^1.7.1",
     "@svgr/rollup": "^6.1.2",
     "@teknologi-umum/eslint-config-typescript": "^0.0.5",

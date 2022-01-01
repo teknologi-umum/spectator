@@ -86,25 +86,25 @@ jobs:
         run: npm run build:prod
       - name: Test
         run: npm run test:coverage
-  devops:
-    name: Verify config
-    runs-on: ubuntu-latest
-    container: python:3-buster
-    timeout-minutes: 10
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Install docker-compose
-        run: >
-          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          && chmod +x /usr/local/bin/docker-compose
-          && docker-compose --version
-      - name: Install ansible-lint
-        run: >
-          pip install ansible
-          && pip3 install "ansible-lint[core,yamllint]"
-          && ansible-lint --version
-      - name: Lint docker-compose
-        run: docker-compose --file docker-compose.yml config
-      - name: Lint ansible
-        run: ansible-lint -v -f rich ansible.yml
+  # devops:
+  #   name: Verify config
+  #   runs-on: ubuntu-latest
+  #   container: python:3-buster
+  #   timeout-minutes: 10
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+  #     - name: Install docker-compose
+  #       run: >
+  #         curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  #         && chmod +x /usr/local/bin/docker-compose
+  #         && docker-compose --version
+  #     - name: Install ansible-lint
+  #       run: >
+  #         pip install ansible
+  #         && pip3 install "ansible-lint[core,yamllint]"
+  #         && ansible-lint --version
+  #     - name: Lint docker-compose
+  #       run: docker-compose --file docker-compose.yml config
+  #     - name: Lint ansible
+  #       run: ansible-lint -v -f rich ansible.yml
