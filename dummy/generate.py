@@ -1,4 +1,16 @@
-# Code documentation soon
+"""
+This file contains the code for generating the data.
+The data that being generated is about:
+    - User's personal info (including their session ID)
+      which from the latest conversation is in the format
+      of UUID.
+    - Keystroke events
+    - Mouse move events
+    - Mouse click events
+
+As the generation process is relatively quick, there's
+no much need for verbosity in this one.
+"""
 
 from datetime import datetime, timedelta
 import json
@@ -19,6 +31,7 @@ def main():
         user = generate_user()
         users.append(user)
 
+    print("Generating user personal data...")
     write_into_file("user_personal.json", users)
 
     events: list[dict[str, any]] = []
@@ -56,6 +69,7 @@ def main():
         # Add the current events to the list of events
         events.extend(current_events)
 
+    print("Generated {} events. Writing into file.".format(len(events)))
     write_into_file("events.json", events)
 
 if __name__ == "__main__":

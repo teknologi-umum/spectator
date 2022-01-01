@@ -1,5 +1,6 @@
 import string
 import random
+import uuid
 
 class User():
     type: str
@@ -33,8 +34,9 @@ def generate_user() -> dict[str, any]:
     languages = ["python", "javascript", "php", "", "c", "c++", "c#", "pascal"]
     letters = string.ascii_lowercase
     numbers = string.digits
+    session_id = str(uuid.uuid4())
     user = User(
-        "".join(random.choice(letters) for _ in range(6)),
+        session_id,
         "".join(random.choice(numbers) for _ in range(8)),
         random.randint(0, 5),
         random.randint(0, 24*7),

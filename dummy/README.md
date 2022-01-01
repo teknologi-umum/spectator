@@ -22,7 +22,9 @@ To generate user personal info (including their session) and the events, do:
 pipenv run python3 generate.py
 ```
 
-Then, we shall insert the generated data into the InfluxDB database.
+Then, we shall insert the generated data into the InfluxDB database. But first,
+we need to put some data into the environment variable. The easiest way to do
+so is to copy .env.example and rename it into .env file.
 ```sh
 pipenv run python3 inserter.py
 ```
