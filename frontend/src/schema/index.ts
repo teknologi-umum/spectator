@@ -9,7 +9,7 @@ const transformRequired = (_?: string, origin?: string) => {
 
 // Labels might come from i18n translations
 export const PersonalInfoSchema = yup.object().shape({
-  stdNo: yup.string().label("Student Number").ensure().required(),
+  studentId: yup.string().label("Student Number").ensure().required(),
   programmingExp: yup
     .number()
     .label("Programming Experience")

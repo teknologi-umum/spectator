@@ -4,7 +4,7 @@ import type { InitialState } from "./types";
 const initialState: InitialState = {
   jwt: "",
   jwtPayload: {
-    studentNumber: "",
+    studentId: "",
     iat: 0,
     exp: 0
   },

@@ -21,7 +21,7 @@ import type { InitialState as PersonalInfoState } from "@/store/slices/personalI
 import { withPublic } from "@/hoc";
 
 interface FormValues {
-  stdNo: string;
+  studentId: string;
   programmingExp: number;
   programmingExercise: number;
   programmingLanguage: string;
@@ -80,10 +80,14 @@ function PersonalInfo() {
 
         <Box>
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
-          <FormControl id="email" mt="6" isInvalid={errors.stdNo !== undefined}>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.studentId !== undefined}
+          >
             <FormLabel>Student Number</FormLabel>
-            <Input type="text" {...register("stdNo")} autoComplete="off" />
-            <FormErrorMessage>{errors?.stdNo?.message}!</FormErrorMessage>
+            <Input type="text" {...register("studentId")} autoComplete="off" />
+            <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
           </FormControl>
 
           <FormControl
