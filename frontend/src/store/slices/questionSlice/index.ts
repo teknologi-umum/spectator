@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { InitialState } from "./types";
+import type { InitialState, Submission } from "./types";
 
 const initialState: InitialState = {
   currentQuestion: 0,
-  results: []
+  submissions: []
 };
 
 export const questionSlice = createSlice({
@@ -24,11 +24,22 @@ export const questionSlice = createSlice({
     },
     setQuestion: (state, action: PayloadAction<number>) => {
       state.currentQuestion = action.payload;
+    },
+    setSubmission: (state, action: PayloadAction<Submission>) => {
+      const idx = state.submissions.findIndex(
+        (submission) => submission.questionNo === action.payload.questionNo
+      );
+
+      if (idx > -1) {
+        state.submissions[idx] = action.payload;
+      } else {
+        state.submissions = state.submissions.concat(action.payload);
+      }
     }
   }
 });
 
-export const { prevQuestion, nextQuestion, setQuestion } =
+export const { prevQuestion, nextQuestion, setQuestion, setSubmission } =
   questionSlice.actions;
 
 export default questionSlice.reducer;
