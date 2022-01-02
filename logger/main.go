@@ -2,22 +2,25 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
-	"net/http"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	pb "logger/proto"
+
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	_ "github.com/joho/godotenv/autoload"
+	"google.golang.org/grpc"
 )
 
 type Dependency struct {
 	DB          influxdb2.Client
 	Org         string
 	AccessToken string
+	pb.UnimplementedLoggerServer
 }
 
 func main() {
@@ -49,7 +52,7 @@ func main() {
 	db := influxdb2.NewClient(influxURL, influxToken)
 	defer db.Close()
 
-	deps := Dependency{
+	deps := &Dependency{
 		DB:          db,
 		Org:         influxOrganization,
 		AccessToken: accessToken,
@@ -58,78 +61,33 @@ func main() {
 	// Prepare the log bucket
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
+
 	err := deps.PrepareBucket(ctx)
 	if err != nil {
 		log.Fatalf("preparing bucket: %v", err)
 	}
 
-	// Create server mux
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			err := deps.ReadLogs(w, r)
-			if err != nil {
-				HandleError(err, w, r)
-			}
-			return
-		case http.MethodPost:
-			err := deps.InsertLog(w, r)
-			if err != nil {
-				HandleError(err, w, r)
-			}
-			return
-		default:
-			err := NotAllowed(w, r)
-			if err != nil {
-				HandleError(err, w, r)
-			}
-		}
-	})
-	mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			err := deps.Ping(w, r)
-			if err != nil {
-				HandleError(err, w, r)
-			}
-			return
-		default:
-			err := NotAllowed(w, r)
-			if err != nil {
-				HandleError(err, w, r)
-			}
-		}
-	})
-
-	// Create server instance
-	server := http.Server{
-		Handler:      mux,
-		ReadTimeout:  time.Second * 30,
-		WriteTimeout: time.Second * 30,
-		IdleTimeout:  time.Second * 5,
-		Addr:         ":" + port,
+	listener, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	grpcServer := grpc.NewServer()
+	pb.RegisterLoggerServer(grpcServer, deps)
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		log.Println("Starting server")
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal(err)
+		s := <-sigCh
+		log.Println("Attempting graceful shutdown with SIGNAL:", s)
+		grpcServer.GracefulStop()
+		if err := listener.Close(); err != nil {
+			log.Println("Failed to close listener:", err)
 		}
-		log.Println("Server closed")
 	}()
-	log.Printf("Logger service running on http://localhost:%s", server.Addr)
 
-	<-done
-	log.Printf("Server shutdown...")
-	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("Server Shutdown Failed: %+v", err)
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
-	log.Print("Server Exited Properly")
 }
