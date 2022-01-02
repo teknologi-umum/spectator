@@ -1,0 +1,7 @@
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+/frontend/ @elianiva 
+/piston/ @aldy505
+/logger/ @aldy505
+/backend/ @ronnygunawan
+/wranggler/ @artileda
+/data/ @artileda

@@ -1,14 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"os"
 
-	"github.com/go-chi/chi/v5"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"google.golang.org/grpc"
+
+	pb "worker/proto"
 )
 
 // Dependency contains the dependency injection
@@ -17,13 +20,17 @@ type Dependency struct {
 	DB             influxdb2.Client
 	Bucket         *minio.Client
 	DBOrganization string
+	pb.UnimplementedWorkerServer
 }
 
-// Member contains the struct for member_id data
-// that will be sent on the request body.
-type Member struct {
-	ID string `json:"member_id"`
-}
+const (
+	// BucketInputEvents is the bucket name for storing
+	// keystroke events, window events, and mouse events.
+	BucketInputEvents = "input_events"
+	// BucketSessionEvents is the bucket name for storing
+	// the session events, including their personal information.
+	BucketSessionEvents = "session_events"
+)
 
 func main() {
 	// Lookup environment variables
@@ -77,21 +84,26 @@ func main() {
 		Bucket:         minioConn,
 	}
 
-	// Create a new HTTP mux router with Chi
-	r := chi.NewRouter()
-	// Endpoint for healthchecks
-	r.Get("/ping", dependencies.Ping)
-	// Endpoint for generating fun fact about the user
-	r.Post("/fun-fact", dependencies.FunFact)
-	// Endpoint for generating file of a user
-	r.Post("/generate", dependencies.GenerateFile)
-
 	portNumber, ok := os.LookupEnv("PORT")
 	if !ok {
 		portNumber = "4444"
 	}
-	err = http.ListenAndServe(":"+portNumber, r)
+
+	// gRPC uses TCP connection.
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "localhost", portNumber))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Failed to listen:", err)
+	}
+	defer listener.Close()
+
+	// Initialize gRPC server
+	server := grpc.NewServer()
+
+	// Register the service with the server, including injecting service dependencies.
+	pb.RegisterWorkerServer(server, dependencies)
+	log.Printf("Server listening at %s", listener.Addr().String())
+
+	if err := server.Serve(listener); err != nil {
+		log.Fatalln("Failed to serve:", err)
 	}
 }
