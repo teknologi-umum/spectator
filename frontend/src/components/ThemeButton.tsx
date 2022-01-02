@@ -12,7 +12,7 @@ interface ThemeButtonProps {
 const THEME = ["light", "dimmed", "dark"];
 
 export default function ThemeButton({ position }: ThemeButtonProps) {
-  const {  colorMode, setColorMode } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
   
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const bgOption = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);

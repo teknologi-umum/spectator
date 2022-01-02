@@ -1,0 +1,21 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <Deterministic>true</Deterministic>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RG.CodeAnalyzer" Version="1.0.29">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="RG.Annotations" Version="1.0.27" />
+    <PackageReference Include="Roslynator.Analyzers" Version="3.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

@@ -12,7 +12,8 @@ import {
   UnorderedList
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
-import { questions } from "@/data/questions.json";
+// TODO: this should be automatically inferred (en/id) when we have proper i18n
+import { questions } from "@/data/en/questions.json";
 import { useAppSelector } from "@/store";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 import { useColorModeValue } from "@/hooks";

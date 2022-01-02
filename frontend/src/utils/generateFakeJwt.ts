@@ -12,6 +12,7 @@ export function getJwt(): string {
       // ideally this should be 90 minutes, but for testing purpose a minute
       // is enough
       exp: 60 * 1000 * 60 * 20
+      // exp: 90 * 60 * 1000
     })
   );
 
