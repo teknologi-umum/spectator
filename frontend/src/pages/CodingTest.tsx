@@ -45,7 +45,7 @@ function CodingTest() {
 
   return (
     <Box w="full" h="full" bg={gray} gap="3" p="3">
-      <Menu bg={bg} fg={fg} fgDarker={fgDarker} />
+      <Menu bg={bg} fgDarker={fgDarker} />
       <Box h="calc(100% - 3.5rem)">
         <ReflexContainer orientation="vertical">
           <ReflexElement minSize={400} style={{ overflow: "hidden" }}>

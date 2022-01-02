@@ -2,7 +2,8 @@ import { useColorMode } from "@/hooks";
 import { Box, Select} from "@chakra-ui/react";
 import { useColorModeValue } from "@/hooks/";
 import { FormEvent } from "react";
-import { Theme } from "@/store/slices/appSlice/types";
+import { Theme } from "@/store/slices/themeSlice/types";
+import theme from "@/styles/themes";
 
 interface ThemeButtonProps {
   position: "fixed" | "relative";
@@ -11,10 +12,11 @@ interface ThemeButtonProps {
 const THEME = ["light", "dimmed", "dark"];
 
 export default function ThemeButton({ position }: ThemeButtonProps) {
-  const { setColorMode } = useColorMode();
+  const {  colorMode, setColorMode } = useColorMode();
   
   const bg = useColorModeValue("white", "gray.700", "gray.800");
-  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const bgOption = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
   return (
     <Box 
@@ -30,11 +32,13 @@ export default function ThemeButton({ position }: ThemeButtonProps) {
         textTransform="capitalize"
         w="8rem"
         border="none"
-        color={fg}
+        color={fgDarker}
+        value={colorMode}
       >
         {
           THEME.map((val, idx) => (
             <option 
+              style={{backgroundColor: bgOption}}
               key={idx} 
               value={val}
             >

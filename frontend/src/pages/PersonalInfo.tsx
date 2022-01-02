@@ -18,7 +18,7 @@ import {
 import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
 import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
-import { useColorModeValue } from "@/hooks/";
+import { useColorModeValue } from "@/hooks";
 import { withPublic } from "@/hoc";
 
 interface FormValues {

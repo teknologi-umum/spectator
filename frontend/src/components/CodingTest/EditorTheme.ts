@@ -3,8 +3,6 @@ import { tags, HighlightStyle } from "@codemirror/highlight";
 import theme from "@/styles/themes";
 
 export function getHighlightTheme(mode: "light" | "dimmed" | "dark") {
-  const isDarkMode = mode;
-
   const c = {
     light: {
       blue: theme.colors.blue[700],
@@ -33,22 +31,22 @@ export function getHighlightTheme(mode: "light" | "dimmed" | "dark") {
   };
 
   return HighlightStyle.define([
-    { tag: tags.keyword, color: c[isDarkMode].red },
-    { tag: tags.number, color: c[isDarkMode].blue },
-    { tag: tags.bool, color: c[isDarkMode].blue },
-    { tag: tags.null, color: c[isDarkMode].blue },
-    { tag: tags.comment, color: c[isDarkMode].gray },
+    { tag: tags.keyword, color: c[mode].red },
+    { tag: tags.number, color: c[mode].blue },
+    { tag: tags.bool, color: c[mode].blue },
+    { tag: tags.null, color: c[mode].blue },
+    { tag: tags.comment, color: c[mode].gray },
     { tag: tags.function, color: theme.colors.pink[600] },
-    { tag: tags.string, color: c[isDarkMode].lightBlue },
-    { tag: tags.propertyName, color: c[isDarkMode].blue },
-    { tag: tags.punctuation, color: c[isDarkMode].gray },
-    { tag: tags.paren, color: c[isDarkMode].gray },
-    { tag: tags.brace, color: c[isDarkMode].gray },
-    { tag: tags.bracket, color: c[isDarkMode].gray },
-    { tag: tags.operator, color: c[isDarkMode].red },
-    { tag: tags.typeName, color: c[isDarkMode].orange },
-    { tag: tags.constant, color: c[isDarkMode].blue },
-    { tag: tags.name, color: c[isDarkMode].normal }
+    { tag: tags.string, color: c[mode].lightBlue },
+    { tag: tags.propertyName, color: c[mode].blue },
+    { tag: tags.punctuation, color: c[mode].gray },
+    { tag: tags.paren, color: c[mode].gray },
+    { tag: tags.brace, color: c[mode].gray },
+    { tag: tags.bracket, color: c[mode].gray },
+    { tag: tags.operator, color: c[mode].red },
+    { tag: tags.typeName, color: c[mode].orange },
+    { tag: tags.constant, color: c[mode].blue },
+    { tag: tags.name, color: c[mode].normal }
   ]).extension;
 }
 
@@ -59,8 +57,6 @@ export function getEditorTheme({
   mode: "light" | "dimmed" | "dark";
   fontSize: number;
 }) {
-  const isDarkMode = mode;
-
   const c = {
     light: {
       gray: theme.colors.gray[600],
@@ -85,7 +81,7 @@ export function getEditorTheme({
   return EditorView.theme(
     {
       "&.cm-editor": {
-        backgroundColor: c[isDarkMode].bg,
+        backgroundColor: c[mode].bg,
         height: "100%"
       },
       "&.cm-editor.cm-focused": {
@@ -98,26 +94,26 @@ export function getEditorTheme({
         height: "100%"
       },
       "&.cm-focused .cm-selectionBackground": {
-        background: c[isDarkMode].bgDarker
+        background: c[mode].bgDarker
       },
       ".cm-selectionBackground": {
-        background: c[isDarkMode].bgDarker
+        background: c[mode].bgDarker
       },
       ".cm-cursor": {
-        borderLeft: `1.25px solid ${c[isDarkMode].caret}`,
-        backgroundColor: c[isDarkMode].gray
+        borderLeft: `1.25px solid ${c[mode].caret}`,
+        backgroundColor: c[mode].gray
       },
       ".cm-gutters": {
         border: "none",
-        backgroundColor: c[isDarkMode].bg,
-        color: c[isDarkMode].gray,
+        backgroundColor: c[mode].bg,
+        color: c[mode].gray,
         fontSize: fontSize + "px"
       },
       ".cm-gutterElement.cm-activeLineGutter": {
-        backgroundColor: c[isDarkMode].bgDarker
+        backgroundColor: c[mode].bgDarker
       },
       ".cm-line.cm-activeLine": {
-        backgroundColor: c[isDarkMode].bgDarker
+        backgroundColor: c[mode].bgDarker
       }
     }
   );

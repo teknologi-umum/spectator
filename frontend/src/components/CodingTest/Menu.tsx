@@ -10,6 +10,8 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { prevQuestion, nextQuestion } from "@/store/slices/questionSlice";
 import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
 import type { InitialState as JwtState } from "@/store/slices/jwtSlice/types";
+import { useColorModeValue } from "@/hooks";
+import theme from "@/styles/themes";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -25,12 +27,12 @@ const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
   bg: string;
-  fg: string;
   fgDarker: string;
 }
 
-export default function Menu({ bg, fg, fgDarker }: MenuProps) {
+export default function Menu({ bg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
+  const bgOption = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
   const { fontSize, currentLanguage } = useAppSelector<EditorState>(
     (state) => state.editor
   );
@@ -83,7 +85,7 @@ export default function Menu({ bg, fg, fgDarker }: MenuProps) {
             <option
               key={idx}
               value={lang}
-              style={{ textTransform: "capitalize" }}
+              style={{ textTransform: "capitalize", backgroundColor: bgOption }}
             >
               {lang === "cpp" ? "C++" : lang}
             </option>
@@ -109,7 +111,7 @@ export default function Menu({ bg, fg, fgDarker }: MenuProps) {
                 <option
                   key={idx}
                   value={fontSize}
-                  style={{ textTransform: "capitalize" }}
+                  style={{ textTransform: "capitalize", backgroundColor: bgOption }}
                 >
                   {fontSize}px
                 </option>

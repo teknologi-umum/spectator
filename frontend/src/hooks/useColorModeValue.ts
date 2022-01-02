@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/store";
-import type { InitialState as AppState } from "@/store/slices/appSlice/types";
+import type { InitialState as AppState } from "@/store/slices/themeSlice/types";
 
 export function useColorModeValue(light: string, dimmed: string, dark: string) {
   const { currentTheme } = useAppSelector<AppState>((state) => state.app);
