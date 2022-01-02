@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using SignalRSwaggerGen.Attributes;
+using SignalRSwaggerGen.Enums;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
 using Spectator.Primitives;
@@ -10,6 +12,7 @@ using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
 
 namespace Spectator.Hubs {
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly SessionServices _sessionServices;
 		private readonly JwtAuthenticationServices _jwtAuthenticationServices;
@@ -109,8 +112,13 @@ namespace Spectator.Hubs {
 			);
 			return new SubmissionResult {
 				Accepted = submission.Accepted,
-				ErrorMessage = submission.ErrorMessage,
-				ConsoleOutput = submission.ConsoleOutput
+				TestResults = {
+					from testResult in submission.TestResults
+					select new SubmissionResult.Types.TestResult {
+						Success = testResult.Success,
+						Message = testResult.Message
+					}
+				}
 			};
 		}
 

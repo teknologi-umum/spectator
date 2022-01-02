@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +29,7 @@ builder.Services.Setup(services => {
 	services.Configure<InfluxDbOptions>(builder.Configuration.GetSection("InfluxDbOptions"));
 
 	// Add application layers
+	services.AddHttpClient();
 	services.AddRepositoryDALs();
 	services.AddPistonClient();
 	services.AddDomainServices();
@@ -37,7 +40,10 @@ builder.Services.Setup(services => {
 
 	// Add Swagger
 	services.AddEndpointsApiExplorer();
-	services.AddSwaggerGen();
+	services.AddSwaggerGen(options => {
+		options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Spectator SignalR API v1", Version = "v1" });
+		options.DocumentFilter<SignalRSwaggerGen.SignalRSwaggerGen>(new List<Assembly> { typeof(SessionHub).Assembly });
+	});
 
 	// Add SignalR
 	services.AddSignalR().AddJsonProtocol(options => options.PayloadSerializerOptions = ProtobufJsonConverter.Options);

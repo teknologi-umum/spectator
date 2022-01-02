@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.Json;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.DomainModels.SubmissionDomain;
 using Spectator.DomainModels.UserDomain;
@@ -113,8 +114,7 @@ namespace Spectator.DomainModels.SessionDomain {
 					Language: @event.Language,
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
-					ErrorMessage: @event.ErrorMessage,
-					ConsoleOutput: @event.ConsoleOutput,
+					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResult>>(@event.SerializedTestResults),
 					Accepted: true
 				))
 			};
@@ -137,8 +137,7 @@ namespace Spectator.DomainModels.SessionDomain {
 					Language: @event.Language,
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
-					ErrorMessage: @event.ErrorMessage,
-					ConsoleOutput: @event.ConsoleOutput,
+					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResult>>(@event.SerializedTestResults),
 					Accepted: false
 				))
 			};

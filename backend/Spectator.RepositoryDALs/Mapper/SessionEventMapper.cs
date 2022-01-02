@@ -36,7 +36,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 					.Single(),
 				FluxProperties: typeof(T)
 					.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance)
-					.Where(prop => prop.Name is not nameof(SessionEventBase.SessionId) and not nameof(SessionEventBase.Timestamp))
+					.Where(prop => prop.Name is not nameof(SessionEventBase.SessionId) and not nameof(SessionEventBase.Timestamp) and not "EqualityContract")
 					.Select(prop => new FluxPropertyInfo(
 						FluxFieldName: ToSnakeCase(prop.Name),
 						PropertyInfo: prop
@@ -46,15 +46,11 @@ namespace Spectator.RepositoryDALs.Mapper {
 		}
 
 		public T ConvertToEntity<T>(FluxRecord fluxRecord) {
-			if (fluxRecord.GetMeasurement() != "event") {
-				throw new InvalidOperationException("This mapper only converts event measurement");
-			}
-
 			var parameters = Constructor.GetParameters();
 			var arguments = new object[parameters.Length];
 
-			arguments[0] = fluxRecord.GetValueByKey("type");
-			arguments[1] = Guid.Parse((string)fluxRecord.GetValueByKey("session_id"));
+			arguments[0] = Guid.Parse((string)fluxRecord.GetValueByKey("session_id"));
+			arguments[1] = new DateTimeOffset(fluxRecord.GetTimeInDateTime()!.Value);
 
 			for (var i = 2; i < parameters.Length; i++) {
 				if (FluxProperties.SingleOrDefault(fluxProp => fluxProp.PropertyInfo.Name == parameters[i].Name) is not FluxPropertyInfo fluxProp) {
@@ -90,13 +86,12 @@ namespace Spectator.RepositoryDALs.Mapper {
 		}
 
 		public PointData ConvertToPointData<T>(T @event) where T : SessionEventBase {
-			if (typeof(T) != Type) {
+			if (@event.GetType() != Type) {
 				throw new InvalidOperationException($"This mapper only converts {Type.Name} and cannot be used to convert {@event.GetType().Name}");
 			}
 
 			var pointData = PointData
-				.Measurement("event")
-				.Tag("type", FluxTypeName)
+				.Measurement(FluxTypeName)
 				.Tag("session_id", @event.SessionId.ToString())
 				.Timestamp(@event.Timestamp, WritePrecision.Ns);
 
