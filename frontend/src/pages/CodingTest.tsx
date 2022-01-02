@@ -20,7 +20,7 @@ import {
   useColorModeValue,
   useEventListener
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";

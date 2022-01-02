@@ -1,3 +1,5 @@
+import React, { useEffect, useState, useMemo } from "react";
+import type { UIEventHandler } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror, { keymap } from "@uiw/react-codemirror";
 import { defaultKeymap } from "@codemirror/commands";
@@ -12,7 +14,6 @@ import { useCodemirrorTheme } from "@/hooks";
 import { questions } from "@/data/en/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
-import { UIEventHandler, useEffect, useState, useMemo } from "react";
 import { useDebounce } from "@/hooks";
 
 const cLike = cpp();

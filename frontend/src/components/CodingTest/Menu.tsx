@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
@@ -112,6 +112,7 @@ export default function Menu({ bg, fg }: MenuProps) {
             const language = e.currentTarget.value;
             dispatch(changeCurrentLanguage(language));
           }}
+          data-testid="editor-language-select"
         >
           {!isSubmitted ? (
             <>
@@ -146,6 +147,7 @@ export default function Menu({ bg, fg }: MenuProps) {
             const fontSize = parseInt(e.currentTarget.value);
             dispatch(changeFontSize(fontSize));
           }}
+          data-testid="editor-fontsize-select"
         >
           {Array(9)
             .fill(0)

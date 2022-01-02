@@ -7,7 +7,7 @@ const FAKE_SIGNATURE = "ySxmfXC7SSP4NR7Go2qitririWvL-vWMLZUDjY0w6U8";
 export function getJwt(): string {
   const fakePayload = window.btoa(
     JSON.stringify({
-      studentNumber: "1234567890",
+      studentId: "1234567890",
       iat: Date.now(),
       // ideally this should be 90 minutes, but for testing purpose a minute
       // is enough
