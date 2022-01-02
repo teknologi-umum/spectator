@@ -1,6 +1,6 @@
 import { HamburgerIcon, StarIcon } from "@chakra-ui/icons";
 import { Divider, Flex, IconButton } from "@chakra-ui/react";
-import { ComponentWithAs, IconProps } from "@chakra-ui/react";
+import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleSideBar } from "@/store/slices/sideBarSlice";
 import NavItem from "./NavItem";
