@@ -7,9 +7,14 @@ import {
   changeCurrentLanguage
 } from "@/store/slices/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { prevQuestion, nextQuestion } from "@/store/slices/questionSlice";
 import { useColorModeValue } from "@/hooks";
 import theme from "@/styles/themes";
+import {
+  prevQuestion,
+  nextQuestion,
+  setSubmission
+} from "@/store/slices/questionSlice";
+import { mutate } from "@/utils/fakeSubmissionCallback";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -31,7 +36,12 @@ interface MenuProps {
 export default function Menu({ bg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
   const bgOption = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
-  const { fontSize, currentLanguage } = useAppSelector((state) => state.editor);
+  const { currentQuestion, submissions } = useAppSelector(
+    (state) => state.question
+  );
+  const { fontSize, currentLanguage, solutions } = useAppSelector(
+    (state) => state.editor
+  );
 
   const {
     jwtPayload: { exp, iat }
@@ -45,6 +55,36 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
 
     return () => clearInterval(timer);
   }, []);
+
+  const recordedSubmission = submissions.find(
+    (submission) => submission.questionNo === currentQuestion
+  );
+  const isSubmitted =
+    recordedSubmission !== undefined ? recordedSubmission.isSubmitted : false;
+  const isRefactored =
+    recordedSubmission !== undefined ? recordedSubmission.isRefactored : false;
+
+  console.log(isSubmitted);
+
+  function handleSubmit() {
+    const currentSolution = solutions.filter(
+      (solution) =>
+        solution.questionNo === currentQuestion &&
+        solution.language === currentLanguage
+    )[0];
+
+    mutate(currentSolution, {
+      onSuccess: (res) => {
+        dispatch(
+          setSubmission({
+            ...res.data,
+            isSubmitted: true,
+            isRefactored: res.data.submissionType === "refactor"
+          })
+        );
+      }
+    });
+  }
 
   return (
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
@@ -77,15 +117,28 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             dispatch(changeCurrentLanguage(language));
           }}
         >
-          {LANGUAGES.map((lang, idx) => (
+          {!isSubmitted ? (
+            <>
+              {LANGUAGES.map((lang, idx) => (
+                <option
+                  key={idx}
+                  value={lang}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {lang === "cpp" ? "C++" : lang}
+                </option>
+              ))}
+            </>
+          ) : (
             <option
-              key={idx}
-              value={lang}
               style={{ textTransform: "capitalize", backgroundColor: bgOption }}
+              value={recordedSubmission?.language ?? ""}
             >
-              {lang === "cpp" ? "C++" : lang}
+              {recordedSubmission?.language === "cpp"
+                ? "C++"
+                : recordedSubmission?.language}
             </option>
-          ))}
+          )}
         </Select>
         <Select
           color={fgDarker}
@@ -150,18 +203,21 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
         >
           Test
         </Button>
-        <Button
-          px="4"
-          background="blue.500"
-          h="full"
-          color="white"
-          onClick={() => {
-            // TODO(elianiva): only allow to continue when they have the correct answer
-            dispatch(nextQuestion());
-          }}
-        >
-          Submit
-        </Button>
+        {!isRefactored && (
+          <Button
+            px="4"
+            background="blue.500"
+            h="full"
+            onClick={() => {
+              // TODO(elianiva): only allow to continue when they have the correct answer
+              // dispatch(nextQuestion());
+
+              handleSubmit();
+            }}
+          >
+            {isSubmitted ? "Refactor" : "Submit"}
+          </Button>
+        )}
       </Flex>
     </Flex>
   );
