@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Spectator.DomainEvents.SessionDomain;
@@ -139,8 +140,8 @@ namespace Spectator.DomainServices.SessionDomain {
 
 			// Create event
 			SessionEventBase @event = submission.Accepted
-				? new SolutionAcceptedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, submission.ErrorMessage, submission.ConsoleOutput)
-				: new SolutionRejectedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, submission.ErrorMessage, submission.ConsoleOutput);
+				? new SolutionAcceptedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults))
+				: new SolutionRejectedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults));
 
 			// Dispatch event
 			sessionStore.Dispatch(@event);
