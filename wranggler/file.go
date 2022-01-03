@@ -47,13 +47,42 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// keystroke and mouse
+	// keystrokeMouseRows
 	_, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+` and (
-			(r["_measurement"] == "coding_event_mouseclick") or
-			(r["_measurement"] == "coding_event_movemove") or
-			(r["_measurement"] == "coding_event_mouseclick"))
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`
+		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")
+		`,
+	)
+	if err != nil {
+		// we send a http request to the logger service
+		// for now, we'll just do this:
+		log.Println(err)
+		return
+	}
+
+	//keystrokeMouseClickRows
+	_, err = queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketInputEvents+`")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`
+		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")
+		`,
+	)
+	if err != nil {
+		// we send a http request to the logger service
+		// for now, we'll just do this:
+		log.Println(err)
+		return
+	}
+
+	// keystrokeMouseMoveRows
+	_, err = queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketInputEvents+`")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`
+		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
 		`,
 	)
 	if err != nil {
@@ -64,6 +93,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	}
 
 	// coding test result
+	// codeSubmissionRows,
 	_, err = queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketSessionEvents+`")
@@ -107,17 +137,40 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	// nil bucket.
 }
 
-// TODO: delete this one
-type SampleInput struct {
-	Time  time.Time `json:"timestamp" csv:"timestamp"`
-	Actor string    `json:"actor" csv:"actor"`
-	X     int       `json:"x" csv:"x"`
-	Y     int       `json:"y" csv:"y"`
+type MouseMovement struct {
+	SessionID      string  `json:"session_id"`
+	Type           string  `json:"type"`
+	QuestionNumber int64   `json:"question_number"`
+	Direction      *string `json:"direction"`
+	XPosition      *int64  `json:"x_position"`
+	YPosition      *int64  `json:"y_position"`
+	WindowWidth    *int64  `json:"window_width"`
+	WindowHeight   *int64  `json:"window_height"`
 }
 
-// TODO: change the SampleInput type with an actual working type
-// that resembles the influxdb schema
-func ConvertDataToJSON(input []SampleInput) ([]byte, error) {
+type Keystroke struct {
+	SessionID      string `json:"session_id"`
+	Type           string `json:"type"`
+	QuestionNumber string `json:"question_number"`
+	KeyChar        string `json:"key_char"`
+	KeyCode        string `json:"key_code"`
+	Shift          bool   `json:"shift"`
+	Alt            bool   `json:"alt"`
+	Control        bool   `json:"control"`
+	UnrelatedKey   bool   `json:"unrelated_key"`
+	Modifier       string `json:"modifier"`
+}
+
+type MouseClick struct {
+	SessionID      string `json:"session_id"`
+	Type           string `json:"type"`
+	QuestionNumber string `json:"question_number"`
+	RightClick     *bool  `json:"right_click"`
+	LeftClick      *bool  `json:"left_click"`
+	MiddleClick    *bool  `json:"middle_click"`
+}
+
+func ConvertDataToJSON(input []interface{}) ([]byte, error) {
 	data, err := json.MarshalIndent(input, "", " ")
 	if err != nil {
 		return []byte{}, err
@@ -126,9 +179,7 @@ func ConvertDataToJSON(input []SampleInput) ([]byte, error) {
 	return data, err
 }
 
-// TODO: change the SampleInput type with an actual working type
-// that resembles the influxdb schema
-func ConvertDataToCSV(input []SampleInput) ([]byte, error) {
+func ConvertDataToCSV(input []interface{}) ([]byte, error) {
 	w := &bytes.Buffer{}
 	writer := csv.NewWriter(w)
 	// Because csv package does not have something like

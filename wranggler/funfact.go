@@ -105,7 +105,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	// number of question submission attempts
 	// TODO:  ini buat ngambil nganu, jangan lupa result
 	// SELECT COUNT(_time) FROM spectator WHERE _type = "coding_attempted"
-	_, err := queryAPI.Query(
+	rows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketSessionEvents+`")
 		|> range(start: 0)
@@ -118,15 +118,13 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 		return err
 	}
 
-	// FIXME: the result not array , the reasou UNKNOW
-
 	// terus langsung return hasilnya
 	// tapi bisa juga di group per question, jadi
 	// misalnya untuk question #1, dia ada 5 attempt, question #2 ada 10 attempt
 	// and so on so forth.
 
 	// Return the result here
-	result <- uint32(1)
+	result <- uint32(rows.Record().Value().(int64))
 	return nil
 }
 
