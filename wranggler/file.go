@@ -6,51 +6,56 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"log"
-	"net/http"
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
+
+	pb "worker/proto"
 )
 
-func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
-	var member Member
-
-	err := json.NewDecoder(r.Body).Decode(&member)
+// GenerateFile is the handler for generating file into CSV and JSON based on
+// the input data (which only contains the Session ID).
+func (d *Dependency) GenerateFile(ctx context.Context, in *pb.Member) (*pb.EmptyResponse, error) {
+	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
 	}
 
-	if _, err := uuid.Parse(member.ID); err != nil {
-		http.Error(w, "member_id is empty", http.StatusInternalServerError)
-		return
-	}
+	go d.CreateFile(sessionID)
 
-	w.WriteHeader(http.StatusOK)
+	return &pb.EmptyResponse{}, nil
+}
 
-	_, err = w.Write([]byte("OK"))
-	if err != nil {
-		// handle http write error here
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+func (d *Dependency) CreateFile(sessionID uuid.UUID) {
+	// Defer a func that will recover from panic.
+	// TODO: Send this data into the Logging service.
+	defer func() {
+		r := recover()
+		if r != nil {
+			log.Println(r.(error))
+		}
+	}()
 
 	// Let's create a new context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 
-	// Now we fetch all the data with the _actor being member.ID
+	// Now we fetch all the data with the _actor being sessionID.String()
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// keystroke and mouse
-	_, err = queryAPI.Query(ctx, `
-	from(bucket:"spectator") 
-	|> filter(fn : (r) => r["session_id"] == "`+member.ID+` and (
-		(r["type"] == "coding_event_mouseclick") or 
-		(r["type"] == "coding_event_movemove") or 
-		(r["type"] == "coding_event_mouseclick"))
-	`)
+	_, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketInputEvents+`")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+` and (
+			(r["_measurement"] == "coding_event_mouseclick") or
+			(r["_measurement"] == "coding_event_movemove") or
+			(r["_measurement"] == "coding_event_mouseclick"))
+		`,
+	)
 	if err != nil {
 		// we send a http request to the logger service
 		// for now, we'll just do this:
@@ -59,11 +64,12 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// coding test result
-	_, err = queryAPI.Query(ctx, `
-	from(bucket:"spectator")
-	|> filter(fn: (r) => r["session_id"] == "`+member.ID+`")
-	|> fliter(fn: (r) => r["type"] == "code_submission")
-	`)
+	_, err = queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketSessionEvents+`")
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> fliter(fn: (r) => r["_measurement"] == "code_submission")`,
+	)
 	if err != nil {
 		// we send a http request to the logger service
 		// for now, we'll just do this:
@@ -73,9 +79,9 @@ func (d *Dependency) GenerateFile(w http.ResponseWriter, r *http.Request) {
 
 	// user
 	_, err = queryAPI.Query(ctx, `
-	from(bucket:"spectator")
-	|> filter(fn: (r) => r["session_id"] == "`+member.ID+`")
-	|> filter(fn: (r) => (r["event"] == "sam_test_before") or 
+	from(bucket: "`+BucketSessionEvents+`")
+	|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+	|> filter(fn: (r) => (r["event"] == "sam_test_before") or
 		(r["event"] == "personal_info"))
 	`)
 	if err != nil {

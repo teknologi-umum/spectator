@@ -1,9 +1,10 @@
 package main_test
 
 import (
-	main "rori"
 	"testing"
 	"time"
+
+	main "worker"
 )
 
 func TestConvertDataToJSON(t *testing.T) {
