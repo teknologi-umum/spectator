@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using FluentAssertions;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.DomainModels.SessionDomain;
@@ -71,7 +72,7 @@ namespace Spectator.DomainModels.Tests {
 		}
 
 		[Fact]
-		public RegisteredSession CanSubmitBeforeExamSAMEvent() {
+		public RegisteredSession CanSubmitBeforeExamSAM() {
 			var timestamp = DateTimeOffset.UtcNow.AddSeconds(2);
 			var registeredSession = CanCreateRegisteredSession();
 			var beforeExamSAMSubmittedEvent = new BeforeExamSAMSubmittedEvent(
@@ -99,9 +100,9 @@ namespace Spectator.DomainModels.Tests {
 		}
 
 		[Fact]
-		public void CannotSubmitBeforeExamSAMEventTwice() {
+		public void CannotSubmitBeforeExamSAMTwice() {
 			var timestamp = DateTimeOffset.UtcNow.AddSeconds(3);
-			var sessionWithBeforeExamSAM = CanSubmitBeforeExamSAMEvent();
+			var sessionWithBeforeExamSAM = CanSubmitBeforeExamSAM();
 			var beforeExamSAMSubmittedEvent = new BeforeExamSAMSubmittedEvent(
 				SessionId: sessionWithBeforeExamSAM.Id,
 				Timestamp: timestamp,
@@ -123,5 +124,118 @@ namespace Spectator.DomainModels.Tests {
 			new Action(() => registeredSession.Apply(beforeExamSAMSubmittedEvent)).Should().Throw<ArgumentException>()
 				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");
 		}
+
+		[Fact]
+		public RegisteredSession CanStartExam() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(3);
+			var sessionWithBeforeExamSAM = CanSubmitBeforeExamSAM();
+			var examStartedEvent = new ExamStartedEvent(
+				SessionId: sessionWithBeforeExamSAM.Id,
+				Timestamp: timestamp,
+				QuestionNumbers: ImmutableArray.Create(1, 2, 3, 4, 5, 6),
+				Deadline: timestamp.AddMinutes(71)
+			);
+			var examSession = sessionWithBeforeExamSAM.Apply(examStartedEvent);
+			examSession.Id.Should().Be(sessionWithBeforeExamSAM.Id);
+			examSession.CreatedAt.Should().Be(sessionWithBeforeExamSAM.CreatedAt);
+			examSession.UpdatedAt.Should().Be(timestamp);
+			examSession.User.Should().NotBeNull();
+			examSession.BeforeExamSAM.Should().NotBeNull();
+			examSession.AfterExamSAM.Should().BeNull();
+			examSession.QuestionNumbers.Should().NotBeNull();
+			examSession.SubmissionByQuestionNumber.Should().NotBeNull();
+			examSession.ExamStartedAt.Should().NotBeNull();
+			examSession.ExamEndedAt.Should().BeNull();
+			examSession.ExamDeadline.Should().NotBeNull();
+
+			examSession.QuestionNumbers!.Value.Should().ContainInOrder(1, 2, 3, 4, 5, 6);
+			examSession.SubmissionByQuestionNumber.Should().BeEmpty();
+			examSession.ExamStartedAt!.Value.Should().Be(timestamp);
+			examSession.ExamDeadline!.Value.Should().Be(timestamp.AddMinutes(71));
+
+			return examSession;
+		}
+
+		[Fact]
+		public void CannotStartExamBeforeSubmittingSAM() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(2);
+			var registeredSession = CanCreateRegisteredSession();
+			var examStartedEvent = new ExamStartedEvent(
+				SessionId: registeredSession.Id,
+				Timestamp: timestamp,
+				QuestionNumbers: ImmutableArray.Create(1, 2, 3, 4, 5, 6),
+				Deadline: timestamp.AddMinutes(71)
+			);
+			new Action(() => registeredSession.Apply(examStartedEvent)).Should().Throw<InvalidOperationException>()
+				.And.Message.Should().Be("SAM hasn't been submitted");
+		}
+
+		[Fact]
+		public void CannotStartExamTwice() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(4);
+			var examSession = CanStartExam();
+			var examStartedEvent = new ExamStartedEvent(
+				SessionId: examSession.Id,
+				Timestamp: timestamp,
+				QuestionNumbers: ImmutableArray.Create(1, 2, 3, 4, 5, 6),
+				Deadline: timestamp.AddMinutes(75)
+			);
+			new Action(() => examSession.Apply(examStartedEvent)).Should().Throw<InvalidOperationException>()
+				.And.Message.Should().Be("Exam already started");
+		}
+
+		[Fact]
+		public void CannotStartExamUsingInvalidEvent() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(3);
+			var sessionWithBeforeExamSAM = CanSubmitBeforeExamSAM();
+			var examStartedEvent = new ExamStartedEvent(
+				SessionId: Guid.NewGuid(),
+				Timestamp: timestamp,
+				QuestionNumbers: ImmutableArray.Create(1, 2, 3, 4, 5, 6),
+				Deadline: timestamp.AddMinutes(71)
+			);
+			new Action(() => sessionWithBeforeExamSAM.Apply(examStartedEvent)).Should().Throw<ArgumentException>()
+				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");
+		}
+
+		// Wanna help? Install Visual Studio + Fine Code Coverage or Jetbrains Rider, then implement following test methods:
+
+		// TODO: CanEndExam
+		// TODO: CannotEndExamBeforeExamStarted
+		// TODO: CannotEndExamTwice
+		// TODO: CannotEndExamWithoutDeadline (corrupt session manually to test)
+		// TODO: CannotEndExamAfterDeadlinePassed
+		// TODO: CannotEndExamWithoutQuestionNumbers (corrupt session manually to test)
+		// TODO: CannotEndExamWithoutSubmissionDictionary (corrupt session manually to test)
+		// TODO: CannotEndExamWithUnansweredQuestions
+		// TODO: CanPassDeadline
+		// TODO: CannotPassDeadlineBeforeExamStarted
+		// TODO: CannotPassDeadlineAfterExamEnded
+		// TODO: CannotPassDeadlineBeforeDeadlinePassed
+		// TODO: CanForfeitExam
+		// TODO: CannotForfeitExamBeforeExamStarted
+		// TODO: CannotForfeitExamAfterExamEnded
+		// TODO: CannotForfeitExamWithoutDeadline (corrupt session manually to test)
+		// TODO: CannotForfeitExamAfterDeadlinePassed
+		// TODO: CannotForfeitExamWithoutQuestionNumbers (corrupt session manually to test)
+		// TODO: CannotForfeitExamWithoutSubmissionDictionary (corrupt session manually to test)
+		// TODO: CannotForfeitExamAfterAllSubmissionsAccepted
+		// TODO: CanAcceptSolution
+		// TODO: CannotAcceptSolutionBeforeExamStarted
+		// TODO: CannotAcceptSolutionAfterExamEnded
+		// TODO: CannotAcceptSolutionWithoutDeadline (corrupt session manually to test)
+		// TODO: CannotAcceptSolutionAfterDeadlinePassed
+		// TODO: CannotAcceptSolutionWithoutQuestionNumbers (corrupt session manually to test)
+		// TODO: CannotAcceptSolutionWithoutSubmissionDictionary (corrupt session manually to test)
+		// TODO: CannotAcceptSolutionWithInvalidQuestionNumber
+		// TODO: CanRejectSolution
+		// TODO: CannotRejectSolutionBeforeExamStarted
+		// TODO: CannotRejectSolutionAfterExamEnded
+		// TODO: CannotRejectSolutionWithoutDeadline (corrupt session manually to test)
+		// TODO: CannotRejectSolutionAfterDeadlinePassed
+		// TODO: CannotRejectSolutionWithoutQuestionNumbers (corrupt session manually to test)
+		// TODO: CannotRejectSolutionWithoutSubmissionDictionary (corrupt session manually to test)
+		// TODO: CannotRejectSolutionWithInvalidQuestionNumber
+		// TODO: CannotRejectAlreadyAcceptedSolution
 	}
 }
