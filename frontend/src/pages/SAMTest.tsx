@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { FC, SVGProps, FormEvent } from "react";
 import {
   Box,
@@ -178,7 +178,7 @@ function SAMTest() {
       </Layout>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={bg} color={fg}>
           <ModalHeader fontSize="2xl">Confirmation</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

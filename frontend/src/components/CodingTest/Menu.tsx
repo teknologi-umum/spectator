@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
@@ -35,7 +35,7 @@ interface MenuProps {
 
 export default function Menu({ bg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
-  const bgOption = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
+  const optionBg = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
   const { currentQuestion, submissions } = useAppSelector(
     (state) => state.question
   );
@@ -116,6 +116,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             const language = e.currentTarget.value;
             dispatch(changeCurrentLanguage(language));
           }}
+          data-testid="editor-language-select"
         >
           {!isSubmitted ? (
             <>
@@ -131,7 +132,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             </>
           ) : (
             <option
-              style={{ textTransform: "capitalize", backgroundColor: bgOption }}
+              style={{ textTransform: "capitalize", backgroundColor: optionBg }}
               value={recordedSubmission?.language ?? ""}
             >
               {recordedSubmission?.language === "cpp"
@@ -151,6 +152,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             const fontSize = parseInt(e.currentTarget.value);
             dispatch(changeFontSize(fontSize));
           }}
+          data-testid="editor-fontsize-select"
         >
           {Array(9)
             .fill(0)
@@ -160,7 +162,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
                 <option
                   key={idx}
                   value={fontSize}
-                  style={{ textTransform: "capitalize", backgroundColor: bgOption }}
+                  style={{ textTransform: "capitalize", backgroundColor: optionBg }}
                 >
                   {fontSize}px
                 </option>
@@ -207,7 +209,12 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           <Button
             px="4"
             background="blue.500"
+            color= "white"
             h="full"
+            _hover={{
+              bg: "gray.800",
+              borderColor: "white",
+            }}
             onClick={() => {
               // TODO(elianiva): only allow to continue when they have the correct answer
               // dispatch(nextQuestion());

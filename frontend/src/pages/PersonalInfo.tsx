@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -5,7 +6,6 @@ import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import {
   Box,
   FormControl,
@@ -22,7 +22,7 @@ import { useColorModeValue } from "@/hooks";
 import { withPublic } from "@/hoc";
 
 interface FormValues {
-  stdNo: string;
+  studentId: string;
   programmingExp: number;
   programmingExercise: number;
   programmingLanguage: string;
@@ -36,7 +36,7 @@ function PersonalInfo() {
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
-  const border = useColorModeValue("gray.800", "gray.400", "gray.700");
+  const border = useColorModeValue("gray.400", "gray.500", "gray.600");
 
   const {
     register,
@@ -82,9 +82,14 @@ function PersonalInfo() {
 
         <Box>
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
-          <FormControl mt="6" isInvalid={errors.stdNo !== undefined}>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.studentId !== undefined}
+          >
             <FormLabel>Student Number</FormLabel>
-            <Input borderColor={border} type="text" {...register("stdNo")} autoComplete="off" />
+            <Input type="text" {...register("studentId")} autoComplete="off" borderColor={border} />
+            <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
           </FormControl>
 
           <FormControl

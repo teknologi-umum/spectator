@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heading,
@@ -11,7 +12,6 @@ import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
 import { withPublic } from "@/hoc";
 import { useColorModeValue } from "@/hooks";
-import { useEffect } from "react";
 
 function Instructions() {
   const navigate = useNavigate();

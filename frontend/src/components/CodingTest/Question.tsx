@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Flex,
@@ -27,7 +28,8 @@ interface QuestionProps {
 }
 
 export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) {
-  const codeBg = useColorModeValue("gray.200", "gray.500", "gray.700");
+  const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
+  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
   );
@@ -45,7 +47,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
     >
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
-        <TabList>
+        <TabList borderColor={borderBg}>
           <Tab color={fgDarker}>Prompt</Tab>
           <Tab color={fgDarker}>Your Result</Tab>
         </TabList>
