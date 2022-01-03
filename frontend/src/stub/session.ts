@@ -22,15 +22,23 @@ export interface StartSessionRequest {
  * @generated from protobuf message session.SessionReply
  */
 export interface SessionReply {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: string access_token = 1;
      */
     accessToken: string;
+=======
+  /**
+     * @generated from protobuf field: string access_token = 1;
+     */
+  accessToken: string;
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.PersonalInfo
  */
 export interface PersonalInfo {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: string student_number = 1;
      */
@@ -47,11 +55,30 @@ export interface PersonalInfo {
      * @generated from protobuf field: repeated enums.Language familiar_languages = 4;
      */
     familiarLanguages: Language[];
+=======
+  /**
+     * @generated from protobuf field: string student_number = 1;
+     */
+  studentNumber: string;
+  /**
+     * @generated from protobuf field: int32 years_of_experience = 2;
+     */
+  yearsOfExperience: number;
+  /**
+     * @generated from protobuf field: int32 hours_of_practice = 3;
+     */
+  hoursOfPractice: number;
+  /**
+     * @generated from protobuf field: repeated enums.Language familiar_languages = 4;
+     */
+  familiarLanguages: Language[];
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.SAM
  */
 export interface SAM {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: int32 aroused_level = 1;
      */
@@ -60,11 +87,22 @@ export interface SAM {
      * @generated from protobuf field: int32 pleased_level = 2;
      */
     pleasedLevel: number;
+=======
+  /**
+     * @generated from protobuf field: int32 aroused_level = 1;
+     */
+  arousedLevel: number;
+  /**
+     * @generated from protobuf field: int32 pleased_level = 2;
+     */
+  pleasedLevel: number;
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.Question
  */
 export interface Question {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: int32 question_number = 1;
      */
@@ -85,11 +123,34 @@ export interface Question {
      * @generated from protobuf field: string boilerplate = 5;
      */
     boilerplate: string;
+=======
+  /**
+     * @generated from protobuf field: int32 question_number = 1;
+     */
+  questionNumber: number;
+  /**
+     * @generated from protobuf field: string title = 2;
+     */
+  title: string;
+  /**
+     * @generated from protobuf field: string instruction = 3;
+     */
+  instruction: string;
+  /**
+     * @generated from protobuf field: repeated enums.Language allowed_languages = 4;
+     */
+  allowedLanguages: Language[];
+  /**
+     * @generated from protobuf field: string boilerplate = 5;
+     */
+  boilerplate: string;
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.Exam
  */
 export interface Exam {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: int64 deadline = 1;
      */
@@ -102,11 +163,26 @@ export interface Exam {
      * @generated from protobuf field: repeated int32 answered_question_numbers = 3;
      */
     answeredQuestionNumbers: number[];
+=======
+  /**
+     * @generated from protobuf field: int64 deadline = 1;
+     */
+  deadline: bigint;
+  /**
+     * @generated from protobuf field: repeated session.Question questions = 2;
+     */
+  questions: Question[];
+  /**
+     * @generated from protobuf field: repeated int32 answered_question_numbers = 3;
+     */
+  answeredQuestionNumbers: number[];
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.ExamResult
  */
 export interface ExamResult {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: int64 duration = 1;
      */
@@ -115,11 +191,22 @@ export interface ExamResult {
      * @generated from protobuf field: repeated int32 answered_question_numbers = 2;
      */
     answeredQuestionNumbers: number[];
+=======
+  /**
+     * @generated from protobuf field: int64 duration = 1;
+     */
+  duration: bigint;
+  /**
+     * @generated from protobuf field: repeated int32 answered_question_numbers = 2;
+     */
+  answeredQuestionNumbers: number[];
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.Solution
  */
 export interface Solution {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: int32 question_number = 1;
      */
@@ -136,11 +223,30 @@ export interface Solution {
      * @generated from protobuf field: string scratch_pad = 4;
      */
     scratchPad: string;
+=======
+  /**
+     * @generated from protobuf field: int32 question_number = 1;
+     */
+  questionNumber: number;
+  /**
+     * @generated from protobuf field: enums.Language language = 2;
+     */
+  language: Language;
+  /**
+     * @generated from protobuf field: string code = 3;
+     */
+  code: string;
+  /**
+     * @generated from protobuf field: string scratch_pad = 4;
+     */
+  scratchPad: string;
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.SubmissionResult
  */
 export interface SubmissionResult {
+<<<<<<< HEAD
     /**
      * @generated from protobuf field: bool accepted = 1;
      */
@@ -153,6 +259,20 @@ export interface SubmissionResult {
      * @generated from protobuf field: string console_output = 3;
      */
     consoleOutput: string;
+=======
+  /**
+     * @generated from protobuf field: bool accepted = 1;
+     */
+  accepted: boolean;
+  /**
+     * @generated from protobuf field: string message = 2;
+     */
+  message: string;
+  /**
+     * @generated from protobuf field: string console_output = 3;
+     */
+  consoleOutput: string;
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated from protobuf message session.EmptyRequest
@@ -166,6 +286,7 @@ export interface EmptyReply {
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
+<<<<<<< HEAD
     constructor() {
         super("session.StartSessionRequest", []);
     }
@@ -183,6 +304,25 @@ class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.StartSessionRequest", []);
+  }
+  create(value?: PartialMessage<StartSessionRequest>): StartSessionRequest {
+    const message = {};
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<StartSessionRequest>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StartSessionRequest): StartSessionRequest {
+    return target ?? this.create();
+  }
+  internalBinaryWrite(message: StartSessionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.StartSessionRequest
@@ -190,6 +330,7 @@ class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
 export const StartSessionRequest = new StartSessionRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SessionReply$Type extends MessageType<SessionReply> {
+<<<<<<< HEAD
     constructor() {
         super("session.SessionReply", [
             { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
@@ -225,6 +366,43 @@ class SessionReply$Type extends MessageType<SessionReply> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.SessionReply", [
+      { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+    ]);
+  }
+  create(value?: PartialMessage<SessionReply>): SessionReply {
+    const message = { accessToken: "" };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<SessionReply>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SessionReply): SessionReply {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* string access_token */ 1:
+          message.accessToken = reader.string();
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: SessionReply, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* string access_token = 1; */
+    if (message.accessToken !== "") {writer.tag(1, WireType.LengthDelimited).string(message.accessToken);}
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.SessionReply
@@ -232,6 +410,7 @@ class SessionReply$Type extends MessageType<SessionReply> {
 export const SessionReply = new SessionReply$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class PersonalInfo$Type extends MessageType<PersonalInfo> {
+<<<<<<< HEAD
     constructor() {
         super("session.PersonalInfo", [
             { no: 1, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -291,6 +470,67 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.familiarLang
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.PersonalInfo", [
+      { no: 1, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 2, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+      { no: 3, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+      { no: 4, name: "familiar_languages", kind: "enum", repeat: 1 /*RepeatType.PACKED*/, T: () => ["enums.Language", Language] }
+    ]);
+  }
+  create(value?: PartialMessage<PersonalInfo>): PersonalInfo {
+    const message = { studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: [] };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<PersonalInfo>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PersonalInfo): PersonalInfo {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* string student_number */ 1:
+          message.studentNumber = reader.string();
+          break;
+        case /* int32 years_of_experience */ 2:
+          message.yearsOfExperience = reader.int32();
+          break;
+        case /* int32 hours_of_practice */ 3:
+          message.hoursOfPractice = reader.int32();
+          break;
+        case /* repeated enums.Language familiar_languages */ 4:
+          if (wireType === WireType.LengthDelimited) {
+            for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.familiarLanguages.push(reader.int32());}
+          } else {message.familiarLanguages.push(reader.int32());}
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: PersonalInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* string student_number = 1; */
+    if (message.studentNumber !== "") {writer.tag(1, WireType.LengthDelimited).string(message.studentNumber);}
+    /* int32 years_of_experience = 2; */
+    if (message.yearsOfExperience !== 0) {writer.tag(2, WireType.Varint).int32(message.yearsOfExperience);}
+    /* int32 hours_of_practice = 3; */
+    if (message.hoursOfPractice !== 0) {writer.tag(3, WireType.Varint).int32(message.hoursOfPractice);}
+    /* repeated enums.Language familiar_languages = 4; */
+    if (message.familiarLanguages.length) {
+      writer.tag(4, WireType.LengthDelimited).fork();
+      for (let i = 0; i < message.familiarLanguages.length; i++) {writer.int32(message.familiarLanguages[i]);}
+      writer.join();
+    }
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.PersonalInfo
@@ -298,6 +538,7 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.familiarLang
 export const PersonalInfo = new PersonalInfo$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SAM$Type extends MessageType<SAM> {
+<<<<<<< HEAD
     constructor() {
         super("session.SAM", [
             { no: 1, name: "aroused_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
@@ -339,6 +580,49 @@ class SAM$Type extends MessageType<SAM> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.SAM", [
+      { no: 1, name: "aroused_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+      { no: 2, name: "pleased_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+    ]);
+  }
+  create(value?: PartialMessage<SAM>): SAM {
+    const message = { arousedLevel: 0, pleasedLevel: 0 };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<SAM>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SAM): SAM {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* int32 aroused_level */ 1:
+          message.arousedLevel = reader.int32();
+          break;
+        case /* int32 pleased_level */ 2:
+          message.pleasedLevel = reader.int32();
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: SAM, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* int32 aroused_level = 1; */
+    if (message.arousedLevel !== 0) {writer.tag(1, WireType.Varint).int32(message.arousedLevel);}
+    /* int32 pleased_level = 2; */
+    if (message.pleasedLevel !== 0) {writer.tag(2, WireType.Varint).int32(message.pleasedLevel);}
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.SAM
@@ -346,6 +630,7 @@ class SAM$Type extends MessageType<SAM> {
 export const SAM = new SAM$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Question$Type extends MessageType<Question> {
+<<<<<<< HEAD
     constructor() {
         super("session.Question", [
             { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
@@ -411,6 +696,73 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.allowedLangu
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.Question", [
+      { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+      { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 3, name: "instruction", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 4, name: "allowed_languages", kind: "enum", repeat: 1 /*RepeatType.PACKED*/, T: () => ["enums.Language", Language] },
+      { no: 5, name: "boilerplate", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+    ]);
+  }
+  create(value?: PartialMessage<Question>): Question {
+    const message = { questionNumber: 0, title: "", instruction: "", allowedLanguages: [], boilerplate: "" };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<Question>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Question): Question {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* int32 question_number */ 1:
+          message.questionNumber = reader.int32();
+          break;
+        case /* string title */ 2:
+          message.title = reader.string();
+          break;
+        case /* string instruction */ 3:
+          message.instruction = reader.string();
+          break;
+        case /* repeated enums.Language allowed_languages */ 4:
+          if (wireType === WireType.LengthDelimited) {
+            for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.allowedLanguages.push(reader.int32());}
+          } else {message.allowedLanguages.push(reader.int32());}
+          break;
+        case /* string boilerplate */ 5:
+          message.boilerplate = reader.string();
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: Question, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* int32 question_number = 1; */
+    if (message.questionNumber !== 0) {writer.tag(1, WireType.Varint).int32(message.questionNumber);}
+    /* string title = 2; */
+    if (message.title !== "") {writer.tag(2, WireType.LengthDelimited).string(message.title);}
+    /* string instruction = 3; */
+    if (message.instruction !== "") {writer.tag(3, WireType.LengthDelimited).string(message.instruction);}
+    /* repeated enums.Language allowed_languages = 4; */
+    if (message.allowedLanguages.length) {
+      writer.tag(4, WireType.LengthDelimited).fork();
+      for (let i = 0; i < message.allowedLanguages.length; i++) {writer.int32(message.allowedLanguages[i]);}
+      writer.join();
+    }
+    /* string boilerplate = 5; */
+    if (message.boilerplate !== "") {writer.tag(5, WireType.LengthDelimited).string(message.boilerplate);}
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.Question
@@ -418,6 +770,7 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.allowedLangu
 export const Question = new Question$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Exam$Type extends MessageType<Exam> {
+<<<<<<< HEAD
     constructor() {
         super("session.Exam", [
             { no: 1, name: "deadline", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
@@ -471,6 +824,61 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.answeredQues
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.Exam", [
+      { no: 1, name: "deadline", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+      { no: 2, name: "questions", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Question },
+      { no: 3, name: "answered_question_numbers", kind: "scalar", repeat: 1 /*RepeatType.PACKED*/, T: 5 /*ScalarType.INT32*/ }
+    ]);
+  }
+  create(value?: PartialMessage<Exam>): Exam {
+    const message = { deadline: 0n, questions: [], answeredQuestionNumbers: [] };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<Exam>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Exam): Exam {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* int64 deadline */ 1:
+          message.deadline = reader.int64().toBigInt();
+          break;
+        case /* repeated session.Question questions */ 2:
+          message.questions.push(Question.internalBinaryRead(reader, reader.uint32(), options));
+          break;
+        case /* repeated int32 answered_question_numbers */ 3:
+          if (wireType === WireType.LengthDelimited) {
+            for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.answeredQuestionNumbers.push(reader.int32());}
+          } else {message.answeredQuestionNumbers.push(reader.int32());}
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: Exam, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* int64 deadline = 1; */
+    if (message.deadline !== 0n) {writer.tag(1, WireType.Varint).int64(message.deadline);}
+    /* repeated session.Question questions = 2; */
+    for (let i = 0; i < message.questions.length; i++) {Question.internalBinaryWrite(message.questions[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();}
+    /* repeated int32 answered_question_numbers = 3; */
+    if (message.answeredQuestionNumbers.length) {
+      writer.tag(3, WireType.LengthDelimited).fork();
+      for (let i = 0; i < message.answeredQuestionNumbers.length; i++) {writer.int32(message.answeredQuestionNumbers[i]);}
+      writer.join();
+    }
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.Exam
@@ -478,6 +886,7 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.answeredQues
 export const Exam = new Exam$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class ExamResult$Type extends MessageType<ExamResult> {
+<<<<<<< HEAD
     constructor() {
         super("session.ExamResult", [
             { no: 1, name: "duration", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
@@ -525,6 +934,55 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.answeredQues
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.ExamResult", [
+      { no: 1, name: "duration", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+      { no: 2, name: "answered_question_numbers", kind: "scalar", repeat: 1 /*RepeatType.PACKED*/, T: 5 /*ScalarType.INT32*/ }
+    ]);
+  }
+  create(value?: PartialMessage<ExamResult>): ExamResult {
+    const message = { duration: 0n, answeredQuestionNumbers: [] };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<ExamResult>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ExamResult): ExamResult {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* int64 duration */ 1:
+          message.duration = reader.int64().toBigInt();
+          break;
+        case /* repeated int32 answered_question_numbers */ 2:
+          if (wireType === WireType.LengthDelimited) {
+            for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.answeredQuestionNumbers.push(reader.int32());}
+          } else {message.answeredQuestionNumbers.push(reader.int32());}
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: ExamResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* int64 duration = 1; */
+    if (message.duration !== 0n) {writer.tag(1, WireType.Varint).int64(message.duration);}
+    /* repeated int32 answered_question_numbers = 2; */
+    if (message.answeredQuestionNumbers.length) {
+      writer.tag(2, WireType.LengthDelimited).fork();
+      for (let i = 0; i < message.answeredQuestionNumbers.length; i++) {writer.int32(message.answeredQuestionNumbers[i]);}
+      writer.join();
+    }
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.ExamResult
@@ -532,6 +990,7 @@ for (let e = reader.int32() + reader.pos; reader.pos < e;) {message.answeredQues
 export const ExamResult = new ExamResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Solution$Type extends MessageType<Solution> {
+<<<<<<< HEAD
     constructor() {
         super("session.Solution", [
             { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
@@ -585,6 +1044,61 @@ class Solution$Type extends MessageType<Solution> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.Solution", [
+      { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+      { no: 2, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
+      { no: 3, name: "code", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 4, name: "scratch_pad", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+    ]);
+  }
+  create(value?: PartialMessage<Solution>): Solution {
+    const message = { questionNumber: 0, language: 0, code: "", scratchPad: "" };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<Solution>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Solution): Solution {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* int32 question_number */ 1:
+          message.questionNumber = reader.int32();
+          break;
+        case /* enums.Language language */ 2:
+          message.language = reader.int32();
+          break;
+        case /* string code */ 3:
+          message.code = reader.string();
+          break;
+        case /* string scratch_pad */ 4:
+          message.scratchPad = reader.string();
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: Solution, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* int32 question_number = 1; */
+    if (message.questionNumber !== 0) {writer.tag(1, WireType.Varint).int32(message.questionNumber);}
+    /* enums.Language language = 2; */
+    if (message.language !== 0) {writer.tag(2, WireType.Varint).int32(message.language);}
+    /* string code = 3; */
+    if (message.code !== "") {writer.tag(3, WireType.LengthDelimited).string(message.code);}
+    /* string scratch_pad = 4; */
+    if (message.scratchPad !== "") {writer.tag(4, WireType.LengthDelimited).string(message.scratchPad);}
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.Solution
@@ -592,6 +1106,7 @@ class Solution$Type extends MessageType<Solution> {
 export const Solution = new Solution$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SubmissionResult$Type extends MessageType<SubmissionResult> {
+<<<<<<< HEAD
     constructor() {
         super("session.SubmissionResult", [
             { no: 1, name: "accepted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
@@ -639,6 +1154,55 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.SubmissionResult", [
+      { no: 1, name: "accepted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+      { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 3, name: "console_output", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+    ]);
+  }
+  create(value?: PartialMessage<SubmissionResult>): SubmissionResult {
+    const message = { accepted: false, message: "", consoleOutput: "" };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<SubmissionResult>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmissionResult): SubmissionResult {
+    const message = target ?? this.create(), end = reader.pos + length;
+    while (reader.pos < end) {
+      const [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* bool accepted */ 1:
+          message.accepted = reader.bool();
+          break;
+        case /* string message */ 2:
+          message.message = reader.string();
+          break;
+        case /* string console_output */ 3:
+          message.consoleOutput = reader.string();
+          break;
+        default:
+          const u = options.readUnknownField;
+          if (u === "throw") {throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);}
+          const d = reader.skip(wireType);
+          if (u !== false) {(u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);}
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: SubmissionResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* bool accepted = 1; */
+    if (message.accepted !== false) {writer.tag(1, WireType.Varint).bool(message.accepted);}
+    /* string message = 2; */
+    if (message.message !== "") {writer.tag(2, WireType.LengthDelimited).string(message.message);}
+    /* string console_output = 3; */
+    if (message.consoleOutput !== "") {writer.tag(3, WireType.LengthDelimited).string(message.consoleOutput);}
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.SubmissionResult
@@ -646,6 +1210,7 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
 export const SubmissionResult = new SubmissionResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class EmptyRequest$Type extends MessageType<EmptyRequest> {
+<<<<<<< HEAD
     constructor() {
         super("session.EmptyRequest", []);
     }
@@ -663,6 +1228,25 @@ class EmptyRequest$Type extends MessageType<EmptyRequest> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.EmptyRequest", []);
+  }
+  create(value?: PartialMessage<EmptyRequest>): EmptyRequest {
+    const message = {};
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<EmptyRequest>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EmptyRequest): EmptyRequest {
+    return target ?? this.create();
+  }
+  internalBinaryWrite(message: EmptyRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.EmptyRequest
@@ -670,6 +1254,7 @@ class EmptyRequest$Type extends MessageType<EmptyRequest> {
 export const EmptyRequest = new EmptyRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class EmptyReply$Type extends MessageType<EmptyReply> {
+<<<<<<< HEAD
     constructor() {
         super("session.EmptyReply", []);
     }
@@ -687,6 +1272,25 @@ class EmptyReply$Type extends MessageType<EmptyReply> {
         if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
         return writer;
     }
+=======
+  constructor() {
+    super("session.EmptyReply", []);
+  }
+  create(value?: PartialMessage<EmptyReply>): EmptyReply {
+    const message = {};
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) {reflectionMergePartial<EmptyReply>(this, message, value);}
+    return message;
+  }
+  internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EmptyReply): EmptyReply {
+    return target ?? this.create();
+  }
+  internalBinaryWrite(message: EmptyReply, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    const u = options.writeUnknownFields;
+    if (u !== false) {(u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);}
+    return writer;
+  }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 }
 /**
  * @generated MessageType for protobuf message session.EmptyReply
@@ -696,6 +1300,7 @@ export const EmptyReply = new EmptyReply$Type();
  * @generated ServiceType for protobuf service session.SessionService
  */
 export const SessionService = new ServiceType("session.SessionService", [
+<<<<<<< HEAD
     { name: "StartSession", options: {}, I: EmptyRequest, O: SessionReply },
     { name: "SubmitPersonalInfo", options: {}, I: PersonalInfo, O: EmptyReply },
     { name: "SubmitBeforeCodeSAM", options: {}, I: SAM, O: EmptyReply },
@@ -704,4 +1309,14 @@ export const SessionService = new ServiceType("session.SessionService", [
     { name: "EndExam", options: {}, I: EmptyRequest, O: ExamResult },
     { name: "SubmitSolution", options: {}, I: Solution, O: SubmissionResult },
     { name: "SubmitAfterCodeSAM", options: {}, I: SAM, O: EmptyReply }
+=======
+  { name: "StartSession", options: {}, I: EmptyRequest, O: SessionReply },
+  { name: "SubmitPersonalInfo", options: {}, I: PersonalInfo, O: EmptyReply },
+  { name: "SubmitBeforeCodeSAM", options: {}, I: SAM, O: EmptyReply },
+  { name: "StartExam", options: {}, I: EmptyRequest, O: Exam },
+  { name: "ResumeExam", options: {}, I: EmptyRequest, O: Exam },
+  { name: "EndExam", options: {}, I: EmptyRequest, O: ExamResult },
+  { name: "SubmitSolution", options: {}, I: Solution, O: SubmissionResult },
+  { name: "SubmitAfterCodeSAM", options: {}, I: SAM, O: EmptyReply }
+>>>>>>> d950fa950c1900ba3ce7fd7fb37d0ea2a3198072
 ]);

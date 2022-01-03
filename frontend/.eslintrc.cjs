@@ -23,5 +23,6 @@ module.exports = {
   },
   rules: {
     "no-extra-parens": "off"
-  }
+  },
+  "ignorePatterns": ["src/stub/*"]
 };
