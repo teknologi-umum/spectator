@@ -6,10 +6,22 @@ services:
     volumes:
       - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
-      # - backend
+      - backend
       - frontend
     networks:
       - host_pub
+
+  backend:
+    image: ${DOCKER_REGISTRY-}backend
+    build: ./backend/Spectator/
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 5000:80
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
 #  backend:
 #    build: ./backend/
@@ -31,8 +43,8 @@ services:
     hostname: fe
     ports:
       - 3000:3000
-    # depends_on:
-      # - backend
+    depends_on:
+      - backend
       # - minio
 
 #  minio:
@@ -72,20 +84,6 @@ services:
 #    restart: always
 #    environment:
 #      - STORAGE_TYPE=mem
-
-  backend:
-    build:
-      context: .
-      dockerfile: ./backend/Spectator/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
 networks:
   host_pub:
