@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import type { UIEventHandler } from "react";
 import {
   Heading,
   Tabs,
@@ -10,7 +12,6 @@ import {
 import CodeMirror from "@uiw/react-codemirror";
 import { lineNumbers } from "@codemirror/gutter";
 import { useCodemirrorTheme, useDebounce } from "@/hooks";
-import { UIEventHandler, useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setScratchPad } from "@/store/slices/editorSlice";
 
@@ -25,7 +26,7 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const { scratchPads } = useAppSelector((state) => state.editor);
 
   const [value, setValue] = useState("");
-  const debouncedValue = useDebounce(value, 1000);
+  const debouncedValue = useDebounce(value, 500);
 
   useEffect(() => {
     const currentScratchPad = scratchPads.find(

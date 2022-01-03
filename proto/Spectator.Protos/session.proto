@@ -63,9 +63,12 @@ message SubmissionRequest {
 }
 
 message SubmissionResult {
+	message TestResult {
+		bool success = 1;
+		string message = 2;
+	}
 	bool accepted = 1;
-	string error_message = 2;
-	string console_output = 3;
+	repeated TestResult test_results = 2;
 }
 
 message EmptyRequest {

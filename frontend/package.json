@@ -8,6 +8,10 @@
     "build:prod": "tsc --skipLibCheck && vite build",
     "lint:fix": "eslint --fix --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
     "lint:check": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx,.jsx .",
+    "test:coverage": "vitest run --coverage",
+    "test:open": "vitest --open",
+    "test:watch": "vitest",
+    "test": "vitest run",
     "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto"
   },
   "dependencies": {
@@ -31,6 +35,7 @@
     "@reduxjs/toolkit": "^1.7.1",
     "@svgr/rollup": "^6.1.2",
     "@teknologi-umum/eslint-config-typescript": "^0.0.5",
+    "@testing-library/react": "^12.1.2",
     "@types/node": "^17.0.0",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
@@ -39,12 +44,17 @@
     "@typescript-eslint/parser": "^5.7.0",
     "@uiw/react-codemirror": "^4.3.1",
     "@vitejs/plugin-react": "^1.0.7",
+    "@vitest/ui": "^0.0.125",
+    "babel-jest": "^27.4.5",
+    "c8": "^7.11.0",
     "eslint": "^8.4.1",
     "eslint-plugin-react": "^7.27.1",
     "framer-motion": "^4.1.17",
+    "jsdom": "^19.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.22.1",
+    "react-icons": "^4.3.1",
     "react-markdown": "^7.1.1",
     "react-redux": "^7.2.6",
     "react-reflex": "^4.0.3",
@@ -53,6 +63,7 @@
     "redux-persist": "^6.0.0",
     "typescript": "^4.4.4",
     "vite": "^2.7.2",
+    "vitest": "^0.0.125",
     "yup": "^0.32.11"
   }
 }

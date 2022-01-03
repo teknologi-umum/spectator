@@ -1,4 +1,5 @@
-﻿using Spectator.Primitives;
+﻿using System.Collections.Immutable;
+using Spectator.Primitives;
 
 namespace Spectator.DomainModels.SubmissionDomain {
 	public record Submission(
@@ -6,8 +7,7 @@ namespace Spectator.DomainModels.SubmissionDomain {
 		Language Language,
 		string Solution,
 		string ScratchPad,
-		string? ErrorMessage,
-		string ConsoleOutput,
+		ImmutableArray<TestResult> TestResults,
 		bool Accepted
 	);
 }

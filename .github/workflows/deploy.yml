@@ -84,6 +84,8 @@ jobs:
         run: npm run lint:check
       - name: Build
         run: npm run build:prod
+      - name: Test
+        run: npm run test:coverage
   # configs:
   #   name: Verify config
   #   runs-on: ubuntu-latest
