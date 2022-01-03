@@ -1,0 +1,37 @@
+[
+  {
+    "session_id": "a12",
+    "type": "code_test_attempt",
+    "question_number": 1,
+    "code": "aoe",
+    "language": "c++"
+  },
+  {
+    "session_id": "a12",
+    "type": "code_test_attempt",
+    "question_number": 2,
+    "code": "aoe",
+    "language": "c++"
+  },
+  {
+    "session_id": "a12",
+    "type": "code_test_attempt",
+    "question_number": 1,
+    "code": "aoe",
+    "language": "c++"
+  },
+  {
+    "session_id": "a12",
+    "type": "code_test_attempt",
+    "question_number": 3,
+    "code": "aoe",
+    "language": "java"
+  },
+  {
+    "session_id": "a12",
+    "type": "code_submit",
+    "question_number": 1,
+    "code": "aoe",
+    "language": "c++"
+  }
+]

@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
 import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
@@ -15,6 +16,9 @@ import {
   Button
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
+import ThemeButton from "@/components/ThemeButton";
+import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
+import { withPublic } from "@/hoc";
 
 interface FormValues {
   stdNo: string;
@@ -23,10 +27,14 @@ interface FormValues {
   programmingLanguage: string;
 }
 
-export default function PersonalInfo() {
+function PersonalInfo() {
   const dispatch = useAppDispatch();
-  const personalInfo = useAppSelector((state) => state.personalInfo);
+  const personalInfo = useAppSelector<PersonalInfoState>(
+    (state) => state.personalInfo
+  );
   const navigate = useNavigate();
+  const bg = useColorModeValue("white", "gray.700");
+  const fg = useColorModeValue("gray.800", "gray.100");
 
   const {
     register,
@@ -34,7 +42,8 @@ export default function PersonalInfo() {
     formState: { errors }
   } = useForm({
     defaultValues: personalInfo,
-    resolver: yupResolver(PersonalInfoSchema)
+    resolver: yupResolver(PersonalInfoSchema),
+    reValidateMode: "onBlur"
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
@@ -43,72 +52,102 @@ export default function PersonalInfo() {
   };
 
   useEffect(() => {
+    document.title = "Personal Info | Spectator";
+  }, []);
+
+  useEffect(() => {
     // eslint-disable-next-line
     console.log("errors", errors);
   }, [errors]);
 
   return (
     <Layout>
+      <ThemeButton position="fixed" />
       <Box
         as="form"
         onSubmit={handleSubmit(onSubmit)}
         boxShadow="xl"
         p="8"
         rounded="md"
-        bg="white"
         maxW="container.sm"
         mx="auto"
+        bg={bg}
+        color={fg}
       >
-        <Heading size="lg" textAlign="center" fontWeight="700" color="gray.700">
+        <Heading size="lg" textAlign="center" fontWeight="700">
           Personal Basic Info
         </Heading>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>Student Number</FormLabel>
-          <Input type="text" {...register("stdNo")} autoComplete="off" />
-        </FormControl>
+        <Box>
+          {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
+          <FormControl id="email" mt="6" isInvalid={errors.stdNo !== undefined}>
+            <FormLabel>Student Number</FormLabel>
+            <Input type="text" {...register("stdNo")} autoComplete="off" />
+            <FormErrorMessage>{errors?.stdNo?.message}!</FormErrorMessage>
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>How many years have you been doing programming?</FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExp")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.programmingExp !== undefined}
+          >
+            <FormLabel>
+              How many years have you been doing programming?
+            </FormLabel>
+            <Input
+              type="number"
+              {...register("programmingExp")}
+              autoComplete="off"
+            />
+            <FormErrorMessage>
+              {errors?.programmingExp?.message}!
+            </FormErrorMessage>
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            How many hours in a week do you practice programming?
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingExercise")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.programmingExercise !== undefined}
+          >
+            <FormLabel>
+              How many hours in a week do you practice programming?
+            </FormLabel>
+            <Input
+              type="number"
+              {...register("programmingExercise")}
+              autoComplete="off"
+            />
+            <FormErrorMessage>
+              {errors?.programmingExercise?.message}!
+            </FormErrorMessage>
+          </FormControl>
 
-        <FormControl id="email" mt="6" isRequired>
-          <FormLabel>
-            What programming languages are you familiar with (ex: Java, Python,
-            C)
-          </FormLabel>
-          <Input
-            type="number"
-            {...register("programmingLanguage")}
-            autoComplete="off"
-          />
-        </FormControl>
+          <FormControl
+            id="email"
+            mt="6"
+            isInvalid={errors.programmingLanguage !== undefined}
+          >
+            <FormLabel>
+              What programming languages are you familiar with (ex: Java,
+              Python, C)
+            </FormLabel>
+            <Input
+              type="text"
+              {...register("programmingLanguage")}
+              autoComplete="off"
+            />
+            <FormErrorMessage>
+              {errors?.programmingLanguage?.message}!
+            </FormErrorMessage>
+          </FormControl>
+        </Box>
 
         <Button
           colorScheme="blue"
           mx="auto"
           mt="6"
+          type="submit"
           display="block"
-          onClick={() => {
-            // FIXME: proper navigation logic
-            navigate("/instructions");
-          }}
         >
           Continue
         </Button>
@@ -116,3 +155,5 @@ export default function PersonalInfo() {
     </Layout>
   );
 }
+
+export default withPublic(PersonalInfo);

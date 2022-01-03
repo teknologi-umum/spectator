@@ -12,11 +12,16 @@ body,
 }
 
 *::-webkit-scrollbar {
-  width: 0.5rem;
-  background-color: #edf2f7;
+  width: 1rem;
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: rgba(0, 0, 0, 0);
 }
 
 *::-webkit-scrollbar-thumb {
-  width: 0.5rem;
-  background-color: #cbd5e0;
+  border: 0.3rem solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 9999px;
+  background-color: var(--chakra-colors-gray-300);
 }

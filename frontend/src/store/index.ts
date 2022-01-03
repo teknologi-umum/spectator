@@ -1,14 +1,52 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { personalInfoReducer, questionReducer } from "./slices";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import {
+  personalInfoReducer,
+  editorReducer,
+  questionReducer,
+  jwtReducer
+} from "./slices";
+
+// see: https://vitejs.dev/guide/env-and-mode.html#modes
+const isDev = import.meta.env.MODE === "development";
+
+const persistConfig = {
+  key: "root",
+  version: 1,
+  whitelist: ["jwt"],
+  storage
+};
+
+const rootReducer = combineReducers({
+  personalInfo: personalInfoReducer,
+  editor: editorReducer,
+  question: questionReducer,
+  jwt: jwtReducer
+});
 
 const store = configureStore({
-  devTools: true,
-  reducer: {
-    personalInfo: personalInfoReducer,
-    question: questionReducer
-  }
+  devTools: isDev,
+  reducer: persistReducer(persistConfig, rootReducer),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+      }
+    })
 });
+
+const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -17,4 +55,4 @@ export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = (): AppDispatch => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-export default store;
+export { store, persistor };
