@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}"
 	ProjectSection(SolutionItems) = preProject
 		backend\.editorconfig = backend\.editorconfig
+		backend\.gitignore = backend\.gitignore
 		backend\Directory.Build.props = backend\Directory.Build.props
 	EndProjectSection
 EndProject
