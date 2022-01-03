@@ -14,26 +14,23 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func (d *Dependency) writeIntoLog(ctx context.Context, p Payload) error {
-	// write defaults first
-	if p.Data.Environment == "" {
-		p.Data.Environment = "unset"
-	}
+type LogPayload struct {
+	AccessToken string    `json:"access_token" msgpack:"access_token"`
+	Data        []LogData `json:"data" msgpack:"data"`
+}
 
-	if p.Data.Level == "" {
-		p.Data.Level = "debug"
-	}
+type LogData struct {
+	RequestID   string            `json:"request_id" msgpack:"request_id"`
+	Application string            `json:"application" msgpack:"application"`
+	Message     string            `json:"message" msgpack:"message"`
+	Body        map[string]string `json:"body" msgpack:"body"`
+	Level       string            `json:"level" msgpack:"level"`
+	Environment string            `json:"environment" msgpack:"environment"`
+	Language    string            `json:"language" msgpack:"language"`
+	Timestamp   time.Time         `json:"timestamp" msgpack:"timestamp"`
+}
 
-	if p.Data.Timestamp.IsZero() {
-		p.Data.Timestamp = time.Now()
-	}
-
-	// convert body into json as influxdb doesnt accept map
-	bodyBytes, err := json.Marshal(p.Data.Body)
-	if err != nil {
-		return fmt.Errorf("marshalling json: %v", err)
-	}
-
+func (d *Dependency) writeIntoLog(ctx context.Context, p []LogData) error {
 	// recovering here in case of any error
 	defer func() {
 		r := recover()
@@ -41,24 +38,52 @@ func (d *Dependency) writeIntoLog(ctx context.Context, p Payload) error {
 			log.Printf("panic: %v", r.(error))
 		}
 	}()
-	writeAPI := d.DB.WriteAPI(d.Org, "log")
-	point := influxdb2.NewPoint(
-		p.Data.Level,
-		map[string]string{
-			"request_id":  p.Data.RequestID,
-			"application": p.Data.Application,
-			"environment": p.Data.Environment,
-		},
-		map[string]interface{}{
-			"language": p.Data.Language,
-			"message":  hex.EncodeToString([]byte(p.Data.Message)),
-			"body":     hex.EncodeToString(bodyBytes),
-		},
-		p.Data.Timestamp,
-	)
 
-	writeAPI.WritePoint(point)
+	writeAPI := d.DB.WriteAPI(d.Org, "log")
+
+	for index, payload := range p {
+		// write defaults first
+		if payload.Environment == "" {
+			payload.Environment = "UNSET"
+		}
+
+		if payload.Level == "" {
+			payload.Level = "DEBUG"
+		}
+
+		if payload.Timestamp.IsZero() {
+			payload.Timestamp = time.Now()
+		}
+
+		// convert body into json as influxdb doesnt accept map
+		bodyBytes, err := json.Marshal(payload.Body)
+		if err != nil {
+			return fmt.Errorf("payload index: %d, marshalling json: %v", index, err)
+		}
+
+		point := influxdb2.NewPoint(
+			payload.Level,
+			map[string]string{
+				"request_id":  payload.RequestID,
+				"application": payload.Application,
+				"environment": payload.Environment,
+			},
+			map[string]interface{}{
+				"language": payload.Language,
+				"message":  hex.EncodeToString([]byte(payload.Message)),
+				"body":     hex.EncodeToString(bodyBytes),
+			},
+			payload.Timestamp,
+		)
+
+		writeAPI.WritePoint(point)
+	}
+
 	writeAPI.Flush()
+	err := writeAPI.Errors()
+	if err != nil {
+		return fmt.Errorf("writing into log: %v", err)
+	}
 	return nil
 }
 
@@ -108,25 +133,25 @@ func buildQuery(q queries) string {
 	return str.String()
 }
 
-func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]Data, error) {
+func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, error) {
 	queryAPI := d.DB.QueryAPI(d.Org)
 	// build query for influx
 	queryStr := buildQuery(query)
 
 	rows, err := queryAPI.Query(ctx, queryStr)
 	if err != nil {
-		return []Data{}, err
+		return []LogData{}, err
 	}
 
 	defer rows.Close()
 
-	var output []Data
-	var temp Data
+	var output []LogData
+	var temp LogData
 	var lastTableIndex int = -1
 	for rows.Next() {
 		unmarshaledRow, err := unmarshalInfluxRow(rows.Record().String())
 		if err != nil {
-			return []Data{}, err
+			return []LogData{}, err
 		}
 
 		tableStr, ok := unmarshaledRow["table"].(string)
@@ -136,7 +161,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]Data, error
 
 		table, err := strconv.Atoi(tableStr)
 		if err != nil {
-			return []Data{}, err
+			return []LogData{}, err
 		}
 		if table == lastTableIndex {
 			switch unmarshaledRow["_field"].(string) {
@@ -144,12 +169,12 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]Data, error
 				bodyJSON := unmarshaledRow["_value"].(string)
 				bodyBytes, err := hex.DecodeString(bodyJSON)
 				if err != nil {
-					return []Data{}, err
+					return []LogData{}, err
 				}
-				body := make(map[string]interface{}, 100)
+				body := make(map[string]string, 100)
 				err = json.Unmarshal(bodyBytes, &body)
 				if err != nil {
-					return []Data{}, err
+					return []LogData{}, err
 				}
 				temp.Body = body
 			case "language":
@@ -157,7 +182,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]Data, error
 			case "message":
 				messageBytes, err := hex.DecodeString(unmarshaledRow["_value"].(string))
 				if err != nil {
-					return []Data{}, err
+					return []LogData{}, err
 				}
 				temp.Message = string(messageBytes)
 			}

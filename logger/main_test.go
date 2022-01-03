@@ -4,16 +4,28 @@ import (
 	"context"
 	"log"
 	logger "logger"
+	pb "logger/proto"
+	"net"
 	"os"
 	"testing"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 var db influxdb2.Client
 var influxOrg string
 var accessToken string
+
+const bufSize = 1024 * 1024
+
+var lis *bufconn.Listener
+
+func bufDialer(context.Context, string) (net.Conn, error) {
+	return lis.Dial()
+}
 
 func TestMain(m *testing.M) {
 	influxURL, ok := os.LookupEnv("INFLUX_URL")
@@ -60,7 +72,7 @@ func TestMain(m *testing.M) {
 	db = influxdb2.NewClient(influxURL, influxToken)
 	defer db.Close()
 
-	deps := logger.Dependency{
+	deps := &logger.Dependency{
 		DB:          db,
 		Org:         influxOrg,
 		AccessToken: accessToken,
@@ -73,6 +85,15 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed preparing bucket: %v", err)
 	}
+
+	lis = bufconn.Listen(bufSize)
+	s := grpc.NewServer()
+	pb.RegisterLoggerServer(s, deps)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("Server exited with error: %v", err)
+		}
+	}()
 
 	os.Exit(m.Run())
 }
