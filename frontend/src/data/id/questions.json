@@ -54,28 +54,28 @@
     },
     {
       "id": 5,
-      "question": "Bagus, apabila kamu disini maka kamu seharusnya sudah menemukan berapa banyak\ntenaga yang dibutuhkan untuk menghidupkan penghangat ruangan, namun ada suatu\nmasalah. Kamu tidak merasa cukup hangat. Kamu memutuskan untuk membuka situs\npencarian favoritmu untuk mencari bagaimana caranya membuat penghangat ruangan\nmenjadi lebih hangat dan menemukan sebuah artikel yang mengatakan untuk\nmeletakkan berlian di atas penghangat untuk membuatnya menjadi lebih hangat.\n\nUntuk membuat sebuah berlian menggunakan kode, buatlah sebuah _function_ yang menerima\nbilangan ganjil yang akan menentukan tinggi berlian kemudian cetak bentuk\nberlian tersebut. Contoh:\n\n**Input:**\n\n```\nmakeDiamond(7)\n```\n\n\n**Output yang diharapkan:**\n```\n   *\n  ***\n *****\n*******\n *****\n  ***\n   *\n```\n\n**Batasan:**\n  - Tingginya akan selalu bernilai ganjil\n  - Tingginya tidak akan pernah melebihi 100\n  - Tingginya tidak akan pernah negatif\n",
-      "title": "Diamond Shape",
+      "question": "Bagus, kalau kamu disini berarti kamu telah menemukan berapa banyak tenaga yang\ndibutuhkan untuk menghidupkan penghangat ruangan, namun ada satu masalah. Kamu\npikir ini masih kurang hangat. Kamu jadi geram dan melontarkan ucapan yang\ntidak jelas. Q-Aa-Bbb-Ffff-Nnnnnn, atau semacamnya.\n\nSetelah beberapa saat, kamu mengenali pola dalam ucapan tidak jelasmu. Kamu\nmemutuskan untuk membuat sebuah program untuk menghasilkan ucapan yang sama\nberdasarkan abjad yang acak. Kamu seharusnya bisa mengenali polanya tanpa perlu\npenjelasan.\n\n**Input:**\n\n```\nmumble(\"QwertY\")\nmumble(\"bruh\")\nmumble(\"asdfb\")\n```\n\n\n**Output yang diharapkan:**\n```\nQ-Ww-Eee-Rrrr-Ttttt-Yyyyyy\nB-Rr-Uuu-Hhhh\nA-Ss-Ddd-Ffff-Bbbb\n```\n",
+      "title": "Mumbling",
       "templates": {
-        "c": "void makeDiamond(int height) {\n    // tulis kode kamu disini\n}",
-        "cpp": "void makeDiamond(int height) {\n    // tulis kode kamu disini\n}",
-        "java": "class Diamond {\n    public void makeDiamond(int height) {\n        // tulis kode kamu disini\n    }\n}",
-        "javascript": "function makeDiamond(height) {\n    |\n}\n",
-        "php": "function makeDiamond(int height) {\n    // tulis kode kamu disini\n}",
-        "python": "def makeDiamond(height: int) -> None:\n    // tulis kode kamu disini"
+        "c": "void mumble() {\n    // tulis kode kamu disini\n}",
+        "cpp": "void mumble() {\n    // tulis kode kamu disini\n}",
+        "java": "class Mumble {\n    public void mumble() {\n        // tulis kode kamu disini\n    }\n}",
+        "javascript": "function mumble() {\n    // tulis kode kamu disini\n}\n",
+        "php": "function mumble() {\n    // tulis kode kamu disini\n}",
+        "python": "def mumble() -> None:\n    // tulis kode kamu disini"
       }
     },
     {
       "id": 6,
-      "question": "Phew, kerja bagus. Kamu meletakkannya di atas penghangat ruangan dan berharap\nitu akan berhasil, namun itu malah membuat suara aneh dan suhunya tidak menjadi\nlebih hangat. Kamu mundur karena merasa sedikit ketakutan. Beberapa detik\nkemudian, ada sebuah portal muncul diatas penghangat ruangan. Portal itu\nmenghisapmu ke dalam.\n\nKamu pingsan setelah terhisap ke dalam dan akhirnya terbangun. Kamu tidak tahu\ndimana kamu berada. Satu satunya hal yang kamu tahu adalah kamu berada di dalam\nruangan gelap dan terdapat sebuah komputer di tengah ruangan. Kamu mengira\nterdapat sebuah catatan di layar komputer tersebut jadi kamu segera berlari\nmenuju komputer dan membaca catatan tersebut. Catatan itu berkata:\n\n```\nSalam, manusia fana. Jika kamu membaca ini maka kamu mungkin sedang frustrasi.\nBagaimana kamu bisa sampai di sini? Di mana tempat ini? Siapa aku? Pertanyaan\nitu tidaklah relevan. Pertanyaan sebenarnya adalah, apakah kamu ingin menjadi\nsalah satu dari mereka yang telah terpilih? Kamu hanya selangkah lagi untuk\nmenjadi salah satu diantara mereka.\n\nApabila kamu dapat membuat piramida angka, aku akan membantumu keluar. Apabila\nkamu tidak bisa, yah, katakan selamat tinggal pada dunia ini.\n\nCepatlah, waktu selalu bergerak.\n\nNB: uhh, kalau kamu masih belum tau, batas waktunya ada di pojok kiri atas.\n```\n\nKamu merasa kebingungan dan ketakutan jadi kamu berusaha untuk melakukan apa\nyang catatan itu minta. Membuat piramida angka. Contoh:\n\n**Input:**\n```\nmakePyramid(7)\n```\n\n\n**Output yang diharapkan:**\n```\n      1\n     2 2\n    3 3 3\n   4 4 4 4\n  5 5 5 5 5\n 6 6 6 6 6 6\n7 7 7 7 7 7 7\n```\n\n**Batasan:**\n  - Tingginya akan selalu bernilai ganjil\n  - Tingginya tidak akan pernah melebihi 100\n  - Tingginya tidak akan pernah bernilai negatif\n",
-      "title": "Pyramid of Numbers",
+      "question": "Bagus, sekarang saatnya pertanyaan terakhir. Kamu harus membantuku menentukan\nbagaimana caranya melakukan penilaian untuk _coding challenge_ ini. (iya, yang\nsudah kamu kerjakan selama kurang lebih 90 menit). Ini beberapa aturan yang\nharus kamu pertimbangkan ketika kamu membuat program yang akan menghitung hasil\nakhir nilai secara otomatis.\n\n- Every student receives a grade in the inclusive range from 0 to 100.\n- Any grade less than 40 is a failing grade.\n- If the difference between the grade and the next multiple of 5 is less than 3, round the grade up to the next multiple of 5.\n- If the value of the grade is less than 38, no rounding occurs as the result will still be a failing grade.\n\nI'll give you some examples:\n\n**Input:**\n```\ncalculateGrade(73)\ncalculateGrade(38)\ncalculateGrade(84)\ncalculateGrade(32)\ncalculateGrade(69)\n```\n\n\n**Output yang diharapkan:**\n```\n75\n40\n85\n32\n70\n```\n\n**Constraints:**\n  - Input akan selalu memiliki tipe data 32bit unsigned integer\n",
+      "title": "Grade System",
       "templates": {
-        "c": "void makePyramid(int height) {\n    // tulis kode kamu disini\n}",
-        "cpp": "void makePyramid(int height) {\n    // tulis kode kamu disini\n}",
-        "java": "class Pyramid {\n    public void makePyramid(int height) {\n        // tulis kode kamu disini\n    }\n}",
-        "javascript": "function makePyramid(height) {\n    // tulis kode kamu disini\n}",
-        "php": "function makePyramid(int height) {\n    // tulis kode kamu disini\n}",
-        "python": "def makePyramid(height: int) -> None:\n    // tulis kode kamu disini"
+        "c": "#include <stdint.h>\n\nvoid calculateGrade(uint32_t grade) {\n    // tulis kode kamu disini\n}",
+        "cpp": "#include <stdint.h>\n\nvoid calculateGrade(uint32_t grade) {\n    // tulis kode kamu disini\n}",
+        "java": "class Grade {\n    public void calculateGrade(int grade) {\n        // tulis kode kamu disini\n    }\n}",
+        "javascript": "function calculateGrade(grade) {\n    // tulis kode kamu disini\n}",
+        "php": "function calculateGrade(int grade) {\n    // tulis kode kamu disini\n}",
+        "python": "def calculateGrade(grade: int) -> int:\n    // tulis kode kamu disini"
       }
     }
   ]

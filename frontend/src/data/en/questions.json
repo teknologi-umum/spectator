@@ -54,28 +54,28 @@
     },
     {
       "id": 5,
-      "question": "Great, if you're here then you must've found the power needed to turn on\nthe heater, but here's the problem. You don't think it's warm enough. You\ndecided to go to your favourite search engine to find how to make it\nwarmer and found an article telling you to place a diamond on top of the\nheater to make it warmer. You decided to find a diamond in your house\nbut you couldn't find it, so you decided to make one.\n\nIn order to make a diamond using code, create a function that receives an\nodd integer which will defines the diamond's height and then print the diamond\nshape. Here's an example:\n\n**Input:**\n\n```\nmakeDiamond(7)\n```\n\n\n**Expected output:**\n```\n   *\n  ***\n *****\n*******\n *****\n  ***\n   *\n```\n\n**Constraints:**\n  - The height will always be odd\n  - The height will never exceeds 100\n  - The height will never be negative\n",
-      "title": "Diamond Shape",
+      "question": "Great, if you're here then you must've found the power needed to turn on\nthe heater, but here's the problem. You don't think it's warm enough. You\ngot furious and starts spouting non sense. Q-Aa-Bbb-Ffff-Nnnnnn, or something\nalong those lines.\n\nAfter a moment, you -- for some weird reason -- recognise a pattern in your\nnonsense mumbling. You decided to make an program to generate the same\nmumbling that you were saying based on some random alphabet because you have\nnothing better to do. No time to explain, you should be able to recognise the\npattern by yourself.\n\n**Input:**\n\n```\nmumble(\"QwertY\")\nmumble(\"bruh\")\nmumble(\"asdfb\")\n```\n\n\n**Expected output:**\n```\nQ-Ww-Eee-Rrrr-Ttttt-Yyyyyy\nB-Rr-Uuu-Hhhh\nA-Ss-Ddd-Ffff-Bbbb\n```\n",
+      "title": "Mumbling",
       "templates": {
-        "c": "void makeDiamond(int height) {\n    // write your code here\n}",
-        "cpp": "void makeDiamond(int height) {\n    // write your code here\n}",
-        "java": "class Diamond {\n    public void makeDiamond(int height) {\n        // write your code here\n    }\n}",
-        "javascript": "function makeDiamond(height) {\n    |\n}\n",
-        "php": "function makeDiamond(int height) {\n    // write your code here\n}",
-        "python": "def makeDiamond(height: int) -> None:\n    // write your code here"
+        "c": "void mumble() {\n    // write your code here\n}",
+        "cpp": "void mumble() {\n    // write your code here\n}",
+        "java": "class Mumble {\n    public void mumble() {\n        // write your code here\n    }\n}",
+        "javascript": "function mumble() {\n    // write your code here\n}\n",
+        "php": "function mumble() {\n    // write your code here\n}",
+        "python": "def mumble() -> None:\n    // write your code here"
       }
     },
     {
       "id": 6,
-      "question": "Phew, you did a great job on making the diamond. You placed it on top of\nthe heater and you think it would work, but apparently it made a strange\nnoise and the temperature doesn't get warmer. You back off a little\nbecause you're scared. A few seconds later there's a portal appeared on\ntop of the heater. The portal sucked you in.\n\nYou fainted after got sucked in and finally woke up. You don't know where\nyou are. The only thing you know is you're in a dark room and there's a\ncomputer in the center of the room. You think there's a note on the screen\nso you quickly ran to the computer and read the note. Here's what it says:\n\n```\nGreetings, mortal human. If you're reading this then you're probably\nfrustrated. How did you got here in the first place? Where is this place?\nWho am I? Those question are irrelevant. The real question is, do you\nwant to be one of the chosen ones? You're just one step away from being\none of them.\n\nIf you can make a pyramid of numbers, I will help you get out. If you\ncan't, well, say good bye to the this world then.\n\nHurry up, time is always ticking.\n\nPS: uhh, if you don't know yet, which you should've known by now, the\ntime limit is on the top left of the screen\n```\n\nYou feel confused and scared so you try to do what the note wants you to\ndo. Make a pyramid of numbers. Here's an example:\n\n**Input:**\n```\nmakePyramid(7)\n```\n\n\n**Expected output:**\n```\n      1\n     2 2\n    3 3 3\n   4 4 4 4\n  5 5 5 5 5\n 6 6 6 6 6 6\n7 7 7 7 7 7 7\n```\n\n**Constraints:**\n  - The height will always be odd\n  - The height will never exceeds 100\n  - The height will never be negative\n",
-      "title": "Pyramid of Numbers",
+      "question": "Great, now into the final question. You need to help me decide how to do the\nscoring for this coding challenge (you know, that one that you've been doing\nfor the past 90 minutes or so). Here are the rules that you need to consider\nwhen making a program to automagically do the hard work for you.\n\n- Every student receives a grade in the inclusive range from 0 to 100.\n- Any grade less than 40 is a failing grade.\n- If the difference between the grade and the next multiple of 5 is less than 3, round the grade up to the next multiple of 5.\n- If the value of the grade is less than 38, no rounding occurs as the result will still be a failing grade.\n\nI'll give you some examples:\n\n**Input:**\n```\ncalculateGrade(73)\ncalculateGrade(38)\ncalculateGrade(84)\ncalculateGrade(32)\ncalculateGrade(69)\n```\n\n\n**Expected output:**\n```\n75\n40\n85\n32\n70\n```\n\n**Constraints:**\n  - The input is always a 32bit unsigned integer\n",
+      "title": "Grade System",
       "templates": {
-        "c": "void makePyramid(int height) {\n    // write your code here\n}",
-        "cpp": "void makePyramid(int height) {\n    // write your code here\n}",
-        "java": "class Pyramid {\n    public void makePyramid(int height) {\n        // write your code here\n    }\n}",
-        "javascript": "function makePyramid(height) {\n    // write your code here\n}",
-        "php": "function makePyramid(int height) {\n    // write your code here\n}",
-        "python": "def makePyramid(height: int) -> None:\n    // write your code here"
+        "c": "#include <stdint.h>\n\nvoid calculateGrade(uint32_t grade) {\n    // write your code here\n}",
+        "cpp": "#include <stdint.h>\n\nvoid calculateGrade(uint32_t grade) {\n    // write your code here\n}",
+        "java": "class Grade {\n    public void calculateGrade(int grade) {\n        // write your code here\n    }\n}",
+        "javascript": "function calculateGrade(grade) {\n    // write your code here\n}",
+        "php": "function calculateGrade(int grade) {\n    // write your code here\n}",
+        "python": "def calculateGrade(grade: int) -> int:\n    // write your code here"
       }
     }
   ]
