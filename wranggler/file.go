@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -17,6 +18,10 @@ import (
 	pb "worker/proto"
 )
 
+type DataAnu interface {
+	Anu()
+}
+
 type MouseMovement struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
 	Type           string    `json:"type" csv:"type"`
@@ -28,6 +33,8 @@ type MouseMovement struct {
 	WindowHeight   int64     `json:"window_height" csv:"window_height"`
 	Timestamp      time.Time `json:"_timestap" csv:"_timestamp"`
 }
+
+func (_ MouseMovement) Anu() {}
 
 type Keystroke struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
@@ -43,6 +50,8 @@ type Keystroke struct {
 	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
 }
 
+func (_ Keystroke) Anu() {}
+
 type MouseClick struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
 	Type           string    `json:"type" csv:"type"`
@@ -52,6 +61,8 @@ type MouseClick struct {
 	MiddleClick    bool      `json:"middle_click" csv:"middle_click"`
 	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
 }
+
+func (_ MouseClick) Anu() {}
 
 type PersonalInfo struct {
 	Type              string    `json:"type" csv:"type"`
@@ -63,6 +74,8 @@ type PersonalInfo struct {
 	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
 }
 
+func (_ PersonalInfo) Anu() {}
+
 type SamTest struct {
 	SessionID    string    `json:"session_id" csv:"session_id"`
 	Type         string    `json:"type" csv:"type"`
@@ -70,6 +83,8 @@ type SamTest struct {
 	PleasedLevel int64     `json:"pleased_level" csv:"pleased_level"`
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
 }
+
+func (_ SamTest) Anu() {}
 
 // GenerateFile is the handler for generating file into CSV and JSON based on
 // the input data (which only contains the Session ID).
@@ -374,6 +389,12 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		outputSamTest = append(outputSamTest, tempSamTest)
 	}
 
+	keystrokeJSON, _ := ConvertDataToJSON(outputKeystroke)
+	keystrokeCSV, _ := ConvertDataToCSV(outputKeystroke)
+	// mouseClickJSON, _ := ConvertDataToJSON(outputMouseClick)
+	fmt.Println(keystrokeJSON)
+	fmt.Println(keystrokeCSV)
+
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
 	//
@@ -414,7 +435,7 @@ func UnmarshalInfluxRow(row string) (map[string]interface{}, error) {
 	return output, nil
 }
 
-func ConvertDataToJSON(input []interface{}) ([]byte, error) {
+func ConvertDataToJSON(input interface{}) ([]byte, error) {
 	data, err := json.MarshalIndent(input, "", " ")
 	if err != nil {
 		return []byte{}, err
@@ -423,7 +444,12 @@ func ConvertDataToJSON(input []interface{}) ([]byte, error) {
 	return data, err
 }
 
-func ConvertDataToCSV(input []interface{}) ([]byte, error) {
+func ConvertDataToCSV(inputp interface{}) ([]byte, error) {
+	input, ok := inputp.([]interface{})
+	if !ok {
+		return []byte{}, errors.New("Fail to infer")
+	}
+
 	w := &bytes.Buffer{}
 	writer := csv.NewWriter(w)
 	// Because csv package does not have something like
