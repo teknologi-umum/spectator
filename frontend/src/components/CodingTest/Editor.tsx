@@ -1,3 +1,5 @@
+import React, { useEffect, useState, useMemo } from "react";
+import type { UIEventHandler } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror, { keymap } from "@uiw/react-codemirror";
 import { defaultKeymap } from "@codemirror/commands";
@@ -7,12 +9,12 @@ import { php } from "@codemirror/lang-php";
 import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
-import { useCodemirrorTheme } from "@/hooks";
-import { questions } from "@/data/questions.json";
-import { useAppSelector } from "@/store";
-import type { InitialState as EditorState } from "@/store/slices/editorSlice/types";
-import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
-import type { UIEventHandler } from "react";
+import { useCodemirrorTheme, useColorModeValue } from "@/hooks";
+// TODO: this should be automatically inferred (en/id) when we have proper i18n
+import { questions } from "@/data/en/questions.json";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { setSolution } from "@/store/slices/editorSlice";
+import { useDebounce } from "@/hooks";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -30,24 +32,69 @@ interface EditorProps {
 }
 
 export default function Editor({ bg, onScroll }: EditorProps) {
+  const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const { currentQuestion } = useAppSelector<QuestionState>(
-    (state) => state.question
-  );
-  const { currentLanguage } = useAppSelector<EditorState>(
+  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const { currentQuestion } = useAppSelector((state) => state.question);
+  const { solutions, currentLanguage } = useAppSelector(
     (state) => state.editor
   );
+  // memoized the question
+  const boilerplate = useMemo(() => {
+    return questions[currentQuestion].templates[currentLanguage];
+  }, [currentQuestion, currentLanguage]);
+
+  const [code, setCode] = useState("");
+  const debouncedCode = useDebounce(code, 500);
+
+  // at first render, we have to check if the data of current solution
+  // already persisted. If so, we assign it with setCode.
+  // else, we assign it with boilerplate and dispatch to persist store at the same time
+  useEffect(() => {
+    const currentSolution = solutions.find(
+      (solution) =>
+        solution.questionNo === currentQuestion &&
+        solution.language === currentLanguage
+    );
+
+    if (currentSolution !== undefined) {
+      setCode(currentSolution.code);
+    } else {
+      setCode(boilerplate);
+      dispatch(
+        setSolution({
+          questionNo: currentQuestion,
+          language: currentLanguage,
+          code: boilerplate
+        })
+      );
+    }
+  }, [currentQuestion, currentLanguage]);
+
+  useEffect(() => {
+    dispatch(
+      setSolution({
+        questionNo: currentQuestion,
+        language: currentLanguage,
+        code: debouncedCode
+      })
+    );
+  }, [debouncedCode]);
+
+  function handleChange(value: string) {
+    setCode(value);
+  }
 
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs h="full">
-        <TabList>
+        <TabList borderColor={borderBg}>
           <Tab>Your Solution</Tab>
         </TabList>
         <TabPanels h="full">
           <TabPanel p="2" h="full" position="relative" tabIndex={-1}>
             <CodeMirror
-              value={questions[currentQuestion].templates[currentLanguage]}
+              value={code}
               extensions={[
                 highlightTheme,
                 lineNumbers(),
@@ -75,6 +122,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
               onScroll={onScroll}
+              onChange={handleChange}
             />
           </TabPanel>
         </TabPanels>

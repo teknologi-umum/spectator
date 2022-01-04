@@ -1,24 +1,25 @@
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heading,
   Text,
   Container,
   Button,
-  Box,
-  useColorModeValue
+  Box
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
 import { withPublic } from "@/hoc";
-import { useEffect } from "react";
+import { useColorModeValue } from "@/hooks";
 
 function Instructions() {
   const navigate = useNavigate();
-  const bg = useColorModeValue("white", "gray.700");
-  const fg = useColorModeValue("gray.800", "gray.100");
+  const bg = useColorModeValue("white", "gray.700", "gray.800");
+  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
-  const textColor = useColorModeValue("gray.600", "gray.400");
+  const textColor = useColorModeValue("gray.600", "gray.400", "gray.400");
 
   useEffect(() => {
     document.title = "Instructions | Spectator";
@@ -56,7 +57,7 @@ function Instructions() {
           asking your current emotion meanwhile the second SAM Test will be
           asking your emotion during programming test.
         </Text>
-        <Box>
+        <Box color={fgDarker}>
           <Arousal width="100%" height="100" viewBox="0 0 1240 140" />
         </Box>
         <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>

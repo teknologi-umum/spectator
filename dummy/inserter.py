@@ -121,9 +121,9 @@ def main():
                         record=point,
                     )
                 elif event["type"] == "coding_event_mouseclick":
-                    point = point.field("right_click", event["right_click"]) \
-                        .field("left_click", event["left_click"]) \
-                        .field("middle_click", event["middle_click"]) \
+                    point = point.field("button", event["button"]) \
+                        .field("x", event["x"]) \
+                        .field("y", event["y"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
 
                     write_client.write(

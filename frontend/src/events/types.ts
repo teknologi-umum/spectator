@@ -37,10 +37,10 @@ export interface CodingStatus {
   // Tags
   session_id: string;
   type:
-    | "coding_started"
-    | "coding_completed"
-    | "coding_paused"
-    | "coding_resumed";
+  | "coding_started"
+  | "coding_completed"
+  | "coding_paused"
+  | "coding_resumed";
   question_number: number;
   // Fields
   time: Date;
