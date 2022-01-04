@@ -26,11 +26,11 @@ def main():
 
     for i, test in enumerate(testCases):
         if test["got"] == test["expected"]:
-            print(f"# {i+1} PASSING".format(i+1))
+            print(f"# {i+1} PASSING")
         else:
-            print(f"# {i+1} FAILED".format(i+1))
-            print("> EXPECTED {}".format(test["expected"]))
-            print("> GOT {}".format(test["got"]))
+            print(f"# {i+1} FAILED")
+            print(f"> EXPECTED {test['expected']}")
+            print(f"> GOT {test['got']}")
 
 if __name__ == "__main__":
     main()

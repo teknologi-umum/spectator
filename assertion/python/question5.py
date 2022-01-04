@@ -15,12 +15,11 @@ def main():
     ]
 
     def workingAnswer(s):
-        result = ""
+        result = []
         for i in range(len(s)):
             c = s[i]
-            result += (c*i+1).capitalize()
-            if i < len(s) - 1:
-                result += "-"
+            result += (c*i+1).capitalize() + "-"
+        result = result [:-1]
         return result
 
     characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -36,8 +35,8 @@ def main():
             print(f"# {i+1} PASSING")
         else:
             print(f"# {i+1} FAILED")
-            print("> EXPECTED {}".format(test["expected"]))
-            print("> GOT {}".format(test["got"]))
+            print(f"> EXPECTED {test['expected']}")
+            print(f"> GOT {test['got']}")
 
 if __name__ == "__main__":
     main()

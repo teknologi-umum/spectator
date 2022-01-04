@@ -54,11 +54,11 @@ def main():
 
     for i, test in enumerate(testCases):
         if round(float(test["got"]), 2) == round(float(test["expected"]), 2):
-            print(f"# {i+1} PASSING")
+            print(f'# {i+1} PASSING')
         else:
             print(f"# {i+1} FAILED")
-            print("> EXPECTED {}".format(round(float(test["expected"]), 2)))
-            print("> GOT {}".format(round(float(test["got"]), 2)))
+            print(f"> EXPECTED { round(float(test['expected']), 2) }")
+            print(f"> GOT { round(float(test['got']), 2) }")
 
 if __name__ == "__main__":
     main()

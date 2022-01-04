@@ -22,22 +22,20 @@ def main():
         return out
 
     for i in range(9):
-        inp = []
         arrLength = __random.randint(4, 20)
-        for j in range(arrLength):
-            inp.append(__random.randint(0, 100))
-
+        inp = __random.sample(range(0,100), arrLength)
+        
         expected = workingAnswer(inp)
         got = calculateGrade(inp)
         testCases.append({ "expected": expected, "got": got })
 
     for i, test in enumerate(testCases):
-        if ", ".join(str(x) for x in test["expected"]) ==  ", ".join(str(x) for x in test["got"]):
+        if ", ".join( map(str,test["expected"]) ) ==  ", ".join( map(str,test["got"]) ):
             print(f"# {i+1} PASSING")
         else:
             print(f"# {i+1} FAILED")
-            print("> EXPECTED {}".format(", ".join(str(x) for x in test["expected"])))
-            print("> GOT {}".format(", ".join(str(x) for x in test["got"])))
+            print(f"> EXPECTED { ', '.join(map(str,test['expected'])) }" )
+            print(f"> GOT { ', '.join(map(str,test['got'])) }" )
 
 if __name__ == "__main__":
     main()

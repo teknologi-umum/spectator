@@ -32,8 +32,8 @@ def main():
             print(f"# {i+1} PASSING")
         else:
             print(f"# {i+1} FAILED")
-            print("> EXPECTED {}".format(test["expected"]))
-            print("> GOT {}".format(test["got"]))
+            print(f"> EXPECTED {test['expected']}")
+            print(f"> GOT {test['got']}")
 
 if __name__ == "__main__":
     main()
