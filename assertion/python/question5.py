@@ -14,7 +14,7 @@ def main():
         }
     ]
 
-    def workingAnswer(s: str):
+    def workingAnswer(s):
         result = ""
         for i in range(len(s)):
             c = s[i]
