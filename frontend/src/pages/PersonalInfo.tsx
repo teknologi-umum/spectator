@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { FormErrorMessage, useColorModeValue } from "@chakra-ui/react";
 import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
@@ -13,11 +12,13 @@ import {
   FormLabel,
   Input,
   Heading,
-  Button
+  Button,
+  FormErrorMessage
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
 import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
+import { useColorModeValue } from "@/hooks";
 import { withPublic } from "@/hoc";
 
 interface FormValues {
@@ -33,8 +34,9 @@ function PersonalInfo() {
     (state) => state.personalInfo
   );
   const navigate = useNavigate();
-  const bg = useColorModeValue("white", "gray.700");
-  const fg = useColorModeValue("gray.800", "gray.100");
+  const bg = useColorModeValue("white", "gray.700", "gray.800");
+  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const border = useColorModeValue("gray.400", "gray.500", "gray.600");
 
   const {
     register,
@@ -86,12 +88,11 @@ function PersonalInfo() {
             isInvalid={errors.studentId !== undefined}
           >
             <FormLabel>Student Number</FormLabel>
-            <Input type="text" {...register("studentId")} autoComplete="off" />
+            <Input type="text" {...register("studentId")} autoComplete="off" borderColor={border} />
             <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
           </FormControl>
 
           <FormControl
-            id="email"
             mt="6"
             isInvalid={errors.programmingExp !== undefined}
           >
@@ -99,6 +100,7 @@ function PersonalInfo() {
               How many years have you been doing programming?
             </FormLabel>
             <Input
+              borderColor={border}
               type="number"
               {...register("programmingExp")}
               autoComplete="off"
@@ -109,7 +111,7 @@ function PersonalInfo() {
           </FormControl>
 
           <FormControl
-            id="email"
+          
             mt="6"
             isInvalid={errors.programmingExercise !== undefined}
           >
@@ -117,6 +119,7 @@ function PersonalInfo() {
               How many hours in a week do you practice programming?
             </FormLabel>
             <Input
+              borderColor={border}
               type="number"
               {...register("programmingExercise")}
               autoComplete="off"
@@ -127,7 +130,7 @@ function PersonalInfo() {
           </FormControl>
 
           <FormControl
-            id="email"
+          
             mt="6"
             isInvalid={errors.programmingLanguage !== undefined}
           >
@@ -136,6 +139,7 @@ function PersonalInfo() {
               Python, C)
             </FormLabel>
             <Input
+              borderColor={border}
               type="text"
               {...register("programmingLanguage")}
               autoComplete="off"

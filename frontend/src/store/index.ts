@@ -16,6 +16,7 @@ import {
   editorReducer,
   questionReducer,
   jwtReducer,
+  themeReducer,
   sideBarReducer
 } from "./slices";
 
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   editor: editorReducer,
   question: questionReducer,
   jwt: jwtReducer,
+  app: themeReducer,
   sideBar: sideBarReducer
 });
 
