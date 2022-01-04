@@ -39,7 +39,7 @@ func TestValidatePayload(t *testing.T) {
 	}
 
 	t.Run("empty", func(t *testing.T) {
-		p := logger.LogPayload{}
+		p := &pb.LogRequest{}
 		err := deps.ValidatePayload(p)
 		if err == nil || err.Error() != "access token must be provided" {
 			t.Errorf("expecting an error, instead got: %v", err)
@@ -47,7 +47,7 @@ func TestValidatePayload(t *testing.T) {
 	})
 
 	t.Run("missing", func(t *testing.T) {
-		p := logger.LogPayload{AccessToken: accessToken}
+		p := &pb.LogRequest{AccessToken: accessToken}
 		err := deps.ValidatePayload(p)
 		if err == nil || err.Error() != "proper request_id, application, message must be provided" {
 			t.Errorf("expecting an error, instead got: %v", err)
@@ -55,10 +55,10 @@ func TestValidatePayload(t *testing.T) {
 	})
 
 	t.Run("commas", func(t *testing.T) {
-		p := logger.LogPayload{
+		p := &pb.LogRequest{
 			AccessToken: accessToken,
-			Data: []logger.LogData{{
-				RequestID:   "bla,bla",
+			Data: []*pb.LogData{{
+				RequestId:   "bla,bla",
 				Application: "asd,asd",
 				Message:     "hello there",
 			}},
