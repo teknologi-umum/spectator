@@ -18,27 +18,24 @@ def main():
         result = ""
         for i in range(len(s)):
             c = s[i]
-            result += c.upper() + c.lower() * i
+            result += (c*i+1).capitalize()
             if i < len(s) - 1:
                 result += "-"
         return result
 
     characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     for i in range(8):
-        chars = ""
         seed = __random.randint(4, 20)
-        for j in range(seed):
-            chars += __random.choice(characters.split())
+        chars = __random.choices(characters, k=seed)
         expected = workingAnswer(chars)
         got = mumble(chars)
         testCases.append({ "expected": expected, "got": got })
 
-    for i in range(len(testCases)):
-        test = testCases[i]
+    for i, test in enumerate(testCases):
         if test["expected"] == test["got"]:
-            print("# {} PASSING".format(i+1))
+            print(f"# {i+1} PASSING")
         else:
-            print("# {} FAILED".format(i+1))
+            print(f"# {i+1} FAILED")
             print("> EXPECTED {}".format(test["expected"]))
             print("> GOT {}".format(test["got"]))
 

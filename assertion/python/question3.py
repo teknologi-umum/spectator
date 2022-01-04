@@ -27,13 +27,11 @@ def main():
         got = isSameNumber(a, a)
         testCases.append({ "got": got, "expected": expected })
 
-    for i in range(len(testCases)):
-        test = testCases[i]
-
+    for i, test in enumerate(testCases):
         if test["got"] == test["expected"]:
-            print("# {} PASSING".format(i+1))
+            print(f"# {i+1} PASSING")
         else:
-            print("# {} FAILED".format(i+1))
+            print(f"# {i+1} FAILED")
             print("> EXPECTED {}".format(test["expected"]))
             print("> GOT {}".format(test["got"]))
 

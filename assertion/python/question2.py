@@ -52,12 +52,11 @@ def main():
         got = calculateTemperature(n, fromTemperature, toTemperature)
         testCases.append({ "expected": expected, "got": got })
 
-    for i in range(len(testCases)):
-        test = testCases[i]
+    for i, test in enumerate(testCases):
         if round(float(test["got"]), 2) == round(float(test["expected"]), 2):
-            print("# {} PASSING".format(i+1))
+            print(f"# {i+1} PASSING")
         else:
-            print("# {} FAILED".format(i+1))
+            print(f"# {i+1} FAILED")
             print("> EXPECTED {}".format(round(float(test["expected"]), 2)))
             print("> GOT {}".format(round(float(test["got"]), 2)))
 

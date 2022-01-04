@@ -31,12 +31,11 @@ def main():
         got = calculateGrade(inp)
         testCases.append({ "expected": expected, "got": got })
 
-    for i in range(len(testCases)):
-        test = testCases[i]
+    for i, test in enumerate(testCases):
         if ", ".join(str(x) for x in test["expected"]) ==  ", ".join(str(x) for x in test["got"]):
-            print("# {} PASSING".format(i+1))
+            print(f"# {i+1} PASSING")
         else:
-            print("# {} FAILED".format(i+1))
+            print(f"# {i+1} FAILED")
             print("> EXPECTED {}".format(", ".join(str(x) for x in test["expected"])))
             print("> GOT {}".format(", ".join(str(x) for x in test["got"])))
 
