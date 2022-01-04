@@ -3,7 +3,7 @@
 function main() {
     const testCases = [
         {
-            got: gradingStudents([73, 67, 38, 33]),
+            got: calculateGrade([73, 67, 38, 33]),
             expected: [75, 67, 40, 33]
         }
     ];
@@ -31,7 +31,7 @@ function main() {
         }
 
         const expected = workingAnswer(input);
-        const got = gradingStudents(input);
+        const got = calculateGrade(input);
 
         testCases.push({ expected, got });
     }

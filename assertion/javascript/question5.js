@@ -4,11 +4,11 @@ function main() {
     const testCases = [
         {
             expected: "A-Bb-Ccc-Dddd",
-            got: accum("abcd")
+            got: mumble("abcd")
         },
         {
             expected: "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy",
-            got: accum("RqaEzTy")
+            got: mumble("RqaEzTy")
         }
     ]
 
@@ -33,7 +33,7 @@ function main() {
         }
 
         const expected = workingAnswer(chars);
-        const got = accum(chars);
+        const got = mumble(chars);
         testCases.push({ expected, got });
     }
 
