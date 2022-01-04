@@ -22,7 +22,7 @@
         "cpp": "#include <stdio.h>\n\nint calculateTemperature(int temp, std::string from, std::string to) {\n    // tulis kode kamu disini\n}",
         "java": "class Temperature {\n    public void calculateTemperature(int temp, String from, String to) {\n        // tulis kode kamu disini\n    }\n}",
         "javascript": "function calculateTemperature(temp, from, to) {\n    // tulis kode kamu disini\n}",
-        "php": "function calculateTemperature(int temp, string from, string to): int {\n    // tulis kode kamu disini\n}",
+        "php": "function calculateTemperature(int $temp, string $from, string $to): int {\n    // tulis kode kamu disini\n}",
         "python": "def calculateTemperature(temp: int, from: str, to: str) -> int:\n    // tulis kode kamu disini"
       }
     },
@@ -35,7 +35,7 @@
         "cpp": "int isSameNumber(int a, int b) {\n    return |\n}\n",
         "java": "class SimilarNumber {\n    public boolean isSameNumber(int a, int b) {\n        |\n    }\n}\n",
         "javascript": "function isSameNumber(a, b) {\n    return |\n}\n",
-        "php": "function isSameNumber(int a, int b) {\n    return |\n}\n",
+        "php": "function isSameNumber(int $a, int $b) {\n    return |\n}\n",
         "python": "def isSameNumber(a: int, b: int) -> bool:\n    // tulis kode kamu disini"
       }
     },
@@ -48,7 +48,7 @@
         "cpp": "int findHeaterPower(int input) {\n    // tulis kode kamu disini\n}",
         "java": "class Heater {\n    public int findHeaterPower(int input) {\n        // tulis kode kamu disini\n    }\n}",
         "javascript": "function findHeaterPower(input) {\n    // tulis kode kamu disini\n}",
-        "php": "function findHeaterPower(int input): int {\n    // tulis kode kamu disini\n}",
+        "php": "function findHeaterPower(int $input): int {\n    // tulis kode kamu disini\n}",
         "python": "def findHeaterPower(input: int) -> int:\n    // tulis kode kamu disini"
       }
     },
@@ -57,12 +57,12 @@
       "question": "Bagus, kalau kamu disini berarti kamu telah menemukan berapa banyak tenaga yang\ndibutuhkan untuk menghidupkan penghangat ruangan, namun ada satu masalah. Kamu\npikir ini masih kurang hangat. Kamu jadi geram dan melontarkan ucapan yang\ntidak jelas. Q-Aa-Bbb-Ffff-Nnnnnn, atau semacamnya.\n\nSetelah beberapa saat, kamu mengenali pola dalam ucapan tidak jelasmu. Kamu\nmemutuskan untuk membuat sebuah program untuk menghasilkan ucapan yang sama\nberdasarkan abjad yang acak. \n\nPolanya yaitu setiap huruf diulang sebanyak `n` kali dimana `n` adalah index\ndari huruf tersebut. Apabila kamu punya `abcd`, maka akan terbentuk seperti ini:\n- `a` akan diulang sebanyak 1x\n- `b` akan diulang sebanyak 2x\n- `c` akan diulang sebanyak 3x\n- `d` akan diulang sebanyak 4x\n\nSetiap huruf akan dijadikan huruf kecil dan masing masing huruf depan dari\nsetiap kumpulan huruf akan menjadi kapital. Jadi, sebagai ganti dari `dDDd`\natau `XxXX`, kamu harus mengubahnya menjadi `Dddd` atau `Xxxx`.\n\nTerakhir, kamu tinggal menggabungkannya menggunakan `-` sehingga hasil akhirnya\nakan menjadi `A-Bb-Ccc-Dddd`.\n\n**Input:**\n\n```\nmumble(\"QwertY\")\nmumble(\"bruh\")\nmumble(\"asdfb\")\n```\n\n\n**Output yang diharapkan:**\n```\nQ-Ww-Eee-Rrrr-Ttttt-Yyyyyy\nB-Rr-Uuu-Hhhh\nA-Ss-Ddd-Ffff-Bbbb\n```\n\n**Constraints:**\n  - The input will always be an string of `A-Z` and `a-z`.\n",
       "title": "Mumbling",
       "templates": {
-        "c": "void mumble() {\n    // tulis kode kamu disini\n}",
-        "cpp": "void mumble() {\n    // tulis kode kamu disini\n}",
-        "java": "class Mumble {\n    public void mumble() {\n        // tulis kode kamu disini\n    }\n}",
+        "c": "char *mumble(char *input) {\n    // tulis kode kamu disini\n}",
+        "cpp": "#include <string>\n\nstd::string mumble(std::string input) {\n    // tulis kode kamu disini\n}",
+        "java": "class Mumble {\n    public String mumble(String input) {\n        // tulis kode kamu disini\n    }\n}",
         "javascript": "function mumble() {\n    // tulis kode kamu disini\n}\n",
-        "php": "function mumble() {\n    // tulis kode kamu disini\n}",
-        "python": "def mumble() -> None:\n    // tulis kode kamu disini"
+        "php": "function mumble(string $input): string {\n    // tulis kode kamu disini\n}",
+        "python": "def mumble() -> str:\n    // tulis kode kamu disini"
       }
     },
     {
@@ -71,11 +71,11 @@
       "title": "Grade System",
       "templates": {
         "c": "#include <stdint.h>\n\nuint32_t *calculateGrade(uint32_t size, uint32_t grade[]) {\n    // tulis kode kamu disini\n}",
-        "cpp": "#include <stdint.h>\n\nstd::vector<uint32_t> calculateGrade(std::vector<uint32_t> grade) {\n    // tulis kode kamu disini\n}",
-        "java": "class Grade {\n    public String calculateGrade(int grade) {\n        // tulis kode kamu disini\n    }\n}",
+        "cpp": "std::vector<int> calculateGrade(std::vector<uint32_t> grade) {\n    // tulis kode kamu disini\n}",
+        "java": "class Grade {\n    public ArrayList<int> calculateGrade(int grade) {\n        // tulis kode kamu disini\n    }\n}",
         "javascript": "function calculateGrade(grade) {\n    // tulis kode kamu disini\n}",
-        "php": "function calculateGrade(int grade) {\n    // tulis kode kamu disini\n}",
-        "python": "def calculateGrade(grade: int) -> int:\n    // tulis kode kamu disini"
+        "php": "function calculateGrade(int $grade): array {\n    // tulis kode kamu disini\n}",
+        "python": "def calculateGrade(grade: int) -> list[int]:\n    // tulis kode kamu disini"
       }
     }
   ]
