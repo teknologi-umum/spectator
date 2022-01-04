@@ -6,10 +6,12 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.DomainModels.SessionDomain;
 using Spectator.DomainModels.SubmissionDomain;
 using Spectator.DomainServices.PistonDomain;
+using Spectator.DomainServices.QuestionDomain;
 using Spectator.Observables.SessionDomain;
 using Spectator.Primitives;
 using Spectator.Repositories;
@@ -18,17 +20,17 @@ namespace Spectator.DomainServices.SessionDomain {
 	public class SessionServices {
 		private static readonly TimeSpan EXAM_DURATION = TimeSpan.FromMinutes(90);
 		private readonly SessionSilo _sessionSilo;
-		private readonly SubmissionServices _submissionServices;
 		private readonly ISessionEventRepository _sessionEventRepository;
+		private readonly IServiceProvider _serviceProvider;
 
 		public SessionServices(
 			SessionSilo sessionSilo,
-			SubmissionServices submissionServices,
-			ISessionEventRepository sessionEventRepository
+			ISessionEventRepository sessionEventRepository,
+			IServiceProvider serviceProvider
 		) {
 			_sessionSilo = sessionSilo;
-			_submissionServices = submissionServices;
 			_sessionEventRepository = sessionEventRepository;
+			_serviceProvider = serviceProvider;
 		}
 
 		public async Task<AnonymousSession> StartSessionAsync() {
@@ -88,16 +90,19 @@ namespace Spectator.DomainServices.SessionDomain {
 			await _sessionEventRepository.AddEventAsync(@event);
 		}
 
-		public async Task<RegisteredSession> StartExamAsync(Guid sessionId) {
+		public async Task<RegisteredSession> StartExamAsync(Guid sessionId, Locale locale) {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
+
+			// Get questions
+			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
 
 			// Create event
 			var utcNow = DateTimeOffset.UtcNow;
 			var @event = new ExamStartedEvent(
 				SessionId: sessionId,
 				Timestamp: utcNow,
-				QuestionNumbers: Enumerable.Range(1, 6).ToImmutableArray(),
+				QuestionNumbers: questions.Select(q => q.QuestionNumber).ToImmutableArray(),
 				Deadline: utcNow.Add(EXAM_DURATION)
 			);
 
@@ -136,7 +141,7 @@ namespace Spectator.DomainServices.SessionDomain {
 			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
 
 			// Execute solution in piston
-			var submission = await _submissionServices.EvaluateSubmissionAsync(questionNumber, language, solution, scratchPad);
+			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, language, solution, scratchPad);
 
 			// Create event
 			SessionEventBase @event = submission.Accepted

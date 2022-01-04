@@ -30,6 +30,7 @@ builder.Services.Setup(services => {
 
 	// Add application layers
 	services.AddHttpClient();
+	services.AddMemoryCache();
 	services.AddRepositoryDALs();
 	services.AddPistonClient();
 	services.AddDomainServices();

@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
+using Spectator.DomainServices.QuestionDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
 using Spectator.Primitives;
@@ -15,21 +19,22 @@ namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly SessionServices _sessionServices;
-		private readonly JwtAuthenticationServices _jwtAuthenticationServices;
+		private readonly IServiceProvider _serviceProvider;
 
 		public SessionHub(
 			SessionServices sessionServices,
-			JwtAuthenticationServices jwtAuthenticationServices
+			IServiceProvider serviceProvider
 		) {
 			_sessionServices = sessionServices;
-			_jwtAuthenticationServices = jwtAuthenticationServices;
+			_serviceProvider = serviceProvider;
 		}
 
 		public async Task<SessionReply> StartSessionAsync() {
 			var session = await _sessionServices.StartSessionAsync();
-			var tokenPayload = _jwtAuthenticationServices.CreatePayload(session.Id);
+			var jwtAuthenticationServices = _serviceProvider.GetRequiredService<JwtAuthenticationServices>();
+			var tokenPayload = jwtAuthenticationServices.CreatePayload(session.Id);
 			return new SessionReply {
-				AccessToken = _jwtAuthenticationServices.EncodeToken(tokenPayload)
+				AccessToken = jwtAuthenticationServices.EncodeToken(tokenPayload)
 			};
 		}
 
@@ -61,17 +66,27 @@ namespace Spectator.Hubs {
 		public async Task<Exam> StartExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.StartExamAsync(tokenPayload.SessionId);
+			// TODO: accept locale parameter
+			// HACK: temporary dummy value Locale.ID
+			var session = await _sessionServices.StartExamAsync(tokenPayload.SessionId, Locale.ID);
+			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(Locale.ID, CancellationToken.None);
+			var questionById = questions.ToImmutableDictionary(q => q.QuestionNumber);
 			return new Exam {
 				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
 					from questionNumber in session.QuestionNumbers!.Value
+					let question = questionById[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = "",
-						Instruction = "",
-						AllowedLanguages = { },
-						Boilerplate = ""
+						Title = question.Title,
+						Instruction = question.Instruction,
+						LanguageAndTemplates = {
+							from kvp in question.TemplateByLanguage
+							select new Question.Types.LanguageAndTemplate {
+								Language = (Protos.Enums.Language)kvp.Key,
+								Template = kvp.Value
+							}
+						}
 					}
 				},
 				AnsweredQuestionNumbers = { }
@@ -83,16 +98,26 @@ namespace Spectator.Hubs {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
 			var session = await _sessionServices.ResumeExamAsync(tokenPayload.SessionId, Context.ConnectionAborted);
+			// TODO: accept locale parameter
+			// HACK: temporary dummy value Locale.ID
+			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(Locale.ID, CancellationToken.None);
+			var questionById = questions.ToImmutableDictionary(q => q.QuestionNumber);
 			return new Exam {
 				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
 					from questionNumber in session.QuestionNumbers!.Value
+					let question = questionById[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = "",
-						Instruction = "",
-						AllowedLanguages = { },
-						Boilerplate = ""
+						Title = question.Title,
+						Instruction = question.Instruction,
+						LanguageAndTemplates = {
+							from kvp in question.TemplateByLanguage
+							select new Question.Types.LanguageAndTemplate {
+								Language = (Protos.Enums.Language)kvp.Key,
+								Template = kvp.Value
+							}
+						}
 					}
 				},
 				AnsweredQuestionNumbers = { }

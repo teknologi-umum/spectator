@@ -78,13 +78,22 @@ export interface Question {
      */
     instruction: string;
     /**
-     * @generated from protobuf field: repeated enums.Language allowed_languages = 4;
+     * @generated from protobuf field: repeated session.Question.LanguageAndTemplate language_and_templates = 4;
      */
-    allowedLanguages: Language[];
+    languageAndTemplates: Question_LanguageAndTemplate[];
+}
+/**
+ * @generated from protobuf message session.Question.LanguageAndTemplate
+ */
+export interface Question_LanguageAndTemplate {
     /**
-     * @generated from protobuf field: string boilerplate = 5;
+     * @generated from protobuf field: enums.Language language = 1;
      */
-    boilerplate: string;
+    language: Language;
+    /**
+     * @generated from protobuf field: string template = 2;
+     */
+    template: string;
 }
 /**
  * @generated from protobuf message session.Exam
@@ -375,12 +384,11 @@ class Question$Type extends MessageType<Question> {
             { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "instruction", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "allowed_languages", kind: "enum", repeat: 1 /*RepeatType.PACKED*/, T: () => ["enums.Language", Language] },
-            { no: 5, name: "boilerplate", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "language_and_templates", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Question_LanguageAndTemplate }
         ]);
     }
     create(value?: PartialMessage<Question>): Question {
-        const message = { questionNumber: 0, title: "", instruction: "", allowedLanguages: [], boilerplate: "" };
+        const message = { questionNumber: 0, title: "", instruction: "", languageAndTemplates: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<Question>(this, message, value);
@@ -400,15 +408,8 @@ class Question$Type extends MessageType<Question> {
                 case /* string instruction */ 3:
                     message.instruction = reader.string();
                     break;
-                case /* repeated enums.Language allowed_languages */ 4:
-                    if (wireType === WireType.LengthDelimited)
-                        for (let e = reader.int32() + reader.pos; reader.pos < e;)
-                            message.allowedLanguages.push(reader.int32());
-                    else
-                        message.allowedLanguages.push(reader.int32());
-                    break;
-                case /* string boilerplate */ 5:
-                    message.boilerplate = reader.string();
+                case /* repeated session.Question.LanguageAndTemplate language_and_templates */ 4:
+                    message.languageAndTemplates.push(Question_LanguageAndTemplate.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -431,16 +432,9 @@ class Question$Type extends MessageType<Question> {
         /* string instruction = 3; */
         if (message.instruction !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.instruction);
-        /* repeated enums.Language allowed_languages = 4; */
-        if (message.allowedLanguages.length) {
-            writer.tag(4, WireType.LengthDelimited).fork();
-            for (let i = 0; i < message.allowedLanguages.length; i++)
-                writer.int32(message.allowedLanguages[i]);
-            writer.join();
-        }
-        /* string boilerplate = 5; */
-        if (message.boilerplate !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.boilerplate);
+        /* repeated session.Question.LanguageAndTemplate language_and_templates = 4; */
+        for (let i = 0; i < message.languageAndTemplates.length; i++)
+            Question_LanguageAndTemplate.internalBinaryWrite(message.languageAndTemplates[i], writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -451,6 +445,60 @@ class Question$Type extends MessageType<Question> {
  * @generated MessageType for protobuf message session.Question
  */
 export const Question = new Question$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class Question_LanguageAndTemplate$Type extends MessageType<Question_LanguageAndTemplate> {
+    constructor() {
+        super("session.Question.LanguageAndTemplate", [
+            { no: 1, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
+            { no: 2, name: "template", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<Question_LanguageAndTemplate>): Question_LanguageAndTemplate {
+        const message = { language: 0, template: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<Question_LanguageAndTemplate>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Question_LanguageAndTemplate): Question_LanguageAndTemplate {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* enums.Language language */ 1:
+                    message.language = reader.int32();
+                    break;
+                case /* string template */ 2:
+                    message.template = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: Question_LanguageAndTemplate, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* enums.Language language = 1; */
+        if (message.language !== 0)
+            writer.tag(1, WireType.Varint).int32(message.language);
+        /* string template = 2; */
+        if (message.template !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.template);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.Question.LanguageAndTemplate
+ */
+export const Question_LanguageAndTemplate = new Question_LanguageAndTemplate$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Exam$Type extends MessageType<Exam> {
     constructor() {

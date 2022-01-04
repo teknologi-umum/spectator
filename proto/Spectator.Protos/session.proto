@@ -37,11 +37,14 @@ message SAM {
 }
 
 message Question {
+	message LanguageAndTemplate {
+		enums.Language language = 1;
+		string template = 2;
+	}
 	int32 question_number = 1;
 	string title = 2;
 	string instruction = 3;
-	repeated enums.Language allowed_languages = 4;
-	string boilerplate = 5;
+	repeated LanguageAndTemplate language_and_templates = 4;
 }
 
 message Exam {
