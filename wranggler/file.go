@@ -106,71 +106,74 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`
+		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")
 		`,
 	)
 	if err != nil {
 		// we send a http request to the logger service
 		// for now, we'll just do this:
-		log.Println(err)
+		log.Fatalln(err)
 		return
 	}
 
 	//var lastTableIndex int = -1
-	output := []Keystroke{}
-	temp := Keystroke{}
+	outputKeystroke := []Keystroke{}
+	tempKeystroke := Keystroke{}
 	for keystrokeMouseRows.Next() {
 		unmarshaledRow, err := UnmarshalInfluxRow(keystrokeMouseRows.Record().String())
 		if err != nil {
 			return
 		}
 
-		// tableStr, ok := unmarshaledRow["table"].(string)
-		// if !ok {
-		// 	continue
-		// }
-
-		// table, err := strconv.Atoi(tableStr)
-		// if err != nil {
-		// 	return
-		// }
-		// if table == lastTableIndex {
 		switch unmarshaledRow["_field"].(string) {
 		case "key_char":
-			temp.KeyChar = unmarshaledRow["_value"].(string)
+			tempKeystroke.KeyChar = unmarshaledRow["_value"].(string)
 		case "key_code":
-			temp.KeyCode = unmarshaledRow["_value"].(string)
+			tempKeystroke.KeyCode = unmarshaledRow["_value"].(string)
 		case "shift":
-			temp.Shift = unmarshaledRow["_value"].(bool)
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempKeystroke.Shift = tempBool
 		case "alt":
-			temp.Alt = unmarshaledRow["_value"].(bool)
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempKeystroke.Alt = tempBool
 		case "control":
-			temp.Control = unmarshaledRow["_value"].(bool)
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempKeystroke.Control = tempBool
 		case "unrelated_key":
-			temp.UnrelatedKey = unmarshaledRow["_value"].(bool)
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempKeystroke.UnrelatedKey = tempBool
 		case "meta":
-			temp.Modifier = unmarshaledRow["_value"].(string)
+			tempKeystroke.Modifier = unmarshaledRow["_value"].(string)
 		}
-		// } else {
-		// clear the last temp, but check if its less than zero
-		// if lastTableIndex >= 0 {
-		// 	output = append(output, temp)
-		// }
+
 		// create a new one
-		temp.QuestionNumber = unmarshaledRow["question_number"].(string)
-		temp.SessionID = unmarshaledRow["session_id"].(string)
-		temp.Timestamp = keystrokeMouseRows.Record().Time()
-		// lastTableIndex = table
-		// }
-		output = append(output, temp)
+		tempKeystroke.QuestionNumber = unmarshaledRow["question_number"].(string)
+		tempKeystroke.SessionID = unmarshaledRow["session_id"].(string)
+		tempKeystroke.Timestamp = keystrokeMouseRows.Record().Time()
+
+		outputKeystroke = append(outputKeystroke, tempKeystroke)
 	}
 
-	//keystrokeMouseClickRows
-	_, err = queryAPI.Query(
+	//t.Log(outputKeystroke)
+
+	mouseClickRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`
+		|> range(start: 0)
+		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")
 		`,
 	)
@@ -181,11 +184,49 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		return
 	}
 
-	// keystrokeMouseMoveRows
-	_, err = queryAPI.Query(
+	outputMouseClick := []MouseClick{}
+	tempMouseClick := MouseClick{}
+
+	for mouseClickRows.Next() {
+		unmarshaledRow, err := UnmarshalInfluxRow(mouseClickRows.Record().String())
+		if err != nil {
+			return
+		}
+
+		switch unmarshaledRow["_field"].(string) {
+		case "left_click":
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempMouseClick.LeftClick = tempBool
+		case "right_click":
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempMouseClick.RightClick = tempBool
+		case "middle_click":
+			tempBool := false
+			if unmarshaledRow["_value"].(string) == "true" {
+				tempBool = true
+			}
+			tempMouseClick.MiddleClick = tempBool
+		}
+
+		// create a new one
+		tempMouseClick.QuestionNumber = unmarshaledRow["question_number"].(string)
+		tempMouseClick.SessionID = unmarshaledRow["session_id"].(string)
+		tempMouseClick.Timestamp = mouseClickRows.Record().Time()
+
+		outputMouseClick = append(outputMouseClick, tempMouseClick)
+	}
+
+	mouseMoveRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`
+		|> range(start: 0)
+		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
 		`,
 	)
@@ -196,13 +237,57 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		return
 	}
 
-	// coding test result
-	// codeSubmissionRows,
-	_, err = queryAPI.Query(
+	outputMouseMove := []MouseMovement{}
+	tempMouseMove := MouseMovement{}
+	for mouseMoveRows.Next() {
+		unmarshaledRow, err := UnmarshalInfluxRow(mouseMoveRows.Record().String())
+		if err != nil {
+			return
+		}
+
+		switch unmarshaledRow["_field"].(string) {
+		case "direction":
+			tempMouseMove.Direction = unmarshaledRow["_value"].(string)
+		case "x_position":
+			x, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempMouseMove.XPosition = x
+		case "y_position":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempMouseMove.YPosition = y
+		case "window_height":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempMouseMove.WindowHeight = y
+		case "window_width":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempMouseMove.WindowWidth = y
+		}
+
+		tempMouseMove.QuestionNumber = unmarshaledRow["question_number"].(string)
+		tempMouseMove.SessionID = unmarshaledRow["session_id"].(string)
+		tempMouseMove.Timestamp = mouseMoveRows.Record().Time()
+
+		outputMouseMove = append(outputMouseMove, tempMouseMove)
+	}
+
+	personalInfoRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketSessionEvents+`")
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> fliter(fn: (r) => r["_measurement"] == "code_submission")`,
+		|> range(start: 0)
+		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["_measurement"] == "personal_info")
+		`,
 	)
 	if err != nil {
 		// we send a http request to the logger service
@@ -211,18 +296,82 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		return
 	}
 
-	// user
-	_, err = queryAPI.Query(ctx, `
-	from(bucket: "`+BucketSessionEvents+`")
-	|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-	|> filter(fn: (r) => (r["event"] == "sam_test_before") or
-		(r["event"] == "personal_info"))
-	`)
+	outputPersonalInfo := []PersonalInfo{}
+	tempPersonalInfo := PersonalInfo{}
+
+	for personalInfoRows.Next() {
+		unmarshaledRow, err := UnmarshalInfluxRow(mouseMoveRows.Record().String())
+		if err != nil {
+			return
+		}
+
+		switch unmarshaledRow["_field"].(string) {
+		case "student_number":
+			tempPersonalInfo.StudentNumber = unmarshaledRow["_value"].(string)
+		case "hours_of_practice":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempPersonalInfo.HoursOfPractice = y
+		case "years_of_experience":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempPersonalInfo.YearsOfExperience = y
+		case "familiar_language":
+			tempPersonalInfo.FamiliarLanguages = unmarshaledRow["_value"].(string)
+		}
+
+		tempPersonalInfo.SessionID = unmarshaledRow["session_id"].(string)
+		tempPersonalInfo.Timestamp = personalInfoRows.Record().Time()
+
+		outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
+	}
+
+	samTestRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["_measurement"] == "sam_test_before")
+		`,
+	)
 	if err != nil {
 		// we send a http request to the logger service
 		// for now, we'll just do this:
 		log.Println(err)
 		return
+	}
+
+	outputSamTest := []SamTest{}
+	tempSamTest := SamTest{}
+	for samTestRows.Next() {
+		unmarshaledRow, err := UnmarshalInfluxRow(samTestRows.Record().String())
+		if err != nil {
+			return
+		}
+
+		switch unmarshaledRow["_field"].(string) {
+		case "aroused_level":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempSamTest.ArousedLevel = y
+		case "pleased_level":
+			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			if err != nil {
+				return
+			}
+			tempSamTest.PleasedLevel = y
+		}
+
+		tempSamTest.SessionID = unmarshaledRow["session_id"].(string)
+		tempSamTest.Timestamp = samTestRows.Record().Time()
+
+		outputSamTest = append(outputSamTest, tempSamTest)
 	}
 
 	// Then, we'll write to 2 different files with 2 different formats.
