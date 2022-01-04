@@ -36,7 +36,7 @@ builder.Services.Setup(services => {
 	services.AddObservables();
 
 	// Add MVC
-	services.AddControllers();
+	services.AddControllersWithViews();
 
 	// Add Swagger
 	services.AddEndpointsApiExplorer();
@@ -51,6 +51,11 @@ builder.Services.Setup(services => {
 	// Add authentication & authorization
 	services.AddJwtBearerAuthentication();
 	services.AddJwtBearerAuthorization();
+
+	// Add Cors Policy
+	services.AddCors(options => options.AddPolicy("AllowAll", builder => {
+		builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+	}));
 });
 
 // Build app
@@ -60,11 +65,30 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment()) {
 	app.UseSwagger();
 	app.UseSwaggerUI();
+} else {
+	app.UseHsts();
 }
 
+// Redirect HTTP traffic
 app.UseHttpsRedirection();
+
+// Middlewares
+app.UseRouting();
 app.UseAuthorization();
-app.MapControllers();
+app.UseCors("AllowAll");
+
+// Map Frontend static files
+app.UseStaticFiles();
+
+// Map Controllers
+app.UseEndpoints(endpoints => {
+	endpoints.MapControllerRoute(
+		name: "default",
+		pattern: "{controller}/{action=Index}/{id?}"
+	);
+});
+
+// Map SignalR Hubs
 app.MapHub<SessionHub>("/session");
 
 // Run app

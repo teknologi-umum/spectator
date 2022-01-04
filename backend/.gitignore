@@ -1,4 +1,4 @@
-﻿
+
 # Created by https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,rider
 # Edit at https://www.toptal.com/developers/gitignore?templates=aspnetcore,dotnetcore,rider
 
@@ -356,5 +356,9 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+# build:prod Output
+Spectator/wwwroot/index.html
+Spectator/wwwroot/assets/
 
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,rider
