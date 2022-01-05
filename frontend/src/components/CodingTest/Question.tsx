@@ -1,5 +1,4 @@
 import React from "react";
-import type { UIEventHandler } from "react";
 import {
   Box,
   Flex,
@@ -11,24 +10,29 @@ import {
   TabPanels,
   Tabs,
   Text,
-  UnorderedList,
-  useColorModeValue
+  UnorderedList
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 // TODO: this should be automatically inferred (en/id) when we have proper i18n
 import { questions } from "@/data/en/questions.json";
 import { useAppSelector } from "@/store";
-import type { UIEventHandler } from "react";
+import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
+import { useColorModeValue } from "@/hooks";
+import { UIEventHandler } from "react";
 
 interface QuestionProps {
   bg: string;
   fg: string;
+  fgDarker: string;
   onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-export default function Question({ bg, fg, onScroll }: QuestionProps) {
-  const codeBg = useColorModeValue("gray.200", "gray.800");
-  const { currentQuestion } = useAppSelector((state) => state.question);
+export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) {
+  const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
+  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const { currentQuestion } = useAppSelector<QuestionState>(
+    (state) => state.question
+  );
 
   return (
     <Flex
@@ -43,9 +47,9 @@ export default function Question({ bg, fg, onScroll }: QuestionProps) {
     >
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
-        <TabList>
-          <Tab>Prompt</Tab>
-          <Tab>Your Result</Tab>
+        <TabList borderColor={borderBg}>
+          <Tab color={fgDarker}>Prompt</Tab>
+          <Tab color={fgDarker}>Your Result</Tab>
         </TabList>
 
         <TabPanels h="full">
@@ -57,7 +61,7 @@ export default function Question({ bg, fg, onScroll }: QuestionProps) {
               <ReactMarkdown
                 components={{
                   p: ({ children }) => (
-                    <Text fontSize="16" lineHeight="6" color={fg} py="2">
+                    <Text fontSize="16" lineHeight="6" color={fgDarker} py="2">
                       {children}
                     </Text>
                   ),

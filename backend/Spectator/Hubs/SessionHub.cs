@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using Spectator.DomainServices.SessionDomain;
@@ -15,29 +16,40 @@ namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly SessionServices _sessionServices;
-		private readonly JwtAuthenticationServices _jwtAuthenticationServices;
+		private readonly IServiceProvider _serviceProvider;
 
 		public SessionHub(
 			SessionServices sessionServices,
-			JwtAuthenticationServices jwtAuthenticationServices
+			IServiceProvider serviceProvider
 		) {
 			_sessionServices = sessionServices;
-			_jwtAuthenticationServices = jwtAuthenticationServices;
+			_serviceProvider = serviceProvider;
 		}
 
-		public async Task<SessionReply> StartSessionAsync() {
-			var session = await _sessionServices.StartSessionAsync();
-			var tokenPayload = _jwtAuthenticationServices.CreatePayload(session.Id);
+		public async Task<SessionReply> StartSessionAsync(LocaleInfo localeInfo) {
+			var session = await _sessionServices.StartSessionAsync((Locale)localeInfo.Locale);
+			var jwtAuthenticationServices = _serviceProvider.GetRequiredService<JwtAuthenticationServices>();
+			var tokenPayload = jwtAuthenticationServices.CreatePayload(session.Id);
 			return new SessionReply {
-				AccessToken = _jwtAuthenticationServices.EncodeToken(tokenPayload)
+				AccessToken = jwtAuthenticationServices.EncodeToken(tokenPayload)
 			};
 		}
 
-		[Authorize(AuthPolicy.ANONYMOUS)]
-		public async Task SubmitPersonalInfoAsync(PersonalInfo personalInfo) {
+		[Authorize]
+		public Task SetLocaleAsync(LocaleInfo localeInfo) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			await _sessionServices.SubmitPersonalInfoAsync(
+			return _sessionServices.SetLocaleAsync(
+				sessionId: tokenPayload.SessionId,
+				locale: (Locale)localeInfo.Locale
+			);
+		}
+
+		[Authorize(AuthPolicy.ANONYMOUS)]
+		public Task SubmitPersonalInfoAsync(PersonalInfo personalInfo) {
+			if (Context.User == null) throw new UnauthorizedAccessException();
+			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+			return _sessionServices.SubmitPersonalInfoAsync(
 				sessionId: tokenPayload.SessionId,
 				studentNumber: personalInfo.StudentNumber,
 				yearsOfExperience: personalInfo.YearsOfExperience,
@@ -47,10 +59,10 @@ namespace Spectator.Hubs {
 		}
 
 		[Authorize(AuthPolicy.REGISTERED)]
-		public async Task SubmitBeforeExamSAMAsync(SAM sam) {
+		public Task SubmitBeforeExamSAMAsync(SAM sam) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			await _sessionServices.SubmitBeforeExamSAMAsync(
+			return _sessionServices.SubmitBeforeExamSAMAsync(
 				sessionId: tokenPayload.SessionId,
 				arousedLevel: sam.ArousedLevel,
 				pleasedLevel: sam.PleasedLevel
@@ -61,17 +73,23 @@ namespace Spectator.Hubs {
 		public async Task<Exam> StartExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.StartExamAsync(tokenPayload.SessionId);
+			(var session, var questionByQuestionNumber) = await _sessionServices.StartExamAsync(tokenPayload.SessionId);
 			return new Exam {
 				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
 					from questionNumber in session.QuestionNumbers!.Value
+					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = "",
-						Instruction = "",
-						AllowedLanguages = { },
-						Boilerplate = ""
+						Title = question.Title,
+						Instruction = question.Instruction,
+						LanguageAndTemplates = {
+							from kvp in question.TemplateByLanguage
+							select new Question.Types.LanguageAndTemplate {
+								Language = (Protos.Enums.Language)kvp.Key,
+								Template = kvp.Value
+							}
+						}
 					}
 				},
 				AnsweredQuestionNumbers = { }
@@ -82,17 +100,23 @@ namespace Spectator.Hubs {
 		public async Task<Exam> ResumeExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.ResumeExamAsync(tokenPayload.SessionId, Context.ConnectionAborted);
+			(var session, var questionByQuestionNumber) = await _sessionServices.ResumeExamAsync(tokenPayload.SessionId, Context.ConnectionAborted);
 			return new Exam {
 				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
 					from questionNumber in session.QuestionNumbers!.Value
+					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = "",
-						Instruction = "",
-						AllowedLanguages = { },
-						Boilerplate = ""
+						Title = question.Title,
+						Instruction = question.Instruction,
+						LanguageAndTemplates = {
+							from kvp in question.TemplateByLanguage
+							select new Question.Types.LanguageAndTemplate {
+								Language = (Protos.Enums.Language)kvp.Key,
+								Template = kvp.Value
+							}
+						}
 					}
 				},
 				AnsweredQuestionNumbers = { }
@@ -168,10 +192,10 @@ namespace Spectator.Hubs {
 		}
 
 		[Authorize(AuthPolicy.HAS_TAKEN_EXAM)]
-		public async Task SubmitAfterExamSAM(SAM sam) {
+		public Task SubmitAfterExamSAM(SAM sam) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			await _sessionServices.SubmitAfterExamSAMAsync(
+			return _sessionServices.SubmitAfterExamSAMAsync(
 				sessionId: tokenPayload.SessionId,
 				arousedLevel: sam.ArousedLevel,
 				pleasedLevel: sam.PleasedLevel

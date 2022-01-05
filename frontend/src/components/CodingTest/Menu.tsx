@@ -7,6 +7,8 @@ import {
   changeCurrentLanguage
 } from "@/store/slices/editorSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
+import { useColorModeValue } from "@/hooks";
+import theme from "@/styles/themes";
 import {
   prevQuestion,
   nextQuestion,
@@ -28,11 +30,12 @@ const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
   bg: string;
-  fg: string;
+  fgDarker: string;
 }
 
-export default function Menu({ bg, fg }: MenuProps) {
+export default function Menu({ bg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
+  const optionBg = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
   const { currentQuestion, submissions } = useAppSelector(
     (state) => state.question
   );
@@ -87,7 +90,7 @@ export default function Menu({ bg, fg }: MenuProps) {
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
       <Flex
         bg={bg}
-        color={fg}
+        color={fgDarker}
         justifyContent="center"
         alignItems="center"
         h="full"
@@ -103,6 +106,7 @@ export default function Menu({ bg, fg }: MenuProps) {
       <ThemeButton position="relative" />
       <Flex alignItems="center" gap="3" w="14rem">
         <Select
+          color={fgDarker}
           bg={bg}
           textTransform="capitalize"
           w="8rem"
@@ -128,8 +132,8 @@ export default function Menu({ bg, fg }: MenuProps) {
             </>
           ) : (
             <option
+              style={{ textTransform: "capitalize", backgroundColor: optionBg }}
               value={recordedSubmission?.language ?? ""}
-              style={{ textTransform: "capitalize" }}
             >
               {recordedSubmission?.language === "cpp"
                 ? "C++"
@@ -138,6 +142,7 @@ export default function Menu({ bg, fg }: MenuProps) {
           )}
         </Select>
         <Select
+          color={fgDarker}
           bg={bg}
           textTransform="capitalize"
           w="6rem"
@@ -157,7 +162,7 @@ export default function Menu({ bg, fg }: MenuProps) {
                 <option
                   key={idx}
                   value={fontSize}
-                  style={{ textTransform: "capitalize" }}
+                  style={{ textTransform: "capitalize", backgroundColor: optionBg }}
                 >
                   {fontSize}px
                 </option>
@@ -168,7 +173,12 @@ export default function Menu({ bg, fg }: MenuProps) {
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
           px="4"
-          colorScheme="red"
+          background="red.500"
+          opacity="60%"
+          _hover={{
+            opacity: "100%"
+          }}
+          color="white"
           h="full"
           onClick={() => {
             // TODO(elianiva): implement proper surrender logic properly
@@ -184,6 +194,11 @@ export default function Menu({ bg, fg }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
+          _hover={{
+            bg: "blue.600",
+            borderColor: "white",
+            color: "white"
+          }}
           onClick={() => {
             // TODO(elianiva): send the code to backend for execution
           }}
@@ -193,8 +208,13 @@ export default function Menu({ bg, fg }: MenuProps) {
         {!isRefactored && (
           <Button
             px="4"
-            colorScheme="blue"
+            background="blue.500"
+            color= "white"
             h="full"
+            _hover={{
+              bg: "gray.800",
+              borderColor: "white",
+            }}
             onClick={() => {
               // TODO(elianiva): only allow to continue when they have the correct answer
               // dispatch(nextQuestion());

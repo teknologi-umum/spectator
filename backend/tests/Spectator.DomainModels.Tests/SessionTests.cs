@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using FluentAssertions;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.DomainModels.SessionDomain;
+using Spectator.Primitives;
 using Xunit;
 
 namespace Spectator.DomainModels.Tests {
@@ -11,14 +12,17 @@ namespace Spectator.DomainModels.Tests {
 		public AnonymousSession CanCreateAnonymousSession() {
 			var sessionId = Guid.NewGuid();
 			var timestamp = DateTimeOffset.UtcNow;
-			var sessionStartedEvent = new SessionStartedEvent(sessionId, timestamp);
+			var sessionStartedEvent = new SessionStartedEvent(sessionId, timestamp, Locale.ID);
 			var anonymousSession = AnonymousSession.From(sessionStartedEvent);
 			anonymousSession.Id.Should().Be(sessionId);
 			anonymousSession.CreatedAt.Should().Be(timestamp);
 			anonymousSession.UpdatedAt.Should().Be(timestamp);
+			anonymousSession.Locale.Should().Be(Locale.ID);
 
 			return anonymousSession;
 		}
+
+		// TODO: CanChangeLocaleOfAnonymousSession
 
 		[Fact]
 		public RegisteredSession CanCreateRegisteredSession() {
@@ -36,6 +40,7 @@ namespace Spectator.DomainModels.Tests {
 			registeredSession.Id.Should().Be(anonymousSession.Id);
 			registeredSession.CreatedAt.Should().Be(anonymousSession.CreatedAt);
 			registeredSession.UpdatedAt.Should().Be(timestamp);
+			registeredSession.Locale.Should().Be(Locale.ID);
 			registeredSession.User.Should().NotBeNull();
 			registeredSession.BeforeExamSAM.Should().BeNull();
 			registeredSession.AfterExamSAM.Should().BeNull();
@@ -71,6 +76,9 @@ namespace Spectator.DomainModels.Tests {
 				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");
 		}
 
+		// TODO: CanChangeLocaleOfRegisteredSession
+		// TODO: CannotChangeLocaleUsingInvalidEvent
+
 		[Fact]
 		public RegisteredSession CanSubmitBeforeExamSAM() {
 			var timestamp = DateTimeOffset.UtcNow.AddSeconds(2);
@@ -84,6 +92,7 @@ namespace Spectator.DomainModels.Tests {
 			sessionWithBeforeExamSAM.Id.Should().Be(registeredSession.Id);
 			sessionWithBeforeExamSAM.CreatedAt.Should().Be(registeredSession.CreatedAt);
 			sessionWithBeforeExamSAM.UpdatedAt.Should().Be(timestamp);
+			sessionWithBeforeExamSAM.Locale.Should().Be(Locale.ID);
 			sessionWithBeforeExamSAM.User.Should().NotBeNull();
 			sessionWithBeforeExamSAM.BeforeExamSAM.Should().NotBeNull();
 			sessionWithBeforeExamSAM.AfterExamSAM.Should().BeNull();
@@ -139,6 +148,7 @@ namespace Spectator.DomainModels.Tests {
 			examSession.Id.Should().Be(sessionWithBeforeExamSAM.Id);
 			examSession.CreatedAt.Should().Be(sessionWithBeforeExamSAM.CreatedAt);
 			examSession.UpdatedAt.Should().Be(timestamp);
+			examSession.Locale.Should().Be(Locale.ID);
 			examSession.User.Should().NotBeNull();
 			examSession.BeforeExamSAM.Should().NotBeNull();
 			examSession.AfterExamSAM.Should().BeNull();

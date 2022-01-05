@@ -6,14 +6,13 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}"
 	ProjectSection(SolutionItems) = preProject
 		backend\.editorconfig = backend\.editorconfig
+		backend\.gitignore = backend\.gitignore
 		backend\Directory.Build.props = backend\Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{DABA930E-64BC-45CE-80AD-78483EDCD7B4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{AEBE0105-4B57-4882-80DD-03AEACE898C3}"
-EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Frontend", "frontend\Frontend.esproj", "{74A2B184-34A7-4C47-A752-988FA547A7E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proto", "proto", "{FABA1F5B-0E99-44F4-ACB0-9B343544F589}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,6 +31,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator", "backend\Spectator\Spectator.csproj", "{9A9D1714-E10B-4BAA-8430-99E189CDE223}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4561F739-9E7A-440B-A17B-EC1F7487EC7E} = {4561F739-9E7A-440B-A17B-EC1F7487EC7E}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.DomainModels", "backend\Spectator.DomainModels\Spectator.DomainModels.csproj", "{6815193B-FBC7-4E1A-9219-4BB98801FBE0}"
 EndProject
@@ -64,18 +66,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.RepositoryDALs.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.DomainModels.Tests", "backend\tests\Spectator.DomainModels.Tests\Spectator.DomainModels.Tests.csproj", "{7C3353BB-58F6-4116-9087-D5E2310634CF}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CC067D46-DC4A-4507-B27B-E52C0BBECF4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend", "frontend\Frontend.csproj", "{4561F739-9E7A-440B-A17B-EC1F7487EC7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{74A2B184-34A7-4C47-A752-988FA547A7E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74A2B184-34A7-4C47-A752-988FA547A7E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74A2B184-34A7-4C47-A752-988FA547A7E3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{74A2B184-34A7-4C47-A752-988FA547A7E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74A2B184-34A7-4C47-A752-988FA547A7E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74A2B184-34A7-4C47-A752-988FA547A7E3}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{9A9D1714-E10B-4BAA-8430-99E189CDE223}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A9D1714-E10B-4BAA-8430-99E189CDE223}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A9D1714-E10B-4BAA-8430-99E189CDE223}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -128,12 +128,16 @@ Global
 		{7C3353BB-58F6-4116-9087-D5E2310634CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C3353BB-58F6-4116-9087-D5E2310634CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C3353BB-58F6-4116-9087-D5E2310634CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC067D46-DC4A-4507-B27B-E52C0BBECF4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC067D46-DC4A-4507-B27B-E52C0BBECF4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4561F739-9E7A-440B-A17B-EC1F7487EC7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4561F739-9E7A-440B-A17B-EC1F7487EC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4561F739-9E7A-440B-A17B-EC1F7487EC7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{74A2B184-34A7-4C47-A752-988FA547A7E3} = {AEBE0105-4B57-4882-80DD-03AEACE898C3}
 		{EE78E82D-E486-460A-AAFA-5A04993FCF88} = {C027A280-5DCC-43BA-9C35-3ECCF3DE13A3}
 		{9A9D1714-E10B-4BAA-8430-99E189CDE223} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 		{6815193B-FBC7-4E1A-9219-4BB98801FBE0} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
@@ -149,6 +153,7 @@ Global
 		{E736DE89-D0B9-4031-B175-820E30045ACF} = {A3062ECA-FE6E-4043-A43F-F9E1C629B7D7}
 		{7889C416-14DA-4490-AA5E-CCBA840ABAE0} = {E736DE89-D0B9-4031-B175-820E30045ACF}
 		{7C3353BB-58F6-4116-9087-D5E2310634CF} = {E736DE89-D0B9-4031-B175-820E30045ACF}
+		{4561F739-9E7A-440B-A17B-EC1F7487EC7E} = {AEBE0105-4B57-4882-80DD-03AEACE898C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81F0BD7D-03EB-40C0-9294-14F7F07A81F0}

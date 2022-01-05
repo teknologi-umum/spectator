@@ -17,6 +17,7 @@ export default defineConfig({
     }
   },
   build: {
+    outDir: "../backend/Spectator/wwwroot",
     rollupOptions: {
       output: {
         manualChunks: {
