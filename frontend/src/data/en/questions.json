@@ -31,11 +31,11 @@
       "question": "Great! You've made a program to convert temperatures to other units. Since\nyou're a curious person, you think to yourself, why are there different units\nfor temperature. Obviously their value won't be the same because they're in\ndifferent unit, but just to make sure, you decided to make a program which\ncompares if 2 temperatures are the same or not.\n\nYour task now is to create a function to make sure that 2 values are indeed\ndifferent. It will return either `true` or `false`. Here's an example:\n\n**Input:**\n```\nisSameNumber(100, 212)\nisSameNumber(212, 373)\nisSameNumber(373, 100)\n```\n\n\n**Expected output:**\n```\nfalse\nfalse\nfalse\n```\n\n**Pseudocode example:**\n```\ndefn isSameNumber(a, b)\n  if a is equal to b then\n    return true\n  otherwise\n    return false\nend\n```\n\n**Constraints:**\n  - The input is always an integer\n\nGood luck!\n",
       "title": "Check similar number",
       "templates": {
-        "c": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nint isSameNumber(int a, int b) {\n    return |\n}\n",
-        "cpp": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nbool isSameNumber(int a, int b) {\n    return |\n}\n",
-        "java": "class SimilarNumber {\n    // `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n    // `b` as integer. It returns a boolean as its output.\n    public boolean isSameNumber(int a, int b) {\n        |\n    }\n}\n",
-        "javascript": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber(a, b) {\n    return |\n}\n",
-        "php": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber($a, $b) {\n    return |\n}\n",
+        "c": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nint isSameNumber(int a, int b) {\n    // write your code here\n}\n",
+        "cpp": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nbool isSameNumber(int a, int b) {\n    // write your code here\n}\n",
+        "java": "class SimilarNumber {\n    // `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n    // `b` as integer. It returns a boolean as its output.\n    public boolean isSameNumber(int a, int b) {\n        // write your code here\n    }\n}\n",
+        "javascript": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber(a, b) {\n    // write your code here\n}\n",
+        "php": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber($a, $b) {\n    // write your code here\n}\n",
         "python": "# `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n# `b` as integer. It returns a boolean as its output.\ndef isSameNumber(a, b):\n    # write your code here"
       }
     },
@@ -44,12 +44,12 @@
       "question": "Nice, you've converted the temperatures and made sure they're different\nfrom each other. You should have 3 numbers with you (Celcius,\nFahrenheit, Kelvin). Since the temperature is freezing, you decided to\nturn on the room heater. One issue though, you don't know how much power\nneeded to turn on the heater.\n\nYour task is now to find the power needed to turn on the room heater.\nYou can find it by simply calculating the sum of the digits of the\nprevious temperatures combined.\n\n**Suppose you have these numbers:**\n  - Celcius = 100\n  - Fahrenheit = 212\n  - Kelvin = 373\n\nThen the input will be 100212373 (100 + 212 + 373). The sum of the input is as\nsimple as adding them all. For example: `1 + 0 + 0 + 2 + 1 + 2 + 3 + 7 + 3` so\nthe final result will be 19. Don't print the number, return it instead.\n\n**Input:**\n```\nfindHeaterPower(100212373)\n```\n\n**Expected output:**\n```\n19\n```\n\n**Pseudocode example:**\n```\ndefn findHeaterPower(input)\n  result = sum(digits of input)\n  return result\nend\n```\n\n**Constraints:**\n  - The input will never exceeds 2147483647\n  - The input will never be negative\n\nThat's it. Good luck and have fun!\n",
       "title": "Sum all digits of integers",
       "templates": {
-        "c": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as integer and\n// returns an integer as its output.\nint findHeaterPower(int input) {\n    // write your code here\n}",
-        "cpp": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as integer and\n// returns an integer as its output.\nint findHeaterPower(int input) {\n    // write your code here\n}",
-        "java": "class Heater {\n    // `findHeaterPower` is function that accepts an argument as integer and\n    // returns an integer as its output.\n    public int findHeaterPower(int input) {\n        // write your code here\n    }\n}",
-        "javascript": "// `findHeaterPower` is function that accepts an argument as integer and\n// returns an integer as its output.\nfunction findHeaterPower(input) {\n    // write your code here\n}",
-        "php": "// `findHeaterPower` is function that accepts an argument as integer and\n// returns an integer as its output.\nfunction findHeaterPower($input) {\n    // write your code here\n}",
-        "python": "# `findHeaterPower` is function that accepts an argument as integer and returns\n# an integer as its output.\ndef findHeaterPower(input):\n    # write your code here"
+        "c": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nint findHeaterPower(long input) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nint findHeaterPower(long input) {\n    // write your code here\n}",
+        "java": "class Heater {\n    // `findHeaterPower` is function that accepts an argument as long and\n    // returns an integer as its output.\n    public int findHeaterPower(long input) {\n        // write your code here\n    }\n}",
+        "javascript": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower(input) {\n    // write your code here\n}",
+        "php": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower($input) {\n    // write your code here\n}",
+        "python": "# `findHeaterPower` is function that accepts an argument as long and returns\n# an integer as its output.\ndef findHeaterPower(input):\n    # write your code here"
       }
     },
     {
@@ -58,7 +58,7 @@
       "title": "Mumbling",
       "templates": {
         "c": "#include <stdio.h>\n#include <strings.h>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nchar* mumble(char* input) {\n    // write your code here\n}",
-        "cpp": "#include <stdio.h>\n#include <string>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nstd::string mumble(std::string input) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n#include <string>\n#include <vector>\n#include <numeric>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nstd::string mumble(std::string input) {\n    // write your code here\n}",
         "java": "class Mumble {\n    // `mumble` is a function that accepts an argument as string and returns a\n    // string as its output.\n    public String mumble(String input) {\n        // write your code here\n    }\n}",
         "javascript": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble() {\n    // write your code here\n}\n",
         "php": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble($input) {\n    // write your code here\n}",
@@ -71,7 +71,7 @@
       "title": "Grade System",
       "templates": {
         "c": "#include <stdio.h>\n\n// `calculateGrade` is a function that accepts 2 arguments as its input: `size` as integer\n// and `grade` as an array of integer. It returns an array of integer as its\n// output\nint* calculateGrade(int size, int* grade) {\n    // write your code here\n}",
-        "cpp": "#include <stdio.h>\n\n// `calculateGrade` is a function that accepts a vector of integer as its input\n// and returns a vector of integer as its output\nstd::vector<int> calculateGrade(std::vector<int> grade) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n#include <vector>\n\n// `calculateGrade` is a function that accepts a vector of integer as its input\n// and returns a vector of integer as its output\nstd::vector<int> calculateGrade(std::vector<int> grade) {\n    // write your code here\n}",
         "java": "class Grade {\n    // `calculateGrade` is a function that accepts an ArrayList of integer as\n    // its input and returns an ArrayList of integer as its output\n    public ArrayList<int> calculateGrade(ArrayList<int> grade) {\n        // write your code here\n    }\n}",
         "javascript": "// calculateGrade is a function that accepts an array of integer as its input\n// and returns an array of integer as its output\nfunction calculateGrade(grade) {\n    // write your code here\n}",
         "php": "// `calculateGrade` is a function that accepts an array of integer as its input and\n// returns an array of integer as its output\nfunction calculateGrade($grade) {\n    // write your code here\n}",
