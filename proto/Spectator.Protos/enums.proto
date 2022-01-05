@@ -1,8 +1,13 @@
-﻿syntax = "proto3";
+syntax = "proto3";
 
 option csharp_namespace = "Spectator.Protos.Enums";
 
 package enums;
+
+enum Locale {
+	EN = 0;
+	ID = 1;
+}
 
 enum Language {
 	UNDEFINED = 0;

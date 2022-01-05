@@ -8,12 +8,13 @@ import type { SubmissionResult } from "./session";
 import type { SubmissionRequest } from "./session";
 import type { ExamResult } from "./session";
 import type { Exam } from "./session";
+import type { EmptyRequest } from "./session";
 import type { SAM } from "./session";
-import type { EmptyReply } from "./session";
 import type { PersonalInfo } from "./session";
+import type { EmptyReply } from "./session";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { SessionReply } from "./session";
-import type { EmptyRequest } from "./session";
+import type { LocaleInfo } from "./session";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
@@ -21,9 +22,13 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface ISessionServiceClient {
     /**
-     * @generated from protobuf rpc: StartSession(session.EmptyRequest) returns (session.SessionReply);
+     * @generated from protobuf rpc: StartSession(session.LocaleInfo) returns (session.SessionReply);
      */
-    startSession(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, SessionReply>;
+    startSession(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, SessionReply>;
+    /**
+     * @generated from protobuf rpc: SetLocale(session.LocaleInfo) returns (session.EmptyReply);
+     */
+    setLocale(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, EmptyReply>;
     /**
      * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
      */
@@ -63,59 +68,66 @@ export class SessionServiceClient implements ISessionServiceClient, ServiceInfo 
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * @generated from protobuf rpc: StartSession(session.EmptyRequest) returns (session.SessionReply);
+     * @generated from protobuf rpc: StartSession(session.LocaleInfo) returns (session.SessionReply);
      */
-    startSession(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, SessionReply> {
+    startSession(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, SessionReply> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
-        return stackIntercept<EmptyRequest, SessionReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<LocaleInfo, SessionReply>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: SetLocale(session.LocaleInfo) returns (session.EmptyReply);
+     */
+    setLocale(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, EmptyReply> {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        return stackIntercept<LocaleInfo, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
      */
     submitPersonalInfo(input: PersonalInfo, options?: RpcOptions): UnaryCall<PersonalInfo, EmptyReply> {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept<PersonalInfo, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
      */
     submitBeforeCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply> {
-        const method = this.methods[2], opt = this._transport.mergeOptions(options);
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
         return stackIntercept<SAM, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
      */
     startExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, Exam> {
-        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<EmptyRequest, Exam>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ResumeExam(session.EmptyRequest) returns (session.Exam);
      */
     resumeExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, Exam> {
-        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
         return stackIntercept<EmptyRequest, Exam>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: EndExam(session.EmptyRequest) returns (session.ExamResult);
      */
     endExam(input: EmptyRequest, options?: RpcOptions): UnaryCall<EmptyRequest, ExamResult> {
-        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept<EmptyRequest, ExamResult>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SubmitSolution(session.SubmissionRequest) returns (session.SubmissionResult);
      */
     submitSolution(input: SubmissionRequest, options?: RpcOptions): UnaryCall<SubmissionRequest, SubmissionResult> {
-        const method = this.methods[6], opt = this._transport.mergeOptions(options);
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
         return stackIntercept<SubmissionRequest, SubmissionResult>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
      */
     submitAfterCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply> {
-        const method = this.methods[7], opt = this._transport.mergeOptions(options);
+        const method = this.methods[8], opt = this._transport.mergeOptions(options);
         return stackIntercept<SAM, EmptyReply>("unary", this._transport, method, opt, input);
     }
 }

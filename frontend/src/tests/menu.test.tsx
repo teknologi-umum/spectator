@@ -11,7 +11,7 @@ const reduxWrapper: FC = ({ children }) => (
 );
 
 test("should be able to change editor language using <Select />", () => {
-  const { getByTestId } = render(<Menu bg="black" fg="white" />, {
+  const { getByTestId } = render(<Menu bg="black" fgDarker="white" />, {
     wrapper: reduxWrapper
   });
 
@@ -23,7 +23,7 @@ test("should be able to change editor language using <Select />", () => {
 });
 
 test("should be able to change editor fontsize using <Select />", () => {
-  const { getByTestId } = render(<Menu bg="black" fg="white" />, {
+  const { getByTestId } = render(<Menu bg="black" fgDarker="white" />, {
     wrapper: reduxWrapper
   });
 

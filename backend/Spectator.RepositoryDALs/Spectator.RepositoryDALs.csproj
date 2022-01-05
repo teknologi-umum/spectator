@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\..\frontend\src\data\en\questions.json" Link="Imported\FrontendData\en\questions.json" />
+    <EmbeddedResource Include="..\..\frontend\src\data\en\translations.json" Link="Imported\FrontendData\en\translations.json" />
+    <EmbeddedResource Include="..\..\frontend\src\data\id\questions.json" Link="Imported\FrontendData\id\questions.json" />
+    <EmbeddedResource Include="..\..\frontend\src\data\id\translations.json" Link="Imported\FrontendData\id\translations.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="InfluxDB.Client" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
@@ -15,6 +22,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Spectator.Repositories\Spectator.Repositories.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Imported\FrontendData\en\" />
+    <Folder Include="Imported\FrontendData\id\" />
   </ItemGroup>
 
 </Project>

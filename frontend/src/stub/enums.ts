@@ -2,6 +2,19 @@
 // @generated from protobuf file "enums.proto" (package "enums", syntax proto3)
 // tslint:disable
 /**
+ * @generated from protobuf enum enums.Locale
+ */
+export enum Locale {
+    /**
+     * @generated from protobuf enum value: EN = 0;
+     */
+    EN = 0,
+    /**
+     * @generated from protobuf enum value: ID = 1;
+     */
+    ID = 1
+}
+/**
  * @generated from protobuf enum enums.Language
  */
 export enum Language {
