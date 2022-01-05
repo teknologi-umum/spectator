@@ -2,7 +2,7 @@
 using Spectator.Primitives;
 
 namespace Spectator.DomainEvents.SessionDomain {
-	public record SessionStartedEvent(
+	public record LocaleSetEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,
 		Locale Locale

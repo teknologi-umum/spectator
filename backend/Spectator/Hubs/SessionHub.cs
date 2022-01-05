@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
-using Spectator.DomainServices.QuestionDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
 using Spectator.Primitives;
@@ -29,8 +26,8 @@ namespace Spectator.Hubs {
 			_serviceProvider = serviceProvider;
 		}
 
-		public async Task<SessionReply> StartSessionAsync() {
-			var session = await _sessionServices.StartSessionAsync();
+		public async Task<SessionReply> StartSessionAsync(LocaleInfo localeInfo) {
+			var session = await _sessionServices.StartSessionAsync((Locale)localeInfo.Locale);
 			var jwtAuthenticationServices = _serviceProvider.GetRequiredService<JwtAuthenticationServices>();
 			var tokenPayload = jwtAuthenticationServices.CreatePayload(session.Id);
 			return new SessionReply {
@@ -38,11 +35,21 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.ANONYMOUS)]
-		public async Task SubmitPersonalInfoAsync(PersonalInfo personalInfo) {
+		[Authorize]
+		public Task SetLocaleAsync(LocaleInfo localeInfo) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			await _sessionServices.SubmitPersonalInfoAsync(
+			return _sessionServices.SetLocaleAsync(
+				sessionId: tokenPayload.SessionId,
+				locale: (Locale)localeInfo.Locale
+			);
+		}
+
+		[Authorize(AuthPolicy.ANONYMOUS)]
+		public Task SubmitPersonalInfoAsync(PersonalInfo personalInfo) {
+			if (Context.User == null) throw new UnauthorizedAccessException();
+			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+			return _sessionServices.SubmitPersonalInfoAsync(
 				sessionId: tokenPayload.SessionId,
 				studentNumber: personalInfo.StudentNumber,
 				yearsOfExperience: personalInfo.YearsOfExperience,
@@ -52,10 +59,10 @@ namespace Spectator.Hubs {
 		}
 
 		[Authorize(AuthPolicy.REGISTERED)]
-		public async Task SubmitBeforeExamSAMAsync(SAM sam) {
+		public Task SubmitBeforeExamSAMAsync(SAM sam) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			await _sessionServices.SubmitBeforeExamSAMAsync(
+			return _sessionServices.SubmitBeforeExamSAMAsync(
 				sessionId: tokenPayload.SessionId,
 				arousedLevel: sam.ArousedLevel,
 				pleasedLevel: sam.PleasedLevel
@@ -66,16 +73,12 @@ namespace Spectator.Hubs {
 		public async Task<Exam> StartExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			// TODO: accept locale parameter
-			// HACK: temporary dummy value Locale.ID
-			var session = await _sessionServices.StartExamAsync(tokenPayload.SessionId, Locale.ID);
-			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(Locale.ID, CancellationToken.None);
-			var questionById = questions.ToImmutableDictionary(q => q.QuestionNumber);
+			(var session, var questionByQuestionNumber) = await _sessionServices.StartExamAsync(tokenPayload.SessionId);
 			return new Exam {
 				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
 					from questionNumber in session.QuestionNumbers!.Value
-					let question = questionById[questionNumber]
+					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
 						Title = question.Title,
@@ -97,16 +100,12 @@ namespace Spectator.Hubs {
 		public async Task<Exam> ResumeExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.ResumeExamAsync(tokenPayload.SessionId, Context.ConnectionAborted);
-			// TODO: accept locale parameter
-			// HACK: temporary dummy value Locale.ID
-			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(Locale.ID, CancellationToken.None);
-			var questionById = questions.ToImmutableDictionary(q => q.QuestionNumber);
+			(var session, var questionByQuestionNumber) = await _sessionServices.ResumeExamAsync(tokenPayload.SessionId, Context.ConnectionAborted);
 			return new Exam {
 				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
 					from questionNumber in session.QuestionNumbers!.Value
-					let question = questionById[questionNumber]
+					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
 						Title = question.Title,
@@ -193,10 +192,10 @@ namespace Spectator.Hubs {
 		}
 
 		[Authorize(AuthPolicy.HAS_TAKEN_EXAM)]
-		public async Task SubmitAfterExamSAM(SAM sam) {
+		public Task SubmitAfterExamSAM(SAM sam) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			await _sessionServices.SubmitAfterExamSAMAsync(
+			return _sessionServices.SubmitAfterExamSAMAsync(
 				sessionId: tokenPayload.SessionId,
 				arousedLevel: sam.ArousedLevel,
 				pleasedLevel: sam.PleasedLevel

@@ -2,6 +2,7 @@
 using FluentAssertions;
 using InfluxDB.Client.Api.Domain;
 using Spectator.DomainEvents.SessionDomain;
+using Spectator.Primitives;
 using Spectator.RepositoryDALs.Mapper;
 using Xunit;
 
@@ -13,7 +14,8 @@ namespace Spectator.RepositoryDALs.Tests {
 			var timestamp = DateTimeOffset.UtcNow;
 			var @event = new SessionStartedEvent(
 				SessionId: sessionId,
-				Timestamp: timestamp
+				Timestamp: timestamp,
+				Locale: Locale.ID
 			);
 			var mapper = new DomainObjectMapper();
 			var pointData = mapper.ConvertToPointData(@event, WritePrecision.Ns);

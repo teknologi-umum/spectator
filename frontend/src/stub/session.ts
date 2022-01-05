@@ -2,21 +2,26 @@
 // @generated from protobuf file "session.proto" (package "session", syntax proto3)
 // tslint:disable
 import { ServiceType } from "@protobuf-ts/runtime-rpc";
-import { WireType } from "@protobuf-ts/runtime";
 import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
 import type { IBinaryWriter } from "@protobuf-ts/runtime";
-import { UnknownFieldHandler } from "@protobuf-ts/runtime";
+import { WireType } from "@protobuf-ts/runtime";
 import type { BinaryReadOptions } from "@protobuf-ts/runtime";
 import type { IBinaryReader } from "@protobuf-ts/runtime";
+import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { Language } from "./enums";
+import { Locale } from "./enums";
 /**
- * @generated from protobuf message session.StartSessionRequest
+ * @generated from protobuf message session.LocaleInfo
  */
-export interface StartSessionRequest {
+export interface LocaleInfo {
+    /**
+     * @generated from protobuf field: enums.Locale locale = 1;
+     */
+    locale: Locale;
 }
 /**
  * @generated from protobuf message session.SessionReply
@@ -183,21 +188,42 @@ export interface EmptyRequest {
 export interface EmptyReply {
 }
 // @generated message type with reflection information, may provide speed optimized methods
-class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
+class LocaleInfo$Type extends MessageType<LocaleInfo> {
     constructor() {
-        super("session.StartSessionRequest", []);
+        super("session.LocaleInfo", [
+            { no: 1, name: "locale", kind: "enum", T: () => ["enums.Locale", Locale] }
+        ]);
     }
-    create(value?: PartialMessage<StartSessionRequest>): StartSessionRequest {
-        const message = {};
+    create(value?: PartialMessage<LocaleInfo>): LocaleInfo {
+        const message = { locale: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<StartSessionRequest>(this, message, value);
+            reflectionMergePartial<LocaleInfo>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StartSessionRequest): StartSessionRequest {
-        return target ?? this.create();
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LocaleInfo): LocaleInfo {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* enums.Locale locale */ 1:
+                    message.locale = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
     }
-    internalBinaryWrite(message: StartSessionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: LocaleInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* enums.Locale locale = 1; */
+        if (message.locale !== 0)
+            writer.tag(1, WireType.Varint).int32(message.locale);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -205,9 +231,9 @@ class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message session.StartSessionRequest
+ * @generated MessageType for protobuf message session.LocaleInfo
  */
-export const StartSessionRequest = new StartSessionRequest$Type();
+export const LocaleInfo = new LocaleInfo$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SessionReply$Type extends MessageType<SessionReply> {
     constructor() {
@@ -862,7 +888,8 @@ export const EmptyReply = new EmptyReply$Type();
  * @generated ServiceType for protobuf service session.SessionService
  */
 export const SessionService = new ServiceType("session.SessionService", [
-    { name: "StartSession", options: {}, I: EmptyRequest, O: SessionReply },
+    { name: "StartSession", options: {}, I: LocaleInfo, O: SessionReply },
+    { name: "SetLocale", options: {}, I: LocaleInfo, O: EmptyReply },
     { name: "SubmitPersonalInfo", options: {}, I: PersonalInfo, O: EmptyReply },
     { name: "SubmitBeforeCodeSAM", options: {}, I: SAM, O: EmptyReply },
     { name: "StartExam", options: {}, I: EmptyRequest, O: Exam },

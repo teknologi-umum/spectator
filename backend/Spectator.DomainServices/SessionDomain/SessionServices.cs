@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Spectator.DomainEvents.SessionDomain;
+using Spectator.DomainModels.QuestionDomain;
 using Spectator.DomainModels.SessionDomain;
 using Spectator.DomainModels.SubmissionDomain;
 using Spectator.DomainServices.PistonDomain;
@@ -33,12 +34,12 @@ namespace Spectator.DomainServices.SessionDomain {
 			_serviceProvider = serviceProvider;
 		}
 
-		public async Task<AnonymousSession> StartSessionAsync() {
+		public async Task<AnonymousSession> StartSessionAsync(Locale locale) {
 			// Generate random sessionId
 			var sessionId = Guid.NewGuid();
 
 			// Create event
-			var @event = new SessionStartedEvent(sessionId, DateTimeOffset.UtcNow);
+			var @event = new SessionStartedEvent(sessionId, DateTimeOffset.UtcNow, locale);
 
 			// Dispatch event
 			var session = AnonymousSession.From(@event);
@@ -49,6 +50,24 @@ namespace Spectator.DomainServices.SessionDomain {
 
 			// Return state
 			return session;
+		}
+
+		public async Task SetLocaleAsync(Guid sessionId, Locale locale) {
+			// Get store
+			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
+
+			// Create event
+			var @event = new LocaleSetEvent(
+				SessionId: sessionId,
+				Timestamp: DateTimeOffset.UtcNow,
+				Locale: locale
+			);
+
+			// Dispatch event
+			sessionStore.Dispatch(@event);
+
+			// Raise event
+			await _sessionEventRepository.AddEventAsync(@event);
 		}
 
 		public async Task SubmitPersonalInfoAsync(Guid sessionId, string studentNumber, int yearsOfExperience, int hoursOfPractice, string familiarLanguages) {
@@ -90,9 +109,16 @@ namespace Spectator.DomainServices.SessionDomain {
 			await _sessionEventRepository.AddEventAsync(@event);
 		}
 
-		public async Task<RegisteredSession> StartExamAsync(Guid sessionId, Locale locale) {
+		public async Task<(RegisteredSession Session, ImmutableDictionary<int, Question> QuestionByQuestionNumber)> StartExamAsync(Guid sessionId) {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
+
+			// Get locale from state
+			var locale = sessionStore.State switch {
+				AnonymousSession a => a.Locale,
+				RegisteredSession r => r.Locale,
+				_ => throw new InvalidProgramException("Unhandled session type")
+			};
 
 			// Get questions
 			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
@@ -113,12 +139,25 @@ namespace Spectator.DomainServices.SessionDomain {
 			await _sessionEventRepository.AddEventAsync(@event);
 
 			// Return state
-			return (RegisteredSession)sessionStore.State;
+			return (
+				Session: (RegisteredSession)sessionStore.State,
+				QuestionByQuestionNumber: questions.ToImmutableDictionary(q => q.QuestionNumber)
+			);
 		}
 
-		public async Task<RegisteredSession> ResumeExamAsync(Guid sessionId, CancellationToken cancellationToken) {
+		public async Task<(RegisteredSession Session, ImmutableDictionary<int, Question> QuestionByQuestionNumber)> ResumeExamAsync(Guid sessionId, CancellationToken cancellationToken) {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, cancellationToken);
+
+			// Get locale from state
+			var locale = sessionStore.State switch {
+				AnonymousSession a => a.Locale,
+				RegisteredSession r => r.Locale,
+				_ => throw new InvalidProgramException("Unhandled session type")
+			};
+
+			// Get questions
+			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
 
 			// Create event
 			var @event = new ExamIDEReloadedEvent(
@@ -133,7 +172,10 @@ namespace Spectator.DomainServices.SessionDomain {
 			await _sessionEventRepository.AddEventAsync(@event);
 
 			// Return state
-			return (RegisteredSession)sessionStore.State;
+			return (
+				Session: (RegisteredSession)sessionStore.State,
+				QuestionByQuestionNumber: questions.ToImmutableDictionary(q => q.QuestionNumber)
+			);
 		}
 
 		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string solution, string scratchPad) {

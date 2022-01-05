@@ -7,7 +7,8 @@ package session;
 import "enums.proto";
 
 service SessionService {
-	rpc StartSession (EmptyRequest) returns (SessionReply);
+	rpc StartSession (LocaleInfo) returns (SessionReply);
+	rpc SetLocale (LocaleInfo) returns (EmptyReply);
 	rpc SubmitPersonalInfo (PersonalInfo) returns (EmptyReply);
 	rpc SubmitBeforeCodeSAM (SAM) returns (EmptyReply);
 	rpc StartExam (EmptyRequest) returns (Exam);
@@ -17,7 +18,8 @@ service SessionService {
 	rpc SubmitAfterCodeSAM (SAM) returns (EmptyReply);
 }
 
-message StartSessionRequest {
+message LocaleInfo {
+	enums.Locale locale = 1;
 }
 
 message SessionReply {
