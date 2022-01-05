@@ -121,7 +121,8 @@ namespace Spectator.DomainServices.SessionDomain {
 			};
 
 			// Get questions
-			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
+			var questionsByLocale = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(CancellationToken.None);
+			var questions = questionsByLocale[locale];
 
 			// Create event
 			var utcNow = DateTimeOffset.UtcNow;
@@ -157,7 +158,8 @@ namespace Spectator.DomainServices.SessionDomain {
 			};
 
 			// Get questions
-			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
+			var questionsByLocale = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(CancellationToken.None);
+			var questions = questionsByLocale[locale];
 
 			// Create event
 			var @event = new ExamIDEReloadedEvent(

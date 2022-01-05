@@ -4,6 +4,6 @@ using Spectator.Primitives;
 
 namespace Spectator.Repositories {
 	public interface IQuestionRepository {
-		Task<ImmutableArray<Question>> GetAllAsync(Locale locale, CancellationToken cancellationToken);
+		Task<ImmutableDictionary<Locale, ImmutableArray<Question>>> GetAllAsync(CancellationToken cancellationToken);
 	}
 }

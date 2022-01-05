@@ -81,10 +81,10 @@ namespace Spectator.Hubs {
 					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = question.Title,
-						Instruction = question.Instruction,
+						Title = question.TitleByLocale[session.Locale],
+						Instruction = question.InstructionByLocale[session.Locale],
 						LanguageAndTemplates = {
-							from kvp in question.TemplateByLanguage
+							from kvp in question.TemplateByLanguageByLocale[session.Locale]
 							select new Question.Types.LanguageAndTemplate {
 								Language = (Protos.Enums.Language)kvp.Key,
 								Template = kvp.Value
@@ -108,10 +108,10 @@ namespace Spectator.Hubs {
 					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = question.Title,
-						Instruction = question.Instruction,
+						Title = question.TitleByLocale[session.Locale],
+						Instruction = question.InstructionByLocale[session.Locale],
 						LanguageAndTemplates = {
-							from kvp in question.TemplateByLanguage
+							from kvp in question.TemplateByLanguageByLocale[session.Locale]
 							select new Question.Types.LanguageAndTemplate {
 								Language = (Protos.Enums.Language)kvp.Key,
 								Template = kvp.Value

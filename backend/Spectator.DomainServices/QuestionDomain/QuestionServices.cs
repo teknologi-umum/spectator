@@ -12,7 +12,7 @@ using Spectator.Repositories;
 namespace Spectator.DomainServices.QuestionDomain {
 	public class QuestionServices {
 		private readonly IQuestionRepository _questionRepository;
-		private readonly ResultCache<Locale, IReadOnlyCollection<Question>> _questionsByLocaleCache;
+		private readonly ResultCache<IReadOnlyDictionary<Locale, ImmutableArray<Question>>> _cache;
 		private static readonly TimeSpan CACHE_TTL = TimeSpan.FromHours(1);
 
 		public QuestionServices(
@@ -20,12 +20,12 @@ namespace Spectator.DomainServices.QuestionDomain {
 			IMemoryCache memoryCache
 		) {
 			_questionRepository = questionRepository;
-			ResultCache.Initialize(out _questionsByLocaleCache, memoryCache);
+			ResultCache.Initialize(out _cache, memoryCache);
 		}
 
-		public async Task<ImmutableArray<Question>> GetAllAsync(Locale locale, CancellationToken cancellationToken) {
-			return (ImmutableArray<Question>)await _questionsByLocaleCache.GetOrCreateAsync(locale, async () => {
-				return await _questionRepository.GetAllAsync(locale, cancellationToken);
+		public async Task<ImmutableDictionary<Locale, ImmutableArray<Question>>> GetAllAsync(CancellationToken cancellationToken) {
+			return (ImmutableDictionary<Locale, ImmutableArray<Question>>)await _cache.GetOrCreateAsync(async () => {
+				return await _questionRepository.GetAllAsync(cancellationToken);
 			}, absoluteExpirationRelativeToNow: CACHE_TTL);
 		}
 	}
