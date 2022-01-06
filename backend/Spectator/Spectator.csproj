@@ -9,6 +9,7 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+    <UserSecretsId>be3dd7a0-e161-43ae-8fc9-f55e6a5c8b78</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

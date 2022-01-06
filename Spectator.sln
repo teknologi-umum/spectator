@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{A306
 		backend\.editorconfig = backend\.editorconfig
 		backend\.gitignore = backend\.gitignore
 		backend\Directory.Build.props = backend\Directory.Build.props
+		backend\README.md = backend\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{DABA930E-64BC-45CE-80AD-78483EDCD7B4}"
@@ -48,6 +49,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF9CC5FA-4267-483B-9EAD-5387522C54EA}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.Observables", "backend\Spectator.Observables\Spectator.Observables.csproj", "{AEC5EE3D-A0AD-493A-B451-FD1F59B29610}"
@@ -64,7 +66,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E736DE89
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.RepositoryDALs.Tests", "backend\tests\Spectator.RepositoryDALs.Tests\Spectator.RepositoryDALs.Tests.csproj", "{7889C416-14DA-4490-AA5E-CCBA840ABAE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.DomainModels.Tests", "backend\tests\Spectator.DomainModels.Tests\Spectator.DomainModels.Tests.csproj", "{7C3353BB-58F6-4116-9087-D5E2310634CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.DomainModels.Tests", "backend\tests\Spectator.DomainModels.Tests\Spectator.DomainModels.Tests.csproj", "{7C3353BB-58F6-4116-9087-D5E2310634CF}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CC067D46-DC4A-4507-B27B-E52C0BBECF4A}"
 EndProject
