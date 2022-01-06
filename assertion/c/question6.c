@@ -1,6 +1,3 @@
-// WARNING!!!!!!!!!!!
-// this thing does not work
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,34 +7,17 @@ int* calculateGrade(int size, int* input);
 
 {0}
 
-int* calculateGrade(int size, int* input) {
-    int* result = malloc(size * sizeof(int));
-
-    for (int i = 0; i < size; i++) {
-        int grade = input[i];
-        if (grade >= 38 && grade % 5 != 0 && grade % 5 >= 3) {
-            result[i] = grade + (5 - grade % 5);
-        } else {
-            result[i] = grade;
-        }
-    }
-
-    return result;
-}
-
 int* __workingAnswer(int size, int* input) {
-    int* result = malloc(size * sizeof(int));
-
     for (int i = 0; i < size; i++) {
         int grade = input[i];
         if (grade >= 38 && grade % 5 != 0 && grade % 5 >= 3) {
-            result[i] = grade + (5 - grade % 5);
+            input[i] = grade + (5 - grade % 5);
         } else {
-            result[i] = grade;
+            input[i] = grade;
         }
     }
 
-    return result;
+    return input;
 }
 
 typedef struct TestCase {
@@ -63,7 +43,7 @@ char* arrayToString(int* arr) {
     char* result = malloc(sizeof(arr));
 
     for (int i = 0, len = sizeof(arr); i < len; i++) {
-        result[i] = arr[i];
+        sprintf(result, "%d", arr[i]);
     }
 
     return result;
@@ -89,15 +69,19 @@ int main() {
     for (unsigned int i = 0, len = sizeof(testCases) / sizeof(TestCase); i < len; i++) {
         TestCase test = testCases[i];
 
-        if (memcmp(test.got, test.expected, sizeof(&test.got))) {
+        char* got = arrayToString(test.got);
+        char* expected = arrayToString(test.expected);
+
+        if (strcmp(got, expected) == 1) {
             printf("# %d PASSING\n", i + 1);
         } else {
-            // std::string expected(test.expected.begin(), test.expected.end());
-            // std::string got(test.got.begin(), test.got.end());
             printf("# %d FAILED\n", i + 1);
-            printf("> EXPECTED %s\n", arrayToString(test.expected));
-            printf("> GOT %s\n", arrayToString(test.got));
+            printf("> EXPECTED %s\n", expected);
+            printf("> GOT %s\n", got);
         }
+
+        free(got);
+        free(expected);
     }
     return 0;
 }
