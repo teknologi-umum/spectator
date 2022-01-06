@@ -64,15 +64,15 @@ int main() {
 
     TestCase testCases[10] = {
         {.expected = "A-Bb-Ccc-Dddd",
-         .got = __workingAnswer("abcd")},
+         .got = mumble("abcd")},
         {.expected = "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy",
-         .got = __workingAnswer("RqaEzTy")}};
+         .got = mumble("RqaEzTy")}};
 
     for (int i = 2; i < 10; i++) {
         int n = __randomNumber(4, 20);
         char* word = __genWords(n);
         char* expected = __workingAnswer(word);
-        char* got = __workingAnswer(word);
+        char* got = mumble(word);
         testCases[i].expected = expected;
         testCases[i].got = got;
         free(word);
