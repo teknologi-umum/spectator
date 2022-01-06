@@ -20,6 +20,7 @@ import ThemeButton from "@/components/ThemeButton";
 import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
 import { useColorModeValue } from "@/hooks";
 import { withPublic } from "@/hoc";
+import { useTranslation } from "react-i18next";
 
 interface FormValues {
   studentId: string;
@@ -62,6 +63,12 @@ function PersonalInfo() {
     console.log("errors", errors);
   }, [errors]);
 
+  const { t, i18n } = useTranslation()
+
+  const changeLanguage = (lang:string) => {
+    i18n.changeLanguage(lang)
+  }
+
   return (
     <Layout>
       <ThemeButton position="fixed" />
@@ -81,13 +88,15 @@ function PersonalInfo() {
         </Heading>
 
         <Box>
+          <Button onClick={() => changeLanguage("en")}>en</Button>
+          <Button onClick={() => changeLanguage("id")}>id</Button>
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
           <FormControl
             id="email"
             mt="6"
             isInvalid={errors.studentId !== undefined}
           >
-            <FormLabel>Student Number</FormLabel>
+            <FormLabel>{t("translations.personal_info.student_number")}</FormLabel>
             <Input type="text" {...register("studentId")} autoComplete="off" borderColor={border} />
             <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
           </FormControl>

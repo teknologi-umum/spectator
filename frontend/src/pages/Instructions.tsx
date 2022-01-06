@@ -12,6 +12,7 @@ import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
 import { withPublic } from "@/hoc";
 import { useColorModeValue } from "@/hooks";
+import { Trans, useTranslation } from "react-i18next";
 
 function Instructions() {
   const navigate = useNavigate();
@@ -25,6 +26,12 @@ function Instructions() {
     document.title = "Instructions | Spectator";
   }, []);
 
+  const { t, i18n } = useTranslation()
+
+  const changeLanguage = (lang:string) => {
+    i18n.changeLanguage(lang)
+  }
+
   return (
     <Layout>
       <ThemeButton position="fixed" />
@@ -33,12 +40,23 @@ function Instructions() {
           General Instructions
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
-          This experiment contains of two part. The first part is SAM Test and
+          {/* <Button onClick={() => changeLanguage("en")}>EN</Button>
+          <Button onClick={() => changeLanguage("id")}>ID</Button> */}
+          {/* <Trans i18nKey="translations.instructions.overview"> */}
+            {/* This experiment consists of two part. 
+            The first part is SAM Test and the second part is Programming Test. 
+            SAM Test is a Self Assessment Test to measure your emotion. 
+            SAM test contains two question that will assess your emotion and will take time less than 5 minutes. 
+            The second test is Programming Test that consist of six programming questions. 
+            In this part you have to answer the questions and finish it within 90 minutes. */}
+          {/* </Trans> */}
+
+          {/* This experiment contains of two part. The first part is SAM Test and
           the second part is coding test. SAM Test is a self assessment test to
           measure your emotion. This test contains three question that will
           assess your emotion and will take time less than 5 minutes. The second
           test is coding test that consist of six programming questions. In this
-          part you have to answer the questions and finish it within 90 minutes.
+          part you have to answer the questions and finish it within 90 minutes. */}
         </Text>
 
         <Heading size="md" mt="6" mb="4" color={fg}>
