@@ -62,8 +62,7 @@ int main() {
         int expected = __workingAnswer(randNum, from, to);
         int got = calculateTemperature(randNum, from, to);
 
-        testCases.insert(testCases.end(),
-                         (TestCase){.expected = expected, .got = got});
+        testCases.push_back({.expected = expected, .got = got});
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {

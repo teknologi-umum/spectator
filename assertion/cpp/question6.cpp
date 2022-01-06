@@ -13,9 +13,9 @@ std::vector<int> __workingAnswer(std::vector<int> input) {
 
     for (auto& grade : input) {
         if (grade >= 38 && grade % 5 != 0 && grade % 5 >= 3) {
-            result.insert(result.end(), grade + (5 - grade % 5));
+            result.push_back(grade + (5 - grade % 5));
         } else {
-            result.insert(result.end(), grade);
+            result.push_back(grade);
         }
     }
 
@@ -35,7 +35,7 @@ long __randomNumber(int min, long max) {
 std::vector<int> genVector(int n) {
     std::vector<int> result;
     for (int i = 0; i < n; i++) {
-        result.insert(result.end(), __randomNumber(0, 100));
+        result.push_back(__randomNumber(0, 100));
     }
     return result;
 }
@@ -52,8 +52,7 @@ int main() {
         std::vector<int> input = genVector(len);
         std::vector<int> expected = __workingAnswer(input);
         std::vector<int> got = calculateGrade(input);
-        testCases.insert(testCases.end(),
-                         (TestCase){ .expected = expected, .got = got });
+        testCases.push_back({ .expected = expected, .got = got });
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {

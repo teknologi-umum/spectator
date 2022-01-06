@@ -38,8 +38,7 @@ int main() {
         int n = __randomNumber(1000000000, 9999999999);
         int expected = __workingAnswer(n);
         int got = findHeaterPower(n);
-        testCases.insert(testCases.end(),
-                         (TestCase){ .expected = expected, .got = got });
+        testCases.push_back({ .expected = expected, .got = got });
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {

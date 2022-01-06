@@ -31,16 +31,14 @@ int main() {
         int b = __randomNumber(0, 9999);
         int expected = a == b;
         int got = isSameNumber(a, b);
-        testCases.insert(testCases.end(),
-                         (TestCase){ .expected = expected, .got = got });
+        testCases.push_back({ .expected = expected, .got = got });
     }
 
     for (int i = 0; i < 4; i++) {
         int a = __randomNumber(0, 9999);
         int expected = true;
         int got = isSameNumber(a, a);
-        testCases.insert(testCases.end(),
-                         (TestCase){ .expected = expected, .got = got });
+        testCases.push_back({ .expected = expected, .got = got });
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {
