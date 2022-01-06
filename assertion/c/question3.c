@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int isSameNumber(int a, int b);
 
 {0}
 
-struct TestCase {
+typedef struct TestCase {
     int expected;
     int got;
-};
+} TestCase;
 
 // creates a random number between min and max
 int __randomNumber(int min, int max) {
@@ -16,13 +17,13 @@ int __randomNumber(int min, int max) {
 }
 
 int main() {
-    struct TestCase testCases[10];
+    srand(time(0));
 
-    testCases[0].expected = 1;
-    testCases[0].got = isSameNumber(100, 212);
-
-    testCases[1].expected = 0;
-    testCases[1].got = isSameNumber(25, 25);
+    TestCase testCases[10] = {
+        {.expected = 0,
+         .got = isSameNumber(100, 212)},
+        {.expected = 1,
+         .got = isSameNumber(25, 25)}};;
 
     for (int i = 2; i < 6; i++) {
         int a = __randomNumber(0, 9999);
@@ -35,14 +36,16 @@ int main() {
 
     for (int i = 6; i < 10; i++) {
         int a = __randomNumber(0, 9999);
-        int expected = 0;
+        int expected = 1;
         int got = isSameNumber(a, a);
         testCases[i].got = got;
         testCases[i].expected = expected;
     }
 
-    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(struct TestCase); i++) {
-        struct TestCase test = testCases[i];
+    // `sizeof` returns the size of the memory used, not the length of the
+    // array so we need to divide it by the size of the struct
+    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++) {
+        TestCase test = testCases[i];
 
         if (test.got == test.expected) {
             printf("# %d PASSING\n", i+1);
