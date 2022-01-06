@@ -17,6 +17,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+
 	pb "worker/proto"
 )
 
@@ -416,11 +418,27 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	mkFileAndUpload(samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
 
 	// TODO
-	// writeAPI := d.DB.WriteAPI(d.DBOrganization, BucketSessionEvents)
+	writeAPI := d.DB.WriteAPI(d.DBOrganization, BucketSessionEvents)
 
-	//  := influxdb2.NewPointWithMeasurement("test_result").AddTag("session_id",sessionID.String())
+	lazyDir := []string{
+		studentNumber + "_keystroke",
+		studentNumber + "_mouse_click",
+		studentNumber + "_mouse_move",
+		studentNumber + "_personal",
+		studentNumber + "_sam_test",
+	}
 
-	// writeAPI.WritePoint()
+	for _, item := range lazyDir {
+		e := influxdb2.NewPointWithMeasurement("test_result")
+		e.AddTag("session_id", sessionID.String())
+		e.AddTag("student_number", studentNumber)
+		e.AddField("file_csv_url", "/public/"+item+".csv")
+		e.AddField("file_json_url", "/public/"+item+".json")
+		e.SetTime(time.Now())
+		writeAPI.WritePoint(e)
+	}
+
+	writeAPI.Flush()
 
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
@@ -566,7 +584,7 @@ func mkFileAndUpload(b []byte, path string, m *minio.Client) (*minio.UploadInfo,
 		return nil, err
 	}
 
-	upInfo, err := m.PutObject(context.Background(), "storage", path, f, fileStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	upInfo, err := m.PutObject(context.Background(), "storage", "/public/"+path, f, fileStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
