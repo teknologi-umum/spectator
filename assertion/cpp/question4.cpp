@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <time.h>
 
 int findHeaterPower(long power);
 
@@ -27,6 +28,8 @@ long __randomNumber(int min, long max) {
 }
 
 int main() {
+    srand(time(0));
+
     std::vector<TestCase> testCases{
         {.expected = 19,
          .got = findHeaterPower(100212373)}};

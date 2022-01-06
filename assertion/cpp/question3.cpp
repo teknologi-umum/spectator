@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <time.h>
 
 int isSameNumber(int a, int b);
 
@@ -17,6 +18,8 @@ int __randomNumber(int min, int max) {
 }
 
 int main() {
+    srand(time(0));
+
     std::vector<TestCase> testCases{
         {.expected = false,
          .got = isSameNumber(100, 212)},

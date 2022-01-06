@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <time.h>
 
 std::vector<int> calculateGrade(std::vector<int> input);
 
@@ -40,6 +41,8 @@ std::vector<int> genVector(int n) {
 }
 
 int main() {
+    srand(time(0));
+
     std::vector<TestCase> testCases{
         {.expected = {75, 67, 40, 33},
          .got = calculateGrade({75, 67, 40, 33})}};

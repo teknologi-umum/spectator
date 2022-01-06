@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <numeric>
+#include <time.h>
 
 std::string mumble(std::string input);
 
@@ -49,6 +50,8 @@ std::string __genWords(int n) {
 }
 
 int main() {
+    srand(time(0));
+
     std::vector<TestCase> testCases{
         {.expected = "A-Bb-Ccc-Dddd",
          .got = mumble("abcd")},
