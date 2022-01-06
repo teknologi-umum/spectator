@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	pb "worker/proto"
 
@@ -131,6 +132,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float32) error {
 	var deletionTotal int64
 	var totalKeystrokes int64
+	var ok bool
 
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
@@ -158,7 +160,10 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	defer deletionRows.Close()
 
 	for deletionRows.Next() {
-		deletionTotal = deletionRows.Record().Value().(int64)
+		deletionTotal, ok = deletionRows.Record().Value().(int64)
+		if !ok {
+			return errors.New("fail to infer deletion Total")
+		}
 	}
 
 	keystrokeTotalRows, err := queryAPI.Query(

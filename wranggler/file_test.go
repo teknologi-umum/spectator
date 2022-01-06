@@ -3,50 +3,23 @@ package main_test
 import (
 	"context"
 	"log"
-	"os"
 	"strconv"
 	"testing"
 
 	main "worker"
-
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-)
-
-const (
-	// BucketInputEvents is the bucket name for storing
-	// keystroke events, window events, and mouse events.
-	BucketInputEvents = "input_events"
-	// BucketSessionEvents is the bucket name for storing
-	// the session events, including their personal information.
-	BucketSessionEvents = "session_events"
 )
 
 func TestConvertDataToJSON(t *testing.T) {
 
-	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
-	if !ok {
-		t.Errorf("INFLUX_TOKEN envar missing")
-	}
-
-	influxHost, ok := os.LookupEnv("INFLUX_HOST")
-	if !ok {
-		t.Errorf("INFLUX_HOST envar missing")
-	}
-
-	influxOrg, ok := os.LookupEnv("INFLUX_ORG")
-	if !ok {
-		t.Errorf("INFLUX_ORG envar missing")
-	}
-
-	influxConn := influxdb2.NewClient(influxHost, influxToken)
+	influxConn := db
 	defer influxConn.Close()
 
-	queryAPI := influxConn.QueryAPI(influxOrg)
+	queryAPI := influxConn.QueryAPI(dbOrganization)
 	ctx := context.TODO()
 
 	keystrokeMouseRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
+		`from(bucket: "`+main.BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")
@@ -114,7 +87,7 @@ func TestConvertDataToJSON(t *testing.T) {
 
 	mouseClickRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
+		`from(bucket: "`+main.BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")
@@ -167,7 +140,7 @@ func TestConvertDataToJSON(t *testing.T) {
 
 	mouseMoveRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
+		`from(bucket: "`+main.BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
@@ -226,7 +199,7 @@ func TestConvertDataToJSON(t *testing.T) {
 
 	personalInfoRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketSessionEvents+`")
+		`from(bucket: "`+main.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "personal_info")
@@ -275,7 +248,7 @@ func TestConvertDataToJSON(t *testing.T) {
 
 	samTestRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketSessionEvents+`")
+		`from(bucket: "`+main.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] != "")
 		|> filter(fn : (r) => r["_measurement"] == "sam_test_before")
