@@ -44,7 +44,11 @@ const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv
 std::string __genWords(int n) {
     std::string result;
 
-    for (int i = 0; i < n; i++) result.append(&characters[n]);
+    const int nchar = characters.size();
+    for (int i = 0; i < n; i++) {
+        char randomChar = characters[__randomNumber(0, nchar)];
+        result.append(&characters[n]);
+    }
 
     return result;
 }
