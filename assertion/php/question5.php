@@ -18,7 +18,7 @@ function main(): void {
         $result = '';
         for ($i = 0; $i < strlen($s); $i++) {
             $result .= ucfirst(strtolower(str_repeat($s[$i], $i + 1)));
-            if ($i < strlen($s)) {
+            if ($i < strlen($s) - 1) {
                 $result .= "-";
             }
         }
