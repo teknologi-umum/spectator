@@ -8,12 +8,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/minio/minio-go/v7"
 
 	pb "worker/proto"
 )
@@ -121,7 +123,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")
 		`,
 	)
@@ -188,7 +190,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")
 		`,
 	)
@@ -241,7 +243,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
 		`,
 	)
@@ -300,7 +302,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		ctx,
 		`from(bucket: "`+BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "personal_info")
 		`,
 	)
@@ -349,7 +351,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		ctx,
 		`from(bucket: "`+BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
+		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "sam_test_before")
 		`,
 	)
@@ -391,9 +393,34 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 
 	keystrokeJSON, _ := ConvertDataToJSON(outputKeystroke)
 	keystrokeCSV, _ := ConvertDataToCSV(outputKeystroke)
-	// mouseClickJSON, _ := ConvertDataToJSON(outputMouseClick)
-	fmt.Println(keystrokeJSON)
-	fmt.Println(keystrokeCSV)
+	mousmoveCSV, _ := ConvertDataToCSV(outputMouseMove)
+	mousmoveJSON, _ := ConvertDataToJSON(outputMouseMove)
+	mousclickCSV, _ := ConvertDataToCSV(outputMouseClick)
+	mousclickJSON, _ := ConvertDataToJSON(outputMouseClick)
+	personalCSV, _ := ConvertDataToCSV(outputPersonalInfo)
+	personalJSON, _ := ConvertDataToJSON(outputPersonalInfo)
+	samtestCSV, _ := ConvertDataToCSV(outputSamTest)
+	samtestJSON, _ := ConvertDataToJSON(outputSamTest)
+
+	studentNumber := tempPersonalInfo.StudentNumber
+
+	mkFileAndUpload(keystrokeCSV, studentNumber+"_keystroke.csv", d.Bucket)
+	mkFileAndUpload(keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
+	mkFileAndUpload(mousclickCSV, studentNumber+"_mouse_click.csv", d.Bucket)
+	mkFileAndUpload(mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
+	mkFileAndUpload(mousmoveCSV, studentNumber+"_mouse_move.csv", d.Bucket)
+	mkFileAndUpload(mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
+	mkFileAndUpload(personalCSV, studentNumber+"_personal.csv", d.Bucket)
+	mkFileAndUpload(personalJSON, studentNumber+"_personal.json", d.Bucket)
+	mkFileAndUpload(samtestCSV, studentNumber+"_sam_test.csv", d.Bucket)
+	mkFileAndUpload(samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
+
+	// TODO
+	// writeAPI := d.DB.WriteAPI(d.DBOrganization, BucketSessionEvents)
+
+	//  := influxdb2.NewPointWithMeasurement("test_result").AddTag("session_id",sessionID.String())
+
+	// writeAPI.WritePoint()
 
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
@@ -517,4 +544,36 @@ func ConvertDataToCSV(inputp interface{}) ([]byte, error) {
 	}
 
 	return w.Bytes(), nil
+}
+
+func mkFileAndUpload(b []byte, path string, m *minio.Client) (*minio.UploadInfo, error) {
+	f, err := os.Create("./" + path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	_, err = f.Write(b)
+	if err != nil {
+		return nil, err
+	}
+
+	f.Sync()
+
+	fileStat, err := f.Stat()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	upInfo, err := m.PutObject(context.Background(), "storage", path, f, fileStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	fmt.Println("Successfully uploaded bytes: ", upInfo)
+
+	os.Remove("./" + path)
+
+	return &upInfo, nil
 }
