@@ -38,18 +38,17 @@ jobs:
   logger:
     name: Logger
     runs-on: ubuntu-latest
-    container: golang:1.17.5-buster
     timeout-minutes: 10
     services:
       db:
-        image: influxdb:2.1
+        image: influxdb:2.1.1
         env:
           DOCKER_INFLUXDB_INIT_MODE: setup
           DOCKER_INFLUXDB_INIT_USERNAME: root
           DOCKER_INFLUXDB_INIT_PASSWORD: password
           DOCKER_INFLUXDB_INIT_ORG: teknologi
           DOCKER_INFLUXDB_INIT_BUCKET: public
-          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
         ports:
           - 8086:8086
     defaults:
@@ -58,6 +57,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.6'
       - name: Build test
         run: go build .
       - name: Run test
@@ -66,7 +68,7 @@ jobs:
           ACCESS_TOKEN: testing
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
-          INFLUX_TOKEN: testing
+          INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
