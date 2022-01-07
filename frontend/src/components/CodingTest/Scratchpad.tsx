@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import type { UIEventHandler } from "react";
 import {
   Heading,
   Tabs,
@@ -9,8 +11,7 @@ import {
 } from "@chakra-ui/react";
 import CodeMirror from "@uiw/react-codemirror";
 import { lineNumbers } from "@codemirror/gutter";
-import { useCodemirrorTheme, useDebounce } from "@/hooks";
-import { UIEventHandler, useEffect, useState } from "react";
+import { useCodemirrorTheme, useColorModeValue, useDebounce } from "@/hooks";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setScratchPad } from "@/store/slices/editorSlice";
 
@@ -21,11 +22,13 @@ interface ScratchPadProps {
 export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
+  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { currentQuestion } = useAppSelector((state) => state.question);
   const { scratchPads } = useAppSelector((state) => state.editor);
 
   const [value, setValue] = useState("");
-  const debouncedValue = useDebounce(value, 1000);
+  const debouncedValue = useDebounce(value, 500);
 
   useEffect(() => {
     const currentScratchPad = scratchPads.find(
@@ -60,7 +63,7 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs isLazy h="full">
-        <TabList>
+        <TabList borderColor={borderBg} color={fgDarker}>
           <Tab>Scratch Pad</Tab>
           <Tab>Output</Tab>
         </TabList>

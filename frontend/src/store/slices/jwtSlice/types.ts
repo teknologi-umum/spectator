@@ -4,7 +4,7 @@ export interface InitialState {
   jwtPayload: {
     exp: number;
     iat: number;
-    studentNumber: string;
+    studentId: string;
   };
   hasFinished: boolean;
 }

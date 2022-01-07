@@ -1,13 +1,26 @@
+import React from "react";
 import { HamburgerIcon, StarIcon } from "@chakra-ui/icons";
-import { Flex, IconButton } from "@chakra-ui/react";
+import { Divider, Flex, IconButton } from "@chakra-ui/react";
+import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleSideBar } from "@/store/slices/sideBarSlice";
 import NavItem from "./NavItem";
+import { FaTemperatureLow, FaEquals, FaPlus } from "react-icons/fa";
+import { BsDiamondFill, BsTriangleFill } from "react-icons/bs";
 
 interface SideBarProps {
   bg: string;
   fg: string;
 }
+
+const icons = [
+  StarIcon,
+  FaTemperatureLow,
+  FaEquals,
+  FaPlus,
+  BsDiamondFill,
+  BsTriangleFill
+];
 
 export default function SideBar({ bg, fg }: SideBarProps) {
   const dispatch = useAppDispatch();
@@ -39,12 +52,16 @@ export default function SideBar({ bg, fg }: SideBarProps) {
           onClick={() => dispatch(toggleSideBar())}
         />
 
-        <NavItem questionNo={0} icon={StarIcon} title="Challenge 1" />
-        <NavItem questionNo={1} icon={StarIcon} title="Challenge 2" />
-        <NavItem questionNo={2} icon={StarIcon} title="Challenge 3" />
-        <NavItem questionNo={3} icon={StarIcon} title="Challenge 4" />
-        <NavItem questionNo={4} icon={StarIcon} title="Challenge 5" />
-        <NavItem questionNo={5} icon={StarIcon} title="Challenge 6" />
+        <Divider />
+
+        {icons.map((icon, idx) => (
+          <NavItem
+            key={idx}
+            questionNo={idx}
+            icon={icon as ComponentWithAs<"svg", IconProps>}
+            title={`Challenge ${idx + 1}`}
+          />
+        ))}
       </Flex>
     </Flex>
   );

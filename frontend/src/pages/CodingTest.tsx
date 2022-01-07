@@ -11,16 +11,15 @@ import {
   mouseMoveHandler,
   scrollHandler
 } from "@/events";
+import { useColorModeValue, useSignalR } from "@/hooks";
 import { withProtected } from "@/hoc";
-import { useSignalR } from "@/hooks";
 import {
   Box,
   Flex,
   theme,
-  useColorModeValue,
   useEventListener
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";
@@ -42,9 +41,10 @@ function CodingTest() {
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
 
-  const gray = useColorModeValue("gray.100", "gray.800");
-  const bg = useColorModeValue("white", "gray.700");
-  const fg = useColorModeValue("gray.800", "gray.100");
+  const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
+  const bg = useColorModeValue("white", "gray.700", "gray.800");
+  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
   useEffect(() => {
     document.title = "Coding Test | Spectator";
@@ -54,13 +54,14 @@ function CodingTest() {
     <Flex w="full" h="full">
       <SideBar bg={bg} fg={fg} />
       <Box bg={gray} gap="3" p="3">
-        <Menu bg={bg} fg={fg} />
+        <Menu bg={bg} fgDarker={fgDarker} />
         <Box h="calc(100% - 3.5rem)">
           <ReflexContainer orientation="vertical">
             <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
               <Question
                 bg={bg}
                 fg={fg}
+                fgDarker={fgDarker}
                 onScroll={scrollHandler(connection, currentQuestion)}
               />
             </ReflexElement>

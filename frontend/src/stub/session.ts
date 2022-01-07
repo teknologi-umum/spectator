@@ -2,21 +2,26 @@
 // @generated from protobuf file "session.proto" (package "session", syntax proto3)
 // tslint:disable
 import { ServiceType } from "@protobuf-ts/runtime-rpc";
-import { WireType } from "@protobuf-ts/runtime";
 import type { BinaryWriteOptions } from "@protobuf-ts/runtime";
 import type { IBinaryWriter } from "@protobuf-ts/runtime";
-import { UnknownFieldHandler } from "@protobuf-ts/runtime";
+import { WireType } from "@protobuf-ts/runtime";
 import type { BinaryReadOptions } from "@protobuf-ts/runtime";
 import type { IBinaryReader } from "@protobuf-ts/runtime";
+import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MESSAGE_TYPE } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { Language } from "./enums";
+import { Locale } from "./enums";
 /**
- * @generated from protobuf message session.StartSessionRequest
+ * @generated from protobuf message session.LocaleInfo
  */
-export interface StartSessionRequest {
+export interface LocaleInfo {
+    /**
+     * @generated from protobuf field: enums.Locale locale = 1;
+     */
+    locale: Locale;
 }
 /**
  * @generated from protobuf message session.SessionReply
@@ -44,9 +49,9 @@ export interface PersonalInfo {
      */
     hoursOfPractice: number;
     /**
-     * @generated from protobuf field: repeated enums.Language familiar_languages = 4;
+     * @generated from protobuf field: string familiar_languages = 4;
      */
-    familiarLanguages: Language[];
+    familiarLanguages: string;
 }
 /**
  * @generated from protobuf message session.SAM
@@ -78,13 +83,22 @@ export interface Question {
      */
     instruction: string;
     /**
-     * @generated from protobuf field: repeated enums.Language allowed_languages = 4;
+     * @generated from protobuf field: repeated session.Question.LanguageAndTemplate language_and_templates = 4;
      */
-    allowedLanguages: Language[];
+    languageAndTemplates: Question_LanguageAndTemplate[];
+}
+/**
+ * @generated from protobuf message session.Question.LanguageAndTemplate
+ */
+export interface Question_LanguageAndTemplate {
     /**
-     * @generated from protobuf field: string boilerplate = 5;
+     * @generated from protobuf field: enums.Language language = 1;
      */
-    boilerplate: string;
+    language: Language;
+    /**
+     * @generated from protobuf field: string template = 2;
+     */
+    template: string;
 }
 /**
  * @generated from protobuf message session.Exam
@@ -117,9 +131,9 @@ export interface ExamResult {
     answeredQuestionNumbers: number[];
 }
 /**
- * @generated from protobuf message session.Solution
+ * @generated from protobuf message session.SubmissionRequest
  */
-export interface Solution {
+export interface SubmissionRequest {
     /**
      * @generated from protobuf field: int32 question_number = 1;
      */
@@ -129,9 +143,9 @@ export interface Solution {
      */
     language: Language;
     /**
-     * @generated from protobuf field: string code = 3;
+     * @generated from protobuf field: string solution = 3;
      */
-    code: string;
+    solution: string;
     /**
      * @generated from protobuf field: string scratch_pad = 4;
      */
@@ -146,13 +160,22 @@ export interface SubmissionResult {
      */
     accepted: boolean;
     /**
+     * @generated from protobuf field: repeated session.SubmissionResult.TestResult test_results = 2;
+     */
+    testResults: SubmissionResult_TestResult[];
+}
+/**
+ * @generated from protobuf message session.SubmissionResult.TestResult
+ */
+export interface SubmissionResult_TestResult {
+    /**
+     * @generated from protobuf field: bool success = 1;
+     */
+    success: boolean;
+    /**
      * @generated from protobuf field: string message = 2;
      */
     message: string;
-    /**
-     * @generated from protobuf field: string console_output = 3;
-     */
-    consoleOutput: string;
 }
 /**
  * @generated from protobuf message session.EmptyRequest
@@ -165,21 +188,42 @@ export interface EmptyRequest {
 export interface EmptyReply {
 }
 // @generated message type with reflection information, may provide speed optimized methods
-class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
+class LocaleInfo$Type extends MessageType<LocaleInfo> {
     constructor() {
-        super("session.StartSessionRequest", []);
+        super("session.LocaleInfo", [
+            { no: 1, name: "locale", kind: "enum", T: () => ["enums.Locale", Locale] }
+        ]);
     }
-    create(value?: PartialMessage<StartSessionRequest>): StartSessionRequest {
-        const message = {};
+    create(value?: PartialMessage<LocaleInfo>): LocaleInfo {
+        const message = { locale: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<StartSessionRequest>(this, message, value);
+            reflectionMergePartial<LocaleInfo>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StartSessionRequest): StartSessionRequest {
-        return target ?? this.create();
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LocaleInfo): LocaleInfo {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* enums.Locale locale */ 1:
+                    message.locale = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
     }
-    internalBinaryWrite(message: StartSessionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: LocaleInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* enums.Locale locale = 1; */
+        if (message.locale !== 0)
+            writer.tag(1, WireType.Varint).int32(message.locale);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -187,9 +231,9 @@ class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message session.StartSessionRequest
+ * @generated MessageType for protobuf message session.LocaleInfo
  */
-export const StartSessionRequest = new StartSessionRequest$Type();
+export const LocaleInfo = new LocaleInfo$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SessionReply$Type extends MessageType<SessionReply> {
     constructor() {
@@ -244,11 +288,11 @@ class PersonalInfo$Type extends MessageType<PersonalInfo> {
             { no: 1, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 3, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 4, name: "familiar_languages", kind: "enum", repeat: 1 /*RepeatType.PACKED*/, T: () => ["enums.Language", Language] }
+            { no: 4, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<PersonalInfo>): PersonalInfo {
-        const message = { studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: [] };
+        const message = { studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<PersonalInfo>(this, message, value);
@@ -268,12 +312,8 @@ class PersonalInfo$Type extends MessageType<PersonalInfo> {
                 case /* int32 hours_of_practice */ 3:
                     message.hoursOfPractice = reader.int32();
                     break;
-                case /* repeated enums.Language familiar_languages */ 4:
-                    if (wireType === WireType.LengthDelimited)
-                        for (let e = reader.int32() + reader.pos; reader.pos < e;)
-                            message.familiarLanguages.push(reader.int32());
-                    else
-                        message.familiarLanguages.push(reader.int32());
+                case /* string familiar_languages */ 4:
+                    message.familiarLanguages = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -296,13 +336,9 @@ class PersonalInfo$Type extends MessageType<PersonalInfo> {
         /* int32 hours_of_practice = 3; */
         if (message.hoursOfPractice !== 0)
             writer.tag(3, WireType.Varint).int32(message.hoursOfPractice);
-        /* repeated enums.Language familiar_languages = 4; */
-        if (message.familiarLanguages.length) {
-            writer.tag(4, WireType.LengthDelimited).fork();
-            for (let i = 0; i < message.familiarLanguages.length; i++)
-                writer.int32(message.familiarLanguages[i]);
-            writer.join();
-        }
+        /* string familiar_languages = 4; */
+        if (message.familiarLanguages !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.familiarLanguages);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -374,12 +410,11 @@ class Question$Type extends MessageType<Question> {
             { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "instruction", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "allowed_languages", kind: "enum", repeat: 1 /*RepeatType.PACKED*/, T: () => ["enums.Language", Language] },
-            { no: 5, name: "boilerplate", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "language_and_templates", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Question_LanguageAndTemplate }
         ]);
     }
     create(value?: PartialMessage<Question>): Question {
-        const message = { questionNumber: 0, title: "", instruction: "", allowedLanguages: [], boilerplate: "" };
+        const message = { questionNumber: 0, title: "", instruction: "", languageAndTemplates: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<Question>(this, message, value);
@@ -399,15 +434,8 @@ class Question$Type extends MessageType<Question> {
                 case /* string instruction */ 3:
                     message.instruction = reader.string();
                     break;
-                case /* repeated enums.Language allowed_languages */ 4:
-                    if (wireType === WireType.LengthDelimited)
-                        for (let e = reader.int32() + reader.pos; reader.pos < e;)
-                            message.allowedLanguages.push(reader.int32());
-                    else
-                        message.allowedLanguages.push(reader.int32());
-                    break;
-                case /* string boilerplate */ 5:
-                    message.boilerplate = reader.string();
+                case /* repeated session.Question.LanguageAndTemplate language_and_templates */ 4:
+                    message.languageAndTemplates.push(Question_LanguageAndTemplate.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -430,16 +458,9 @@ class Question$Type extends MessageType<Question> {
         /* string instruction = 3; */
         if (message.instruction !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.instruction);
-        /* repeated enums.Language allowed_languages = 4; */
-        if (message.allowedLanguages.length) {
-            writer.tag(4, WireType.LengthDelimited).fork();
-            for (let i = 0; i < message.allowedLanguages.length; i++)
-                writer.int32(message.allowedLanguages[i]);
-            writer.join();
-        }
-        /* string boilerplate = 5; */
-        if (message.boilerplate !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.boilerplate);
+        /* repeated session.Question.LanguageAndTemplate language_and_templates = 4; */
+        for (let i = 0; i < message.languageAndTemplates.length; i++)
+            Question_LanguageAndTemplate.internalBinaryWrite(message.languageAndTemplates[i], writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -450,6 +471,60 @@ class Question$Type extends MessageType<Question> {
  * @generated MessageType for protobuf message session.Question
  */
 export const Question = new Question$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class Question_LanguageAndTemplate$Type extends MessageType<Question_LanguageAndTemplate> {
+    constructor() {
+        super("session.Question.LanguageAndTemplate", [
+            { no: 1, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
+            { no: 2, name: "template", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<Question_LanguageAndTemplate>): Question_LanguageAndTemplate {
+        const message = { language: 0, template: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<Question_LanguageAndTemplate>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Question_LanguageAndTemplate): Question_LanguageAndTemplate {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* enums.Language language */ 1:
+                    message.language = reader.int32();
+                    break;
+                case /* string template */ 2:
+                    message.template = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: Question_LanguageAndTemplate, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* enums.Language language = 1; */
+        if (message.language !== 0)
+            writer.tag(1, WireType.Varint).int32(message.language);
+        /* string template = 2; */
+        if (message.template !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.template);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.Question.LanguageAndTemplate
+ */
+export const Question_LanguageAndTemplate = new Question_LanguageAndTemplate$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Exam$Type extends MessageType<Exam> {
     constructor() {
@@ -582,23 +657,23 @@ class ExamResult$Type extends MessageType<ExamResult> {
  */
 export const ExamResult = new ExamResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class Solution$Type extends MessageType<Solution> {
+class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
     constructor() {
-        super("session.Solution", [
+        super("session.SubmissionRequest", [
             { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 2, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
-            { no: 3, name: "code", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "solution", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "scratch_pad", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<Solution>): Solution {
-        const message = { questionNumber: 0, language: 0, code: "", scratchPad: "" };
+    create(value?: PartialMessage<SubmissionRequest>): SubmissionRequest {
+        const message = { questionNumber: 0, language: 0, solution: "", scratchPad: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<Solution>(this, message, value);
+            reflectionMergePartial<SubmissionRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Solution): Solution {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmissionRequest): SubmissionRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -609,8 +684,8 @@ class Solution$Type extends MessageType<Solution> {
                 case /* enums.Language language */ 2:
                     message.language = reader.int32();
                     break;
-                case /* string code */ 3:
-                    message.code = reader.string();
+                case /* string solution */ 3:
+                    message.solution = reader.string();
                     break;
                 case /* string scratch_pad */ 4:
                     message.scratchPad = reader.string();
@@ -626,16 +701,16 @@ class Solution$Type extends MessageType<Solution> {
         }
         return message;
     }
-    internalBinaryWrite(message: Solution, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: SubmissionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* int32 question_number = 1; */
         if (message.questionNumber !== 0)
             writer.tag(1, WireType.Varint).int32(message.questionNumber);
         /* enums.Language language = 2; */
         if (message.language !== 0)
             writer.tag(2, WireType.Varint).int32(message.language);
-        /* string code = 3; */
-        if (message.code !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.code);
+        /* string solution = 3; */
+        if (message.solution !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.solution);
         /* string scratch_pad = 4; */
         if (message.scratchPad !== "")
             writer.tag(4, WireType.LengthDelimited).string(message.scratchPad);
@@ -646,20 +721,19 @@ class Solution$Type extends MessageType<Solution> {
     }
 }
 /**
- * @generated MessageType for protobuf message session.Solution
+ * @generated MessageType for protobuf message session.SubmissionRequest
  */
-export const Solution = new Solution$Type();
+export const SubmissionRequest = new SubmissionRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SubmissionResult$Type extends MessageType<SubmissionResult> {
     constructor() {
         super("session.SubmissionResult", [
             { no: 1, name: "accepted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "console_output", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "test_results", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => SubmissionResult_TestResult }
         ]);
     }
     create(value?: PartialMessage<SubmissionResult>): SubmissionResult {
-        const message = { accepted: false, message: "", consoleOutput: "" };
+        const message = { accepted: false, testResults: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubmissionResult>(this, message, value);
@@ -673,11 +747,8 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
                 case /* bool accepted */ 1:
                     message.accepted = reader.bool();
                     break;
-                case /* string message */ 2:
-                    message.message = reader.string();
-                    break;
-                case /* string console_output */ 3:
-                    message.consoleOutput = reader.string();
+                case /* repeated session.SubmissionResult.TestResult test_results */ 2:
+                    message.testResults.push(SubmissionResult_TestResult.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -694,12 +765,9 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
         /* bool accepted = 1; */
         if (message.accepted !== false)
             writer.tag(1, WireType.Varint).bool(message.accepted);
-        /* string message = 2; */
-        if (message.message !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.message);
-        /* string console_output = 3; */
-        if (message.consoleOutput !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.consoleOutput);
+        /* repeated session.SubmissionResult.TestResult test_results = 2; */
+        for (let i = 0; i < message.testResults.length; i++)
+            SubmissionResult_TestResult.internalBinaryWrite(message.testResults[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -710,6 +778,60 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
  * @generated MessageType for protobuf message session.SubmissionResult
  */
 export const SubmissionResult = new SubmissionResult$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SubmissionResult_TestResult$Type extends MessageType<SubmissionResult_TestResult> {
+    constructor() {
+        super("session.SubmissionResult.TestResult", [
+            { no: 1, name: "success", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SubmissionResult_TestResult>): SubmissionResult_TestResult {
+        const message = { success: false, message: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<SubmissionResult_TestResult>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmissionResult_TestResult): SubmissionResult_TestResult {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool success */ 1:
+                    message.success = reader.bool();
+                    break;
+                case /* string message */ 2:
+                    message.message = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SubmissionResult_TestResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* bool success = 1; */
+        if (message.success !== false)
+            writer.tag(1, WireType.Varint).bool(message.success);
+        /* string message = 2; */
+        if (message.message !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.message);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.SubmissionResult.TestResult
+ */
+export const SubmissionResult_TestResult = new SubmissionResult_TestResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class EmptyRequest$Type extends MessageType<EmptyRequest> {
     constructor() {
@@ -766,12 +888,13 @@ export const EmptyReply = new EmptyReply$Type();
  * @generated ServiceType for protobuf service session.SessionService
  */
 export const SessionService = new ServiceType("session.SessionService", [
-    { name: "StartSession", options: {}, I: EmptyRequest, O: SessionReply },
+    { name: "StartSession", options: {}, I: LocaleInfo, O: SessionReply },
+    { name: "SetLocale", options: {}, I: LocaleInfo, O: EmptyReply },
     { name: "SubmitPersonalInfo", options: {}, I: PersonalInfo, O: EmptyReply },
     { name: "SubmitBeforeCodeSAM", options: {}, I: SAM, O: EmptyReply },
     { name: "StartExam", options: {}, I: EmptyRequest, O: Exam },
     { name: "ResumeExam", options: {}, I: EmptyRequest, O: Exam },
     { name: "EndExam", options: {}, I: EmptyRequest, O: ExamResult },
-    { name: "SubmitSolution", options: {}, I: Solution, O: SubmissionResult },
+    { name: "SubmitSolution", options: {}, I: SubmissionRequest, O: SubmissionResult },
     { name: "SubmitAfterCodeSAM", options: {}, I: SAM, O: EmptyReply }
 ]);

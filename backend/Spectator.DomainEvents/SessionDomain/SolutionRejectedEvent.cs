@@ -9,7 +9,6 @@ namespace Spectator.DomainEvents.SessionDomain {
 		Language Language,
 		string Solution,
 		string ScratchPad,
-		string? ErrorMessage,
-		string ConsoleOutput
+		string SerializedTestResults
 	) : SessionEventBase(SessionId, Timestamp);
 }

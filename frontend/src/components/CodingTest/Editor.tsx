@@ -1,3 +1,5 @@
+import React, { useEffect, useState, useMemo } from "react";
+import type { UIEventHandler } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror, { keymap } from "@uiw/react-codemirror";
 import { defaultKeymap } from "@codemirror/commands";
@@ -7,12 +9,11 @@ import { php } from "@codemirror/lang-php";
 import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
-import { useCodemirrorTheme } from "@/hooks";
+import { useCodemirrorTheme, useColorModeValue } from "@/hooks";
 // TODO: this should be automatically inferred (en/id) when we have proper i18n
 import { questions } from "@/data/en/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
-import { UIEventHandler, useEffect, useState, useMemo } from "react";
 import { useDebounce } from "@/hooks";
 
 const cLike = cpp();
@@ -33,6 +34,7 @@ interface EditorProps {
 export default function Editor({ bg, onScroll }: EditorProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
+  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
   const { currentQuestion } = useAppSelector((state) => state.question);
   const { solutions, currentLanguage } = useAppSelector(
     (state) => state.editor
@@ -43,14 +45,16 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   }, [currentQuestion, currentLanguage]);
 
   const [code, setCode] = useState("");
-  const debouncedCode = useDebounce(code, 1000);
+  const debouncedCode = useDebounce(code, 500);
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
     const currentSolution = solutions.find(
-      (solution) => solution.questionNo === currentQuestion
+      (solution) =>
+        solution.questionNo === currentQuestion &&
+        solution.language === currentLanguage
     );
 
     if (currentSolution !== undefined) {
@@ -65,7 +69,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
         })
       );
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, currentLanguage]);
 
   useEffect(() => {
     dispatch(
@@ -84,7 +88,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs h="full">
-        <TabList>
+        <TabList borderColor={borderBg}>
           <Tab>Your Solution</Tab>
         </TabList>
         <TabPanels h="full">

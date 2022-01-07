@@ -7,7 +7,8 @@ package session;
 import "enums.proto";
 
 service SessionService {
-	rpc StartSession (EmptyRequest) returns (SessionReply);
+	rpc StartSession (LocaleInfo) returns (SessionReply);
+	rpc SetLocale (LocaleInfo) returns (EmptyReply);
 	rpc SubmitPersonalInfo (PersonalInfo) returns (EmptyReply);
 	rpc SubmitBeforeCodeSAM (SAM) returns (EmptyReply);
 	rpc StartExam (EmptyRequest) returns (Exam);
@@ -17,7 +18,8 @@ service SessionService {
 	rpc SubmitAfterCodeSAM (SAM) returns (EmptyReply);
 }
 
-message StartSessionRequest {
+message LocaleInfo {
+	enums.Locale locale = 1;
 }
 
 message SessionReply {
@@ -37,11 +39,14 @@ message SAM {
 }
 
 message Question {
+	message LanguageAndTemplate {
+		enums.Language language = 1;
+		string template = 2;
+	}
 	int32 question_number = 1;
 	string title = 2;
 	string instruction = 3;
-	repeated enums.Language allowed_languages = 4;
-	string boilerplate = 5;
+	repeated LanguageAndTemplate language_and_templates = 4;
 }
 
 message Exam {
@@ -63,9 +68,12 @@ message SubmissionRequest {
 }
 
 message SubmissionResult {
+	message TestResult {
+		bool success = 1;
+		string message = 2;
+	}
 	bool accepted = 1;
-	string error_message = 2;
-	string console_output = 3;
+	repeated TestResult test_results = 2;
 }
 
 message EmptyRequest {

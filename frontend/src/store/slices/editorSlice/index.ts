@@ -20,7 +20,9 @@ export const editorSlice = createSlice({
     },
     setSolution: (state, action: PayloadAction<Solution>) => {
       const idx = state.solutions.findIndex(
-        (solution) => solution.questionNo === action.payload.questionNo
+        (solution) =>
+          solution.questionNo === action.payload.questionNo &&
+          solution.language === action.payload.language
       );
 
       if (idx > -1) {

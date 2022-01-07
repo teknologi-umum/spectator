@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { finishSession } from "@/store/slices/jwtSlice";

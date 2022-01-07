@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Spectator.DomainModels.SubmissionDomain;
 using Spectator.Piston;
 using Spectator.Primitives;
@@ -21,8 +22,7 @@ namespace Spectator.DomainServices.PistonDomain {
 				Language: language,
 				Solution: solution,
 				ScratchPad: scratchPad,
-				ErrorMessage: null,
-				ConsoleOutput: "",
+				TestResults: ImmutableArray<TestResult>.Empty,
 				Accepted: true
 			);
 		}
