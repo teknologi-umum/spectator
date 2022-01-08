@@ -104,6 +104,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 	queryAPI := d.DB.QueryAPI(d.Org)
 	// build query for influx
 	queryStr := buildQuery(query)
+	fmt.Println(queryStr)
 
 	rows, err := queryAPI.Query(ctx, queryStr)
 	if err != nil {
