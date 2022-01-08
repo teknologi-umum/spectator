@@ -6,7 +6,7 @@ function main(): void {
     function is_celcius (string $s): bool { return $s === "Celcius"; }
     function is_fahrenheit (string $s): bool { return  $s === "Farenheit"; }
     function is_kelvin (string $s): bool { return  $s === "Kelvin"; }
-    function to_fixed_of_two (float $n): bool { return number_format($n, 2, ".", ""); }
+    function to_fixed_of_two (float $n): number { return number_format($n, 2, ".", ""); }
 
     $temperatures = ["Celcius", "Farenheit", "Kelvin"];
     $test_cases = [
