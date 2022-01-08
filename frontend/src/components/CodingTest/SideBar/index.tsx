@@ -1,3 +1,4 @@
+import React from "react";
 import { HamburgerIcon, StarIcon } from "@chakra-ui/icons";
 import { Divider, Flex, IconButton } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";

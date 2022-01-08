@@ -12,6 +12,7 @@ namespace Spectator.DomainModels.SessionDomain {
 		Guid Id,
 		DateTimeOffset CreatedAt,
 		DateTimeOffset UpdatedAt,
+		Locale Locale,
 		User User,
 		SelfAssessmentManikin? BeforeExamSAM = null,
 		SelfAssessmentManikin? AfterExamSAM = null,
@@ -21,6 +22,15 @@ namespace Spectator.DomainModels.SessionDomain {
 		DateTimeOffset? ExamEndedAt = null,
 		ImmutableDictionary<int, Submission>? SubmissionByQuestionNumber = null
 	) : SessionBase(Id, CreatedAt, UpdatedAt) {
+		public RegisteredSession Apply(LocaleSetEvent @event) {
+			if (@event.SessionId != Id) throw new ArgumentException("Applied event has different SessionId", nameof(@event));
+
+			return this with {
+				UpdatedAt = @event.Timestamp,
+				Locale = @event.Locale
+			};
+		}
+
 		public RegisteredSession Apply(BeforeExamSAMSubmittedEvent @event) {
 			if (BeforeExamSAM != null) throw new InvalidOperationException("SAM already submitted");
 			if (@event.SessionId != Id) throw new ArgumentException("Applied event has different SessionId", nameof(@event));

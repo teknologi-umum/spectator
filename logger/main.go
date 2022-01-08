@@ -23,6 +23,22 @@ type Dependency struct {
 	pb.UnimplementedLoggerServer
 }
 
+type LogPayload struct {
+	AccessToken string    `json:"access_token" msgpack:"access_token"`
+	Data        []LogData `json:"data" msgpack:"data"`
+}
+
+type LogData struct {
+	RequestID   string            `json:"request_id" msgpack:"request_id"`
+	Application string            `json:"application" msgpack:"application"`
+	Message     string            `json:"message" msgpack:"message"`
+	Body        map[string]string `json:"body" msgpack:"body"`
+	Level       string            `json:"level" msgpack:"level"`
+	Environment string            `json:"environment" msgpack:"environment"`
+	Language    string            `json:"language" msgpack:"language"`
+	Timestamp   time.Time         `json:"timestamp" msgpack:"timestamp"`
+}
+
 func main() {
 	influxURL, ok := os.LookupEnv("INFLUX_URL")
 	if !ok {
@@ -87,6 +103,7 @@ func main() {
 		}
 	}()
 
+	log.Println("gRPC server: Listening on port", port)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}

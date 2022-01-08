@@ -6,85 +6,52 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
+	pb "logger/proto"
 	"strconv"
 	"strings"
-	"time"
 
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"time"
 )
 
-type LogPayload struct {
-	AccessToken string    `json:"access_token" msgpack:"access_token"`
-	Data        []LogData `json:"data" msgpack:"data"`
+type queries struct {
+	Level       string
+	RequestID   string
+	Application string
+	TimeFrom    time.Time
+	TimeTo      time.Time
 }
 
-type LogData struct {
-	RequestID   string            `json:"request_id" msgpack:"request_id"`
-	Application string            `json:"application" msgpack:"application"`
-	Message     string            `json:"message" msgpack:"message"`
-	Body        map[string]string `json:"body" msgpack:"body"`
-	Level       string            `json:"level" msgpack:"level"`
-	Environment string            `json:"environment" msgpack:"environment"`
-	Language    string            `json:"language" msgpack:"language"`
-	Timestamp   time.Time         `json:"timestamp" msgpack:"timestamp"`
-}
-
-func (d *Dependency) writeIntoLog(ctx context.Context, p []LogData) error {
-	// recovering here in case of any error
-	defer func() {
-		r := recover()
-		if r != nil {
-			log.Printf("panic: %v", r.(error))
-		}
-	}()
-
-	writeAPI := d.DB.WriteAPI(d.Org, "log")
-
-	for index, payload := range p {
-		// write defaults first
-		if payload.Environment == "" {
-			payload.Environment = "UNSET"
-		}
-
-		if payload.Level == "" {
-			payload.Level = "DEBUG"
-		}
-
-		if payload.Timestamp.IsZero() {
-			payload.Timestamp = time.Now()
-		}
-
-		// convert body into json as influxdb doesnt accept map
-		bodyBytes, err := json.Marshal(payload.Body)
-		if err != nil {
-			return fmt.Errorf("payload index: %d, marshalling json: %v", index, err)
-		}
-
-		point := influxdb2.NewPoint(
-			payload.Level,
-			map[string]string{
-				"request_id":  payload.RequestID,
-				"application": payload.Application,
-				"environment": payload.Environment,
-			},
-			map[string]interface{}{
-				"language": payload.Language,
-				"message":  hex.EncodeToString([]byte(payload.Message)),
-				"body":     hex.EncodeToString(bodyBytes),
-			},
-			payload.Timestamp,
-		)
-
-		writeAPI.WritePoint(point)
+func (d *Dependency) ReadLog(ctx context.Context, r *pb.ReadLogRequest) (*pb.ReadLogResponse, error) {
+	var timestampFrom time.Time
+	var timestampTo time.Time
+	if r.GetTimestampFrom() == 0 {
+		timestampFrom = time.Time{}
+	} else {
+		timestampFrom = time.UnixMilli(r.GetTimestampFrom())
 	}
 
-	writeAPI.Flush()
-	err := writeAPI.Errors()
+	if r.GetTimestampTo() == 0 {
+		timestampTo = time.Time{}
+	} else {
+		timestampTo = time.UnixMilli(r.GetTimestampTo())
+	}
+
+	var query = queries{
+		Level:       r.GetLevel().String(),
+		RequestID:   r.GetRequestId(),
+		Application: r.GetApplication(),
+		TimeFrom:    timestampFrom,
+		TimeTo:      timestampTo,
+	}
+
+	logs, err := d.fetchLog(ctx, query)
 	if err != nil {
-		return fmt.Errorf("writing into log: %v", err)
+		return &pb.ReadLogResponse{}, fmt.Errorf("reading log: %v", err)
 	}
-	return nil
+
+	return &pb.ReadLogResponse{
+		Data: d.convertIntoProtoData(logs),
+	}, nil
 }
 
 func buildQuery(q queries) string {
@@ -140,7 +107,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 
 	rows, err := queryAPI.Query(ctx, queryStr)
 	if err != nil {
-		return []LogData{}, err
+		return []LogData{}, fmt.Errorf("querying data: %v", err)
 	}
 
 	defer rows.Close()
@@ -169,12 +136,12 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 				bodyJSON := unmarshaledRow["_value"].(string)
 				bodyBytes, err := hex.DecodeString(bodyJSON)
 				if err != nil {
-					return []LogData{}, err
+					return []LogData{}, fmt.Errorf("decoding string: %v", err)
 				}
 				body := make(map[string]string, 100)
 				err = json.Unmarshal(bodyBytes, &body)
 				if err != nil {
-					return []LogData{}, err
+					return []LogData{}, fmt.Errorf("unmarshaling json: %v", err)
 				}
 				temp.Body = body
 			case "language":
@@ -182,7 +149,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 			case "message":
 				messageBytes, err := hex.DecodeString(unmarshaledRow["_value"].(string))
 				if err != nil {
-					return []LogData{}, err
+					return []LogData{}, fmt.Errorf("decoding string: %v", err)
 				}
 				temp.Message = string(messageBytes)
 			}

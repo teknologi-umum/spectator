@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 
 	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
 	if !ok {
-		influxToken = "H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH"
+		influxToken = "nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd"
 		err := os.Setenv("INFLUX_TOKEN", influxToken)
 		if err != nil {
 			log.Fatalf("error setting INFLUX_TOKEN environment variable: %v", err)

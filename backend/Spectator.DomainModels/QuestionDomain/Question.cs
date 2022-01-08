@@ -6,6 +6,6 @@ namespace Spectator.DomainModels.QuestionDomain {
 		int QuestionNumber,
 		string Title,
 		string Instruction,
-		ImmutableDictionary<Language, string> BoilerplateByLanguage
+		ImmutableDictionary<Language, string> TemplateByLanguage
 	);
 }

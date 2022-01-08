@@ -9,7 +9,7 @@ import { php } from "@codemirror/lang-php";
 import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
-import { useCodemirrorTheme } from "@/hooks";
+import { useCodemirrorTheme, useColorModeValue } from "@/hooks";
 // TODO: this should be automatically inferred (en/id) when we have proper i18n
 import { questions } from "@/data/en/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
@@ -34,6 +34,7 @@ interface EditorProps {
 export default function Editor({ bg, onScroll }: EditorProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
+  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
   const { currentQuestion } = useAppSelector((state) => state.question);
   const { solutions, currentLanguage } = useAppSelector(
     (state) => state.editor
@@ -87,7 +88,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   return (
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs h="full">
-        <TabList>
+        <TabList borderColor={borderBg}>
           <Tab>Your Solution</Tab>
         </TabList>
         <TabPanels h="full">

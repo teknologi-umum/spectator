@@ -9,25 +9,25 @@ test("should return the initial state", () => {
 });
 
 test("should be able to go to the next question", () => {
-  expect(reducer({ currentQuestion: 0 }, nextQuestion())).toEqual({
+  expect(reducer({ currentQuestion: 0, submissions: [] }, nextQuestion())).toEqual({
     currentQuestion: 1
   });
 });
 
 test("should not be able to go past 6th question", () => {
-  expect(reducer({ currentQuestion: 5 }, nextQuestion())).toEqual({
+  expect(reducer({ currentQuestion: 5, submissions: [] }, nextQuestion())).toEqual({
     currentQuestion: 5
   });
 });
 
 test("should be able to go to the previous question", () => {
-  expect(reducer({ currentQuestion: 1 }, prevQuestion())).toEqual({
+  expect(reducer({ currentQuestion: 1, submissions: [] }, prevQuestion())).toEqual({
     currentQuestion: 0
   });
 });
 
 test("should not be able to go past 0th question", () => {
-  expect(reducer({ currentQuestion: 0 }, prevQuestion())).toEqual({
+  expect(reducer({ currentQuestion: 0, submissions: [] }, prevQuestion())).toEqual({
     currentQuestion: 0
   });
 });

@@ -1,36 +1,52 @@
 import { EditorView } from "@codemirror/view";
 import { tags, HighlightStyle } from "@codemirror/highlight";
-import { theme } from "@chakra-ui/react";
+import theme from "@/styles/themes";
 
-export function getHighlightTheme(mode: "dark" | "light") {
-  const isDarkMode = mode === "dark";
-
+export function getHighlightTheme(mode: "light" | "dimmed" | "dark") {
   const c = {
-    blue: isDarkMode ? theme.colors.blue[400] : theme.colors.blue[700],
-    lightBlue: isDarkMode ? theme.colors.blue[200] : theme.colors.blue[500],
-    red: isDarkMode ? theme.colors.red[300] : theme.colors.red[500],
-    gray: isDarkMode ? theme.colors.gray[400] : theme.colors.gray[600],
-    orange: isDarkMode ? theme.colors.orange[300] : theme.colors.orange[500],
-    normal: isDarkMode ? theme.colors.gray[200] : theme.colors.gray[700]
+    light: {
+      blue: theme.colors.blue[700],
+      lightBlue: theme.colors.blue[500],
+      red: theme.colors.red[500],
+      gray: theme.colors.gray[600],
+      orange: theme.colors.orange[500],
+      normal: theme.colors.gray[700]
+    },
+    dimmed: {
+      blue: theme.colors.blue[400],
+      lightBlue: theme.colors.blue[200],
+      red: theme.colors.red[300],
+      gray: theme.colors.gray[400],
+      orange: theme.colors.orange[300],
+      normal: theme.colors.gray[200]
+    },
+    dark: {
+      blue: theme.colors.blue[400],
+      lightBlue: theme.colors.blue[200],
+      red: theme.colors.red[300],
+      gray: theme.colors.gray[400],
+      orange: theme.colors.orange[300],
+      normal: theme.colors.gray[200]
+    }
   };
 
   return HighlightStyle.define([
-    { tag: tags.keyword, color: c.red },
-    { tag: tags.number, color: c.blue },
-    { tag: tags.bool, color: c.blue },
-    { tag: tags.null, color: c.blue },
-    { tag: tags.comment, color: c.gray },
+    { tag: tags.keyword, color: c[mode].red },
+    { tag: tags.number, color: c[mode].blue },
+    { tag: tags.bool, color: c[mode].blue },
+    { tag: tags.null, color: c[mode].blue },
+    { tag: tags.comment, color: c[mode].gray },
     { tag: tags.function, color: theme.colors.pink[600] },
-    { tag: tags.string, color: c.lightBlue },
-    { tag: tags.propertyName, color: c.blue },
-    { tag: tags.punctuation, color: c.gray },
-    { tag: tags.paren, color: c.gray },
-    { tag: tags.brace, color: c.gray },
-    { tag: tags.bracket, color: c.gray },
-    { tag: tags.operator, color: c.red },
-    { tag: tags.typeName, color: c.orange },
-    { tag: tags.constant, color: c.blue },
-    { tag: tags.name, color: c.normal }
+    { tag: tags.string, color: c[mode].lightBlue },
+    { tag: tags.propertyName, color: c[mode].blue },
+    { tag: tags.punctuation, color: c[mode].gray },
+    { tag: tags.paren, color: c[mode].gray },
+    { tag: tags.brace, color: c[mode].gray },
+    { tag: tags.bracket, color: c[mode].gray },
+    { tag: tags.operator, color: c[mode].red },
+    { tag: tags.typeName, color: c[mode].orange },
+    { tag: tags.constant, color: c[mode].blue },
+    { tag: tags.name, color: c[mode].normal }
   ]).extension;
 }
 
@@ -38,22 +54,34 @@ export function getEditorTheme({
   mode,
   fontSize
 }: {
-  mode: "dark" | "light";
+  mode: "light" | "dimmed" | "dark";
   fontSize: number;
 }) {
-  const isDarkMode = mode === "dark";
-
   const c = {
-    gray: isDarkMode ? theme.colors.gray[400] : theme.colors.gray[600],
-    bg: isDarkMode ? theme.colors.gray[700] : theme.colors.white,
-    bgDarker: isDarkMode ? theme.colors.blue[800] : theme.colors.blue[50],
-    caret: isDarkMode ? theme.colors.gray[200] : theme.colors.gray[700]
+    light: {
+      gray: theme.colors.gray[600],
+      bg: theme.colors.white,
+      bgDarker: theme.colors.blue[50],
+      caret: theme.colors.gray[700]
+    },
+    dimmed: {
+      gray: theme.colors.gray[400],
+      bg: theme.colors.gray[700],
+      bgDarker: theme.colors.gray[700],
+      caret: theme.colors.gray[200]
+    },
+    dark: {
+      gray: theme.colors.gray[400],
+      bg: theme.colors.gray[800],
+      bgDarker: theme.colors.gray[700],
+      caret: theme.colors.gray[200]
+    }
   };
 
   return EditorView.theme(
     {
       "&.cm-editor": {
-        backgroundColor: c.bg,
+        backgroundColor: c[mode].bg,
         height: "100%"
       },
       "&.cm-editor.cm-focused": {
@@ -66,28 +94,27 @@ export function getEditorTheme({
         height: "100%"
       },
       "&.cm-focused .cm-selectionBackground": {
-        background: c.bgDarker
+        background: c[mode].bgDarker
       },
       ".cm-selectionBackground": {
-        background: c.bgDarker
+        background: c[mode].bgDarker
       },
       ".cm-cursor": {
-        borderLeft: `1.25px solid ${c.caret}`,
-        backgroundColor: c.gray
+        borderLeft: `1.25px solid ${c[mode].caret}`,
+        backgroundColor: c[mode].gray
       },
       ".cm-gutters": {
         border: "none",
-        backgroundColor: c.bg,
-        color: c.gray,
+        backgroundColor: c[mode].bg,
+        color: c[mode].gray,
         fontSize: fontSize + "px"
       },
       ".cm-gutterElement.cm-activeLineGutter": {
-        backgroundColor: c.bgDarker
+        backgroundColor: c[mode].bgDarker
       },
       ".cm-line.cm-activeLine": {
-        backgroundColor: c.bgDarker
+        backgroundColor: c[mode].bgDarker
       }
-    },
-    { dark: isDarkMode }
+    }
   );
 }
