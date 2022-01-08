@@ -108,7 +108,6 @@ func TestReadLog_Empty(t *testing.T) {
 func TestReadLog_Query(t *testing.T) {
 	t.Cleanup(cleanup)
 
-	timeCurrent := time.Now().UnixMilli()
 	payload := &pb.LogRequest{
 		AccessToken: accessToken,
 		Data: []*pb.LogData{
@@ -118,7 +117,6 @@ func TestReadLog_Query(t *testing.T) {
 				Message:     "A quick brown fox jumps over the lazy dog",
 				Level:       pb.Level_ERROR.Enum(),
 				Environment: pb.Environment_PRODUCTION.Enum(),
-				Timestamp:   &timeCurrent,
 			},
 			{
 				RequestId:   "a1",
@@ -126,7 +124,6 @@ func TestReadLog_Query(t *testing.T) {
 				Message:     "Well, hello there. General Kenobi.",
 				Level:       pb.Level_ERROR.Enum(),
 				Environment: pb.Environment_PRODUCTION.Enum(),
-				Timestamp:   &timeCurrent,
 			},
 			{
 				RequestId:   "a1",
@@ -134,7 +131,6 @@ func TestReadLog_Query(t *testing.T) {
 				Message:     "Lorem ipsum dolor sit amet",
 				Level:       pb.Level_ERROR.Enum(),
 				Environment: pb.Environment_PRODUCTION.Enum(),
-				Timestamp:   &timeCurrent,
 			},
 		},
 	}
@@ -157,21 +153,23 @@ func TestReadLog_Query(t *testing.T) {
 
 	a1 := "a1"
 	core := "core"
-	timeTo := time.Now().Add(1 * 24 * time.Hour).Unix()
 	resp, err := client.ReadLog(
 		ctx,
 		&pb.ReadLogRequest{
 			Level:       pb.Level_ERROR.Enum(),
 			Application: &core,
 			RequestId:   &a1,
-			TimestampTo: &timeTo,
 		},
 	)
 	if err != nil {
 		t.Errorf("an error was thrown: %v", err)
 	}
+	for i, data := range resp.GetData() {
+		t.Logf("Message index: %d: %s\n", i, data.String())
+	}
 
 	if len(resp.GetData()) != 2 {
 		t.Errorf("expected 2 log, got %d", len(resp.GetData()))
 	}
+
 }

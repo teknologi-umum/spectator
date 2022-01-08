@@ -31,7 +31,12 @@ func (*Dependency) convertIntoProtoData(l []LogData) []*pb.LogData {
 	for _, d := range l {
 		var level pb.Level
 		var environment pb.Environment
-		var timestamp = d.Timestamp.UnixMilli()
+		var timestamp int64
+		if d.Timestamp.IsZero() || d.Timestamp.UnixMilli() == 0 {
+			timestamp = time.Now().UnixMilli()
+		} else {
+			timestamp = d.Timestamp.UnixMilli()
+		}
 
 		switch d.Level {
 		case "INFO":

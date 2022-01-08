@@ -117,8 +117,12 @@ func cleanup() {
 
 	// delete bucket data
 	deleteAPI := db.DeleteAPI()
-	err = deleteAPI.Delete(ctx, currentOrganization, currentBucket, time.UnixMilli(0), time.Now(), "")
-	if err != nil {
-		log.Fatalf("deleting bucket data: %v", err)
+
+	measurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	for _, measurement := range measurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, currentBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+		}
 	}
 }

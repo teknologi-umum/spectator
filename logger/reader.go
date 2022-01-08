@@ -72,7 +72,9 @@ func buildQuery(q queries) string {
 	str.WriteString(")\n")
 
 	str.WriteString("|> sort(columns: [\"_time\"])\n")
-	str.WriteString("|> group(columns: [\"request_id\"])\n")
+	if q.RequestID == "" {
+		str.WriteString("|> group(columns: [\"request_id\"])\n")
+	}
 	thereIsDataToBeFiltered := q.Level != "" || q.Application != "" || q.RequestID != ""
 	if thereIsDataToBeFiltered {
 		str.WriteString(`|> filter(fn: (r) => `)
@@ -104,7 +106,6 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 	queryAPI := d.DB.QueryAPI(d.Org)
 	// build query for influx
 	queryStr := buildQuery(query)
-	fmt.Println(queryStr)
 
 	rows, err := queryAPI.Query(ctx, queryStr)
 	if err != nil {
@@ -133,6 +134,8 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 		}
 		if table == lastTableIndex {
 			switch unmarshaledRow["_field"].(string) {
+			// FIXME: body is not detected, might as well find another way
+			// to parse the current rows/record.
 			case "body":
 				bodyJSON := unmarshaledRow["_value"].(string)
 				bodyBytes, err := hex.DecodeString(bodyJSON)
