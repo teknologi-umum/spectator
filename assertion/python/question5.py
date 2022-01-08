@@ -16,11 +16,9 @@ def main():
 
     def workingAnswer(s):
         result = []
-        for i in range(len(s)):
-            c = s[i]
-            result += (c*i+1).capitalize() + "-"
-        result = result [:-1]
-        return result
+        for index,letter in enumerate(s):
+            result.append( (letter*(index+1)).capitalize() )
+        return "-".join(result)
 
     characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     for i in range(8):
