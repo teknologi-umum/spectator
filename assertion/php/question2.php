@@ -2,19 +2,12 @@
 
 {0}
 
-define("CELCIUS", "Celcius");
-define("FARENHEIT", "Farenheit");
-define("KELVIN", "Kelvin");
-
-function is_celcius(string $s): bool { return $s === CELCIUS; }
-
-function is_farenheit(string $s): bool { return $s === FARENHEIT; }
-
-function is_kelvin(string $s): bool { return $s === KELVIN; }
-
-function to_fixed_of_two(float $n): string { return number_format($n, 2, ".", ""); }
-
 function main(): void {
+    function is_celcius (string $s): bool { return $s === "Celcius"; }
+    function is_fahrenheit (string $s): bool { return  $s === "Farenheit"; }
+    function is_kelvin (string $s): bool { return  $s === "Kelvin"; }
+    function to_fixed_of_two (float $n): bool { return number_format($n, 2, ".", ""); }
+
     $temperatures = ["Celcius", "Farenheit", "Kelvin"];
     $test_cases = [
         [
@@ -39,29 +32,21 @@ function main(): void {
         ],
     ];
 
-    function working_answer(float $n, string $a, string $b): float {
-        if (is_celcius($a) && is_farenheit($b)) {
-            return ($n * 9 / 5) + 32;
-        } else if (is_celcius($a) && is_kelvin($b)) {
-            return $n + 273.15;
-        } else if (is_farenheit($a) && is_celcius($b)) {
-            return ($n - 32) * 5 / 9;
-        } else if (is_farenheit($a) && is_kelvin($b)) {
-            return ($n - 32) * 5 / 9 + 273.15;
-        } else if (is_kelvin($a) && is_celcius($b)) {
-            return $n - 273.15;
-        } else if (is_kelvin($a) && is_farenheit($b)) {
-            return ($n - 273.15) * 9 / 5 + 32;
-        } else {
-            return $n;
-        }
-    }
+    $working_answer = function(float $n, string $a, string $b): float {
+        if (is_celcius($a) && is_fahrenheit($b)) return ($n * 9 / 5) + 32;
+        if (is_celcius($a) && is_kelvin($b)) return $n + 273.15;
+        if (is_fahrenheit($a) && is_celcius($b)) return ($n - 32) * 5 / 9;
+        if (is_fahrenheit($a) && is_kelvin($b)) return ($n - 32) * 5 / 9 + 273.15;
+        if (is_kelvin($a) && is_celcius($b)) return $n - 273.15;
+        if (is_kelvin($a) && is_fahrenheit($b)) return ($n - 273.15) * 9 / 5 + 32;
+        return $n;
+    };
 
     for ($i = 0; $i < 5; $i++) {
         $from = $temperatures[rand(0, count($temperatures) - 1)];
         $to = $temperatures[rand(0, count($temperatures) - 1)];
         $n = rand(-500, 500);
-        $expected = working_answer($n, $from, $to);
+        $expected = $working_answer($n, $from, $to);
         $got = calculateTemperature($n, $from, $to);
         array_push($test_cases, [
             "got" => $got,
@@ -73,7 +58,7 @@ function main(): void {
         $test = $test_cases[$i];
 
         if (to_fixed_of_two($test["got"]) === to_fixed_of_two($test["expected"])) {
-            echo "# ". $i + 1 . " PASSING"; 
+            echo "# ". $i + 1 . " PASSING";
         } else {
             echo "# " . $i + 1 . " FAILED";
             echo "> EXPECTED " . to_fixed_of_two($test["expected"]);
