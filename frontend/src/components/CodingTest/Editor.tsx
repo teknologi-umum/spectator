@@ -15,6 +15,7 @@ import { questions } from "@/data/en/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
 import { useDebounce } from "@/hooks";
+import { useTranslation } from "react-i18next";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -33,15 +34,17 @@ interface EditorProps {
 
 export default function Editor({ bg, onScroll }: EditorProps) {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
   const { currentQuestion } = useAppSelector((state) => state.question);
   const { solutions, currentLanguage } = useAppSelector(
     (state) => state.editor
   );
+
   // memoized the question
   const boilerplate = useMemo(() => {
-    return questions[currentQuestion].templates[currentLanguage];
+    return t(`questions.${questions[currentQuestion].id - 1}.templates.${currentLanguage}`)
   }, [currentQuestion, currentLanguage]);
 
   const [code, setCode] = useState("");
