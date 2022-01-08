@@ -18,7 +18,7 @@
       "student_number": "Nomor Mahasiswa",
       "programming_years": "Sudah berapa tahun kamu melalukan pemrograman?",
       "programming_practice": "Berapa jam per minggu kamu berlatih pemrograman?",
-      "programming_experience": "What programming languages are you familiar with? (ex: Java, Python, C)"
+      "programming_experience": "Bahasa pemrograman apa yang kamu bisa ? (contoh: Java, Python, C)"
     },
     "instructions": {
       "title": "Instruksi",

@@ -25,6 +25,7 @@ import { useAppDispatch } from "@/store";
 import { setJwt } from "@/store/slices/jwtSlice";
 import { useColorModeValue } from "@/hooks/";
 import { withPublic } from "@/hoc";
+import { useTranslation } from "react-i18next";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -69,6 +70,7 @@ function SAMTest() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
+  const { t } = useTranslation()
   
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -82,6 +84,7 @@ function SAMTest() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
   }
+
 
   useEffect(() => {
     document.title = "SAM Test | Spectator";
@@ -111,11 +114,10 @@ function SAMTest() {
               <Fade in={currentPage === 0}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    How aroused are you now?
+                    {t("translations.sam_test.aroused_title")}
                   </Text>
                   <Text color={fgDarker} fontSize="lg" mb="4">
-                    Arousal refer to how aroused are you generally in the
-                    meantime
+                    {t("translations.sam_test.aroused_body")}
                   </Text>
                   <Box color={fgDarker}>
                     {getResponseOptions(
@@ -132,11 +134,10 @@ function SAMTest() {
               <Fade in={currentPage === 1}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    How pleased are you now?
+                    {t("translations.sam_test.pleasure_title")}
                   </Text>
                   <Text color={fgDarker} fontSize="lg">
-                    Pleasure refer to how pleased are you generally in the
-                    meantime
+                    {t("translations.sam_test.pleasure_body")}
                   </Text>
                   <Box color={fgDarker}>
                     {getResponseOptions(
@@ -157,10 +158,10 @@ function SAMTest() {
                     variant="outline"
                     onClick={() => goto("prev")}
                   >
-                    Previous
+                    {t("translations.ui.previous")}
                   </Button>
                   <Button colorScheme="blue" variant="solid" onClick={onOpen}>
-                    Finish
+                    {t("translations.ui.finish")}
                   </Button>
                 </>
               ) : (
@@ -169,7 +170,7 @@ function SAMTest() {
                   variant="solid"
                   onClick={() => goto("next")}
                 >
-                  Next
+                  {t("translations.ui.next")}
                 </Button>
               )}
             </Flex>
@@ -179,15 +180,11 @@ function SAMTest() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
-          <ModalHeader fontSize="2xl">Confirmation</ModalHeader>
+          <ModalHeader fontSize="2xl">{t("translations.confirmation.title")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
-              In this coding test, <b>ALL</b> of your mouse and keyboard
-              activity will be recorded for data collecting purpose. We will
-              also need the camera permission to record your movement. By
-              pressing the confirm button, you&apos;re fully agree with these
-              conditions and given us your permissions.
+              {t("translations.confirmation.body")}
             </Text>
           </ModalBody>
 
@@ -198,7 +195,7 @@ function SAMTest() {
               mr={3}
               onClick={onClose}
             >
-              Cancel
+              {t("translations.ui.cancel")}
             </Button>
             <Button
               colorScheme="blue"
@@ -208,7 +205,7 @@ function SAMTest() {
                 navigate("/coding-test");
               }}
             >
-              Confirm
+              {t("translations.ui.confirm")}
             </Button>
           </ModalFooter>
         </ModalContent>

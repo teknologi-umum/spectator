@@ -30,15 +30,16 @@ interface FormValues {
 }
 
 function PersonalInfo() {
+  const { t } = useTranslation()
   const dispatch = useAppDispatch();
   const personalInfo = useAppSelector<PersonalInfoState>(
     (state) => state.personalInfo
-  );
+    );
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const border = useColorModeValue("gray.400", "gray.500", "gray.600");
-
+  
   const {
     register,
     handleSubmit,
@@ -63,11 +64,6 @@ function PersonalInfo() {
     console.log("errors", errors);
   }, [errors]);
 
-  const { t, i18n } = useTranslation()
-
-  const changeLanguage = (lang:string) => {
-    i18n.changeLanguage(lang)
-  }
 
   return (
     <Layout>
@@ -88,8 +84,8 @@ function PersonalInfo() {
         </Heading>
 
         <Box>
-          <Button onClick={() => changeLanguage("en")}>en</Button>
-          <Button onClick={() => changeLanguage("id")}>id</Button>
+          {/* <Button onClick={() => changeLanguage("en")}>en</Button>
+          <Button onClick={() => changeLanguage("id")}>id</Button> */}
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
           <FormControl
             id="email"
@@ -106,7 +102,7 @@ function PersonalInfo() {
             isInvalid={errors.programmingExp !== undefined}
           >
             <FormLabel>
-              How many years have you been doing programming?
+              {t("translations.personal_info.programming_years")}
             </FormLabel>
             <Input
               borderColor={border}
@@ -125,7 +121,7 @@ function PersonalInfo() {
             isInvalid={errors.programmingExercise !== undefined}
           >
             <FormLabel>
-              How many hours in a week do you practice programming?
+              {t("translations.personal_info.programming_practice")}
             </FormLabel>
             <Input
               borderColor={border}
@@ -144,8 +140,7 @@ function PersonalInfo() {
             isInvalid={errors.programmingLanguage !== undefined}
           >
             <FormLabel>
-              What programming languages are you familiar with (ex: Java,
-              Python, C)
+              {t("translations.personal_info.programming_experience")}
             </FormLabel>
             <Input
               borderColor={border}
@@ -166,7 +161,7 @@ function PersonalInfo() {
           type="submit"
           display="block"
         >
-          Continue
+          {t("translations.ui.continue")}
         </Button>
       </Box>
     </Layout>
