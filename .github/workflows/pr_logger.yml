@@ -9,7 +9,7 @@ jobs:
   logger:
     name: Logger
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     services:
       db:
         image: influxdb:2.1
