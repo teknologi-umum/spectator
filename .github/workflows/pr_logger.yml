@@ -1,0 +1,42 @@
+name: Check
+
+on:
+  pull_request:
+    paths:
+      - 'logger/**'
+
+jobs:
+  logger:
+    name: Logger
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
+        ports:
+          - 8086:8086
+    defaults:
+      run:
+        working-directory: ./logger
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+      - name: Build test
+        run: go build .
+      - name: Run test
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic
+        env:
+          ACCESS_TOKEN: testing
+          INFLUX_URL: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: testing

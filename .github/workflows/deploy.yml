@@ -25,7 +25,6 @@ jobs:
   logger:
     name: Logger
     runs-on: ubuntu-latest
-    container: golang:1.17.5-buster
     timeout-minutes: 10
     services:
       db:
@@ -44,7 +43,10 @@ jobs:
         working-directory: ./logger
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2'
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
       - name: Build test
         run: go build .
       - name: Run test
@@ -57,7 +59,6 @@ jobs:
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
-    container: node:16-buster
     timeout-minutes: 10
     defaults:
       run:
@@ -65,6 +66,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - name: Install dependencies
         run: npm install
       - name: Protoc
@@ -78,11 +82,13 @@ jobs:
   # configs:
   #   name: Verify config
   #   runs-on: ubuntu-latest
-  #   container: python:3-buster
   #   timeout-minutes: 10
   #   steps:
   #     - name: Checkout repository
   #       uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.10'
   #     - name: Install docker-compose
   #       run: >
   #         curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -94,16 +100,21 @@ jobs:
   #         && pip3 install "ansible-lint[core,yamllint]"
   #         && ansible-lint --version
   #     - name: Lint docker-compose
-  #       run: docker-compose --file docker-compose.yml config
+  #       run: >
+  #         docker-compose --file docker-compose.yml config
+  #         && docker-compose --file docker-compose.dev.yml config
+  #         && docker-compose --file docker-compose.influx.yml config
   #     - name: Lint ansible
   #       run: ansible-lint -v -f rich ansible.yml
   # deploy:
   #   name: Deploy
   #   needs: [configs, frontend, logger]
   #   runs-on: ubuntu-latest
-  #   container: python:3-buster
   #   timeout-minutes: 15
   #   steps:
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.10'
   #     - name: Install SSH key
   #       uses: shimataro/ssh-key-action@v2
   #       with:
