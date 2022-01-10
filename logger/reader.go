@@ -107,6 +107,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 	// build query for influx
 	queryStr := buildQuery(query)
 
+	// TODO: dipisah ini jadi yang proper based on POC kemaren
 	rows, err := queryAPI.Query(ctx, queryStr)
 	if err != nil {
 		return []LogData{}, fmt.Errorf("querying data: %v", err)
@@ -118,6 +119,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 	var temp LogData
 	var lastTableIndex int = -1
 	for rows.Next() {
+		// TODO: ngga perlu pake custom marshaller
 		unmarshaledRow, err := unmarshalInfluxRow(rows.Record().String())
 		if err != nil {
 			return []LogData{}, err
