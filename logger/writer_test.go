@@ -64,6 +64,48 @@ func TestValidatePayload(t *testing.T) {
 			t.Errorf("expecting an error, nistead got: %v", err)
 		}
 	})
+
+	t.Run("five_limit", func(t *testing.T) {
+		p := &pb.LogRequest{
+			AccessToken: accessToken,
+			Data: []*pb.LogData{
+				{
+					RequestId:   "",
+					Application: "",
+					Message:     "",
+				},
+				{
+					RequestId:   "",
+					Application: "",
+					Message:     "",
+				},
+				{
+					RequestId:   "",
+					Application: "",
+					Message:     "",
+				},
+				{
+					RequestId:   "",
+					Application: "",
+					Message:     "",
+				},
+				{
+					RequestId:   "",
+					Application: "",
+					Message:     "",
+				},
+				{
+					RequestId:   "",
+					Application: "",
+					Message:     "",
+				},
+			},
+		}
+		err := deps.ValidatePayload(p)
+		if err == nil || err.Error() != "log data is more than five, maximum of five" {
+			t.Errorf("expecting an error, instead got: %v", err)
+		}
+	})
 }
 
 func TestSingleCreate(t *testing.T) {

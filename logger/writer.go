@@ -24,6 +24,10 @@ func (d *Dependency) ValidatePayload(p *pb.LogRequest) error {
 		return fmt.Errorf("proper data must be provided")
 	}
 
+	if len(p.GetData()) > 5 {
+		return fmt.Errorf("log data is more than five, maximum of five")
+	}
+
 	var missing []string
 	for _, field := range p.GetData() {
 		if field.GetRequestId() == "" || strings.Contains(field.GetRequestId(), ",") {
