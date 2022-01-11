@@ -5,7 +5,7 @@
 
 std::vector<int> calculateGrade(std::vector<int> input);
 
-{0}
+_REPLACE_ME_
 
 std::vector<int> __workingAnswer(std::vector<int> input) {
     std::vector<int> result;

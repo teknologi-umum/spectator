@@ -4,7 +4,7 @@
 
 int isSameNumber(int a, int b);
 
-{0}
+_REPLACE_ME_
 
 typedef struct TestCase {
     int expected;

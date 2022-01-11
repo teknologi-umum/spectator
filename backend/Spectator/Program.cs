@@ -92,7 +92,7 @@ app.UseEndpoints(endpoints => {
 });
 
 // Map SignalR Hubs
-app.MapHub<SessionHub>("/session");
+app.MapHub<SessionHub>("/hubs/session");
 
 // Run app
 app.Run();

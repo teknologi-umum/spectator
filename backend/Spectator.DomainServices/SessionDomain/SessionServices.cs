@@ -184,8 +184,15 @@ namespace Spectator.DomainServices.SessionDomain {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
 
+			// Get locale from state
+			var locale = sessionStore.State switch {
+				AnonymousSession a => a.Locale,
+				RegisteredSession r => r.Locale,
+				_ => throw new InvalidProgramException("Unhandled session type")
+			};
+
 			// Execute solution in piston
-			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, language, solution, scratchPad);
+			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, locale, language, solution, scratchPad);
 
 			// Create event
 			SessionEventBase @event = submission.Accepted

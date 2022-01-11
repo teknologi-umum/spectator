@@ -8,6 +8,9 @@ using Spectator.Repositories;
 namespace Spectator.RepositoryDALs.Internals {
 	internal class QuestionRepositoryDAL : IQuestionRepository {
 		private static readonly Assembly ASSEMBLY = Assembly.GetAssembly(typeof(QuestionRepositoryDAL))!;
+		private static readonly JsonSerializerOptions JSON_SERIALIZER_OPTIONS = new JsonSerializerOptions {
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+		};
 
 		public async Task<ImmutableDictionary<Locale, ImmutableArray<Question>>> GetAllAsync(CancellationToken cancellationToken) {
 			// Get all assertions
@@ -47,7 +50,7 @@ namespace Spectator.RepositoryDALs.Internals {
 				using var stream = ASSEMBLY.GetManifestResourceStream(resourceName)!;
 				using var reader = new StreamReader(stream);
 				var json = await reader.ReadToEndAsync();
-				var questionSet = JsonSerializer.Deserialize<JsonModels.QuestionSet>(json)!;
+				var questionSet = JsonSerializer.Deserialize<JsonModels.QuestionSet>(json, JSON_SERIALIZER_OPTIONS)!;
 				questionsByLocale.Add(locale, questionSet.Questions.ToImmutableDictionary(q => q.Id));
 			}
 

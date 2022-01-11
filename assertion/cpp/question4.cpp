@@ -4,7 +4,7 @@
 
 int findHeaterPower(long power);
 
-{0}
+_REPLACE_ME_
 
 int __workingAnswer(long power) {
     int result = 0;

@@ -7,7 +7,7 @@
 
 int calculateTemperature(int temp, std::string from, std::string to);
 
-{0}
+_REPLACE_ME_
 
 const std::string __CELCIUS = "Celcius";
 const std::string __FAHRENHEIT = "Fahrenheit";

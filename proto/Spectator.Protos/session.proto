@@ -67,11 +67,25 @@ message SubmissionRequest {
 	string scratch_pad = 4;
 }
 
-message SubmissionResult {
-	message TestResult {
-		bool success = 1;
-		string message = 2;
+message TestResult {
+	message PassingTest {
 	}
+	message FailingTest {
+		string expected_stdout = 2;
+		string actual_stdout = 3;
+	}
+	message CompileError {
+		string stderr = 1;
+	}
+	int32 test_number = 1;
+	oneof result {
+		PassingTest passing_test = 2;
+		FailingTest failing_test = 3;
+		CompileError compile_error = 4;
+	}
+}
+
+message SubmissionResult {
 	bool accepted = 1;
 	repeated TestResult test_results = 2;
 }
