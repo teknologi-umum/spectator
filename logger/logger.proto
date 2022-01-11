@@ -44,7 +44,7 @@ message LogData {
 
 message LogRequest {
     string access_token = 1;
-    repeated LogData data = 2;
+    LogData data = 2;
 }
 
 message Healthcheck {

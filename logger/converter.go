@@ -5,25 +5,18 @@ import (
 	"time"
 )
 
-func (*Dependency) convertIntoLogData(l []*pb.LogData) []LogData {
-	var data []LogData
-	for _, d := range l {
-		data = append(
-			data,
-			LogData{
-				RequestID:   d.GetRequestId(),
-				Application: d.GetApplication(),
-				Message:     d.GetMessage(),
-				Body:        d.GetBody(),
-				Level:       d.GetLevel().String(),
-				Environment: d.GetEnvironment().String(),
-				Language:    d.GetLanguage(),
-				Timestamp:   time.UnixMilli(d.GetTimestamp()),
-			},
-		)
+func (*Dependency) convertIntoLogData(d *pb.LogData) LogData {
+	return LogData{
+		RequestID:   d.GetRequestId(),
+		Application: d.GetApplication(),
+		Message:     d.GetMessage(),
+		Body:        d.GetBody(),
+		Level:       d.GetLevel().String(),
+		Environment: d.GetEnvironment().String(),
+		Language:    d.GetLanguage(),
+		Timestamp:   time.UnixMilli(d.GetTimestamp()),
 	}
 
-	return data
 }
 
 func (*Dependency) convertIntoProtoData(l []LogData) []*pb.LogData {
