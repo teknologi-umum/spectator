@@ -152,6 +152,66 @@ export interface SubmissionRequest {
     scratchPad: string;
 }
 /**
+ * @generated from protobuf message session.TestResult
+ */
+export interface TestResult {
+    /**
+     * @generated from protobuf field: int32 test_number = 1;
+     */
+    testNumber: number;
+    /**
+     * @generated from protobuf oneof: result
+     */
+    result: {
+        oneofKind: "passingTest";
+        /**
+         * @generated from protobuf field: session.TestResult.PassingTest passing_test = 2;
+         */
+        passingTest: TestResult_PassingTest;
+    } | {
+        oneofKind: "failingTest";
+        /**
+         * @generated from protobuf field: session.TestResult.FailingTest failing_test = 3;
+         */
+        failingTest: TestResult_FailingTest;
+    } | {
+        oneofKind: "compileError";
+        /**
+         * @generated from protobuf field: session.TestResult.CompileError compile_error = 4;
+         */
+        compileError: TestResult_CompileError;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ * @generated from protobuf message session.TestResult.PassingTest
+ */
+export interface TestResult_PassingTest {
+}
+/**
+ * @generated from protobuf message session.TestResult.FailingTest
+ */
+export interface TestResult_FailingTest {
+    /**
+     * @generated from protobuf field: string expected_stdout = 2;
+     */
+    expectedStdout: string;
+    /**
+     * @generated from protobuf field: string actual_stdout = 3;
+     */
+    actualStdout: string;
+}
+/**
+ * @generated from protobuf message session.TestResult.CompileError
+ */
+export interface TestResult_CompileError {
+    /**
+     * @generated from protobuf field: string stderr = 1;
+     */
+    stderr: string;
+}
+/**
  * @generated from protobuf message session.SubmissionResult
  */
 export interface SubmissionResult {
@@ -160,22 +220,9 @@ export interface SubmissionResult {
      */
     accepted: boolean;
     /**
-     * @generated from protobuf field: repeated session.SubmissionResult.TestResult test_results = 2;
+     * @generated from protobuf field: repeated session.TestResult test_results = 2;
      */
-    testResults: SubmissionResult_TestResult[];
-}
-/**
- * @generated from protobuf message session.SubmissionResult.TestResult
- */
-export interface SubmissionResult_TestResult {
-    /**
-     * @generated from protobuf field: bool success = 1;
-     */
-    success: boolean;
-    /**
-     * @generated from protobuf field: string message = 2;
-     */
-    message: string;
+    testResults: TestResult[];
 }
 /**
  * @generated from protobuf message session.EmptyRequest
@@ -725,11 +772,215 @@ class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
  */
 export const SubmissionRequest = new SubmissionRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class TestResult$Type extends MessageType<TestResult> {
+    constructor() {
+        super("session.TestResult", [
+            { no: 1, name: "test_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "passing_test", kind: "message", oneof: "result", T: () => TestResult_PassingTest },
+            { no: 3, name: "failing_test", kind: "message", oneof: "result", T: () => TestResult_FailingTest },
+            { no: 4, name: "compile_error", kind: "message", oneof: "result", T: () => TestResult_CompileError }
+        ]);
+    }
+    create(value?: PartialMessage<TestResult>): TestResult {
+        const message = { testNumber: 0, result: { oneofKind: undefined } };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<TestResult>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TestResult): TestResult {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 test_number */ 1:
+                    message.testNumber = reader.int32();
+                    break;
+                case /* session.TestResult.PassingTest passing_test */ 2:
+                    message.result = {
+                        oneofKind: "passingTest",
+                        passingTest: TestResult_PassingTest.internalBinaryRead(reader, reader.uint32(), options, (message.result as any).passingTest)
+                    };
+                    break;
+                case /* session.TestResult.FailingTest failing_test */ 3:
+                    message.result = {
+                        oneofKind: "failingTest",
+                        failingTest: TestResult_FailingTest.internalBinaryRead(reader, reader.uint32(), options, (message.result as any).failingTest)
+                    };
+                    break;
+                case /* session.TestResult.CompileError compile_error */ 4:
+                    message.result = {
+                        oneofKind: "compileError",
+                        compileError: TestResult_CompileError.internalBinaryRead(reader, reader.uint32(), options, (message.result as any).compileError)
+                    };
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: TestResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 test_number = 1; */
+        if (message.testNumber !== 0)
+            writer.tag(1, WireType.Varint).int32(message.testNumber);
+        /* session.TestResult.PassingTest passing_test = 2; */
+        if (message.result.oneofKind === "passingTest")
+            TestResult_PassingTest.internalBinaryWrite(message.result.passingTest, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* session.TestResult.FailingTest failing_test = 3; */
+        if (message.result.oneofKind === "failingTest")
+            TestResult_FailingTest.internalBinaryWrite(message.result.failingTest, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* session.TestResult.CompileError compile_error = 4; */
+        if (message.result.oneofKind === "compileError")
+            TestResult_CompileError.internalBinaryWrite(message.result.compileError, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.TestResult
+ */
+export const TestResult = new TestResult$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TestResult_PassingTest$Type extends MessageType<TestResult_PassingTest> {
+    constructor() {
+        super("session.TestResult.PassingTest", []);
+    }
+    create(value?: PartialMessage<TestResult_PassingTest>): TestResult_PassingTest {
+        const message = {};
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<TestResult_PassingTest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TestResult_PassingTest): TestResult_PassingTest {
+        return target ?? this.create();
+    }
+    internalBinaryWrite(message: TestResult_PassingTest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.TestResult.PassingTest
+ */
+export const TestResult_PassingTest = new TestResult_PassingTest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TestResult_FailingTest$Type extends MessageType<TestResult_FailingTest> {
+    constructor() {
+        super("session.TestResult.FailingTest", [
+            { no: 2, name: "expected_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "actual_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<TestResult_FailingTest>): TestResult_FailingTest {
+        const message = { expectedStdout: "", actualStdout: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<TestResult_FailingTest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TestResult_FailingTest): TestResult_FailingTest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string expected_stdout */ 2:
+                    message.expectedStdout = reader.string();
+                    break;
+                case /* string actual_stdout */ 3:
+                    message.actualStdout = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: TestResult_FailingTest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string expected_stdout = 2; */
+        if (message.expectedStdout !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.expectedStdout);
+        /* string actual_stdout = 3; */
+        if (message.actualStdout !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.actualStdout);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.TestResult.FailingTest
+ */
+export const TestResult_FailingTest = new TestResult_FailingTest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TestResult_CompileError$Type extends MessageType<TestResult_CompileError> {
+    constructor() {
+        super("session.TestResult.CompileError", [
+            { no: 1, name: "stderr", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<TestResult_CompileError>): TestResult_CompileError {
+        const message = { stderr: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<TestResult_CompileError>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TestResult_CompileError): TestResult_CompileError {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string stderr */ 1:
+                    message.stderr = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: TestResult_CompileError, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string stderr = 1; */
+        if (message.stderr !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.stderr);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.TestResult.CompileError
+ */
+export const TestResult_CompileError = new TestResult_CompileError$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class SubmissionResult$Type extends MessageType<SubmissionResult> {
     constructor() {
         super("session.SubmissionResult", [
             { no: 1, name: "accepted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 2, name: "test_results", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => SubmissionResult_TestResult }
+            { no: 2, name: "test_results", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => TestResult }
         ]);
     }
     create(value?: PartialMessage<SubmissionResult>): SubmissionResult {
@@ -747,8 +998,8 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
                 case /* bool accepted */ 1:
                     message.accepted = reader.bool();
                     break;
-                case /* repeated session.SubmissionResult.TestResult test_results */ 2:
-                    message.testResults.push(SubmissionResult_TestResult.internalBinaryRead(reader, reader.uint32(), options));
+                case /* repeated session.TestResult test_results */ 2:
+                    message.testResults.push(TestResult.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -765,9 +1016,9 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
         /* bool accepted = 1; */
         if (message.accepted !== false)
             writer.tag(1, WireType.Varint).bool(message.accepted);
-        /* repeated session.SubmissionResult.TestResult test_results = 2; */
+        /* repeated session.TestResult test_results = 2; */
         for (let i = 0; i < message.testResults.length; i++)
-            SubmissionResult_TestResult.internalBinaryWrite(message.testResults[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+            TestResult.internalBinaryWrite(message.testResults[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -778,60 +1029,6 @@ class SubmissionResult$Type extends MessageType<SubmissionResult> {
  * @generated MessageType for protobuf message session.SubmissionResult
  */
 export const SubmissionResult = new SubmissionResult$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class SubmissionResult_TestResult$Type extends MessageType<SubmissionResult_TestResult> {
-    constructor() {
-        super("session.SubmissionResult.TestResult", [
-            { no: 1, name: "success", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<SubmissionResult_TestResult>): SubmissionResult_TestResult {
-        const message = { success: false, message: "" };
-        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
-        if (value !== undefined)
-            reflectionMergePartial<SubmissionResult_TestResult>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmissionResult_TestResult): SubmissionResult_TestResult {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* bool success */ 1:
-                    message.success = reader.bool();
-                    break;
-                case /* string message */ 2:
-                    message.message = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: SubmissionResult_TestResult, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* bool success = 1; */
-        if (message.success !== false)
-            writer.tag(1, WireType.Varint).bool(message.success);
-        /* string message = 2; */
-        if (message.message !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.message);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message session.SubmissionResult.TestResult
- */
-export const SubmissionResult_TestResult = new SubmissionResult_TestResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class EmptyRequest$Type extends MessageType<EmptyRequest> {
     constructor() {
