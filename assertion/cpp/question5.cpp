@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <numeric>
+#include <time.h>
 
 std::string mumble(std::string input);
 
@@ -15,9 +16,9 @@ std::string __workingAnswer(std::string input) {
         std::string m = "";
         for (unsigned int j = 0; j <= i; j++) {
             char c = input.at(i);
-            m.insert(m.end(), j == 0 ? std::toupper(c) : std::tolower(c));
+            m.push_back(j == 0 ? std::toupper(c) : std::tolower(c));
         }
-        words.insert(words.end(), m);
+        words.push_back(m);
     }
 
     std::string result = std::accumulate(
@@ -43,12 +44,18 @@ const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv
 std::string __genWords(int n) {
     std::string result;
 
-    for (int i = 0; i < n; i++) result.append(&characters[n]);
+    const int nchar = characters.size();
+    for (int i = 0; i < n; i++) {
+        char randomChar = characters[__randomNumber(0, nchar)];
+        result.append(&characters[n]);
+    }
 
     return result;
 }
 
 int main() {
+    srand(time(0));
+
     std::vector<TestCase> testCases{
         {.expected = "A-Bb-Ccc-Dddd",
          .got = mumble("abcd")},
@@ -60,8 +67,7 @@ int main() {
         std::string word = __genWords(n);
         std::string expected = __workingAnswer(word);
         std::string got = mumble(word);
-        testCases.insert(testCases.end(),
-                         (TestCase){ .expected = expected, .got = got });
+        testCases.push_back({ .expected = expected, .got = got });
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {

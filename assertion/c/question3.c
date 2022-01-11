@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector>
 #include <time.h>
 
 int isSameNumber(int a, int b);
 
-_REPLACE_ME_
+{0}
 
 typedef struct TestCase {
     int expected;
@@ -20,34 +19,38 @@ int __randomNumber(int min, int max) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{
-        {.expected = false,
+    TestCase testCases[10] = {
+        {.expected = 0,
          .got = isSameNumber(100, 212)},
-        {.expected = true,
-         .got = isSameNumber(25, 25)}};
+        {.expected = 1,
+         .got = isSameNumber(25, 25)}};;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 2; i < 6; i++) {
         int a = __randomNumber(0, 9999);
         int b = __randomNumber(0, 9999);
         int expected = a == b;
         int got = isSameNumber(a, b);
-        testCases.push_back({ .expected = expected, .got = got });
+        testCases[i].got = got;
+        testCases[i].expected = expected;
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 6; i < 10; i++) {
         int a = __randomNumber(0, 9999);
-        int expected = true;
+        int expected = 1;
         int got = isSameNumber(a, a);
-        testCases.push_back({ .expected = expected, .got = got });
+        testCases[i].got = got;
+        testCases[i].expected = expected;
     }
 
-    for (unsigned int i = 0; i < testCases.size(); i++) {
-        TestCase test = testCases.at(i);
+    // `sizeof` returns the size of the memory used, not the length of the
+    // array so we need to divide it by the size of the struct
+    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++) {
+        TestCase test = testCases[i];
 
         if (test.got == test.expected) {
-            printf("# %d PASSING\n", i + 1);
+            printf("# %d PASSING\n", i+1);
         } else {
-            printf("# %d FAILED\n", i + 1);
+            printf("# %d FAILED\n", i+1);
             printf("> EXPECTED %d\n", test.expected);
             printf("> GOT %d\n", test.got);
         }

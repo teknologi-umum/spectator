@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector>
 #include <time.h>
 
 int findHeaterPower(long power);
 
-_REPLACE_ME_
+{0}
 
 int __workingAnswer(long power) {
     int result = 0;
@@ -30,7 +29,7 @@ long __randomNumber(int min, long max) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{
+    TestCase testCases[10] = {
         {.expected = 19,
          .got = findHeaterPower(100212373)}};
 
@@ -38,11 +37,13 @@ int main() {
         int n = __randomNumber(1000000000, 9999999999);
         int expected = __workingAnswer(n);
         int got = findHeaterPower(n);
-        testCases.push_back({ .expected = expected, .got = got });
+        testCases[i].expected = expected;
+        testCases[i].got = got;
     }
 
-    for (unsigned int i = 0; i < testCases.size(); i++) {
-        TestCase test = testCases.at(i);
+    // TODO: use constant for size
+    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++) {
+        TestCase test = testCases[i];
 
         if (test.got == test.expected) {
             printf("# %d PASSING\n", i + 1);
