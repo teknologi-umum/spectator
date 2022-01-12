@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Spectator.Piston.Tests {
+	[Collection("PistonConsumer")]
 	public class PistonClientTests {
 		private IServiceProvider ServiceProvider { get; }
 
@@ -30,6 +31,10 @@ namespace Spectator.Piston.Tests {
 
 			// Only wait piston API for 10 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
 			var executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
 				code: @"
@@ -46,6 +51,9 @@ namespace Spectator.Piston.Tests {
 			executeResult.Run.Stdout.Should().BeEmpty();
 			executeResult.Run.Stderr.Should().BeEmpty();
 			executeResult.Run.Output.Should().BeEmpty();
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
@@ -64,6 +72,9 @@ namespace Spectator.Piston.Tests {
 			executeResult.Run.Stdout.Should().Be("Hello world");
 			executeResult.Run.Stderr.Should().BeEmpty();
 			executeResult.Run.Output.Should().Be("Hello world");
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
@@ -89,6 +100,10 @@ namespace Spectator.Piston.Tests {
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
 			var executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
 				code: @"

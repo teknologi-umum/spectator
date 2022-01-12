@@ -12,6 +12,7 @@ using Spectator.RepositoryDALs;
 using Xunit;
 
 namespace Spectator.DomainServices.Tests {
+	[Collection("PistonConsumer")]
 	public class SubmissionServicesTests {
 		private IServiceProvider ServiceProvider { get; }
 
@@ -58,6 +59,10 @@ namespace Spectator.DomainServices.Tests {
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
@@ -101,6 +106,10 @@ namespace Spectator.DomainServices.Tests {
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
@@ -148,6 +157,10 @@ namespace Spectator.DomainServices.Tests {
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
@@ -191,6 +204,10 @@ namespace Spectator.DomainServices.Tests {
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
