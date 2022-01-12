@@ -180,9 +180,9 @@ namespace Spectator.DomainServices.SessionDomain {
 			);
 		}
 
-		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string solution, string scratchPad) {
+		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string solution, string scratchPad, CancellationToken cancellationToken) {
 			// Get store
-			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
+			var sessionStore = await GetSessionStoreAsync(sessionId, cancellationToken);
 
 			// Get locale from state
 			var locale = sessionStore.State switch {
@@ -192,7 +192,9 @@ namespace Spectator.DomainServices.SessionDomain {
 			};
 
 			// Execute solution in piston
-			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, locale, language, solution, scratchPad);
+			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, locale, language, solution, scratchPad, cancellationToken);
+
+			// ----- NOTE: DO NOT USE cancellationToken BELOW THE FOLD!! -----
 
 			// Create event
 			SessionEventBase @event = submission.Accepted

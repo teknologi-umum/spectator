@@ -181,6 +181,12 @@ export interface TestResult {
          */
         compileError: TestResult_CompileError;
     } | {
+        oneofKind: "runtimeError";
+        /**
+         * @generated from protobuf field: session.TestResult.RuntimeError runtime_error = 5;
+         */
+        runtimeError: TestResult_RuntimeError;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -206,6 +212,15 @@ export interface TestResult_FailingTest {
  * @generated from protobuf message session.TestResult.CompileError
  */
 export interface TestResult_CompileError {
+    /**
+     * @generated from protobuf field: string stderr = 1;
+     */
+    stderr: string;
+}
+/**
+ * @generated from protobuf message session.TestResult.RuntimeError
+ */
+export interface TestResult_RuntimeError {
     /**
      * @generated from protobuf field: string stderr = 1;
      */
@@ -778,7 +793,8 @@ class TestResult$Type extends MessageType<TestResult> {
             { no: 1, name: "test_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 2, name: "passing_test", kind: "message", oneof: "result", T: () => TestResult_PassingTest },
             { no: 3, name: "failing_test", kind: "message", oneof: "result", T: () => TestResult_FailingTest },
-            { no: 4, name: "compile_error", kind: "message", oneof: "result", T: () => TestResult_CompileError }
+            { no: 4, name: "compile_error", kind: "message", oneof: "result", T: () => TestResult_CompileError },
+            { no: 5, name: "runtime_error", kind: "message", oneof: "result", T: () => TestResult_RuntimeError }
         ]);
     }
     create(value?: PartialMessage<TestResult>): TestResult {
@@ -814,6 +830,12 @@ class TestResult$Type extends MessageType<TestResult> {
                         compileError: TestResult_CompileError.internalBinaryRead(reader, reader.uint32(), options, (message.result as any).compileError)
                     };
                     break;
+                case /* session.TestResult.RuntimeError runtime_error */ 5:
+                    message.result = {
+                        oneofKind: "runtimeError",
+                        runtimeError: TestResult_RuntimeError.internalBinaryRead(reader, reader.uint32(), options, (message.result as any).runtimeError)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -838,6 +860,9 @@ class TestResult$Type extends MessageType<TestResult> {
         /* session.TestResult.CompileError compile_error = 4; */
         if (message.result.oneofKind === "compileError")
             TestResult_CompileError.internalBinaryWrite(message.result.compileError, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* session.TestResult.RuntimeError runtime_error = 5; */
+        if (message.result.oneofKind === "runtimeError")
+            TestResult_RuntimeError.internalBinaryWrite(message.result.runtimeError, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -975,6 +1000,53 @@ class TestResult_CompileError$Type extends MessageType<TestResult_CompileError> 
  * @generated MessageType for protobuf message session.TestResult.CompileError
  */
 export const TestResult_CompileError = new TestResult_CompileError$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TestResult_RuntimeError$Type extends MessageType<TestResult_RuntimeError> {
+    constructor() {
+        super("session.TestResult.RuntimeError", [
+            { no: 1, name: "stderr", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<TestResult_RuntimeError>): TestResult_RuntimeError {
+        const message = { stderr: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<TestResult_RuntimeError>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TestResult_RuntimeError): TestResult_RuntimeError {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string stderr */ 1:
+                    message.stderr = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: TestResult_RuntimeError, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string stderr = 1; */
+        if (message.stderr !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.stderr);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.TestResult.RuntimeError
+ */
+export const TestResult_RuntimeError = new TestResult_RuntimeError$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SubmissionResult$Type extends MessageType<SubmissionResult> {
     constructor() {

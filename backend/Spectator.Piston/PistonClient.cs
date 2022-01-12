@@ -63,7 +63,12 @@ namespace Spectator.Piston {
 				code: testCode,
 				cancellationToken: cancellationToken
 			);
-			if (executeResult.Run.Code != 0) return ImmutableArray.Create<TestResultBase>(new CompileErrorResult(executeResult.Run.Stderr));
+
+			if (executeResult.Compile.Code != 0) return ImmutableArray.Create<TestResultBase>(new CompileErrorResult(executeResult.Compile.Stderr));
+
+			// TODO: report runtime error together with passing and failing tests
+			if (executeResult.Run.Code != 0) return ImmutableArray.Create<TestResultBase>(new RuntimeErrorResult(executeResult.Run.Stderr));
+
 			return ResultParser.ParseTestResults(executeResult.Run.Stdout);
 		}
 

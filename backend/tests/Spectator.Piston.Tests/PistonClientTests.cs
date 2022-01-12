@@ -28,6 +28,8 @@ namespace Spectator.Piston.Tests {
 		public async Task CanExecuteCCodeAsync() {
 			var pistonClient = ServiceProvider.GetRequiredService<PistonClient>();
 
+			// Only wait piston API for 10 seconds to save github CI quota
+			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 			var executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
 				code: @"
@@ -37,7 +39,7 @@ namespace Spectator.Piston.Tests {
 						return 0;
 					}
 				",
-				cancellationToken: CancellationToken.None
+				cancellationToken: timeoutSource.Token
 			);
 
 			executeResult.Run.Code.Should().Be(0);
@@ -55,7 +57,7 @@ namespace Spectator.Piston.Tests {
 						return 0;
 					}
 				",
-				cancellationToken: CancellationToken.None
+				cancellationToken: timeoutSource.Token
 			);
 
 			executeResult.Run.Code.Should().Be(0);
@@ -72,7 +74,7 @@ namespace Spectator.Piston.Tests {
 						return 1;
 					}
 				",
-				cancellationToken: CancellationToken.None
+				cancellationToken: timeoutSource.Token
 			);
 
 			executeResult.Run.Code.Should().Be(1);
@@ -85,6 +87,8 @@ namespace Spectator.Piston.Tests {
 		public async Task CanReturnSyntaxErrorAsync() {
 			var pistonClient = ServiceProvider.GetRequiredService<PistonClient>();
 
+			// Only wait piston API for 5 seconds to save github CI quota
+			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 			var executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
 				code: @"
@@ -94,7 +98,7 @@ namespace Spectator.Piston.Tests {
 						return 0
 					}
 				",
-				cancellationToken: CancellationToken.None
+				cancellationToken: timeoutSource.Token
 			);
 
 			executeResult.Run.Code.Should().Be(127);

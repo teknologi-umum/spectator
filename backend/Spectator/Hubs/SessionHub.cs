@@ -133,7 +133,8 @@ namespace Spectator.Hubs {
 				questionNumber: submissionRequest.QuestionNumber,
 				language: (Language)submissionRequest.Language,
 				solution: submissionRequest.Solution,
-				scratchPad: submissionRequest.ScratchPad
+				scratchPad: submissionRequest.ScratchPad,
+				cancellationToken: Context.ConnectionAborted
 			);
 			return new SubmissionResult {
 				Accepted = submission.Accepted,
@@ -151,10 +152,16 @@ namespace Spectator.Hubs {
 								ActualStdout = failing.ActualStdout
 							}
 						},
-						CompileErrorResult error => new TestResult {
-							TestNumber = error.TestNumber,
+						CompileErrorResult compileError => new TestResult {
+							TestNumber = compileError.TestNumber,
 							CompileError = new TestResult.Types.CompileError {
-								Stderr = error.Stderr
+								Stderr = compileError.Stderr
+							}
+						},
+						RuntimeErrorResult runtimeError => new TestResult {
+							TestNumber = runtimeError.TestNumber,
+							RuntimeError = new TestResult.Types.RuntimeError {
+								Stderr = runtimeError.Stderr
 							}
 						},
 						_ => throw new InvalidProgramException("Unhandled TestResult type")

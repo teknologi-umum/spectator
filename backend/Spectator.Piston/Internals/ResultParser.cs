@@ -7,7 +7,7 @@ using Spectator.DomainModels.SubmissionDomain;
 namespace Spectator.Piston.Internals {
 	internal static class ResultParser {
 		public static ImmutableArray<TestResultBase> ParseTestResults(string stdout) {
-			var lines = stdout.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+			var lines = stdout.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			var testResults = new List<TestResultBase>();
 
 			for (var i = 0; i < lines.Length; i++) {
