@@ -2,7 +2,7 @@
 
 void printLyrics();
 
-{0}
+_REPLACE_ME_
 
 int main() {
     printLyrics();

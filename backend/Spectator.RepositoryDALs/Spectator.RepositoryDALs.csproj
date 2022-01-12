@@ -25,8 +25,32 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Imported\AssertionData\cpp\" />
+    <Folder Include="Imported\AssertionData\javascript\" />
+    <Folder Include="Imported\AssertionData\python\" />
     <Folder Include="Imported\FrontendData\en\" />
     <Folder Include="Imported\FrontendData\id\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\assertion\cpp\question1.cpp" Link="Imported\AssertionData\cpp\question1.cpp" />
+    <EmbeddedResource Include="..\..\assertion\cpp\question2.cpp" Link="Imported\AssertionData\cpp\question2.cpp" />
+    <EmbeddedResource Include="..\..\assertion\cpp\question3.cpp" Link="Imported\AssertionData\cpp\question3.cpp" />
+    <EmbeddedResource Include="..\..\assertion\cpp\question4.cpp" Link="Imported\AssertionData\cpp\question4.cpp" />
+    <EmbeddedResource Include="..\..\assertion\cpp\question5.cpp" Link="Imported\AssertionData\cpp\question5.cpp" />
+    <EmbeddedResource Include="..\..\assertion\cpp\question6.cpp" Link="Imported\AssertionData\cpp\question6.cpp" />
+    <EmbeddedResource Include="..\..\assertion\javascript\question1.js" Link="Imported\AssertionData\javascript\question1.js" />
+    <EmbeddedResource Include="..\..\assertion\javascript\question2.js" Link="Imported\AssertionData\javascript\question2.js" />
+    <EmbeddedResource Include="..\..\assertion\javascript\question3.js" Link="Imported\AssertionData\javascript\question3.js" />
+    <EmbeddedResource Include="..\..\assertion\javascript\question4.js" Link="Imported\AssertionData\javascript\question4.js" />
+    <EmbeddedResource Include="..\..\assertion\javascript\question5.js" Link="Imported\AssertionData\javascript\question5.js" />
+    <EmbeddedResource Include="..\..\assertion\javascript\question6.js" Link="Imported\AssertionData\javascript\question6.js" />
+    <EmbeddedResource Include="..\..\assertion\python\question1.py" Link="Imported\AssertionData\python\question1.py" />
+    <EmbeddedResource Include="..\..\assertion\python\question2.py" Link="Imported\AssertionData\python\question2.py" />
+    <EmbeddedResource Include="..\..\assertion\python\question3.py" Link="Imported\AssertionData\python\question3.py" />
+    <EmbeddedResource Include="..\..\assertion\python\question4.py" Link="Imported\AssertionData\python\question4.py" />
+    <EmbeddedResource Include="..\..\assertion\python\question5.py" Link="Imported\AssertionData\python\question5.py" />
+    <EmbeddedResource Include="..\..\assertion\python\question6.py" Link="Imported\AssertionData\python\question6.py" />
   </ItemGroup>
 
 </Project>

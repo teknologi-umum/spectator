@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Spectator.RepositoryDALs\Spectator.RepositoryDALs.csproj" />
+    <ProjectReference Include="..\..\Spectator.DomainModels\Spectator.DomainModels.csproj" />
   </ItemGroup>
 
 </Project>
