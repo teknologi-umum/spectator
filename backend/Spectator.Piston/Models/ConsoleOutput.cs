@@ -1,5 +1,5 @@
 ﻿namespace Spectator.Piston.Models {
-	public record RunResult(
+	public record ConsoleOutput(
 		string Stdout,
 		string Stderr,
 		string Output,

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
+using Spectator.DomainModels.SubmissionDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
 using Spectator.Primitives;
@@ -81,10 +82,10 @@ namespace Spectator.Hubs {
 					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = question.Title,
-						Instruction = question.Instruction,
+						Title = question.TitleByLocale[session.Locale],
+						Instruction = question.InstructionByLocale[session.Locale],
 						LanguageAndTemplates = {
-							from kvp in question.TemplateByLanguage
+							from kvp in question.TemplateByLanguageByLocale[session.Locale]
 							select new Question.Types.LanguageAndTemplate {
 								Language = (Protos.Enums.Language)kvp.Key,
 								Template = kvp.Value
@@ -108,10 +109,10 @@ namespace Spectator.Hubs {
 					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = question.Title,
-						Instruction = question.Instruction,
+						Title = question.TitleByLocale[session.Locale],
+						Instruction = question.InstructionByLocale[session.Locale],
 						LanguageAndTemplates = {
-							from kvp in question.TemplateByLanguage
+							from kvp in question.TemplateByLanguageByLocale[session.Locale]
 							select new Question.Types.LanguageAndTemplate {
 								Language = (Protos.Enums.Language)kvp.Key,
 								Template = kvp.Value
@@ -132,15 +133,38 @@ namespace Spectator.Hubs {
 				questionNumber: submissionRequest.QuestionNumber,
 				language: (Language)submissionRequest.Language,
 				solution: submissionRequest.Solution,
-				scratchPad: submissionRequest.ScratchPad
+				scratchPad: submissionRequest.ScratchPad,
+				cancellationToken: Context.ConnectionAborted
 			);
 			return new SubmissionResult {
 				Accepted = submission.Accepted,
 				TestResults = {
 					from testResult in submission.TestResults
-					select new SubmissionResult.Types.TestResult {
-						Success = testResult.Success,
-						Message = testResult.Message
+					select testResult switch {
+						PassingTestResult passing => new TestResult {
+							TestNumber = passing.TestNumber,
+							PassingTest = new TestResult.Types.PassingTest()
+						},
+						FailingTestResult failing => new TestResult {
+							TestNumber = failing.TestNumber,
+							FailingTest = new TestResult.Types.FailingTest {
+								ExpectedStdout = failing.ExpectedStdout,
+								ActualStdout = failing.ActualStdout
+							}
+						},
+						CompileErrorResult compileError => new TestResult {
+							TestNumber = compileError.TestNumber,
+							CompileError = new TestResult.Types.CompileError {
+								Stderr = compileError.Stderr
+							}
+						},
+						RuntimeErrorResult runtimeError => new TestResult {
+							TestNumber = runtimeError.TestNumber,
+							RuntimeError = new TestResult.Types.RuntimeError {
+								Stderr = runtimeError.Stderr
+							}
+						},
+						_ => throw new InvalidProgramException("Unhandled TestResult type")
 					}
 				}
 			};

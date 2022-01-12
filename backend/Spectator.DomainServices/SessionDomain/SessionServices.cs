@@ -121,7 +121,8 @@ namespace Spectator.DomainServices.SessionDomain {
 			};
 
 			// Get questions
-			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
+			var questionsByLocale = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(CancellationToken.None);
+			var questions = questionsByLocale[locale];
 
 			// Create event
 			var utcNow = DateTimeOffset.UtcNow;
@@ -157,7 +158,8 @@ namespace Spectator.DomainServices.SessionDomain {
 			};
 
 			// Get questions
-			var questions = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(locale, CancellationToken.None);
+			var questionsByLocale = await _serviceProvider.GetRequiredService<QuestionServices>().GetAllAsync(CancellationToken.None);
+			var questions = questionsByLocale[locale];
 
 			// Create event
 			var @event = new ExamIDEReloadedEvent(
@@ -178,12 +180,21 @@ namespace Spectator.DomainServices.SessionDomain {
 			);
 		}
 
-		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string solution, string scratchPad) {
+		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string solution, string scratchPad, CancellationToken cancellationToken) {
 			// Get store
-			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
+			var sessionStore = await GetSessionStoreAsync(sessionId, cancellationToken);
+
+			// Get locale from state
+			var locale = sessionStore.State switch {
+				AnonymousSession a => a.Locale,
+				RegisteredSession r => r.Locale,
+				_ => throw new InvalidProgramException("Unhandled session type")
+			};
 
 			// Execute solution in piston
-			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, language, solution, scratchPad);
+			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, locale, language, solution, scratchPad, cancellationToken);
+
+			// ----- NOTE: DO NOT USE cancellationToken BELOW THE FOLD!! -----
 
 			// Create event
 			SessionEventBase @event = submission.Accepted

@@ -124,7 +124,7 @@ namespace Spectator.DomainModels.SessionDomain {
 					Language: @event.Language,
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
-					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResult>>(@event.SerializedTestResults),
+					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults),
 					Accepted: true
 				))
 			};
@@ -147,7 +147,7 @@ namespace Spectator.DomainModels.SessionDomain {
 					Language: @event.Language,
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
-					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResult>>(@event.SerializedTestResults),
+					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults),
 					Accepted: false
 				))
 			};
