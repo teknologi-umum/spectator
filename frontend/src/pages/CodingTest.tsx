@@ -24,7 +24,6 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
-import { useTranslation } from "react-i18next";
 
 function CodingTest() {
   const { currentQuestion } = useAppSelector<QuestionState>(
@@ -34,15 +33,13 @@ function CodingTest() {
   const connection = useSignalR("fake_hub_url");
 
   useEventListener("mousedown", mouseClickHandler(connection, currentQuestion));
-  // useEventListener("mousemove", mouseMoveHandler(connection, currentQuestion));
+  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestion));
   useEventListener("keydown", keystrokeHandler(connection, currentQuestion));
 
   useEventListener("scroll", scrollHandler(connection, currentQuestion));
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
-
-  const { t } = useTranslation()
 
   const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");

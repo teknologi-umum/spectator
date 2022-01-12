@@ -44,7 +44,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
 
   // memoized the question
   const boilerplate = useMemo(() => {
-    return t(`questions.${questions[currentQuestion].id - 1}.templates.${currentLanguage}`)
+    return t(`ns2.questions.${questions[currentQuestion].id - 1}.templates.${currentLanguage}`);
   }, [currentQuestion, currentLanguage]);
 
   const [code, setCode] = useState("");

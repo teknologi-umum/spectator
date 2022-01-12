@@ -213,7 +213,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             h="full"
             _hover={{
               bg: "gray.800",
-              borderColor: "white",
+              borderColor: "white"
             }}
             onClick={() => {
               // TODO(elianiva): only allow to continue when they have the correct answer

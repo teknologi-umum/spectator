@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Button,
   Flex,
   Heading,
   ListItem,
@@ -20,7 +19,7 @@ import { useAppSelector } from "@/store";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 import { useColorModeValue } from "@/hooks";
 import { UIEventHandler } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 interface QuestionProps {
   bg: string;
@@ -36,7 +35,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
     (state) => state.question
   );
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Flex
@@ -60,7 +59,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
           <TabPanel p="2" h="full">
             <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
               <Heading size="lg" color={fg}>
-                  {t(`questions.${questions[currentQuestion].id - 1}.title`)}
+                {t(`ns2.questions.${questions[currentQuestion].id - 1}.title`)}
               </Heading>
               <ReactMarkdown
                 components={{
@@ -89,7 +88,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
                   )
                 }}
               >
-                {t(`questions.${questions[currentQuestion].id - 1}.question`)}
+                {t(`ns2.questions.${questions[currentQuestion].id - 1}.question`)}
               </ReactMarkdown>
             </Box>
           </TabPanel>

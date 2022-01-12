@@ -70,7 +70,7 @@ function SAMTest() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -114,10 +114,10 @@ function SAMTest() {
               <Fade in={currentPage === 0}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    {t("translations.sam_test.aroused_title")}
+                    {t("ns1.translations.sam_test.aroused_title")}
                   </Text>
                   <Text color={fgDarker} fontSize="lg" mb="4">
-                    {t("translations.sam_test.aroused_body")}
+                    {t("ns1.translations.sam_test.aroused_body")}
                   </Text>
                   <Box color={fgDarker}>
                     {getResponseOptions(
@@ -134,10 +134,10 @@ function SAMTest() {
               <Fade in={currentPage === 1}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    {t("translations.sam_test.pleasure_title")}
+                    {t("ns1.translations.sam_test.pleasure_title")}
                   </Text>
                   <Text color={fgDarker} fontSize="lg">
-                    {t("translations.sam_test.pleasure_body")}
+                    {t("ns1.translations.sam_test.pleasure_body")}
                   </Text>
                   <Box color={fgDarker}>
                     {getResponseOptions(
@@ -158,10 +158,10 @@ function SAMTest() {
                     variant="outline"
                     onClick={() => goto("prev")}
                   >
-                    {t("translations.ui.previous")}
+                    {t("ns1.translations.ui.previous")}
                   </Button>
                   <Button colorScheme="blue" variant="solid" onClick={onOpen}>
-                    {t("translations.ui.finish")}
+                    {t("ns1.translations.ui.finish")}
                   </Button>
                 </>
               ) : (
@@ -170,7 +170,7 @@ function SAMTest() {
                   variant="solid"
                   onClick={() => goto("next")}
                 >
-                  {t("translations.ui.next")}
+                  {t("ns1.translations.ui.next")}
                 </Button>
               )}
             </Flex>
@@ -180,11 +180,11 @@ function SAMTest() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
-          <ModalHeader fontSize="2xl">{t("translations.confirmation.title")}</ModalHeader>
+          <ModalHeader fontSize="2xl">{t("ns1.translations.confirmation.title")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
-              {t("translations.confirmation.body")}
+              {t("ns1.translations.confirmation.body")}
             </Text>
           </ModalBody>
 
@@ -195,7 +195,7 @@ function SAMTest() {
               mr={3}
               onClick={onClose}
             >
-              {t("translations.ui.cancel")}
+              {t("ns1.translations.ui.cancel")}
             </Button>
             <Button
               colorScheme="blue"
@@ -205,7 +205,7 @@ function SAMTest() {
                 navigate("/coding-test");
               }}
             >
-              {t("translations.ui.confirm")}
+              {t("ns1.translations.ui.confirm")}
             </Button>
           </ModalFooter>
         </ModalContent>
