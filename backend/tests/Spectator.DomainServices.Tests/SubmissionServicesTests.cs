@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEBUG
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -226,3 +227,4 @@ namespace Spectator.DomainServices.Tests {
 		}
 	}
 }
+#endif
