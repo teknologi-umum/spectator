@@ -81,8 +81,6 @@ func TestReadLog(t *testing.T) {
 	if len(resp.GetData()) != 4 {
 		t.Errorf("expected 4 logs, got %d", len(resp.GetData()))
 	}
-
-	t.Log(resp.GetData())
 }
 
 func TestReadLog_Empty(t *testing.T) {
@@ -170,9 +168,6 @@ func TestReadLog_Query(t *testing.T) {
 	)
 	if err != nil {
 		t.Errorf("an error was thrown: %v", err)
-	}
-	for i, data := range resp.GetData() {
-		t.Logf("Message index: %d: %s\n", i, data.String())
 	}
 
 	if len(resp.GetData()) != 2 {

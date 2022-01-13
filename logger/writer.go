@@ -37,7 +37,11 @@ func (d *Dependency) ValidatePayload(p *pb.LogRequest) error {
 		return nil
 	}
 
-	return fmt.Errorf("proper %s must be provided", strings.Join(missing, ", "))
+	if len(missing) > 0 {
+		return fmt.Errorf("proper %s must be provided", strings.Join(missing, ", "))
+	}
+
+	return nil
 }
 
 func (d *Dependency) CreateLog(ctx context.Context, r *pb.LogRequest) (*pb.EmptyResponse, error) {
@@ -63,7 +67,7 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 		}
 	}()
 
-	writeAPI := d.DB.WriteAPI(d.Org, "log")
+	writeAPI := d.DB.WriteAPIBlocking(d.Org, "log")
 
 	// write defaults first
 	if payload.Environment == "" {
@@ -99,8 +103,9 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 		payload.Timestamp,
 	)
 
-	writeAPI.WritePoint(point)
-
-	writeAPI.Flush()
+	err = writeAPI.WritePoint(ctx, point)
+	if err != nil {
+		return fmt.Errorf("writing point: %v", err)
+	}
 	return nil
 }

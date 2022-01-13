@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"encoding/csv"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log"
 	pb "logger/proto"
 	"strconv"
 	"strings"
@@ -72,33 +72,27 @@ func buildQuery(q queries) string {
 	str.WriteString(")\n")
 
 	str.WriteString("|> sort(columns: [\"_time\"])\n")
-	if q.RequestID == "" {
-		str.WriteString("|> group(columns: [\"request_id\"])\n")
-	}
-	thereIsDataToBeFiltered := q.Level != "" || q.Application != "" || q.RequestID != ""
-	if thereIsDataToBeFiltered {
-		str.WriteString(`|> filter(fn: (r) => `)
-	}
 
-	var filtered []string
+	if q.RequestID == "" {
+		str.WriteString("|> group(columns: [\"request_id\", \"_time\"])\n")
+	} else {
+		str.WriteString("|> group(columns: [\"_time\"])\n")
+	}
 
 	if q.Level != "" {
-		filtered = append(filtered, `r["_measurement"] == "`+q.Level+`"`)
+		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "`+q.Level+`")`+"\n")
 	}
 
 	if q.Application != "" {
-		filtered = append(filtered, `r["application"] == "`+q.Application+`"`)
+		str.WriteString(`|> filter(fn: (r) => r["application"] == "`+q.Application+`")`+"\n")
 	}
 
 	if q.RequestID != "" {
-		filtered = append(filtered, `r["request_id"] == "`+q.RequestID+`"`)
+		str.WriteString(`|> filter(fn: (r) => r["request_id"] == "`+q.RequestID+`")`+"\n")
 	}
 
-	str.WriteString(strings.Join(filtered, " and "))
+	str.WriteString("|> yield()\n")
 
-	if thereIsDataToBeFiltered {
-		str.WriteString(")\n")
-	}
 	return str.String()
 }
 
@@ -106,100 +100,92 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 	queryAPI := d.DB.QueryAPI(d.Org)
 	// build query for influx
 	queryStr := buildQuery(query)
+	if d.Debug {
+		log.Println(queryStr)
+	}
 
-	// TODO: dipisah ini jadi yang proper based on POC kemaren
 	rows, err := queryAPI.Query(ctx, queryStr)
 	if err != nil {
 		return []LogData{}, fmt.Errorf("querying data: %v", err)
 	}
-
 	defer rows.Close()
-
+	
 	var output []LogData
 	var temp LogData
-	var lastTableIndex int = -1
+	var tablePosition int64
 	for rows.Next() {
-		// TODO: ngga perlu pake custom marshaller
-		unmarshaledRow, err := unmarshalInfluxRow(rows.Record().String())
-		if err != nil {
-			return []LogData{}, err
-		}
-
-		tableStr, ok := unmarshaledRow["table"].(string)
+		record := rows.Record()
+		table, ok := rows.Record().ValueByKey("table").(int64)
 		if !ok {
-			continue
+			table = 0
+		}
+		switch record.Field() {
+		case "body":
+			bodyJSON, ok := record.Value().(string)
+			if !ok {
+				bodyJSON = ""
+			}
+			bodyBytes, err := hex.DecodeString(bodyJSON)
+			if err != nil {
+				return []LogData{}, fmt.Errorf("decoding string: %v", err)
+			}
+			body := make(map[string]string, 100)
+			err = json.Unmarshal(bodyBytes, &body)
+			if err != nil {
+				return []LogData{}, fmt.Errorf("unmarshaling json: %v", err)
+			}
+			temp.Body = body
+		case "language":
+			temp.Language, ok = record.Value().(string)
+			if !ok {
+				temp.Language = ""
+			}
+		case "message":
+			value, ok := record.Value().(string)
+			if !ok {
+				value = ""
+			}
+			messageBytes, err := hex.DecodeString(value)
+			if err != nil {
+				return []LogData{}, fmt.Errorf("decoding string: %v", err)
+			}
+			temp.Message = string(messageBytes)
 		}
 
-		table, err := strconv.Atoi(tableStr)
-		if err != nil {
-			return []LogData{}, err
+		if d.Debug {
+			log.Println(rows.Record().String())
+			log.Printf("table %d\n", rows.Record().Table())
 		}
-		if table == lastTableIndex {
-			switch unmarshaledRow["_field"].(string) {
-			// FIXME: body is not detected, might as well find another way
-			// to parse the current rows/record.
-			case "body":
-				bodyJSON := unmarshaledRow["_value"].(string)
-				bodyBytes, err := hex.DecodeString(bodyJSON)
-				if err != nil {
-					return []LogData{}, fmt.Errorf("decoding string: %v", err)
-				}
-				body := make(map[string]string, 100)
-				err = json.Unmarshal(bodyBytes, &body)
-				if err != nil {
-					return []LogData{}, fmt.Errorf("unmarshaling json: %v", err)
-				}
-				temp.Body = body
-			case "language":
-				temp.Language = unmarshaledRow["_value"].(string)
-			case "message":
-				messageBytes, err := hex.DecodeString(unmarshaledRow["_value"].(string))
-				if err != nil {
-					return []LogData{}, fmt.Errorf("decoding string: %v", err)
-				}
-				temp.Message = string(messageBytes)
-			}
+
+		if table != 0 && table > tablePosition {
+			output = append(output, temp)
+			tablePosition = table
 		} else {
-			// clear the last temp, but check if its less than zero
-			if lastTableIndex >= 0 {
-				output = append(output, temp)
+			var ok bool
+
+			temp.Application, ok = record.ValueByKey("application").(string)
+			if !ok {
+				temp.Application = ""
 			}
-			// create a new one
-			temp.Application = unmarshaledRow["application"].(string)
-			temp.Environment = unmarshaledRow["environment"].(string)
-			temp.Level = unmarshaledRow["_measurement"].(string)
-			temp.RequestID = unmarshaledRow["request_id"].(string)
-			temp.Timestamp = rows.Record().Time()
-			lastTableIndex = table
+
+			temp.Environment, ok = record.ValueByKey("environment").(string)
+			if !ok {
+				temp.Environment = ""
+			}
+
+			temp.Level = record.Measurement()
+
+			temp.RequestID, ok = record.ValueByKey("request_id").(string)
+			if !ok {
+				temp.RequestID = ""
+			}
+
+			temp.Timestamp = record.Time()
 		}
 	}
 	// append the last temp, if the output length is more than zero
 	if len(output) > 0 || temp.RequestID != "" {
 		output = append(output, temp)
-	}
-
-	return output, nil
-}
-
-func unmarshalInfluxRow(row string) (map[string]interface{}, error) {
-	// because csv.NewReader() accepts io.Reader, we'll create one from strings pkg
-	input := strings.NewReader(row)
-	reader := csv.NewReader(input)
-	reader.LazyQuotes = true
-	reader.TrimLeadingSpace = true
-	records, err := reader.Read()
-	if err != nil {
-		return map[string]interface{}{}, fmt.Errorf("reading row value to csv: %v", err)
-	}
-
-	// find records length
-	// because it's a jagged array, we'll do a nested one
-	var recordsLength = len(records)
-
-	output := make(map[string]interface{}, recordsLength)
-	for _, rec := range records {
-		kv := strings.Split(rec, ":")
-		output[kv[0]] = kv[1]
 	}
 
 	return output, nil

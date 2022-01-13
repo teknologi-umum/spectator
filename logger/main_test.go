@@ -70,7 +70,6 @@ func TestMain(m *testing.M) {
 	}
 
 	db = influxdb2.NewClient(influxURL, influxToken)
-	defer db.Close()
 
 	deps := &logger.Dependency{
 		DB:          db,
@@ -79,7 +78,6 @@ func TestMain(m *testing.M) {
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
 
 	err = deps.PrepareBucket(ctx)
 	if err != nil {
@@ -94,8 +92,12 @@ func TestMain(m *testing.M) {
 			log.Fatalf("Server exited with error: %v", err)
 		}
 	}()
-
-	os.Exit(m.Run())
+	
+	code := m.Run()
+	cleanup()
+	db.Close()
+	cancel()
+	os.Exit(code)
 }
 
 func cleanup() {

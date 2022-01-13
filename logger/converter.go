@@ -6,6 +6,14 @@ import (
 )
 
 func (*Dependency) convertIntoLogData(d *pb.LogData) LogData {
+	var timestamp time.Time
+
+	if d.GetTimestamp() == 0 {
+		timestamp = time.Time{}
+	} else {
+		timestamp = time.Unix(0, d.GetTimestamp()*int64(time.Millisecond))
+	}
+
 	return LogData{
 		RequestID:   d.GetRequestId(),
 		Application: d.GetApplication(),
@@ -14,7 +22,7 @@ func (*Dependency) convertIntoLogData(d *pb.LogData) LogData {
 		Level:       d.GetLevel().String(),
 		Environment: d.GetEnvironment().String(),
 		Language:    d.GetLanguage(),
-		Timestamp:   time.UnixMilli(d.GetTimestamp()),
+		Timestamp:   timestamp,
 	}
 
 }

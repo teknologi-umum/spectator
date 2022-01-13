@@ -18,6 +18,7 @@ import (
 
 type Dependency struct {
 	DB          influxdb2.Client
+	Debug bool
 	Org         string
 	AccessToken string
 	pb.UnimplementedLoggerServer
@@ -72,6 +73,7 @@ func main() {
 		DB:          db,
 		Org:         influxOrganization,
 		AccessToken: accessToken,
+		Debug: os.Getenv("ENVIRONMENT") == "development",
 	}
 
 	// Prepare the log bucket
