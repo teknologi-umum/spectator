@@ -107,7 +107,6 @@ func TestReadLog_Empty(t *testing.T) {
 }
 
 func TestReadLog_Query(t *testing.T) {
-	t.Skip("need to fix something up on the reader.go")
 	t.Cleanup(cleanup)
 
 	payload := []*pb.LogData{
