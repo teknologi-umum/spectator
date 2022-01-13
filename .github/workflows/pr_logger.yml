@@ -18,8 +18,8 @@ jobs:
           DOCKER_INFLUXDB_INIT_USERNAME: root
           DOCKER_INFLUXDB_INIT_PASSWORD: password
           DOCKER_INFLUXDB_INIT_ORG: teknologi
-          DOCKER_INFLUXDB_INIT_BUCKET: public
-          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
+          DOCKER_INFLUXDB_INIT_BUCKET: log
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
         ports:
           - 8086:8086
     defaults:
@@ -39,4 +39,4 @@ jobs:
           ACCESS_TOKEN: testing
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
-          INFLUX_TOKEN: testing
+          INFLUX_TOKEN: iKPpruHfaXygrwSV
