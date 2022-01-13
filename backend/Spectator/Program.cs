@@ -27,6 +27,7 @@ builder.Configuration
 builder.Services.Setup(services => {
 	// Configure options
 	services.Configure<InfluxDbOptions>(builder.Configuration.GetSection("InfluxDbOptions"));
+	services.Configure<PistonOptions>(builder.Configuration.GetSection("PistonOptions"));
 
 	// Add application layers
 	services.AddHttpClient();
@@ -79,6 +80,7 @@ app.UseAuthorization();
 app.UseCors("AllowAll");
 
 // Map Frontend static files
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // Map Controllers
@@ -90,7 +92,7 @@ app.UseEndpoints(endpoints => {
 });
 
 // Map SignalR Hubs
-app.MapHub<SessionHub>("/session");
+app.MapHub<SessionHub>("/hubs/session");
 
 // Run app
 app.Run();

@@ -7,7 +7,7 @@
 
 std::string mumble(std::string input);
 
-{0}
+_REPLACE_ME_
 
 std::string __workingAnswer(std::string input) {
     std::vector<std::string> words;

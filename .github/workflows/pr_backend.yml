@@ -1,0 +1,25 @@
+name: Check
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.100
+      - name: Restore dependencies
+        run: dotnet restore Spectator.sln
+      - name: Build
+        run: dotnet build --no-restore Spectator.sln
+      - name: Test
+        run: dotnet test --no-build --verbosity normal Spectator.sln /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov

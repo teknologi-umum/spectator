@@ -9,7 +9,10 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Spectator.DomainModels.SubmissionDomain;
+using Spectator.Piston.Internals;
 using Spectator.Piston.Models;
+using Spectator.Primitives;
 
 namespace Spectator.Piston {
 	public class PistonClient {
@@ -18,7 +21,8 @@ namespace Spectator.Piston {
 
 		private readonly HttpClient _httpClient;
 		private readonly PistonOptions _pistonOptions;
-		private readonly string _baseUrl;
+		private readonly string _runtimesUrl;
+		private readonly string _executeUrl;
 		private readonly JsonSerializerOptions _jsonSerializerOptions;
 
 		public PistonClient(
@@ -26,7 +30,8 @@ namespace Spectator.Piston {
 			IOptions<PistonOptions> pistonOptionsAccessor
 		) {
 			_pistonOptions = pistonOptionsAccessor.Value;
-			_baseUrl = _pistonOptions.BaseUrl ?? throw new InvalidOperationException("Piston BaseUrl not configured. Please add a .NET secret with key 'PistonOptions:BaseUrl' or a Docker secret with key 'PistonOptions__BaseUrl'");
+			_runtimesUrl = _pistonOptions.RuntimesUrl;
+			_executeUrl = _pistonOptions.ExecuteUrl;
 			_semaphore ??= new SemaphoreSlim(_pistonOptions.MaxConcurrentExecutions, _pistonOptions.MaxConcurrentExecutions);
 			_httpClient = httpClient;
 			_jsonSerializerOptions = new JsonSerializerOptions {
@@ -36,7 +41,7 @@ namespace Spectator.Piston {
 
 		private async Task<RuntimeResult?> GetRuntimeAsync(string language, CancellationToken cancellationToken) {
 			if (_runtimes is null) {
-				_runtimes = await _httpClient.GetFromJsonAsync<ImmutableList<RuntimeResult>>($"{_baseUrl}api/v2/runtimes", cancellationToken);
+				_runtimes = await _httpClient.GetFromJsonAsync<ImmutableList<RuntimeResult>>(_runtimesUrl, cancellationToken);
 			}
 			return _runtimes!
 				.Where(runtime => runtime.Language == language)
@@ -44,12 +49,35 @@ namespace Spectator.Piston {
 				.FirstOrDefault();
 		}
 
-		public async Task<ExecuteResult> ExecuteAsync(string language, string code, CancellationToken cancellationToken) {
+		public async Task<ImmutableArray<TestResultBase>> ExecuteTestsAsync(Language language, string testCode, CancellationToken cancellationToken) {
+			var executeResult = await ExecuteAsync(
+				language: language switch {
+					Language.C => "c",
+					Language.CPP => "c++",
+					Language.PHP => "php",
+					Language.Javascript => "javascript",
+					Language.Java => "java",
+					Language.Python => "python",
+					_ => throw new InvalidProgramException("Unhandled language")
+				},
+				code: testCode,
+				cancellationToken: cancellationToken
+			);
+
+			if (executeResult.Compile.Code != 0) return ImmutableArray.Create<TestResultBase>(new CompileErrorResult(executeResult.Compile.Stderr));
+
+			// TODO: report runtime error together with passing and failing tests
+			if (executeResult.Run.Code != 0) return ImmutableArray.Create<TestResultBase>(new RuntimeErrorResult(executeResult.Run.Stderr));
+
+			return ResultParser.ParseTestResults(executeResult.Run.Stdout);
+		}
+
+		internal async Task<ExecuteResult> ExecuteAsync(string language, string code, CancellationToken cancellationToken) {
 			await _semaphore!.WaitAsync(cancellationToken);
 			try {
 				var runtime = await GetRuntimeAsync(language, cancellationToken) ?? throw new KeyNotFoundException($"Runtime for {language} not found.");
 				using var response = await _httpClient.PostAsJsonAsync(
-					requestUri: $"{_baseUrl}api/v2/execute",
+					requestUri: _executeUrl,
 					value: new ExecutePayload(
 						Language: language,
 						Version: runtime.Version,
