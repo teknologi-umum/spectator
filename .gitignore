@@ -4,3 +4,13 @@ bin
 obj
 wranggler/docker-compose.yml
 wranggler/data
+wranggler/_keystroke.csv
+wranggler/_keystroke.json
+wranggler/_mouse_click.csv
+wranggler/_mouse_click.json
+wranggler/_mouse_move.csv
+wranggler/_mouse_move.json
+wranggler/_personal.csv
+wranggler/_personal.json
+wranggler/_sam_test.csv
+wranggler/_sam_test.json

@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 
+	"github.com/gocarina/gocsv"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 
 	pb "worker/proto"
@@ -394,28 +395,27 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	}
 
 	keystrokeJSON, _ := ConvertDataToJSON(outputKeystroke)
-	keystrokeCSV, _ := ConvertDataToCSV(outputKeystroke)
-	mousmoveCSV, _ := ConvertDataToCSV(outputMouseMove)
+	keystrokeCSV, _ := gocsv.MarshalString(outputKeystroke)
+	mousmoveCSV, _ := gocsv.MarshalString(outputMouseMove)
 	mousmoveJSON, _ := ConvertDataToJSON(outputMouseMove)
-	mousclickCSV, _ := ConvertDataToCSV(outputMouseClick)
+	mousclickCSV, _ := gocsv.MarshalString(outputMouseClick)
 	mousclickJSON, _ := ConvertDataToJSON(outputMouseClick)
-	personalCSV, _ := ConvertDataToCSV(outputPersonalInfo)
+	personalCSV, _ := gocsv.MarshalString(outputPersonalInfo)
 	personalJSON, _ := ConvertDataToJSON(outputPersonalInfo)
-	samtestCSV, err := ConvertDataToCSV(outputSamTest)
-	fmt.Println(err)
+	samtestCSV, _ := gocsv.MarshalString(outputSamTest)
 	samtestJSON, _ := ConvertDataToJSON(outputSamTest)
 
 	studentNumber := tempPersonalInfo.StudentNumber
 
-	mkFileAndUpload(keystrokeCSV, studentNumber+"_keystroke.csv", d.Bucket)
+	mkFileAndUpload([]byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
 	mkFileAndUpload(keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
-	mkFileAndUpload(mousclickCSV, studentNumber+"_mouse_click.csv", d.Bucket)
+	mkFileAndUpload([]byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
 	mkFileAndUpload(mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
-	mkFileAndUpload(mousmoveCSV, studentNumber+"_mouse_move.csv", d.Bucket)
+	mkFileAndUpload([]byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
 	mkFileAndUpload(mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
-	mkFileAndUpload(personalCSV, studentNumber+"_personal.csv", d.Bucket)
+	mkFileAndUpload([]byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
 	mkFileAndUpload(personalJSON, studentNumber+"_personal.json", d.Bucket)
-	mkFileAndUpload(samtestCSV, studentNumber+"_sam_test.csv", d.Bucket)
+	mkFileAndUpload([]byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
 	mkFileAndUpload(samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
 
 	// TODO
