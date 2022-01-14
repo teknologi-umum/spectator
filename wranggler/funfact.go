@@ -76,19 +76,14 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	defer rows.Close()
 
 	for rows.Next() {
-		fmt.Println(cRows)
 		cRows += 1
 	}
 
 	if cRows != 0 {
-		var wpmTotal, keyTotal = 1, 1
-		for rows.Next() {
-			keytotal := cRows
-			wpmTotal += int(keytotal) / (5)
-			keyTotal += 1
-		}
 
-		result <- uint32(wpmTotal / keyTotal)
+		result <- uint32((cRows / 5))
+	} else {
+		result <- uint32(cRows)
 	}
 
 	// Cara calculate WPM:
@@ -102,7 +97,6 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	// terus return ke channel hasil average dari semua menit yang ada
 
 	// Return the result here
-	result <- uint32(cRows)
 	return nil
 }
 
@@ -134,9 +128,9 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	if rows.Record() == nil {
 		result <- 0
 		//return errors.New("submission attempt result not found")
-		return nil
+	} else {
+		result <- uint32(rows.Record().Value().(int64))
 	}
-	result <- uint32(rows.Record().Value().(int64))
 
 	return nil
 }
