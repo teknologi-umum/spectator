@@ -60,6 +60,7 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 
 func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan uint32) error {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
+	cRows := 0
 
 	rows, err := queryAPI.Query(
 		ctx,
@@ -67,26 +68,27 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> aggregateWindow(
-				every: -1d,
-				fn: (tables=<-, column) => tables |> count()
-			)
-		|> yield(name: "count")`,
+		|> filter(fn: (r) => r["_field"] == "key_char" and r["_value"] != "")`,
 	)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	if rows.Record() == nil {
-		return errors.New("word result not found")
+	for rows.Next() {
+		fmt.Println(cRows)
+		cRows += 1
 	}
 
-	var wpmTotal, keyTotal = 0, 0
-	for rows.Next() {
-		keytotal := rows.Record().Value().(int64)
-		wpmTotal += int(keytotal) / (5 * 60 * 24)
-		keyTotal += 1
+	if cRows != 0 {
+		var wpmTotal, keyTotal = 1, 1
+		for rows.Next() {
+			keytotal := cRows
+			wpmTotal += int(keytotal) / (5)
+			keyTotal += 1
+		}
+
+		result <- uint32(wpmTotal / keyTotal)
 	}
 
 	// Cara calculate WPM:
@@ -100,7 +102,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	// terus return ke channel hasil average dari semua menit yang ada
 
 	// Return the result here
-	result <- uint32(wpmTotal / keyTotal)
+	result <- uint32(cRows)
 	return nil
 }
 
@@ -140,8 +142,8 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 }
 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float32) error {
-	var deletionTotal int64
-	var totalKeystrokes int64
+	var deletionTotal int64 = 0
+	var totalKeystrokes int64 = 0
 	var ok bool
 
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)

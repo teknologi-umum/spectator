@@ -92,7 +92,7 @@ func (_ SamTest) Anu() {}
 
 // GenerateFile is the handler for generating file into CSV and JSON based on
 // the input data (which only contains the Session ID).
-func (d *Dependency) GenerateFile(ctx context.Context, in *pb.Member) (*pb.EmptyResponse, error) {
+func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.EmptyResponse, error) {
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
 		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
@@ -401,7 +401,8 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	mousclickJSON, _ := ConvertDataToJSON(outputMouseClick)
 	personalCSV, _ := ConvertDataToCSV(outputPersonalInfo)
 	personalJSON, _ := ConvertDataToJSON(outputPersonalInfo)
-	samtestCSV, _ := ConvertDataToCSV(outputSamTest)
+	samtestCSV, err := ConvertDataToCSV(outputSamTest)
+	fmt.Println(err)
 	samtestJSON, _ := ConvertDataToJSON(outputSamTest)
 
 	studentNumber := tempPersonalInfo.StudentNumber
