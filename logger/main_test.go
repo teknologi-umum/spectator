@@ -4,16 +4,28 @@ import (
 	"context"
 	"log"
 	logger "logger"
+	pb "logger/proto"
+	"net"
 	"os"
 	"testing"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 var db influxdb2.Client
 var influxOrg string
 var accessToken string
+
+const bufSize = 1024 * 1024
+
+var lis *bufconn.Listener
+
+func bufDialer(context.Context, string) (net.Conn, error) {
+	return lis.Dial()
+}
 
 func TestMain(m *testing.M) {
 	influxURL, ok := os.LookupEnv("INFLUX_URL")
@@ -27,7 +39,7 @@ func TestMain(m *testing.M) {
 
 	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
 	if !ok {
-		influxToken = "H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH"
+		influxToken = "nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd"
 		err := os.Setenv("INFLUX_TOKEN", influxToken)
 		if err != nil {
 			log.Fatalf("error setting INFLUX_TOKEN environment variable: %v", err)
@@ -58,23 +70,34 @@ func TestMain(m *testing.M) {
 	}
 
 	db = influxdb2.NewClient(influxURL, influxToken)
-	defer db.Close()
 
-	deps := logger.Dependency{
+	deps := &logger.Dependency{
 		DB:          db,
 		Org:         influxOrg,
 		AccessToken: accessToken,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
 
 	err = deps.PrepareBucket(ctx)
 	if err != nil {
 		log.Fatalf("failed preparing bucket: %v", err)
 	}
 
-	os.Exit(m.Run())
+	lis = bufconn.Listen(bufSize)
+	s := grpc.NewServer()
+	pb.RegisterLoggerServer(s, deps)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("Server exited with error: %v", err)
+		}
+	}()
+	
+	code := m.Run()
+	cleanup()
+	db.Close()
+	cancel()
+	os.Exit(code)
 }
 
 func cleanup() {
@@ -96,8 +119,12 @@ func cleanup() {
 
 	// delete bucket data
 	deleteAPI := db.DeleteAPI()
-	err = deleteAPI.Delete(ctx, currentOrganization, currentBucket, time.UnixMilli(0), time.Now(), "")
-	if err != nil {
-		log.Fatalf("deleting bucket data: %v", err)
+
+	measurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	for _, measurement := range measurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, currentBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+		}
 	}
 }
