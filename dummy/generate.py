@@ -51,30 +51,29 @@ def main():
         additional_duration: timedelta = timedelta(minutes=random.randint(20, (20 + date_range)))
         date_ends: datetime = datetime.fromtimestamp(date_start_int + additional_duration.total_seconds())
 
-        for _ in range(1..number_of_data):
-            for _ in range(random.randint(200, 500)):
-                # Generate random number between 1 to 3
-                rand = random.randint(1, 4)
-                if rand == 1:
-                    # Generate a keystroke event
-                    event = generate_event_keystroke(current_session, date_start, date_ends)
-                    current_events.append(event)
-                    continue
-                elif rand == 2:
-                    # Generate a mouse move event
-                    event = generate_event_mousemove(current_session, date_start, date_ends)
-                    current_events.append(event)
-                    continue
-                elif rand == 3:
-                    # Generate a window resize event
-                    event = generate_event_window_sized(current_session, date_start, date_ends)
-                    current_events.append(event)
-                    continue
-                else:
-                    # Generate a mouse click event
-                    event = generate_event_mouseclick(current_session, date_start, date_ends)
-                    current_events.append(event)
-                    continue
+        for _ in range(random.randint(420 * number_of_data, 666 * number_of_data)):
+            # Generate random number between 1 to 3
+            rand = random.randint(1, 4)
+            if rand == 1:
+                # Generate a keystroke event
+                event = generate_event_keystroke(current_session, date_start, date_ends)
+                current_events.append(event)
+                continue
+            elif rand == 2:
+                # Generate a mouse move event
+                event = generate_event_mousemove(current_session, date_start, date_ends)
+                current_events.append(event)
+                continue
+            elif rand == 3:
+                # Generate a window resize event
+                event = generate_event_window_sized(current_session, date_start, date_ends)
+                current_events.append(event)
+                continue
+            else:
+                # Generate a mouse click event
+                event = generate_event_mouseclick(current_session, date_start, date_ends)
+                current_events.append(event)
+                continue
 
         # Add the current events to the list of events
         events.extend(current_events)
