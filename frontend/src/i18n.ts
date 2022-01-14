@@ -2,10 +2,10 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 
-import enTranslation from "../src/data/en/translations.json";
-import idTranslation from "../src/data/id/translations.json";
-
+import enTranslation from "./data/en/translations.json";
 import enQuestion from "./data/en/questions.json";
+
+import idTranslation from "./data/id/translations.json";
 import idQuestion from "./data/id/questions.json";
 
 i18n
