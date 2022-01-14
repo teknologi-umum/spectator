@@ -29,7 +29,7 @@ def main():
 
     # begini bukan
     number_of_data = 5
-    date_range = 2
+    date_range = 4
 
     for _ in range(5):
         user = generate_user()
@@ -48,7 +48,7 @@ def main():
         # Generate 2 random dates that are close to each other
         date_start_int: int = random_date(datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59))
         date_start: datetime = datetime.fromtimestamp(date_start_int)
-        additional_duration: timedelta = timedelta(minutes=random.randint(20, (20 + date_range)))
+        additional_duration: timedelta = timedelta(minutes=random.randint(4, (4 + date_range)))
         date_ends: datetime = datetime.fromtimestamp(date_start_int + additional_duration.total_seconds())
 
         for _ in range(random.randint(420 * number_of_data, 666 * number_of_data)):
