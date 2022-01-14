@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Spectator.DomainModels\Spectator.DomainModels.csproj" />
+  </ItemGroup>
+
 </Project>

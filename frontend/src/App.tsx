@@ -4,7 +4,7 @@ import PersonalInfo from "@/pages/PersonalInfo";
 import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
 import CodingTest from "@/pages/CodingTest";
-import FunFact from "./pages/FunFact";
+import FunFact from "@/pages/FunFact";
 
 function App() {
   // basically, the rules are:

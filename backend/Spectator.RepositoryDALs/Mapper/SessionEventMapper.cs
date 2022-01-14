@@ -46,15 +46,20 @@ namespace Spectator.RepositoryDALs.Mapper {
 		}
 
 		public T ConvertToEntity<T>(FluxRecord fluxRecord) {
+			var measurement = fluxRecord.GetMeasurement();
+			if (measurement != FluxTypeName) {
+				throw new ArgumentException($"fluxRecord doesn't contain {FluxTypeName} measurement; instead, it contains {measurement} measurement", nameof(fluxRecord));
+			}
+
 			var parameters = Constructor.GetParameters();
 			var arguments = new object[parameters.Length];
 
 			arguments[0] = Guid.Parse((string)fluxRecord.GetValueByKey("session_id"));
-			arguments[1] = new DateTimeOffset(fluxRecord.GetTimeInDateTime()!.Value);
+			arguments[1] = new DateTimeOffset(fluxRecord.GetTimeInDateTime()!.Value, TimeSpan.Zero);
 
 			for (var i = 2; i < parameters.Length; i++) {
 				if (FluxProperties.SingleOrDefault(fluxProp => fluxProp.PropertyInfo.Name == parameters[i].Name) is not FluxPropertyInfo fluxProp) {
-					throw new InvalidOperationException("This exception should never be thrown");
+					throw new InvalidProgramException("This exception should never be thrown");
 				}
 
 				var parameterType = parameters[i].ParameterType;
@@ -64,6 +69,10 @@ namespace Spectator.RepositoryDALs.Mapper {
 					arguments[i] = fluxRecord.GetValueByKey(fluxProp.FluxFieldName);
 				} else if (parameterType == typeof(MouseButton)) {
 					arguments[i] = Enum.Parse<MouseButton>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
+				} else if (parameterType == typeof(Locale)) {
+					arguments[i] = Enum.Parse<Locale>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
+				} else if (parameterType == typeof(Language)) {
+					arguments[i] = Enum.Parse<Language>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
 				} else if (parameterType == typeof(SelfAssessmentManikin)) {
 					arguments[i] = new SelfAssessmentManikin(
 						ArousedLevel: (int)fluxRecord.GetValueByKey("aroused_level"),
@@ -103,6 +112,8 @@ namespace Spectator.RepositoryDALs.Mapper {
 					int i => pointData.Field(fluxProperty.FluxFieldName, i),
 					DateTimeOffset dto => pointData.Field(fluxProperty.FluxFieldName, dto.ToUnixTimeMilliseconds() * 1_000_000),
 					MouseButton mb => pointData.Field(fluxProperty.FluxFieldName, mb.ToString()),
+					Locale l => pointData.Field(fluxProperty.FluxFieldName, l.ToString().ToUpperInvariant()),
+					Language l => pointData.Field(fluxProperty.FluxFieldName, l.ToString().ToLowerInvariant()),
 					SelfAssessmentManikin sam => pointData
 						.Field("aroused_level", sam.ArousedLevel)
 						.Field("pleased_level", sam.PleasedLevel),
@@ -129,6 +140,10 @@ namespace Spectator.RepositoryDALs.Mapper {
 			if (!IsInPascalCase(pascalCaseName)) {
 				throw new ArgumentException("Name is not in pascal case", nameof(pascalCaseName));
 			}
+
+			// Known abbreviations
+			pascalCaseName = pascalCaseName.Replace("SAM", "Sam");
+			pascalCaseName = pascalCaseName.Replace("IDE", "Ide");
 
 			return string.Concat(
 				pascalCaseName
