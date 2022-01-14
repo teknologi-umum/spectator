@@ -28,7 +28,7 @@ def main():
     users: list[dict[str, any]] = []
 
     # begini bukan
-    number_of_data = 5
+    number_of_data = 10
     date_range = 4
 
     for _ in range(5):
