@@ -27,7 +27,6 @@ def write_into_file(filename: str, data):
 def main():
     users: list[dict[str, any]] = []
 
-    # begini bukan
     number_of_data = 10
     date_range = 4
 
