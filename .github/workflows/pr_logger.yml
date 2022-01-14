@@ -9,6 +9,7 @@ jobs:
   logger:
     name: Logger
     runs-on: ubuntu-latest
+    container: golang:1.17
     timeout-minutes: 5
     services:
       db:
@@ -28,9 +29,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '1.17'
       - name: Build test
         run: go build .
       - name: Run test
