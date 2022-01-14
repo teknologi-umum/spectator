@@ -63,12 +63,12 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 
 	rows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "spectator")
-		|> range(start: -1d)
-		|> filter(fn: (r) => r["event"] == "coding_event_keystroke")
+		`from(bucket: "`+BucketInputEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> aggregateWindow(
-				every: 1m,
+				every: -1d,
 				fn: (tables=<-, column) => tables |> count()
 			)
 		|> yield(name: "count")`,
@@ -78,10 +78,14 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	}
 	defer rows.Close()
 
+	if rows.Record() == nil {
+		return errors.New("word result not found")
+	}
+
 	var wpmTotal, keyTotal = 0, 0
 	for rows.Next() {
 		keytotal := rows.Record().Value().(int64)
-		wpmTotal += int(keytotal) / 5
+		wpmTotal += int(keytotal) / (5 * 60 * 24)
 		keyTotal += 1
 	}
 
@@ -110,7 +114,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 		ctx,
 		`from(bucket: "`+BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["type"] == "code_test_attempt")
+		|> filter(fn: (r) => r["_measurement"] == "code_test_attempt")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> group(columns: ["question_id"])
 		|> count()`,
@@ -125,7 +129,13 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	// and so on so forth.
 
 	// Return the result here
+	if rows.Record() == nil {
+		result <- 0
+		//return errors.New("submission attempt result not found")
+		return nil
+	}
 	result <- uint32(rows.Record().Value().(int64))
+
 	return nil
 }
 
@@ -140,17 +150,10 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	deletionRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
-		|> range(start: -1d)
-		|> filter(fn: (r) => r["type"] == "coding_event_keystroke")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn: (r) => (r["key_char"] == "backspace" or r["key_char"] == "delete"))
-		|> filter(fn: (r) => not(
-			(r["_field"] == "shift" and r["_value"] == true) or
-			(r["_field"] == "alt" and r["_value"] == true) or
-			(r["_field"] == "control" and r["_value"] == true) or
-			(r["_field"] == "meta" and r["_value"] == true) or
-			(r["_field"] == "unrelatedkey" and r["_value"] == true)
-		)
 		|> count()
 		|> yield(name: "count")`,
 	)
@@ -170,16 +173,10 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
 		|> range(start: -1d)
-		|> filter(fn: (r) => r["type"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => not(
-			(r["_field"] == "shift" and r["_value"] == true) or
-			(r["_field"] == "alt" and r["_value"] == true) or
-			(r["_field"] == "control" and r["_value"] == true) or
-			(r["_field"] == "meta" and r["_value"] == true) or
-			(r["_field"] == "unrelatedkey" and r["_value"] == true)
-		)
-			|> count()
+		|> filter(fn: (r) => (r._field == "key_char" and r._value != ""))
+		|> count()
 		|> yield(name: "count")`,
 	)
 	if err != nil {

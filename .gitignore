@@ -2,3 +2,5 @@
 .vs
 bin
 obj
+wranggler/docker-compose.yml
+wranggler/data

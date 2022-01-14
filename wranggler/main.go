@@ -90,7 +90,7 @@ func main() {
 	}
 
 	// gRPC uses TCP connection.
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "localhost", portNumber))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "0.0.0.0", portNumber))
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}
