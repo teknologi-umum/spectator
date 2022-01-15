@@ -6,10 +6,28 @@ services:
     volumes:
       - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
-      # - backend
+      - backend
       - frontend
     networks:
       - host_pub
+
+  backend:
+    image: ${DOCKER_REGISTRY-}backend
+    build: ./backend/Spectator/
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_InfluxDbOptions__Url=http://influx:8086
+      - ASPNETCORE_InfluxDbOptions__Token=H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
+      - ASPNETCORE_InfluxDbOptions__SessionEventsBucket=session_events
+      - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
+      - ASPNETCORE_InfluxDbOptions__Org=teknum_spectator
+      - ASPNETCORE_PistonOptions__BaseUrl=http://piston/
+    ports:
+      - 5000:80
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
 #  backend:
 #    build: ./backend/
@@ -31,8 +49,8 @@ services:
     hostname: fe
     ports:
       - 3000:3000
-    # depends_on:
-      # - backend
+    depends_on:
+      - backend
       # - minio
 
 #  minio:

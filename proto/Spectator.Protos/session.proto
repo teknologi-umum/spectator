@@ -7,7 +7,8 @@ package session;
 import "enums.proto";
 
 service SessionService {
-	rpc StartSession (EmptyRequest) returns (SessionReply);
+	rpc StartSession (LocaleInfo) returns (SessionReply);
+	rpc SetLocale (LocaleInfo) returns (EmptyReply);
 	rpc SubmitPersonalInfo (PersonalInfo) returns (EmptyReply);
 	rpc SubmitBeforeCodeSAM (SAM) returns (EmptyReply);
 	rpc StartExam (EmptyRequest) returns (Exam);
@@ -17,7 +18,8 @@ service SessionService {
 	rpc SubmitAfterCodeSAM (SAM) returns (EmptyReply);
 }
 
-message StartSessionRequest {
+message LocaleInfo {
+	enums.Locale locale = 1;
 }
 
 message SessionReply {
@@ -37,11 +39,14 @@ message SAM {
 }
 
 message Question {
+	message LanguageAndTemplate {
+		enums.Language language = 1;
+		string template = 2;
+	}
 	int32 question_number = 1;
 	string title = 2;
 	string instruction = 3;
-	repeated enums.Language allowed_languages = 4;
-	string boilerplate = 5;
+	repeated LanguageAndTemplate language_and_templates = 4;
 }
 
 message Exam {
@@ -62,11 +67,29 @@ message SubmissionRequest {
 	string scratch_pad = 4;
 }
 
-message SubmissionResult {
-	message TestResult {
-		bool success = 1;
-		string message = 2;
+message TestResult {
+	message PassingTest {
 	}
+	message FailingTest {
+		string expected_stdout = 2;
+		string actual_stdout = 3;
+	}
+	message CompileError {
+		string stderr = 1;
+	}
+	message RuntimeError {
+		string stderr = 1;
+	}
+	int32 test_number = 1;
+	oneof result {
+		PassingTest passing_test = 2;
+		FailingTest failing_test = 3;
+		CompileError compile_error = 4;
+		RuntimeError runtime_error = 5;
+	}
+}
+
+message SubmissionResult {
 	bool accepted = 1;
 	repeated TestResult test_results = 2;
 }

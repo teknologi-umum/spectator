@@ -5,12 +5,12 @@
       "question": "You've been given a task to prevent a star from falling down to earth. Wait,\nhow would you do that? Simply create a function that will print the lyrics of a\nsong called twinkle twinkle little star but by only using 2 variables. If you\ndo more than that or less than that, the star will fall, the world will end,\nand everybody will blame you.\n\n**Expected output:**\n```\nTwinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are\n```\n\n**Pseudocode example:**\n```\ndefn printLyrics()\n  lyric1 = some lyrics goes here\n  lyric2 = the rest of the lyrics goes here\n  print(lyric1)\n  print(lyric2)\nend\n```\n\nVery easy, right? You should be able to do it less than 5 minutes.\n",
       "title": "Twinkle Twinkle Little Star",
       "templates": {
-        "c": "void printLyrics() {\n    // write your code here\n}",
-        "cpp": "void printLyrics() {\n    // write your code here\n}",
-        "java": "class Lyrics {\n    public void printLyrics() {\n        // write your code here\n    }\n}",
-        "javascript": "function printLyrics() {\n    // write your code here\n}",
-        "php": "function printLyrics() {\n    // write your code here\n}",
-        "python": "def printLyrics() -> None:\n    // write your code here"
+        "c": "#include <stdio.h>\n\n// `printLyrics` is a function that accepts no argument and returns nothing.\nvoid printLyrics() {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n\n// `printLyrics` is a function that accepts no argument and returns nothing.\nvoid printLyrics() {\n    // write your code here\n}",
+        "java": "class Lyrics {\n    // `printLyrics` is a function that accepts no argument and returns\n    // nothing.\n    public void printLyrics() {\n        // write your code here\n    }\n}",
+        "javascript": "// `printLyrics` is a function that accepts no argument and returns nothing.\nfunction printLyrics() {\n    // write your code here\n}",
+        "php": "// `printLyrics` is a function that accepts no argument and returns nothing.\nfunction printLyrics() {\n    // write your code here\n}",
+        "python": "# `printLyrics` is a function that accepts no argument and returns nothing.\ndef printLyrics():\n    # write your code here"
       }
     },
     {
@@ -18,12 +18,12 @@
       "question": "Great! If you've arrived here. That means you've successfully prevented\nthe star from falling down to earth. Wait a minute, the atmosphere\nsuddenly feels cold. Oh shoot, apparently the shooting star broke the\nearth's atmosphere and the temperature dropped quickly.\n\nSince you're a curious person, you decided to find how much the\ntemperature has dropped in Celcius, Fahrenheit, and Kelvin. Of course,\nsince you're a smart person you don't want to calculate it manually. You\ndecided to make a program to calculate them for you.\n\nYour current task is figure out how to convert a given temperature and find its\nequivalent in other units. Should be easy enough, right?\n\n**Input:**\n```\ncalculateTemperature(100, \"Celcius\", \"Fahrenheit\")\ncalculateTemperature(212, \"Fahrenheit\", \"Kelvin\")\n```\n\n**Expected output:**\n```\n212\n373\n```\n\n**Pseudocode example:**\n```\ndefn calculateTemperature(temperature, from, to)\n  if (from == \"celcius\") and (to == \"fahrenheit\") then\n    return celcius -> fahrenheit\n  else if (from == \"fahrenheit\") and (to == \"celcius\") then\n    return fahrenheit -> celcius\n  ...\nend\n```\n\n**Constraints:**\n  - The input is always an integer\n  - The input will never exceeds 1000\n  - The input will never be negative\n\nGood luck!\n",
       "title": "Temperature Converter",
       "templates": {
-        "c": "int calculateTemperature(int temp, char* from, char* to) {\n    // write your code here\n}",
-        "cpp": "#include <stdio.h>\n\nint calculateTemperature(int temp, std::string from, std::string to) {\n    // write your code here\n}",
-        "java": "class Temperature {\n    public void calculateTemperature(int temp, String from, String to) {\n        // write your code here\n    }\n}",
-        "javascript": "function calculateTemperature(temp, from, to) {\n    // write your code here\n}",
-        "php": "function calculateTemperature(int temp, string from, string to): int {\n    // write your code here\n}",
-        "python": "def calculateTemperature(temp: int, from: str, to: str) -> int:\n    // write your code here"
+        "c": "#include <stdio.h>\n#include <strings.h>\n\n// `calculateTemperature` is a function that accepts 3 arguments as its input:\n// `temp` as integer, `from` as string, `to` as string. It returns an integer\n// as its output.\nint calculateTemperature(int temp, char* from, char* to) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n#include <string>\n\n// `calculateTemperature` is a function that accepts 3 arguments as its input:\n// `temp` as integer, `from` as string, `to` as string. It returns an integer\n// as its output.\nint calculateTemperature(int temp, std::string from, std::string to) {\n    // write your code here\n}",
+        "java": "class Temperature {\n    // `calculateTemperature` is a function that accepts 3 arguments as its input:\n    // `temp` as integer, `from` as string, `to` as string. It returns an integer\n    // as its output.\n    public void calculateTemperature(int temp, String from, String to) {\n        // write your code here\n    }\n}",
+        "javascript": "// `calculateTemperature` is a function that accepts 3 arguments as its input:\n// `temp` as integer, `from` as string, `to` as string. It returns an integer\n// as its output.\nfunction calculateTemperature(temp, from, to) {\n    // write your code here\n}",
+        "php": "// `calculateTemperature` is a function that accepts 3 arguments as its input:\n// `temp` as integer, `from` as string, `to` as string. It returns an integer\n// as its output.\nfunction calculateTemperature($temp, $from, $to) {\n    // write your code here\n}",
+        "python": "# `calculateTemperature` is a function that accepts 3 arguments as its input:\n# `temp` as integer, `from` as string, `to` as string. It returns an integer as\n# its output.\ndef calculateTemperature(temp, from, to):\n    # write your code here"
       }
     },
     {
@@ -31,12 +31,12 @@
       "question": "Great! You've made a program to convert temperatures to other units. Since\nyou're a curious person, you think to yourself, why are there different units\nfor temperature. Obviously their value won't be the same because they're in\ndifferent unit, but just to make sure, you decided to make a program which\ncompares if 2 temperatures are the same or not.\n\nYour task now is to create a function to make sure that 2 values are indeed\ndifferent. It will return either `true` or `false`. Here's an example:\n\n**Input:**\n```\nisSameNumber(100, 212)\nisSameNumber(212, 373)\nisSameNumber(373, 100)\n```\n\n\n**Expected output:**\n```\nfalse\nfalse\nfalse\n```\n\n**Pseudocode example:**\n```\ndefn isSameNumber(a, b)\n  if a is equal to b then\n    return true\n  otherwise\n    return false\nend\n```\n\n**Constraints:**\n  - The input is always an integer\n\nGood luck!\n",
       "title": "Check similar number",
       "templates": {
-        "c": "int isSameNumber(int a, int b) {\n    return |\n}\n",
-        "cpp": "int isSameNumber(int a, int b) {\n    return |\n}\n",
-        "java": "class SimilarNumber {\n    public boolean isSameNumber(int a, int b) {\n        |\n    }\n}\n",
-        "javascript": "function isSameNumber(a, b) {\n    return |\n}\n",
-        "php": "function isSameNumber(int a, int b) {\n    return |\n}\n",
-        "python": "def isSameNumber(a: int, b: int) -> bool:\n    // write your code here"
+        "c": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nint isSameNumber(int a, int b) {\n    // write your code here\n}\n",
+        "cpp": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nbool isSameNumber(int a, int b) {\n    // write your code here\n}\n",
+        "java": "class SimilarNumber {\n    // `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n    // `b` as integer. It returns a boolean as its output.\n    public boolean isSameNumber(int a, int b) {\n        // write your code here\n    }\n}\n",
+        "javascript": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber(a, b) {\n    // write your code here\n}\n",
+        "php": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber($a, $b) {\n    // write your code here\n}\n",
+        "python": "# `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n# `b` as integer. It returns a boolean as its output.\ndef isSameNumber(a, b):\n    # write your code here"
       }
     },
     {
@@ -44,38 +44,38 @@
       "question": "Nice, you've converted the temperatures and made sure they're different\nfrom each other. You should have 3 numbers with you (Celcius,\nFahrenheit, Kelvin). Since the temperature is freezing, you decided to\nturn on the room heater. One issue though, you don't know how much power\nneeded to turn on the heater.\n\nYour task is now to find the power needed to turn on the room heater.\nYou can find it by simply calculating the sum of the digits of the\nprevious temperatures combined.\n\n**Suppose you have these numbers:**\n  - Celcius = 100\n  - Fahrenheit = 212\n  - Kelvin = 373\n\nThen the input will be 100212373 (100 + 212 + 373). The sum of the input is as\nsimple as adding them all. For example: `1 + 0 + 0 + 2 + 1 + 2 + 3 + 7 + 3` so\nthe final result will be 19. Don't print the number, return it instead.\n\n**Input:**\n```\nfindHeaterPower(100212373)\n```\n\n**Expected output:**\n```\n19\n```\n\n**Pseudocode example:**\n```\ndefn findHeaterPower(input)\n  result = sum(digits of input)\n  return result\nend\n```\n\n**Constraints:**\n  - The input will never exceeds 2147483647\n  - The input will never be negative\n\nThat's it. Good luck and have fun!\n",
       "title": "Sum all digits of integers",
       "templates": {
-        "c": "int findHeaterPower(int input) {\n    // write your code here\n}",
-        "cpp": "int findHeaterPower(int input) {\n    // write your code here\n}",
-        "java": "class Heater {\n    public int findHeaterPower(int input) {\n        // write your code here\n    }\n}",
-        "javascript": "function findHeaterPower(input) {\n    // write your code here\n}",
-        "php": "function findHeaterPower(int input): int {\n    // write your code here\n}",
-        "python": "def findHeaterPower(input: int) -> int:\n    // write your code here"
+        "c": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nint findHeaterPower(long input) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nint findHeaterPower(long input) {\n    // write your code here\n}",
+        "java": "class Heater {\n    // `findHeaterPower` is function that accepts an argument as long and\n    // returns an integer as its output.\n    public int findHeaterPower(long input) {\n        // write your code here\n    }\n}",
+        "javascript": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower(input) {\n    // write your code here\n}",
+        "php": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower($input) {\n    // write your code here\n}",
+        "python": "# `findHeaterPower` is function that accepts an argument as long and returns\n# an integer as its output.\ndef findHeaterPower(input):\n    # write your code here"
       }
     },
     {
       "id": 5,
-      "question": "Great, if you're here then you must've found the power needed to turn on\nthe heater, but here's the problem. You don't think it's warm enough. You\ndecided to go to your favourite search engine to find how to make it\nwarmer and found an article telling you to place a diamond on top of the\nheater to make it warmer. You decided to find a diamond in your house\nbut you couldn't find it, so you decided to make one.\n\nIn order to make a diamond using code, create a function that receives an\nodd integer which will defines the diamond's height and then print the diamond\nshape. Here's an example:\n\n**Input:**\n\n```\nmakeDiamond(7)\n```\n\n\n**Expected output:**\n```\n   *\n  ***\n *****\n*******\n *****\n  ***\n   *\n```\n\n**Constraints:**\n  - The height will always be odd\n  - The height will never exceeds 100\n  - The height will never be negative\n",
-      "title": "Diamond Shape",
+      "question": "Great, if you're here then you must've found the power needed to turn on\nthe heater, but here's the problem. You don't think it's warm enough. You\ngot furious and starts spouting non sense. Q-Aa-Bbb-Ffff-Nnnnnn, or something\nalong those lines.\n\nAfter a moment, you -- for some weird reason -- recognise a pattern in your\nnonsense mumbling. You decided to make an program to generate the same\nmumbling that you were saying based on some random alphabet because you have\nnothing better to do.\n\nThe pattern is each letter is repeated n times where n is the current index of\nthe letter. If you have `abcd`, you'll have it as such:\n\n- `a` will be repeated once\n- `b` will be repeated twice\n- `c` will be repeated thrice\n- `4` will be repeated 4 times\n\nEach letters are lowercased and each group will have its first letter\ncapitalised. So, instead of `dDDd` or `XxXX`, you should make it `Dddd` or\n`Xxxx`.\n\nFinally, you just need to combine them using `-` so that would be `A-Bb-Ccc-Dddd`.\n\n\n**Input:**\n\n```\nmumble(\"QwertY\")\nmumble(\"bruh\")\nmumble(\"asdfb\")\n```\n\n\n**Expected output:**\n```\nQ-Ww-Eee-Rrrr-Ttttt-Yyyyyy\nB-Rr-Uuu-Hhhh\nA-Ss-Ddd-Ffff-Bbbb\n```\n\n**Constraints:**\n  - The input will always be an string of `A-Z` and `a-z`.\n",
+      "title": "Mumbling",
       "templates": {
-        "c": "void makeDiamond(int height) {\n    // write your code here\n}",
-        "cpp": "void makeDiamond(int height) {\n    // write your code here\n}",
-        "java": "class Diamond {\n    public void makeDiamond(int height) {\n        // write your code here\n    }\n}",
-        "javascript": "function makeDiamond(height) {\n    |\n}\n",
-        "php": "function makeDiamond(int height) {\n    // write your code here\n}",
-        "python": "def makeDiamond(height: int) -> None:\n    // write your code here"
+        "c": "#include <stdio.h>\n#include <strings.h>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nchar* mumble(char* input) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n#include <string>\n#include <vector>\n#include <numeric>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nstd::string mumble(std::string input) {\n    // write your code here\n}",
+        "java": "class Mumble {\n    // `mumble` is a function that accepts an argument as string and returns a\n    // string as its output.\n    public String mumble(String input) {\n        // write your code here\n    }\n}",
+        "javascript": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble() {\n    // write your code here\n}\n",
+        "php": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble($input) {\n    // write your code here\n}",
+        "python": "# `mumble` is a function that accepts an argument as string and returns a\n# string as its output.\ndef mumble() -> str:\n    # write your code here"
       }
     },
     {
       "id": 6,
-      "question": "Phew, you did a great job on making the diamond. You placed it on top of\nthe heater and you think it would work, but apparently it made a strange\nnoise and the temperature doesn't get warmer. You back off a little\nbecause you're scared. A few seconds later there's a portal appeared on\ntop of the heater. The portal sucked you in.\n\nYou fainted after got sucked in and finally woke up. You don't know where\nyou are. The only thing you know is you're in a dark room and there's a\ncomputer in the center of the room. You think there's a note on the screen\nso you quickly ran to the computer and read the note. Here's what it says:\n\n```\nGreetings, mortal human. If you're reading this then you're probably\nfrustrated. How did you got here in the first place? Where is this place?\nWho am I? Those question are irrelevant. The real question is, do you\nwant to be one of the chosen ones? You're just one step away from being\none of them.\n\nIf you can make a pyramid of numbers, I will help you get out. If you\ncan't, well, say good bye to the this world then.\n\nHurry up, time is always ticking.\n\nPS: uhh, if you don't know yet, which you should've known by now, the\ntime limit is on the top left of the screen\n```\n\nYou feel confused and scared so you try to do what the note wants you to\ndo. Make a pyramid of numbers. Here's an example:\n\n**Input:**\n```\nmakePyramid(7)\n```\n\n\n**Expected output:**\n```\n      1\n     2 2\n    3 3 3\n   4 4 4 4\n  5 5 5 5 5\n 6 6 6 6 6 6\n7 7 7 7 7 7 7\n```\n\n**Constraints:**\n  - The height will always be odd\n  - The height will never exceeds 100\n  - The height will never be negative\n",
-      "title": "Pyramid of Numbers",
+      "question": "Great, now into the final question. You need to help me decide how to do the\nscoring for this coding challenge (you know, that one that you've been doing\nfor the past 90 minutes or so). Here are the rules that you need to consider\nwhen making a program to automagically do the hard work for you.\n\n- Every student receives a grade in the inclusive range from 0 to 100.\n- Any grade less than 40 is a failing grade.\n- If the difference between the grade and the next multiple of 5 is less than 3, round the grade up to the next multiple of 5.\n- If the value of the grade is less than 38, no rounding occurs as the result will still be a failing grade.\n\nI'll give you some examples:\n\n**Input:**\n```\ncalculateGrade([73, 38, 84, 32, 69])\n```\n\n\n**Expected output:**\n```\n[75, 40, 85, 32, 70]\n```\n\n**Constraints:**\n  - The grade is 0 to 100 inclusive\n  - The length of the array is 0 to 60 inclusive\n",
+      "title": "Grade System",
       "templates": {
-        "c": "void makePyramid(int height) {\n    // write your code here\n}",
-        "cpp": "void makePyramid(int height) {\n    // write your code here\n}",
-        "java": "class Pyramid {\n    public void makePyramid(int height) {\n        // write your code here\n    }\n}",
-        "javascript": "function makePyramid(height) {\n    // write your code here\n}",
-        "php": "function makePyramid(int height) {\n    // write your code here\n}",
-        "python": "def makePyramid(height: int) -> None:\n    // write your code here"
+        "c": "#include <stdio.h>\n\n// `calculateGrade` is a function that accepts 2 arguments as its input: `size` as integer\n// and `grade` as an array of integer. It returns an array of integer as its\n// output\nint* calculateGrade(int size, int* grade) {\n    // write your code here\n}",
+        "cpp": "#include <stdio.h>\n#include <vector>\n\n// `calculateGrade` is a function that accepts a vector of integer as its input\n// and returns a vector of integer as its output\nstd::vector<int> calculateGrade(std::vector<int> grade) {\n    // write your code here\n}",
+        "java": "class Grade {\n    // `calculateGrade` is a function that accepts an ArrayList of integer as\n    // its input and returns an ArrayList of integer as its output\n    public ArrayList<int> calculateGrade(ArrayList<int> grade) {\n        // write your code here\n    }\n}",
+        "javascript": "// calculateGrade is a function that accepts an array of integer as its input\n// and returns an array of integer as its output\nfunction calculateGrade(grade) {\n    // write your code here\n}",
+        "php": "// `calculateGrade` is a function that accepts an array of integer as its input and\n// returns an array of integer as its output\nfunction calculateGrade($grade) {\n    // write your code here\n}",
+        "python": "# `calculateGrade` is a function that accepts a list of integer as its input and\n# returns a list of integer as its output\ndef calculateGrade(grade):\n    # write your code here"
       }
     }
   ]

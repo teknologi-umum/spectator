@@ -4,8 +4,9 @@ using Spectator.Primitives;
 namespace Spectator.DomainModels.QuestionDomain {
 	public record Question(
 		int QuestionNumber,
-		string Title,
-		string Instruction,
-		ImmutableDictionary<Language, string> BoilerplateByLanguage
+		ImmutableDictionary<Locale, string> TitleByLocale,
+		ImmutableDictionary<Locale, string> InstructionByLocale,
+		ImmutableDictionary<Locale, ImmutableDictionary<Language, string>> TemplateByLanguageByLocale,
+		ImmutableDictionary<Language, string> AssertionByLanguage
 	);
 }

@@ -39,7 +39,7 @@ type MouseMovement struct {
 	Timestamp      time.Time `json:"_timestap" csv:"_timestamp"`
 }
 
-func (_ MouseMovement) Anu() {}
+func (MouseMovement) Anu() {}
 
 type Keystroke struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
@@ -55,7 +55,7 @@ type Keystroke struct {
 	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (_ Keystroke) Anu() {}
+func (Keystroke) Anu() {}
 
 type MouseClick struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
@@ -67,7 +67,7 @@ type MouseClick struct {
 	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (_ MouseClick) Anu() {}
+func (MouseClick) Anu() {}
 
 type PersonalInfo struct {
 	Type              string    `json:"type" csv:"type"`
@@ -79,7 +79,7 @@ type PersonalInfo struct {
 	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (_ PersonalInfo) Anu() {}
+func (PersonalInfo) Anu() {}
 
 type SamTest struct {
 	SessionID    string    `json:"session_id" csv:"session_id"`
@@ -89,7 +89,7 @@ type SamTest struct {
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (_ SamTest) Anu() {}
+func (SamTest) Anu() {}
 
 // GenerateFile is the handler for generating file into CSV and JSON based on
 // the input data (which only contains the Session ID).
@@ -115,7 +115,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	}()
 
 	// Let's create a new context
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
 	defer cancel()
 
 	// Now we fetch all the data with the _actor being sessionID.String()
@@ -260,6 +260,8 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	outputMouseMove := []MouseMovement{}
 	tempMouseMove := MouseMovement{}
 	for mouseMoveRows.Next() {
+		// TODO: remove this, just use normal stuffs instead of
+		// reinventing the wheel. lol.
 		unmarshaledRow, err := UnmarshalInfluxRow(mouseMoveRows.Record().String())
 		if err != nil {
 			return
@@ -394,6 +396,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		outputSamTest = append(outputSamTest, tempSamTest)
 	}
 
+	// TODO: handle errors
 	keystrokeJSON, _ := ConvertDataToJSON(outputKeystroke)
 	keystrokeCSV, _ := gocsv.MarshalString(outputKeystroke)
 	mousmoveCSV, _ := gocsv.MarshalString(outputMouseMove)
@@ -407,16 +410,16 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 
 	studentNumber := tempPersonalInfo.StudentNumber
 
-	mkFileAndUpload([]byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
-	mkFileAndUpload(keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
-	mkFileAndUpload([]byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
-	mkFileAndUpload(mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
-	mkFileAndUpload([]byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
-	mkFileAndUpload(mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
-	mkFileAndUpload([]byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
-	mkFileAndUpload(personalJSON, studentNumber+"_personal.json", d.Bucket)
-	mkFileAndUpload([]byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
-	mkFileAndUpload(samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
+	mkFileAndUpload(ctx, []byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
+	mkFileAndUpload(ctx, keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
+	mkFileAndUpload(ctx, []byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
+	mkFileAndUpload(ctx, mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
+	mkFileAndUpload(ctx, []byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
+	mkFileAndUpload(ctx, mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
+	mkFileAndUpload(ctx, []byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
+	mkFileAndUpload(ctx, personalJSON, studentNumber+"_personal.json", d.Bucket)
+	mkFileAndUpload(ctx, []byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
+	mkFileAndUpload(ctx, samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
 
 	// TODO
 	writeAPI := d.DB.WriteAPI(d.DBOrganization, BucketSessionEvents)
@@ -457,6 +460,9 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	// nil bucket.
 }
 
+// UnmarshalInfluxRow converts a row from InfluxDB into a map[string]interface{}
+//
+// Deprecated: use regular row parsing provided by InfluxDB client library
 func UnmarshalInfluxRow(row string) (map[string]interface{}, error) {
 	// because csv.NewReader() accepts io.Reader, we'll create one from strings pkg
 	input := strings.NewReader(row)
@@ -493,7 +499,7 @@ func ConvertDataToJSON(input interface{}) ([]byte, error) {
 func ConvertDataToCSV(inputp interface{}) ([]byte, error) {
 	input, ok := inputp.([]interface{})
 	if !ok {
-		return []byte{}, errors.New("Fail to infer")
+		return []byte{}, errors.New("failed to infer data type to array of interfaces")
 	}
 
 	w := &bytes.Buffer{}
@@ -565,16 +571,16 @@ func ConvertDataToCSV(inputp interface{}) ([]byte, error) {
 	return w.Bytes(), nil
 }
 
-func mkFileAndUpload(b []byte, path string, m *minio.Client) (*minio.UploadInfo, error) {
+func mkFileAndUpload(ctx context.Context, b []byte, path string, m *minio.Client) (*minio.UploadInfo, error) {
 	f, err := os.Create("./" + path)
 	if err != nil {
-		return nil, err
+		return &minio.UploadInfo{}, err
 	}
 	defer f.Close()
 
 	_, err = f.Write(b)
 	if err != nil {
-		return nil, err
+		return &minio.UploadInfo{}, err
 	}
 
 	f.Sync()
@@ -582,17 +588,26 @@ func mkFileAndUpload(b []byte, path string, m *minio.Client) (*minio.UploadInfo,
 	fileStat, err := f.Stat()
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return &minio.UploadInfo{}, err
 	}
 
-	upInfo, err := m.PutObject(context.Background(), "storage", "/public/"+path, f, fileStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	upInfo, err := m.PutObject(
+		ctx,
+		"storage",
+		"/public/"+path,
+		f,
+		fileStat.Size(),
+		minio.PutObjectOptions{ContentType: "application/octet-stream"},
+	)
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return &minio.UploadInfo{}, err
 	}
 	fmt.Println("Successfully uploaded bytes: ", upInfo)
 
-	os.Remove("./" + path)
-
+	err = os.Remove("./" + path)
+	if err != nil {
+		return &minio.UploadInfo{}, err
+	}
 	return &upInfo, nil
 }

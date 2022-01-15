@@ -6,6 +6,7 @@
 [*]
 indent_style = space
 indent_size = 2
+end_of_line=lf
 # XAML files
 [*.xaml]
 indent_size = 4
@@ -252,6 +253,9 @@ dotnet_diagnostic.RCS1036.severity = warning
 
 # IDE0007: Use implicit type
 dotnet_diagnostic.IDE0007.severity = warning
+
+# RG0018: 'SelfAssessmentManikin' is class type and should not be used in a record
+dotnet_diagnostic.RG0018.severity = silent
 
 [*.vb]
 # Modifier preferences

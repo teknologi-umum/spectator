@@ -7,7 +7,7 @@ namespace Spectator.DomainModels.SubmissionDomain {
 		Language Language,
 		string Solution,
 		string ScratchPad,
-		ImmutableArray<TestResult> TestResults,
+		ImmutableArray<TestResultBase> TestResults,
 		bool Accepted
 	);
 }

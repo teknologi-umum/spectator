@@ -5,51 +5,38 @@ on:
     branches: ["master"]
 
 jobs:
-  # backend:
-  #   name: Backend check
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 10
-  #   services:
-  #     db:
-  #       image: influxdb:2.1
-  #       env:
-  #         DOCKER_INFLUXDB_INIT_USERNAME: teknum
-  #         DOCKER_INFLUXDB_INIT_PASSWORD: P@ssw0rd!
-  #         DOCKER_INFLUXDB_INIT_ORG: teknologi
-  #         DOCKER_INFLUXDB_INIT_BUCKET: spectator
-  #       ports:
-  #         - 8086:8086
-  #   defaults:
-  #     run:
-  #       working-directory: ./backend
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v1
-  #       with:
-  #         dotnet-version: 6.0.100
-  #     - name: Restore dependencies
-  #       run: dotnet restore
-  #     - name: Build
-  #       run: dotnet build --no-restore
-  #     - name: Test
-  #       run: dotnet test --no-build --verbosity normal
+  backend:
+    name: Backend check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.100
+      - name: Restore dependencies
+        run: dotnet restore Spectator.sln
+      - name: Build
+        run: dotnet build --no-restore Spectator.sln
+      - name: Test
+        run: dotnet test --no-build --verbosity normal Spectator.sln /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
   logger:
     name: Logger
     runs-on: ubuntu-latest
-    container: golang:1.17.5-buster
-    timeout-minutes: 10
+    container: golang:1.17
+    timeout-minutes: 5
     services:
       db:
-        image: influxdb:2.1
+        image: influxdb:2.1.1
         env:
           DOCKER_INFLUXDB_INIT_MODE: setup
           DOCKER_INFLUXDB_INIT_USERNAME: root
           DOCKER_INFLUXDB_INIT_PASSWORD: password
           DOCKER_INFLUXDB_INIT_ORG: teknologi
           DOCKER_INFLUXDB_INIT_BUCKET: public
-          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: testing
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
         ports:
           - 8086:8086
     defaults:
@@ -66,20 +53,24 @@ jobs:
           ACCESS_TOKEN: testing
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
-          INFLUX_TOKEN: testing
+          INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
-    container: node:16-buster
-    timeout-minutes: 10
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: ./frontend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - name: Install dependencies
         run: npm install
+      - name: Protoc
+        run: npm run protoc
       - name: Lint
         run: npm run lint:check
       - name: Build
@@ -89,11 +80,13 @@ jobs:
   # configs:
   #   name: Verify config
   #   runs-on: ubuntu-latest
-  #   container: python:3-buster
-  #   timeout-minutes: 10
+  #   timeout-minutes: 5
   #   steps:
   #     - name: Checkout repository
   #       uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.10'
   #     - name: Install docker-compose
   #       run: >
   #         curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -105,16 +98,21 @@ jobs:
   #         && pip3 install "ansible-lint[core,yamllint]"
   #         && ansible-lint --version
   #     - name: Lint docker-compose
-  #       run: docker-compose --file docker-compose.yml config
+  #       run: >
+  #         docker-compose --file docker-compose.yml config
+  #         && docker-compose --file docker-compose.dev.yml config
+  #         && docker-compose --file docker-compose.influx.yml config
   #     - name: Lint ansible
   #       run: ansible-lint -v -f rich ansible.yml
   # deploy:
   #   name: Deploy
   #   needs: [configs, frontend, logger]
   #   runs-on: ubuntu-latest
-  #   container: python:3-buster
   #   timeout-minutes: 15
   #   steps:
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.10'
   #     - name: Install SSH key
   #       uses: shimataro/ssh-key-action@v2
   #       with:

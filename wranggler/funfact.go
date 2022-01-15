@@ -25,15 +25,15 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	attempt := make(chan uint32, 1)
 
 	// Run all the calculate function concurently
-	errs, ctx := errgroup.WithContext(ctx)
+	errs, gctx := errgroup.WithContext(ctx)
 	errs.Go(func() error {
-		return d.CalculateWordsPerMinute(ctx, sessionID, wpm)
+		return d.CalculateWordsPerMinute(gctx, sessionID, wpm)
 	})
 	errs.Go(func() error {
-		return d.CalculateDeletionRate(ctx, sessionID, deletionRate)
+		return d.CalculateDeletionRate(gctx, sessionID, deletionRate)
 	})
 	errs.Go(func() error {
-		return d.CalculateSubmissionAttempts(ctx, sessionID, attempt)
+		return d.CalculateSubmissionAttempts(gctx, sessionID, attempt)
 	})
 
 	err = errs.Wait()
@@ -59,33 +59,6 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 }
 
 func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan uint32) error {
-	queryAPI := d.DB.QueryAPI(d.DBOrganization)
-	cRows := 0
-
-	rows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_field"] == "key_char" and r["_value"] != "")`,
-	)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		cRows += 1
-	}
-
-	if cRows != 0 {
-
-		result <- uint32((cRows / 5))
-	} else {
-		result <- uint32(cRows)
-	}
-
 	// Cara calculate WPM:
 	// SELECT semua KeystrokeEvent, group by TIME, each TIME itu 1 menit
 	// for every 1 minute, hitung total keystroke event itu,
@@ -96,7 +69,56 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	// ngga perlu specify menit keberapanya, karena slice pasti urut)
 	// terus return ke channel hasil average dari semua menit yang ada
 
+	queryAPI := d.DB.QueryAPI(d.DBOrganization)
+
+	rows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+BucketInputEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> window(every: 1m)
+		|> filter(fn: (r) => r["_field"] == "key_char")
+		|> sort(columns: ["_time"])`,
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var wordsPerMinute []uint32
+	var tablePosition int64
+	var temporaryWords uint32
+	for rows.Next() {
+		record := rows.Record()
+		table, ok := record.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
+		}
+
+		temporaryWords += 1
+
+		if table != 0 && table > tablePosition {
+			wordsPerMinute = append(wordsPerMinute, temporaryWords)
+			temporaryWords = 0
+		}
+	}
+
+	// Append the last value
+	if len(wordsPerMinute) > 0 && temporaryWords != 0 {
+		wordsPerMinute = append(wordsPerMinute, temporaryWords)
+	}
+
+	var averageWpm uint32
+	var wordsSum uint32
+	for _, wpm := range wordsPerMinute {
+		wordsSum += wpm / 5
+	}
+
+	averageWpm = wordsSum / uint32(len(wordsPerMinute))
+
 	// Return the result here
+	result <- averageWpm
 	return nil
 }
 
