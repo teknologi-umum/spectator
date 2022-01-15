@@ -29,7 +29,7 @@ type DataAnu interface {
 
 type MouseMovement struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
-	Type           string    `json:"type" csv:"type"`
+	Type           string    `json:"type" csv:"-"`
 	QuestionNumber string    `json:"question_number" csv:"question_number"`
 	Direction      string    `json:"direction" csv:"direction"`
 	XPosition      int64     `json:"x_position" csv:"x_position"`
@@ -43,7 +43,7 @@ func (MouseMovement) Anu() {}
 
 type Keystroke struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
-	Type           string    `json:"type" csv:"type"`
+	Type           string    `json:"type" csv:"-"`
 	QuestionNumber string    `json:"question_number" csv:"question_number"`
 	KeyChar        string    `json:"key_char" csv:"key_char"`
 	KeyCode        string    `json:"key_code" csv:"key_code"`
@@ -59,7 +59,7 @@ func (Keystroke) Anu() {}
 
 type MouseClick struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
-	Type           string    `json:"type" csv:"type"`
+	Type           string    `json:"type" csv:"-"`
 	QuestionNumber string    `json:"question_number" csv:"question_number"`
 	RightClick     bool      `json:"right_click" csv:"right_click"`
 	LeftClick      bool      `json:"left_click" csv:"left_click"`
@@ -70,7 +70,7 @@ type MouseClick struct {
 func (MouseClick) Anu() {}
 
 type PersonalInfo struct {
-	Type              string    `json:"type" csv:"type"`
+	Type              string    `json:"type" csv:"-"`
 	SessionID         string    `json:"session_id" csv:"session_id"`
 	StudentNumber     string    `json:"student_number" csv:"student_number"`
 	HoursOfPractice   int64     `json:"hours_of_practice" csv:"hours_of_experience"`
@@ -83,7 +83,7 @@ func (PersonalInfo) Anu() {}
 
 type SamTest struct {
 	SessionID    string    `json:"session_id" csv:"session_id"`
-	Type         string    `json:"type" csv:"type"`
+	Type         string    `json:"type" csv:"-"`
 	ArousedLevel int64     `json:"aroused_level" csv:"aroused_level"`
 	PleasedLevel int64     `json:"pleased_level" csv:"pleased_level"`
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
