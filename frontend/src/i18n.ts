@@ -18,13 +18,13 @@ i18n
       en: {
         translation: {
           translation: enTranslation,
-          Question: enQuestion
+          question: enQuestion
         }
       },
       id: {
         translation: {
           translation: idTranslation,
-          Question: idQuestion
+          question: idQuestion
         }
       }
     },

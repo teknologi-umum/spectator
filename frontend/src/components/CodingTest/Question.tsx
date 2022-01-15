@@ -59,7 +59,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
           <TabPanel p="2" h="full">
             <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
               <Heading size="lg" color={fg}>
-                {t(`Question.questions.${currentQuestion}.title`)}
+                {t(`question.questions.${currentQuestion}.title`)}
               </Heading>
               <ReactMarkdown
                 components={{
@@ -88,7 +88,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
                   )
                 }}
               >
-                {t(`Question.questions.${currentQuestion}.question`)}
+                {t(`question.questions.${currentQuestion}.question`)}
               </ReactMarkdown>
             </Box>1
           </TabPanel>
