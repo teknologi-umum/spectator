@@ -20,5 +20,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["./src", "public/sam"]
+  "include": ["./src", "public/"]
 }
