@@ -51,15 +51,15 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
         <TabList borderColor={borderBg}>
-          <Tab color={fgDarker}>Prompt</Tab>
-          <Tab color={fgDarker}>Your Result</Tab>
+          <Tab color={fgDarker}>{t("translation.translations.ui.prompt")}</Tab>
+          <Tab color={fgDarker}>{t("translation.translations.ui.your_result")}</Tab>
         </TabList>
 
         <TabPanels h="full">
           <TabPanel p="2" h="full">
             <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
               <Heading size="lg" color={fg}>
-                {t(`ns2.questions.${currentQuestion}.title`)}
+                {t(`Question.questions.${currentQuestion}.title`)}
               </Heading>
               <ReactMarkdown
                 components={{
@@ -88,7 +88,7 @@ export default function Question({ bg, fg, fgDarker, onScroll }: QuestionProps) 
                   )
                 }}
               >
-                {t(`ns2.questions.${currentQuestion}.question`)}
+                {t(`Question.questions.${currentQuestion}.question`)}
               </ReactMarkdown>
             </Box>1
           </TabPanel>

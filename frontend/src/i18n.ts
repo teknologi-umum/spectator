@@ -17,14 +17,14 @@ i18n
     resources: {
       en: {
         translation: {
-          ns1: enTranslation,
-          ns2: enQuestion
+          translation: enTranslation,
+          Question: enQuestion
         }
       },
       id: {
         translation: {
-          ns1: idTranslation,
-          ns2: idQuestion
+          translation: idTranslation,
+          Question: idQuestion
         }
       }
     },

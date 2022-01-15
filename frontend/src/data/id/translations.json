@@ -12,7 +12,8 @@
       "your_result": "Hasil Kamu",
       "your_solution": "Solusi Kamu",
       "scratchpad": "Corat Coret",
-      "output": "Output"
+      "output": "Output",
+      "begin_test": "Mulai Test"
     },
     "personal_info": {
       "student_number": "Nomor Mahasiswa",

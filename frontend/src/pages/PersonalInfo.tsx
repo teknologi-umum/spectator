@@ -92,7 +92,7 @@ function PersonalInfo() {
             mt="6"
             isInvalid={errors.studentId !== undefined}
           >
-            <FormLabel>{t("ns1.translations.personal_info.student_number")}</FormLabel>
+            <FormLabel>{t("translation.translations.personal_info.student_number")}</FormLabel>
             <Input type="text" {...register("studentId")} autoComplete="off" borderColor={border} />
             <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
           </FormControl>
@@ -102,7 +102,7 @@ function PersonalInfo() {
             isInvalid={errors.programmingExp !== undefined}
           >
             <FormLabel>
-              {t("ns1.translations.personal_info.programming_years")}
+              {t("translation.translations.personal_info.programming_years")}
             </FormLabel>
             <Input
               borderColor={border}
@@ -121,7 +121,7 @@ function PersonalInfo() {
             isInvalid={errors.programmingExercise !== undefined}
           >
             <FormLabel>
-              {t("ns1.translations.personal_info.programming_practice")}
+              {t("translation.translations.personal_info.programming_practice")}
             </FormLabel>
             <Input
               borderColor={border}
@@ -140,7 +140,7 @@ function PersonalInfo() {
             isInvalid={errors.programmingLanguage !== undefined}
           >
             <FormLabel>
-              {t("ns1.translations.personal_info.programming_experience")}
+              {t("translation.translations.personal_info.programming_experience")}
             </FormLabel>
             <Input
               borderColor={border}
@@ -161,7 +161,7 @@ function PersonalInfo() {
           type="submit"
           display="block"
         >
-          {t("ns1.translations.ui.continue")}
+          {t("translation.translations.ui.continue")}
         </Button>
       </Box>
     </Layout>
