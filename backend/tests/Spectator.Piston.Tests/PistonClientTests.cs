@@ -38,13 +38,11 @@ namespace Spectator.Piston.Tests {
 
 			var executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
-				code: @"
-					#include <stdio.h>
+				code: @"#include <stdio.h>
 
-					int main() {
-						return 0;
-					}
-				",
+						int main() {
+							return 0;
+						}",
 				cancellationToken: timeoutSource.Token
 			);
 
@@ -58,14 +56,12 @@ namespace Spectator.Piston.Tests {
 
 			executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
-				code: @"
-					#include <stdio.h>
+				code: @"#include <stdio.h>
 
-					int main() {
-						printf(""Hello world"");
-						return 0;
-					}
-				",
+						int main() {
+							printf(""Hello world"");
+							return 0;
+						}",
 				cancellationToken: timeoutSource.Token
 			);
 
@@ -79,13 +75,11 @@ namespace Spectator.Piston.Tests {
 
 			executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
-				code: @"
-					#include <stdio.h>
+				code: @"#include <stdio.h>
 
-					int main() {
-						return 1;
-					}
-				",
+						int main() {
+							return 1;
+						}",
 				cancellationToken: timeoutSource.Token
 			);
 
@@ -107,13 +101,11 @@ namespace Spectator.Piston.Tests {
 
 			var executeResult = await pistonClient.ExecuteAsync(
 				language: "c",
-				code: @"
-					#include <stdio.h>
+				code: @"#include <stdio.h>
 
-					int main() {
-						return 0
-					}
-				",
+						int main() {
+							return 0
+						}",
 				cancellationToken: timeoutSource.Token
 			);
 
