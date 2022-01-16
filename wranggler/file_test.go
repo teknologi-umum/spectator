@@ -3,6 +3,8 @@ package main_test
 import (
 	"context"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -131,26 +133,26 @@ func TestConvertDataToJSON(t *testing.T) {
 
 	wg.Wait()
 
-	// filesJson, err := filepath.Glob("./*.json")
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// filesCSV, err := filepath.Glob("./*.csv")
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
+	filesJson, err := filepath.Glob("./*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	filesCSV, err := filepath.Glob("./*.csv")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	// result := append(filesJson, filesCSV...)
+	result := append(filesJson, filesCSV...)
 
-	// if len(result) == 0 {
-	// 	t.Fail()
-	// }
+	if len(result) == 0 {
+		t.Fail()
+	}
 
-	// for _, f := range result {
-	// 	if err := os.Remove(f); err != nil {
-	// 		panic(err)
-	// 	}
-	// }
+	for _, f := range result {
+		if err := os.Remove(f); err != nil {
+			panic(err)
+		}
+	}
 
 }
 
