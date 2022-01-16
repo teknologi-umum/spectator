@@ -98,13 +98,13 @@ func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.Empt
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
 		defer d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
-			in.RequestId, 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			in.RequestId,
 			map[string]string{
 				"session_id": in.SessionId,
-				"function": "GenerateFiles",
-				"info": "parsing uuid",
+				"function":   "GenerateFiles",
+				"info":       "parsing uuid",
 			},
 		)
 		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
@@ -118,6 +118,7 @@ func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.Empt
 func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
 	// TODO: Send this data into the Logging service.
+
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -125,13 +126,13 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		}
 
 		d.Log(
-			r.(error).Error(), 
-			logger.Level_ERROR.Enum(), 
-			requestID, 
+			r.(error).Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
 			map[string]string{
 				"session_id": sessionID.String(),
-				"function": "CreateFile",
-				"info": "recovering from panic",
+				"function":   "CreateFile",
+				"info":       "recovering from panic",
 			},
 		)
 	}()
@@ -154,13 +155,13 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	)
 	if err != nil {
 		d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
-			requestID, 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
 			map[string]string{
 				"session_id": sessionID.String(),
-				"function": "CreateFile",
-				"info": "querying coding_event_keystroke",
+				"function":   "CreateFile",
+				"info":       "querying coding_event_keystroke",
 			},
 		)
 		return
@@ -230,18 +231,19 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	)
 	if err != nil {
 		d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
 			requestID,
 			map[string]string{
 				"session_id": sessionID.String(),
-				"function": "CreateFile",
-				"info": "querying coding_event_mouseclick",
+				"function":   "CreateFile",
+				"info":       "querying coding_event_mouseclick",
 			},
 		)
 		return
 	}
 
+	log.Println("Pas here 207")
 	outputMouseClick := []MouseClick{}
 	tempMouseClick := MouseClick{}
 
@@ -290,13 +292,13 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	)
 	if err != nil {
 		d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
 			requestID,
 			map[string]string{
 				"session_id": sessionID.String(),
-				"function": "CreateFile",
-				"info": "querying coding_event_mousemove",
+				"function":   "CreateFile",
+				"info":       "querying coding_event_mousemove",
 			},
 		)
 		return
@@ -358,13 +360,13 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	)
 	if err != nil {
 		d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
-			requestID, 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
 			map[string]string{
 				"session_id": sessionID.String(),
-				"function": "CreateFile",
-				"info": "querying personal_info",
+				"function":   "CreateFile",
+				"info":       "querying personal_info",
 			},
 		)
 		return
@@ -414,13 +416,13 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	)
 	if err != nil {
 		d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
-			requestID, 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
 			map[string]string{
 				"session_id": sessionID.String(),
-				"function": "CreateFile",
-				"info": "querying sam_test_before",
+				"function":   "CreateFile",
+				"info":       "querying sam_test_before",
 			},
 		)
 		return
@@ -455,17 +457,46 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		outputSamTest = append(outputSamTest, tempSamTest)
 	}
 
-	// TODO: handle errors
-	keystrokeJSON, _ := ConvertDataToJSON(outputKeystroke)
-	keystrokeCSV, _ := gocsv.MarshalString(outputKeystroke)
-	mousmoveCSV, _ := gocsv.MarshalString(outputMouseMove)
-	mousmoveJSON, _ := ConvertDataToJSON(outputMouseMove)
-	mousclickCSV, _ := gocsv.MarshalString(outputMouseClick)
-	mousclickJSON, _ := ConvertDataToJSON(outputMouseClick)
-	personalCSV, _ := gocsv.MarshalString(outputPersonalInfo)
-	personalJSON, _ := ConvertDataToJSON(outputPersonalInfo)
-	samtestCSV, _ := gocsv.MarshalString(outputSamTest)
-	samtestJSON, _ := ConvertDataToJSON(outputSamTest)
+	keystrokeJSON, err := ConvertDataToJSON(outputKeystroke)
+	if err != nil {
+		return
+	}
+	keystrokeCSV, err := gocsv.MarshalString(outputKeystroke)
+	if err != nil {
+		return
+	}
+	mousmoveCSV, err := gocsv.MarshalString(outputMouseMove)
+	if err != nil {
+		return
+	}
+	mousmoveJSON, err := ConvertDataToJSON(outputMouseMove)
+	if err != nil {
+		return
+	}
+	mousclickCSV, err := gocsv.MarshalString(outputMouseClick)
+	if err != nil {
+		return
+	}
+	mousclickJSON, err := ConvertDataToJSON(outputMouseClick)
+	if err != nil {
+		return
+	}
+	personalCSV, err := gocsv.MarshalString(outputPersonalInfo)
+	if err != nil {
+		return
+	}
+	personalJSON, err := ConvertDataToJSON(outputPersonalInfo)
+	if err != nil {
+		return
+	}
+	samtestCSV, err := gocsv.MarshalString(outputSamTest)
+	if err != nil {
+		return
+	}
+	samtestJSON, err := ConvertDataToJSON(outputSamTest)
+	if err != nil {
+		return
+	}
 
 	studentNumber := tempPersonalInfo.StudentNumber
 
@@ -502,6 +533,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	writeAPI.Flush()
+
+	log.Println(tempPersonalInfo.StudentNumber)
 
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
@@ -650,10 +683,16 @@ func mkFileAndUpload(ctx context.Context, b []byte, path string, m *minio.Client
 		return &minio.UploadInfo{}, err
 	}
 
+	f, err = os.Open("./" + path)
+	if err != nil {
+		return &minio.UploadInfo{}, err
+	}
+	defer f.Close()
+
 	upInfo, err := m.PutObject(
 		ctx,
-		"storage",
-		"/public/"+path,
+		"spectator",
+		path,
 		f,
 		fileStat.Size(),
 		minio.PutObjectOptions{ContentType: "application/octet-stream"},

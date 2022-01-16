@@ -19,13 +19,13 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
 		defer d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
-			in.RequestId, 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			in.RequestId,
 			map[string]string{
 				"session_id": in.GetSessionId(),
-				"function": "funfact",
-				"info": "parsing uuid",
+				"function":   "funfact",
+				"info":       "parsing uuid",
 			},
 		)
 		return &pb.FunFactResponse{}, fmt.Errorf("parsing uuid: %v", err)
@@ -51,13 +51,13 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	err = errs.Wait()
 	if err != nil {
 		defer d.Log(
-			err.Error(), 
-			logger.Level_ERROR.Enum(), 
-			in.RequestId, 
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			in.RequestId,
 			map[string]string{
 				"session_id": in.GetSessionId(),
-				"function": "funfact",
-				"info": "calculating fun fact",
+				"function":   "funfact",
+				"info":       "calculating fun fact",
 			},
 		)
 		return &pb.FunFactResponse{}, fmt.Errorf("calculating fun fact: %v", err)
@@ -172,16 +172,15 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	if rows.Record() == nil {
 		result <- uint32(0)
 		return nil
-	} 
-		value, ok := rows.Record().Value().(int64)
-		if !ok {
-			log.Println("[ERROR] casting value to int64")
-			result <- uint32(0)
-			return nil
-		}
+	}
+	value, ok := rows.Record().Value().(int64)
+	if !ok {
+		log.Println("[ERROR] casting value to int64")
+		result <- uint32(0)
+		return nil
+	}
 
-		result <- uint32(value)
-
+	result <- uint32(value)
 
 	return nil
 }

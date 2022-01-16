@@ -84,13 +84,18 @@ func main() {
 		environment = "DEVELOPMENT"
 	}
 
+	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
+	if !ok {
+		log.Fatalln("MINIO_TOKEN envar missing")
+	}
+
 	// Create InfluxDB instance
 	influxConn := influxdb2.NewClient(influxHost, influxToken)
 	defer influxConn.Close()
 
 	// Create Minio instance
 	minioConn, err := minio.New(minioHost, &minio.Options{
-		Creds: credentials.NewStaticV4(minioID, minioSecret, "spectator"),
+		Creds: credentials.NewStaticV4(minioID, minioSecret, minioToken),
 	})
 	if err != nil {
 		log.Fatalln(err)
