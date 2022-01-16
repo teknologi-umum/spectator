@@ -204,6 +204,7 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		return
 	}
 
+	log.Println("Pas here 207")
 	outputMouseClick := []MouseClick{}
 	tempMouseClick := MouseClick{}
 
@@ -396,17 +397,46 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 		outputSamTest = append(outputSamTest, tempSamTest)
 	}
 
-	// TODO: handle errors
-	keystrokeJSON, _ := ConvertDataToJSON(outputKeystroke)
-	keystrokeCSV, _ := gocsv.MarshalString(outputKeystroke)
-	mousmoveCSV, _ := gocsv.MarshalString(outputMouseMove)
-	mousmoveJSON, _ := ConvertDataToJSON(outputMouseMove)
-	mousclickCSV, _ := gocsv.MarshalString(outputMouseClick)
-	mousclickJSON, _ := ConvertDataToJSON(outputMouseClick)
-	personalCSV, _ := gocsv.MarshalString(outputPersonalInfo)
-	personalJSON, _ := ConvertDataToJSON(outputPersonalInfo)
-	samtestCSV, _ := gocsv.MarshalString(outputSamTest)
-	samtestJSON, _ := ConvertDataToJSON(outputSamTest)
+	keystrokeJSON, err := ConvertDataToJSON(outputKeystroke)
+	if err != nil {
+		return
+	}
+	keystrokeCSV, err := gocsv.MarshalString(outputKeystroke)
+	if err != nil {
+		return
+	}
+	mousmoveCSV, err := gocsv.MarshalString(outputMouseMove)
+	if err != nil {
+		return
+	}
+	mousmoveJSON, err := ConvertDataToJSON(outputMouseMove)
+	if err != nil {
+		return
+	}
+	mousclickCSV, err := gocsv.MarshalString(outputMouseClick)
+	if err != nil {
+		return
+	}
+	mousclickJSON, err := ConvertDataToJSON(outputMouseClick)
+	if err != nil {
+		return
+	}
+	personalCSV, err := gocsv.MarshalString(outputPersonalInfo)
+	if err != nil {
+		return
+	}
+	personalJSON, err := ConvertDataToJSON(outputPersonalInfo)
+	if err != nil {
+		return
+	}
+	samtestCSV, err := gocsv.MarshalString(outputSamTest)
+	if err != nil {
+		return
+	}
+	samtestJSON, err := ConvertDataToJSON(outputSamTest)
+	if err != nil {
+		return
+	}
 
 	studentNumber := tempPersonalInfo.StudentNumber
 
@@ -443,6 +473,8 @@ func (d *Dependency) CreateFile(sessionID uuid.UUID) {
 	}
 
 	writeAPI.Flush()
+
+	log.Println(tempPersonalInfo.StudentNumber)
 
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
@@ -591,10 +623,16 @@ func mkFileAndUpload(ctx context.Context, b []byte, path string, m *minio.Client
 		return &minio.UploadInfo{}, err
 	}
 
+	f, err = os.Open("./" + path)
+	if err != nil {
+		return &minio.UploadInfo{}, err
+	}
+	defer f.Close()
+
 	upInfo, err := m.PutObject(
 		ctx,
 		"spectator",
-		"/"+path,
+		path,
 		f,
 		fileStat.Size(),
 		minio.PutObjectOptions{ContentType: "application/octet-stream"},
