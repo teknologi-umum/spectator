@@ -12,7 +12,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,6 +20,7 @@ import (
 	"github.com/gocarina/gocsv"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 
+	"worker/logger"
 	pb "worker/proto"
 )
 
@@ -37,7 +37,7 @@ type MouseMovement struct {
 	YPosition      int64     `json:"y_position" csv:"y_position"`
 	WindowWidth    int64     `json:"window_width" csv:"window_width"`
 	WindowHeight   int64     `json:"window_height" csv:"window_height"`
-	Timestamp      time.Time `json:"_timestap" csv:"_timestamp"`
+	Timestamp      time.Time `json:"timestamp" csv:"_timestamp"`
 }
 
 func (MouseMovement) Anu() {}
@@ -97,26 +97,44 @@ func (SamTest) Anu() {}
 func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.EmptyResponse, error) {
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
+		defer d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			in.RequestId,
+			map[string]string{
+				"session_id": in.SessionId,
+				"function":   "GenerateFiles",
+				"info":       "parsing uuid",
+			},
+		)
 		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
 	}
 
-	go d.CreateFile(nil, sessionID)
+	go d.CreateFile(in.RequestId, sessionID)
 
 	return &pb.EmptyResponse{}, nil
 }
 
-func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
+func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
 	// TODO: Send this data into the Logging service.
 
 	defer func() {
-		if wg != nil {
-			wg.Done()
-		}
 		r := recover()
 		if r != nil {
 			log.Println(r.(error))
 		}
+
+		d.Log(
+			r.(error).Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "recovering from panic",
+			},
+		)
 	}()
 
 	// Let's create a new context
@@ -126,19 +144,26 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 	// Now we fetch all the data with the _actor being sessionID.String()
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
+	// TODO: might be better to refactor each of these into their own functions.
 	// keystroke and mouse
 	keystrokeMouseRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")
-		`,
+		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")`,
 	)
 	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Fatalln(err)
+		d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "querying coding_event_keystroke",
+			},
+		)
 		return
 	}
 
@@ -146,6 +171,8 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 	outputKeystroke := []Keystroke{}
 	tempKeystroke := Keystroke{}
 	for keystrokeMouseRows.Next() {
+		// TODO: no need to use UnmarshalInfluxRow
+		// See the implementation on the logger service
 		unmarshaledRow, err := UnmarshalInfluxRow(keystrokeMouseRows.Record().String())
 		if err != nil {
 			return
@@ -203,9 +230,16 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 		`,
 	)
 	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
+		d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "querying coding_event_mouseclick",
+			},
+		)
 		return
 	}
 
@@ -257,9 +291,16 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 		`,
 	)
 	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
+		d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "querying coding_event_mousemove",
+			},
+		)
 		return
 	}
 
@@ -318,9 +359,16 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 		`,
 	)
 	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
+		d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "querying personal_info",
+			},
+		)
 		return
 	}
 
@@ -367,9 +415,16 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 		`,
 	)
 	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
+		d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "querying sam_test_before",
+			},
+		)
 		return
 	}
 
@@ -456,7 +511,7 @@ func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 	mkFileAndUpload(ctx, []byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
 	mkFileAndUpload(ctx, samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
 
-	// TODO
+	// TODO: should use WriteAPIBlocking because InfluxDB has no locks
 	writeAPI := d.DB.WriteAPI(d.DBOrganization, BucketSessionEvents)
 
 	lazyDir := []string{

@@ -12,9 +12,11 @@ import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
 import { withPublic } from "@/hoc";
 import { useColorModeValue } from "@/hooks";
+import { useTranslation } from "react-i18next";
 
 function Instructions() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
@@ -25,59 +27,39 @@ function Instructions() {
     document.title = "Instructions | Spectator";
   }, []);
 
+
   return (
     <Layout>
       <ThemeButton position="fixed" />
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
-          General Instructions
+          {t("translation.translations.instructions.title")}
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
-          This experiment contains of two part. The first part is SAM Test and
-          the second part is coding test. SAM Test is a self assessment test to
-          measure your emotion. This test contains three question that will
-          assess your emotion and will take time less than 5 minutes. The second
-          test is coding test that consist of six programming questions. In this
-          part you have to answer the questions and finish it within 90 minutes.
+          {t("translation.translations.instructions.overview")}
         </Text>
 
         <Heading size="md" mt="6" mb="4" color={fg}>
           1. SAM Test
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
-          In this part there will be three question that you are required to
-          answer by clicking one out of nine images available. The images
-          represent how do you feel about the question. The image that is
-          located on the far left indicates that you are very disagree with the
-          statement and the image on the far right indicates that you are very
-          agree with the statement meanwhile whe 5th image indicates that you
-          are neutral towards the statement. You are required to fill this test
-          two times. The first is before you take the test and the second test
-          is after you finish programming test. The first SAM Test will be
-          asking your current emotion meanwhile the second SAM Test will be
-          asking your emotion during programming test.
+          {t("translation.translations.instructions.sam_test")}
         </Text>
         <Box color={fgDarker}>
           <Arousal width="100%" height="100" viewBox="0 0 1240 140" />
         </Box>
         <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>
-          SAM Test Example
+          {t("translation.translations.instructions.sam_test_label")}
         </Text>
 
         <Heading size="md" mt="6" mb="4" color={fg}>
           2. Programming Test
         </Heading>
         <Text fontSize="18" lineHeight="8" color={textColor}>
-          In this part there will be six programming questions that you are
-          required to answer within 90 minutes by using java programming
-          language. You are not allowed to search the answer somewhere else or
-          get help from other people. If you are not able to answer the
-          questions, you are allowed to left the page empty and go to the next
-          question. You are allowed to go back to previous questions when there
-          is still time left.
+          {t("translation.translations.instructions.programming_test")}
         </Text>
         <Text as="label" fontSize="sm" lineHeight="8" color={textColor}>
-          P.S: This test will not affect your mark
+          {t("translation.translations.instructions.sam_test_label_2")}
         </Text>
 
         <Button
@@ -88,7 +70,7 @@ function Instructions() {
           mx="auto"
           mt="6"
         >
-          Begin Test
+          {t("translation.translations.ui.begin_test")}
         </Button>
       </Container>
     </Layout>

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"worker/logger"
 	pb "worker/proto"
 
 	"github.com/google/uuid"
@@ -16,6 +18,16 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	// Parse UUID
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
+		defer d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			in.RequestId,
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "funfact",
+				"info":       "parsing uuid",
+			},
+		)
 		return &pb.FunFactResponse{}, fmt.Errorf("parsing uuid: %v", err)
 	}
 
@@ -38,6 +50,16 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 
 	err = errs.Wait()
 	if err != nil {
+		defer d.Log(
+			err.Error(),
+			logger.Level_ERROR.Enum(),
+			in.RequestId,
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "funfact",
+				"info":       "calculating fun fact",
+			},
+		)
 		return &pb.FunFactResponse{}, fmt.Errorf("calculating fun fact: %v", err)
 	}
 
@@ -148,11 +170,17 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 
 	// Return the result here
 	if rows.Record() == nil {
-		result <- 0
-		//return errors.New("submission attempt result not found")
-	} else {
-		result <- uint32(rows.Record().Value().(int64))
+		result <- uint32(0)
+		return nil
 	}
+	value, ok := rows.Record().Value().(int64)
+	if !ok {
+		log.Println("[ERROR] casting value to int64")
+		result <- uint32(0)
+		return nil
+	}
+
+	result <- uint32(value)
 
 	return nil
 }
@@ -203,7 +231,12 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	defer keystrokeTotalRows.Close()
 
 	for keystrokeTotalRows.Next() {
-		totalKeystrokes = keystrokeTotalRows.Record().Value().(int64)
+		value, ok := keystrokeTotalRows.Record().Value().(int64)
+		if !ok {
+			return errors.New("fail to infer keystroke Total")
+		}
+
+		totalKeystrokes = value
 	}
 
 	result <- (float32(deletionTotal) / float32(totalKeystrokes))

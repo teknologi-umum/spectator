@@ -15,6 +15,7 @@ import {
   setSubmission
 } from "@/store/slices/questionSlice";
 import { mutate } from "@/utils/fakeSubmissionCallback";
+import { useTranslation } from "react-i18next";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -42,6 +43,8 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
   const { fontSize, currentLanguage, solutions } = useAppSelector(
     (state) => state.editor
   );
+
+  const { t } = useTranslation();
 
   const {
     jwtPayload: { exp, iat }
@@ -187,7 +190,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             dispatch(prevQuestion());
           }}
         >
-          Surrender
+          {t("translation.translations.ui.surrender")}
         </Button>
         <Button
           px="4"
@@ -213,7 +216,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             h="full"
             _hover={{
               bg: "gray.800",
-              borderColor: "white",
+              borderColor: "white"
             }}
             onClick={() => {
               // TODO(elianiva): only allow to continue when they have the correct answer

@@ -24,7 +24,7 @@ export default function ThemeButton({ position }: ThemeButtonProps) {
       position={position}
       left={position === "fixed" ? 4 : "initial"}
       top={position === "fixed" ? 4 : "initial"}
-      >
+    >
       
       <Select
         onChange={(e:FormEvent<HTMLSelectElement>) => setColorMode(e.currentTarget.value as Theme)}

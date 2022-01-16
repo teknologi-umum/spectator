@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 )
 
 func TestConvertDataToJSON(t *testing.T) {
@@ -41,7 +42,6 @@ func TestConvertDataToJSON(t *testing.T) {
 	delta := max - min
 
 	for i := 0; i < 50; i++ {
-
 		p := influxdb2.NewPoint(
 			"personal_info",
 			map[string]string{

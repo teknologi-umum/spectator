@@ -6,11 +6,8 @@ import (
 	"log"
 	"net"
 	"os"
-	"time"
-
-	//"log"
-	//"os"
 	"testing"
+	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -74,7 +71,7 @@ func TestMain(m *testing.M) {
 
 	influxOrg, ok := os.LookupEnv("INFLUX_ORG")
 	if !ok {
-		log.Fatalln("INFLUX_ORG envar missing")
+		influxOrg = "teknum_spectator"
 	}
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")

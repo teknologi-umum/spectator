@@ -10,10 +10,9 @@
       "surrender": "Surrender",
       "prompt": "Prompt",
       "your_result": "Your Result",
-      "your_solution": "Your Solution",
+      "your_solution": "Your Result",
       "scratchpad": "Scratchpad",
-      "output": "Output",
-      "begin_test": "Begin Test"
+      "output": "Output"
     },
     "personal_info": {
       "student_number": "Student Number",

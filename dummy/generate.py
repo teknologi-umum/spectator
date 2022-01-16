@@ -44,10 +44,10 @@ def main():
         # Generate 2 random dates that are close to each other
         date_start_int: int = random_date(datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59))
         date_start: datetime = datetime.fromtimestamp(date_start_int)
-        additional_duration: timedelta = timedelta(minutes=random.randint(20, 90))
+        additional_duration: timedelta = timedelta(minutes=random.randint(6, 21))
         date_ends: datetime = datetime.fromtimestamp(date_start_int + additional_duration.total_seconds())
 
-        for _ in range(random.randint(200, 500)):
+        for _ in range(random.randint(420 * 10, 666 * 12)):
             # Generate random number between 1 to 3
             rand = random.randint(1, 4)
             if rand == 1:

@@ -14,6 +14,7 @@ import { lineNumbers } from "@codemirror/gutter";
 import { useCodemirrorTheme, useColorModeValue, useDebounce } from "@/hooks";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setScratchPad } from "@/store/slices/editorSlice";
+import { useTranslation } from "react-i18next";
 
 interface ScratchPadProps {
   bg: string;
@@ -29,6 +30,8 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
 
   const [value, setValue] = useState("");
   const debouncedValue = useDebounce(value, 500);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const currentScratchPad = scratchPads.find(
@@ -64,8 +67,8 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
     <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
       <Tabs isLazy h="full">
         <TabList borderColor={borderBg} color={fgDarker}>
-          <Tab>Scratch Pad</Tab>
-          <Tab>Output</Tab>
+          <Tab>{t("translation.translations.ui.scratchpad")}</Tab>
+          <Tab>{t("translation.translations.ui.output")}</Tab>
         </TabList>
 
         <TabPanels h="full">
