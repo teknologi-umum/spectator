@@ -593,8 +593,8 @@ func mkFileAndUpload(ctx context.Context, b []byte, path string, m *minio.Client
 
 	upInfo, err := m.PutObject(
 		ctx,
-		"storage",
-		"/public/"+path,
+		"spectator",
+		"/"+path,
 		f,
 		fileStat.Size(),
 		minio.PutObjectOptions{ContentType: "application/octet-stream"},
