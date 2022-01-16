@@ -3,6 +3,8 @@ package main_test
 import (
 	"context"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 	"worker/proto"
@@ -33,110 +35,118 @@ func TestConvertDataToJSON(t *testing.T) {
 
 	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
 	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketSessionEvents)
+
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
 	delta := max - min
 
-	p := influxdb2.NewPoint(
-		"personal_info",
-		map[string]string{
-			"session_id": id.String(),
-		},
-		map[string]interface{}{
-			"student_number":      "",
-			"hours_of_practice":   0,
-			"years_of_experience": 0,
-			"familiar_languages":  "",
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
+	for i := 0; i < 50; i++ {
 
-	writeSessionAPI.WritePoint(ctx, p)
+		p := influxdb2.NewPoint(
+			"personal_info",
+			map[string]string{
+				"session_id": id.String(),
+			},
+			map[string]interface{}{
+				"student_number":      "",
+				"hours_of_practice":   rand.Int31n(666),
+				"years_of_experience": rand.Int31n(5),
+				"familiar_languages":  "",
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		)
 
-	p = influxdb2.NewPoint(
-		"sam_test",
-		map[string]string{
-			"session_id": id.String(),
-		},
-		map[string]interface{}{
-			"aroused_level": 0,
-			"pleased_level": 0,
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
+		writeSessionAPI.WritePoint(ctx, p)
 
-	writeSessionAPI.WritePoint(ctx, p)
+		p = influxdb2.NewPoint(
+			"sam_test",
+			map[string]string{
+				"session_id": id.String(),
+			},
+			map[string]interface{}{
+				"aroused_level": rand.Int31n(3),
+				"pleased_level": rand.Int31n(3),
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		)
 
-	// code submissive
-	p = influxdb2.NewPoint(
-		"code_submission",
-		map[string]string{
-			"session_id":      id.String(),
-			"question_number": "1",
-		},
-		map[string]interface{}{
-			"code":     "let () = print_endline \"UwU\"",
-			"language": "OCaml",
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
+		writeSessionAPI.WritePoint(ctx, p)
 
-	writeInputAPI.WritePoint(ctx, p)
+		// code_event_keystroke
+		p = influxdb2.NewPoint(
+			"coding_event_keystroke",
+			map[string]string{
+				"session_id": id.String(),
+			},
+			map[string]interface{}{
+				"key_char": "a",
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		)
 
-	// code_event_keystroke
-	p = influxdb2.NewPoint(
-		"coding_event_keystroke",
-		map[string]string{
-			"session_id": id.String(),
-		},
-		map[string]interface{}{
-			"key_char": "a",
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
+		writeInputAPI.WritePoint(ctx, p)
 
-	writeInputAPI.WritePoint(ctx, p)
+		// code_event_mouseclick
+		p = influxdb2.NewPoint(
+			"coding_event_mouseclick",
+			map[string]string{
+				"session_id":      id.String(),
+				"question_number": "1",
+			},
+			map[string]interface{}{
+				"key_char":     "a",
+				"right_click":  false,
+				"left_click":   false,
+				"middle_click": false,
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		)
 
-	// code_event_mouseclick
-	p = influxdb2.NewPoint(
-		"coding_event_mouseclick",
-		map[string]string{
-			"session_id":      id.String(),
-			"question_number": "1",
-		},
-		map[string]interface{}{
-			"key_char":     "a",
-			"right_click":  false,
-			"left_click":   false,
-			"middle_click": false,
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
+		writeInputAPI.WritePoint(ctx, p)
 
-	writeInputAPI.WritePoint(ctx, p)
+		// code_event_mouseclick
+		p = influxdb2.NewPoint(
+			"coding_event_mousemove",
+			map[string]string{
+				"session_id":      id.String(),
+				"question_number": "1",
+			},
+			map[string]interface{}{
+				"direction":     "right",
+				"x_position":    rand.Int31n(1337),
+				"y_position":    rand.Int31n(768),
+				"window_width":  rand.Int31n(1337),
+				"window_height": rand.Int31n(768),
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		)
 
-	// code_event_mouseclick
-	p = influxdb2.NewPoint(
-		"coding_event_mousemove",
-		map[string]string{
-			"session_id":      id.String(),
-			"question_number": "1",
-		},
-		map[string]interface{}{
-			"direction":     "right",
-			"x_position":    0,
-			"y_position":    0,
-			"window_width":  0,
-			"window_height": 0,
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
-
-	writeInputAPI.WritePoint(ctx, p)
+		writeInputAPI.WritePoint(ctx, p)
+	}
 
 	deps.GenerateFiles(ctx, &proto.Member{SessionId: id.String()})
 
-	// TODO: DELETE THE FILE HASBEN GENERATED, BUT NOT TODAY MAY HAD AGAINST ME WILL NOW
+	filesJson, err := filepath.Glob("./*.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	filesCSV, err := filepath.Glob("./*.csv")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result := append(filesJson, filesCSV...)
+
+	if len(result) == 0 {
+		t.Fail()
+	}
+
+	for _, f := range result {
+		if err := os.Remove(f); err != nil {
+			panic(err)
+		}
+	}
+
 }
 
 func TestConvertDataToCSV(t *testing.T) {
