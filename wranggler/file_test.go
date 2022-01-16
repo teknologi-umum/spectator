@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 )
 
 func TestConvertDataToJSON(t *testing.T) {
@@ -37,102 +38,93 @@ func TestConvertDataToJSON(t *testing.T) {
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
 	delta := max - min
 
-	p := influxdb2.NewPoint(
-		"personal_info",
-		map[string]string{
-			"session_id": id.String(),
-		},
-		map[string]interface{}{
-			"student_number":      "",
-			"hours_of_practice":   0,
-			"years_of_experience": 0,
-			"familiar_languages":  "",
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
+	var sessionPoints = []*write.Point{
+		influxdb2.NewPoint(
+			"personal_info",
+			map[string]string{
+				"session_id": id.String(),
+			},
+			map[string]interface{}{
+				"student_number":      "",
+				"hours_of_practice":   0,
+				"years_of_experience": 0,
+				"familiar_languages":  "",
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		),
+		influxdb2.NewPoint(
+			"sam_test",
+			map[string]string{
+				"session_id": id.String(),
+			},
+			map[string]interface{}{
+				"aroused_level": 0,
+				"pleased_level": 0,
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		),
+	}
+	
+	for _, p := range sessionPoints {
+		writeSessionAPI.WritePoint(ctx, p)
+	}
+	var inputPoints = []*write.Point{
+		influxdb2.NewPoint(
+			"code_submission",
+			map[string]string{
+				"session_id":      id.String(),
+				"question_number": "1",
+			},
+			map[string]interface{}{
+				"code":     "let () = print_endline \"UwU\"",
+				"language": "OCaml",
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		),
+		influxdb2.NewPoint(
+			"coding_event_keystroke",
+			map[string]string{
+				"session_id": id.String(),
+			},
+			map[string]interface{}{
+				"key_char": "a",
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		),
+		influxdb2.NewPoint(
+			"coding_event_mouseclick",
+			map[string]string{
+				"session_id":      id.String(),
+				"question_number": "1",
+			},
+			map[string]interface{}{
+				"key_char":     "a",
+				"right_click":  false,
+				"left_click":   false,
+				"middle_click": false,
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		),
+		influxdb2.NewPoint(
+			"coding_event_mousemove",
+			map[string]string{
+				"session_id":      id.String(),
+				"question_number": "1",
+			},
+			map[string]interface{}{
+				"direction":     "right",
+				"x_position":    0,
+				"y_position":    0,
+				"window_width":  0,
+				"window_height": 0,
+			},
+			time.Unix(rand.Int63n(delta)+min, 0),
+		),
+	}
 
-	writeSessionAPI.WritePoint(ctx, p)
-
-	p = influxdb2.NewPoint(
-		"sam_test",
-		map[string]string{
-			"session_id": id.String(),
-		},
-		map[string]interface{}{
-			"aroused_level": 0,
-			"pleased_level": 0,
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
-
-	writeSessionAPI.WritePoint(ctx, p)
-
-	// code submissive
-	p = influxdb2.NewPoint(
-		"code_submission",
-		map[string]string{
-			"session_id":      id.String(),
-			"question_number": "1",
-		},
-		map[string]interface{}{
-			"code":     "let () = print_endline \"UwU\"",
-			"language": "OCaml",
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
-
-	writeInputAPI.WritePoint(ctx, p)
-
-	// code_event_keystroke
-	p = influxdb2.NewPoint(
-		"coding_event_keystroke",
-		map[string]string{
-			"session_id": id.String(),
-		},
-		map[string]interface{}{
-			"key_char": "a",
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
-
-	writeInputAPI.WritePoint(ctx, p)
-
-	// code_event_mouseclick
-	p = influxdb2.NewPoint(
-		"coding_event_mouseclick",
-		map[string]string{
-			"session_id":      id.String(),
-			"question_number": "1",
-		},
-		map[string]interface{}{
-			"key_char":     "a",
-			"right_click":  false,
-			"left_click":   false,
-			"middle_click": false,
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
-
-	writeInputAPI.WritePoint(ctx, p)
-
-	// code_event_mouseclick
-	p = influxdb2.NewPoint(
-		"coding_event_mousemove",
-		map[string]string{
-			"session_id":      id.String(),
-			"question_number": "1",
-		},
-		map[string]interface{}{
-			"direction":     "right",
-			"x_position":    0,
-			"y_position":    0,
-			"window_width":  0,
-			"window_height": 0,
-		},
-		time.Unix(rand.Int63n(delta)+min, 0),
-	)
-
-	writeInputAPI.WritePoint(ctx, p)
+	for _, p := range inputPoints {
+		writeInputAPI.WritePoint(ctx, p)
+	}
 
 	deps.GenerateFiles(ctx, &proto.Member{SessionId: id.String()})
 

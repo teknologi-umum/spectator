@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "worker/proto";
+option go_package = "/proto";
 
 package worker;
 
@@ -19,7 +19,8 @@ message Health {
 }
 
 message Member {
-    string session_id = 1;
+    string request_id = 1;
+    string session_id = 2;
 }
 
 message FunFactResponse {
