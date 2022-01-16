@@ -70,8 +70,7 @@ func main() {
 
 	// Create Minio instance
 	minioConn, err := minio.New(minioHost, &minio.Options{
-		Creds:  credentials.NewStaticV4(minioID, minioSecret, "spectator"),
-		Secure: true,
+		Creds: credentials.NewStaticV4(minioID, minioSecret, "spectator"),
 	})
 	if err != nil {
 		log.Fatalln(err)
@@ -90,7 +89,7 @@ func main() {
 	}
 
 	// gRPC uses TCP connection.
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "localhost", portNumber))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "0.0.0.0", portNumber))
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}

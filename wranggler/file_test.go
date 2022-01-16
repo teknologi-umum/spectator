@@ -2,294 +2,141 @@ package main_test
 
 import (
 	"context"
-	"log"
-	"strconv"
+	"math/rand"
 	"testing"
+	"time"
+	"worker/proto"
 
-	main "worker"
+	worker "worker"
+
+	"github.com/google/uuid"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 func TestConvertDataToJSON(t *testing.T) {
+	t.Cleanup(cleanup)
+	rand.Seed(time.Now().Unix())
 
-	influxConn := db
-	defer influxConn.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
-	queryAPI := influxConn.QueryAPI(dbOrganization)
-	ctx := context.TODO()
+	deps := worker.Dependency{
+		DB:             db,
+		DBOrganization: dbOrganization,
+		Bucket:         bucket,
+	}
 
-	keystrokeMouseRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+main.BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")
-		`,
-	)
+	id, err := uuid.NewUUID()
 	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
 		t.Error(err)
-		return
 	}
 
-	//var lastTableIndex int = -1
-	outputKeystroke := []main.Keystroke{}
-	tempKeystroke := main.Keystroke{}
-	for keystrokeMouseRows.Next() {
-		unmarshaledRow, err := main.UnmarshalInfluxRow(keystrokeMouseRows.Record().String())
-		if err != nil {
-			return
-		}
+	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
+	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketSessionEvents)
+	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
+	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
+	delta := max - min
 
-		switch unmarshaledRow["_field"].(string) {
-		case "key_char":
-			tempKeystroke.KeyChar = unmarshaledRow["_value"].(string)
-		case "key_code":
-			tempKeystroke.KeyCode = unmarshaledRow["_value"].(string)
-		case "shift":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempKeystroke.Shift = tempBool
-		case "alt":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempKeystroke.Alt = tempBool
-		case "control":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempKeystroke.Control = tempBool
-		case "unrelated_key":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempKeystroke.UnrelatedKey = tempBool
-		case "meta":
-			tempKeystroke.Modifier = unmarshaledRow["_value"].(string)
-		}
-
-		// create a new one
-		tempKeystroke.QuestionNumber = unmarshaledRow["question_number"].(string)
-		tempKeystroke.SessionID = unmarshaledRow["session_id"].(string)
-		tempKeystroke.Timestamp = keystrokeMouseRows.Record().Time()
-
-		outputKeystroke = append(outputKeystroke, tempKeystroke)
-	}
-
-	t.Log("ISI")
-	//t.Log(outputKeystroke)
-
-	mouseClickRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+main.BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")
-		`,
+	p := influxdb2.NewPoint(
+		"personal_info",
+		map[string]string{
+			"session_id": id.String(),
+		},
+		map[string]interface{}{
+			"student_number":      "",
+			"hours_of_practice":   0,
+			"years_of_experience": 0,
+			"familiar_languages":  "",
+		},
+		time.Unix(rand.Int63n(delta)+min, 0),
 	)
-	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
-		return
-	}
 
-	outputMouseClick := []main.MouseClick{}
-	tempMouseClick := main.MouseClick{}
+	writeSessionAPI.WritePoint(ctx, p)
 
-	for mouseClickRows.Next() {
-		unmarshaledRow, err := main.UnmarshalInfluxRow(mouseClickRows.Record().String())
-		if err != nil {
-			return
-		}
-
-		switch unmarshaledRow["_field"].(string) {
-		case "left_click":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempMouseClick.LeftClick = tempBool
-		case "right_click":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempMouseClick.RightClick = tempBool
-		case "middle_click":
-			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
-				tempBool = true
-			}
-			tempMouseClick.MiddleClick = tempBool
-		}
-
-		// create a new one
-		tempMouseClick.QuestionNumber = unmarshaledRow["question_number"].(string)
-		tempMouseClick.SessionID = unmarshaledRow["session_id"].(string)
-		tempMouseClick.Timestamp = mouseClickRows.Record().Time()
-
-		outputMouseClick = append(outputMouseClick, tempMouseClick)
-	}
-
-	mouseMoveRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+main.BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
-		`,
+	p = influxdb2.NewPoint(
+		"sam_test",
+		map[string]string{
+			"session_id": id.String(),
+		},
+		map[string]interface{}{
+			"aroused_level": 0,
+			"pleased_level": 0,
+		},
+		time.Unix(rand.Int63n(delta)+min, 0),
 	)
-	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
-		return
-	}
 
-	outputMouseMove := []main.MouseMovement{}
-	tempMouseMove := main.MouseMovement{}
-	for mouseMoveRows.Next() {
-		unmarshaledRow, err := main.UnmarshalInfluxRow(mouseMoveRows.Record().String())
-		if err != nil {
-			return
-		}
+	writeSessionAPI.WritePoint(ctx, p)
 
-		switch unmarshaledRow["_field"].(string) {
-		case "direction":
-			tempMouseMove.Direction = unmarshaledRow["_value"].(string)
-		case "x_position":
-			x, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempMouseMove.XPosition = x
-		case "y_position":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempMouseMove.YPosition = y
-		case "window_height":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempMouseMove.WindowHeight = y
-		case "window_width":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempMouseMove.WindowWidth = y
-		}
-
-		tempMouseMove.QuestionNumber = unmarshaledRow["question_number"].(string)
-		tempMouseMove.SessionID = unmarshaledRow["session_id"].(string)
-		tempMouseMove.Timestamp = mouseMoveRows.Record().Time()
-
-		outputMouseMove = append(outputMouseMove, tempMouseMove)
-	}
-
-	personalInfoRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+main.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
-		|> filter(fn : (r) => r["_measurement"] == "personal_info")
-		`,
+	// code submissive
+	p = influxdb2.NewPoint(
+		"code_submission",
+		map[string]string{
+			"session_id":      id.String(),
+			"question_number": "1",
+		},
+		map[string]interface{}{
+			"code":     "let () = print_endline \"UwU\"",
+			"language": "OCaml",
+		},
+		time.Unix(rand.Int63n(delta)+min, 0),
 	)
-	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
-		return
-	}
 
-	outputPersonalInfo := []main.PersonalInfo{}
-	tempPersonalInfo := main.PersonalInfo{}
+	writeInputAPI.WritePoint(ctx, p)
 
-	for personalInfoRows.Next() {
-		unmarshaledRow, err := main.UnmarshalInfluxRow(mouseMoveRows.Record().String())
-		if err != nil {
-			return
-		}
-
-		switch unmarshaledRow["_field"].(string) {
-		case "student_number":
-			tempPersonalInfo.StudentNumber = unmarshaledRow["_value"].(string)
-		case "hours_of_practice":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempPersonalInfo.HoursOfPractice = y
-		case "years_of_experience":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempPersonalInfo.YearsOfExperience = y
-		case "familiar_language":
-			tempPersonalInfo.FamiliarLanguages = unmarshaledRow["_value"].(string)
-		}
-
-		tempPersonalInfo.SessionID = unmarshaledRow["session_id"].(string)
-		tempPersonalInfo.Timestamp = personalInfoRows.Record().Time()
-
-		outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
-	}
-
-	samTestRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+main.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] != "")
-		|> filter(fn : (r) => r["_measurement"] == "sam_test_before")
-		`,
+	// code_event_keystroke
+	p = influxdb2.NewPoint(
+		"coding_event_keystroke",
+		map[string]string{
+			"session_id": id.String(),
+		},
+		map[string]interface{}{
+			"key_char": "a",
+		},
+		time.Unix(rand.Int63n(delta)+min, 0),
 	)
-	if err != nil {
-		// we send a http request to the logger service
-		// for now, we'll just do this:
-		log.Println(err)
-		return
-	}
 
-	outputSamTest := []main.SamTest{}
-	tempSamTest := main.SamTest{}
-	for samTestRows.Next() {
-		unmarshaledRow, err := main.UnmarshalInfluxRow(samTestRows.Record().String())
-		if err != nil {
-			return
-		}
+	writeInputAPI.WritePoint(ctx, p)
 
-		switch unmarshaledRow["_field"].(string) {
-		case "aroused_level":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempSamTest.ArousedLevel = y
-		case "pleased_level":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
-			if err != nil {
-				return
-			}
-			tempSamTest.PleasedLevel = y
-		}
+	// code_event_mouseclick
+	p = influxdb2.NewPoint(
+		"coding_event_mouseclick",
+		map[string]string{
+			"session_id":      id.String(),
+			"question_number": "1",
+		},
+		map[string]interface{}{
+			"key_char":     "a",
+			"right_click":  false,
+			"left_click":   false,
+			"middle_click": false,
+		},
+		time.Unix(rand.Int63n(delta)+min, 0),
+	)
 
-		tempSamTest.SessionID = unmarshaledRow["session_id"].(string)
-		tempSamTest.Timestamp = samTestRows.Record().Time()
+	writeInputAPI.WritePoint(ctx, p)
 
-		outputSamTest = append(outputSamTest, tempSamTest)
-	}
+	// code_event_mouseclick
+	p = influxdb2.NewPoint(
+		"coding_event_mousemove",
+		map[string]string{
+			"session_id":      id.String(),
+			"question_number": "1",
+		},
+		map[string]interface{}{
+			"direction":     "right",
+			"x_position":    0,
+			"y_position":    0,
+			"window_width":  0,
+			"window_height": 0,
+		},
+		time.Unix(rand.Int63n(delta)+min, 0),
+	)
 
+	writeInputAPI.WritePoint(ctx, p)
+
+	deps.GenerateFiles(ctx, &proto.Member{SessionId: id.String()})
+
+	// TODO: DELETE THE FILE HASBEN GENERATED, BUT NOT TODAY MAY HAD AGAINST ME WILL NOW
 }
 
 func TestConvertDataToCSV(t *testing.T) {
