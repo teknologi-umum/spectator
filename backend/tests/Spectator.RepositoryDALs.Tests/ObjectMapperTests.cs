@@ -74,8 +74,7 @@ namespace Spectator.RepositoryDALs.Tests {
 				}
 			};
 			var mapper = new DomainObjectMapper();
-			new Action(() => mapper.ConvertToEntity<ExamStartedEvent>(fluxRecord)).Should().Throw<ArgumentException>()
-				.And.Message.Should().Be("fluxRecord doesn't contain exam_started measurement; instead, it contains session_started measurement (Parameter 'fluxRecord')");
+			new Action(() => mapper.ConvertToEntity<ExamStartedEvent>(fluxRecord)).Should().Throw<InvalidCastException>();
 		}
 
 		[Fact]

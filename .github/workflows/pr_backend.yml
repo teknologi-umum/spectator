@@ -20,6 +20,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore Spectator.sln
       - name: Build
-        run: dotnet build --no-restore Spectator.sln
+        run: dotnet build --no-restore --configuration Release Spectator.sln
       - name: Test
-        run: dotnet test --no-build --verbosity normal Spectator.sln /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+        run: dotnet test --no-build --configuration Release --verbosity normal Spectator.sln /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov

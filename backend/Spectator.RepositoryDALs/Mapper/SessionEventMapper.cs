@@ -14,27 +14,43 @@ namespace Spectator.RepositoryDALs.Mapper {
 		ConstructorInfo Constructor,
 		ImmutableList<FluxPropertyInfo> FluxProperties
 	) {
-		public static SessionEventMapper For<T>() {
-			if (typeof(T) is { IsClass: false } or { IsAbstract: true }) {
+		private static readonly ImmutableDictionary<string, Type> EVENT_TYPE_BY_MEASUREMENT;
+
+		static SessionEventMapper() {
+			EVENT_TYPE_BY_MEASUREMENT = (
+				from eventType in Assembly.GetAssembly(typeof(SessionEventBase))!.GetTypes()
+				where eventType.FullName!.StartsWith(typeof(SessionEventBase).Namespace!)
+				select new {
+					Measurement = ToSnakeCase(eventType.Name.EndsWith("Event", out var pascalCaseName) ? pascalCaseName : eventType.Name),
+					EventType = eventType
+				}
+			).ToImmutableDictionary(
+				keySelector: e => e.Measurement,
+				elementSelector: e => e.EventType
+			);
+		}
+
+		public static SessionEventMapper For(Type eventType) {
+			if (eventType is { IsClass: false } or { IsAbstract: true }) {
 				throw new InvalidOperationException("Event type must be a concrete class");
 			}
 
-			if (!typeof(SessionEventBase).IsAssignableFrom(typeof(T))) {
+			if (!typeof(SessionEventBase).IsAssignableFrom(eventType)) {
 				throw new InvalidOperationException("Event type must be derived from SessionEventBase");
 			}
 
-			var typeName = typeof(T).Name;
+			var typeName = eventType.Name;
 			if (!typeName.EndsWith("Event", out var pascalCaseName)) {
 				throw new InvalidOperationException("Event type must end with 'Event'");
 			}
 
 			return new(
-				Type: typeof(T),
+				Type: eventType,
 				FluxTypeName: ToSnakeCase(pascalCaseName),
-				Constructor: typeof(T)
+				Constructor: eventType
 					.GetConstructors()
 					.Single(),
-				FluxProperties: typeof(T)
+				FluxProperties: eventType
 					.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance)
 					.Where(prop => prop.Name is not nameof(SessionEventBase.SessionId) and not nameof(SessionEventBase.Timestamp) and not "EqualityContract")
 					.Select(prop => new FluxPropertyInfo(
@@ -45,7 +61,14 @@ namespace Spectator.RepositoryDALs.Mapper {
 			);
 		}
 
-		public T ConvertToEntity<T>(FluxRecord fluxRecord) {
+		public static Type EventTypeFor(FluxRecord fluxRecord) {
+			if (!EVENT_TYPE_BY_MEASUREMENT.TryGetValue(fluxRecord.GetMeasurement(), out var eventType)) {
+				throw new KeyNotFoundException();
+			}
+			return eventType;
+		}
+
+		public SessionEventBase ConvertToEntity(FluxRecord fluxRecord) {
 			var measurement = fluxRecord.GetMeasurement();
 			if (measurement != FluxTypeName) {
 				throw new ArgumentException($"fluxRecord doesn't contain {FluxTypeName} measurement; instead, it contains {measurement} measurement", nameof(fluxRecord));
@@ -63,10 +86,12 @@ namespace Spectator.RepositoryDALs.Mapper {
 				}
 
 				var parameterType = parameters[i].ParameterType;
-				if (parameterType == typeof(string)
-					|| parameterType == typeof(int)
-					|| parameterType == typeof(DateTimeOffset)) {
-					arguments[i] = fluxRecord.GetValueByKey(fluxProp.FluxFieldName);
+				if (parameterType == typeof(string)) {
+					arguments[i] = (string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName);
+				} else if (parameterType == typeof(int)) {
+					arguments[i] = Convert.ToInt32(fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
+				} else if (parameterType == typeof(DateTimeOffset)) {
+					arguments[i] = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(fluxRecord.GetValueByKey(fluxProp.FluxFieldName)) / 1_000_000);
 				} else if (parameterType == typeof(MouseButton)) {
 					arguments[i] = Enum.Parse<MouseButton>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
 				} else if (parameterType == typeof(Locale)) {
@@ -75,8 +100,8 @@ namespace Spectator.RepositoryDALs.Mapper {
 					arguments[i] = Enum.Parse<Language>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
 				} else if (parameterType == typeof(SelfAssessmentManikin)) {
 					arguments[i] = new SelfAssessmentManikin(
-						ArousedLevel: (int)fluxRecord.GetValueByKey("aroused_level"),
-						PleasedLevel: (int)fluxRecord.GetValueByKey("pleased_level")
+						ArousedLevel: Convert.ToInt32(fluxRecord.GetValueByKey("aroused_level")),
+						PleasedLevel: Convert.ToInt32(fluxRecord.GetValueByKey("pleased_level"))
 					);
 				} else if (parameterType == typeof(ConsoleKeyInfo)) {
 					arguments[i] = new ConsoleKeyInfo(
@@ -86,15 +111,17 @@ namespace Spectator.RepositoryDALs.Mapper {
 						alt: (bool)fluxRecord.GetValueByKey("alt"),
 						control: (bool)fluxRecord.GetValueByKey("ctrl")
 					);
+				} else if (parameterType == typeof(ImmutableArray<int>)) {
+					arguments[i] = ((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName)).Split(',').Select(s => int.Parse(s)).ToImmutableArray();
 				} else {
 					throw new InvalidProgramException($"Unhandled parameter type {parameterType}");
 				}
 			}
 
-			return (T)Constructor.Invoke(arguments);
+			return (SessionEventBase)Constructor.Invoke(arguments);
 		}
 
-		public PointData ConvertToPointData<T>(T @event) where T : SessionEventBase {
+		public PointData ConvertToPointData(SessionEventBase @event) {
 			if (@event.GetType() != Type) {
 				throw new InvalidOperationException($"This mapper only converts {Type.Name} and cannot be used to convert {@event.GetType().Name}");
 			}
@@ -123,6 +150,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 						.Field("shift", cki.Modifiers.HasFlag(ConsoleModifiers.Shift))
 						.Field("alt", cki.Modifiers.HasFlag(ConsoleModifiers.Alt))
 						.Field("ctrl", cki.Modifiers.HasFlag(ConsoleModifiers.Control)),
+					ImmutableArray<int> a => pointData.Field(fluxProperty.FluxFieldName, string.Join(',', a.Select(i => i.ToString()))),
 					_ => throw new InvalidProgramException($"Unhandled property type {value.GetType()}")
 				};
 			}
