@@ -126,8 +126,7 @@ func TestConvertDataToJSON(t *testing.T) {
 	wg.Add(1)
 
 	go func(w *sync.WaitGroup) {
-		deps.CreateFile(id)
-		defer w.Done()
+		deps.CreateFile(w, id)
 	}(&wg)
 
 	wg.Wait()

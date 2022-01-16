@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -99,15 +100,19 @@ func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.Empt
 		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
 	}
 
-	go d.CreateFile(sessionID)
+	go d.CreateFile(nil, sessionID)
 
 	return &pb.EmptyResponse{}, nil
 }
 
-func (d *Dependency) CreateFile(sessionID uuid.UUID) {
+func (d *Dependency) CreateFile(wg *sync.WaitGroup, sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
 	// TODO: Send this data into the Logging service.
+
 	defer func() {
+		if wg != nil {
+			wg.Done()
+		}
 		r := recover()
 		if r != nil {
 			log.Println(r.(error))
