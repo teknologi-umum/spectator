@@ -220,7 +220,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	// FIXME: this should be like this
-	studentNumber := tempPersonalInfo.StudentNumber
+	studentNumber := outputPersonalInfo[0].StudentNumber
 
 	mkFileAndUpload(ctx, []byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
 	mkFileAndUpload(ctx, keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
@@ -256,7 +256,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 
 	writeAPI.Flush()
 
-	log.Println(tempPersonalInfo.StudentNumber)
+	log.Println(studentNumber)
 
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.

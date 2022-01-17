@@ -4,18 +4,33 @@ import (
 	"context"
 	"log"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
+type queries struct {
+	Level     string
+	SessionID string
+	Buckets   string
+	TimeFrom  time.Time
+	TimeTo    time.Time
+}
+
+func (d *Dependency) IsDebug() bool {
+	return d.Environment == "DEVELOPMENT"
+}
+
 func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
 	keystrokeMouseRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_keystroke")`,
+		reinaldysBuildQuery(queries{
+			Level:     "coding_event_keystroke",
+			SessionID: sessionID.String(),
+			Buckets:   BucketInputEvents,
+		}),
 	)
 	if err != nil {
 		return []Keystroke{}, err
@@ -24,55 +39,78 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 	//var lastTableIndex int = -1
 	outputKeystroke := []Keystroke{}
 	tempKeystroke := Keystroke{}
+	var tablePosition int64
 	for keystrokeMouseRows.Next() {
-		// TODO: no need to use UnmarshalInfluxRow
-		// See the implementation on the logger service
-		unmarshaledRow, err := UnmarshalInfluxRow(keystrokeMouseRows.Record().String())
-		if err != nil {
-			return []Keystroke{}, err
+		rows := keystrokeMouseRows.Record()
+		table, ok := rows.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
 		}
 
-		switch unmarshaledRow["_field"].(string) {
+		switch rows.Field() {
 		case "key_char":
-			tempKeystroke.KeyChar = unmarshaledRow["_value"].(string)
+			tempKeystroke.KeyChar, ok = rows.Value().(string)
+			if !ok {
+				tempKeystroke.KeyChar = ""
+			}
 		case "key_code":
-			tempKeystroke.KeyCode = unmarshaledRow["_value"].(string)
+			tempKeystroke.KeyCode = rows.Value().(string)
 		case "shift":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempKeystroke.Shift = tempBool
 		case "alt":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempKeystroke.Alt = tempBool
 		case "control":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempKeystroke.Control = tempBool
 		case "unrelated_key":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempKeystroke.UnrelatedKey = tempBool
 		case "meta":
-			tempKeystroke.Modifier = unmarshaledRow["_value"].(string)
+			tempKeystroke.Modifier = rows.Value().(string)
 		}
 
-		// create a new one
-		tempKeystroke.QuestionNumber = unmarshaledRow["question_number"].(string)
-		tempKeystroke.SessionID = unmarshaledRow["session_id"].(string)
-		tempKeystroke.Timestamp = keystrokeMouseRows.Record().Time()
+		if d.IsDebug() {
+			log.Println(rows.String())
+			log.Printf("table %d\n", rows.Table())
+		}
 
-		outputKeystroke = append(outputKeystroke, tempKeystroke)
+		if table != 0 && table > tablePosition {
+			outputKeystroke = append(outputKeystroke, tempKeystroke)
+			tablePosition = table
+		} else {
+			var ok bool
+
+			tempKeystroke.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
+			if !ok {
+				tempKeystroke.QuestionNumber = ""
+			}
+
+			tempKeystroke.SessionID, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempKeystroke.SessionID = ""
+			}
+			tempKeystroke.Timestamp = rows.Time()
+		}
 	}
 
+	// ? : this part ask Reynaldi's i had no ideas.
+	if len(outputKeystroke) > 0 || tempKeystroke.SessionID != "" {
+		outputKeystroke = append(outputKeystroke, tempKeystroke)
+	}
 	return outputKeystroke, nil
 }
 
@@ -89,44 +127,66 @@ func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI,
 		return []MouseClick{}, err
 	}
 
-	log.Println("Pas here 207")
 	outputMouseClick := []MouseClick{}
 	tempMouseClick := MouseClick{}
-
+	var tablePosition int64
 	for mouseClickRows.Next() {
-		unmarshaledRow, err := UnmarshalInfluxRow(mouseClickRows.Record().String())
-		if err != nil {
-			return []MouseClick{}, err
+		rows := mouseClickRows.Record()
+		table, ok := rows.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
 		}
 
-		switch unmarshaledRow["_field"].(string) {
+		switch rows.Field() {
 		case "left_click":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempMouseClick.LeftClick = tempBool
 		case "right_click":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempMouseClick.RightClick = tempBool
 		case "middle_click":
 			tempBool := false
-			if unmarshaledRow["_value"].(string) == "true" {
+			if rows.Value().(string) == "true" {
 				tempBool = true
 			}
 			tempMouseClick.MiddleClick = tempBool
 		}
 
-		// create a new one
-		tempMouseClick.QuestionNumber = unmarshaledRow["question_number"].(string)
-		tempMouseClick.SessionID = unmarshaledRow["session_id"].(string)
-		tempMouseClick.Timestamp = mouseClickRows.Record().Time()
+		if d.IsDebug() {
+			log.Println(rows.String())
+			log.Printf("table %d\n", rows.Table())
+		}
 
+		if table != 0 && table > tablePosition {
+			outputMouseClick = append(outputMouseClick, tempMouseClick)
+			tablePosition = table
+		} else {
+			var ok bool
+
+			tempMouseClick.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
+			if !ok {
+				tempMouseClick.QuestionNumber = ""
+			}
+
+			tempMouseClick.SessionID, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempMouseClick.SessionID = ""
+			}
+			tempMouseClick.Timestamp = rows.Time()
+		}
+	}
+
+	// ? : this part ask Reynaldi's i had no ideas.
+	if len(outputMouseClick) > 0 || tempMouseClick.SessionID != "" {
 		outputMouseClick = append(outputMouseClick, tempMouseClick)
 	}
+
 	return outputMouseClick, nil
 }
 
@@ -145,47 +205,72 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 	outputMouseMove := []MouseMovement{}
 	tempMouseMove := MouseMovement{}
+	var tablePosition int64
 	for mouseMoveRows.Next() {
 		// TODO: remove this, just use normal stuffs instead of
 		// reinventing the wheel. lol.
-		unmarshaledRow, err := UnmarshalInfluxRow(mouseMoveRows.Record().String())
-		if err != nil {
-			return []MouseMovement{}, err
+
+		rows := mouseMoveRows.Record()
+		table, ok := rows.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
 		}
 
-		switch unmarshaledRow["_field"].(string) {
+		switch rows.Field() {
 		case "direction":
-			tempMouseMove.Direction = unmarshaledRow["_value"].(string)
+			tempMouseMove.Direction = rows.Value().(string)
 		case "x_position":
-			x, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			x, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []MouseMovement{}, err
 			}
 			tempMouseMove.XPosition = x
 		case "y_position":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []MouseMovement{}, err
 			}
 			tempMouseMove.YPosition = y
 		case "window_height":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []MouseMovement{}, err
 			}
 			tempMouseMove.WindowHeight = y
 		case "window_width":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []MouseMovement{}, err
 			}
 			tempMouseMove.WindowWidth = y
 		}
 
-		tempMouseMove.QuestionNumber = unmarshaledRow["question_number"].(string)
-		tempMouseMove.SessionID = unmarshaledRow["session_id"].(string)
-		tempMouseMove.Timestamp = mouseMoveRows.Record().Time()
+		if d.IsDebug() {
+			log.Println(rows.String())
+			log.Printf("table %d\n", rows.Table())
+		}
 
+		if table != 0 && table > tablePosition {
+			outputMouseMove = append(outputMouseMove, tempMouseMove)
+			tablePosition = table
+		} else {
+			var ok bool
+
+			tempMouseMove.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
+			if !ok {
+				tempMouseMove.QuestionNumber = ""
+			}
+
+			tempMouseMove.SessionID, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempMouseMove.SessionID = ""
+			}
+			tempMouseMove.Timestamp = rows.Time()
+		}
+	}
+
+	// ? : this part ask Reynaldi's i had no ideas.
+	if len(outputMouseMove) > 0 || tempMouseMove.SessionID != "" {
 		outputMouseMove = append(outputMouseMove, tempMouseMove)
 	}
 
@@ -207,39 +292,63 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 	outputPersonalInfo := []PersonalInfo{}
 	tempPersonalInfo := PersonalInfo{}
-
+	var tablePosition int64
 	for personalInfoRows.Next() {
 		// TODO: mabok
-		unmarshaledRow, err := UnmarshalInfluxRow(personalInfoRows.Record().String())
-		if err != nil {
-			return []PersonalInfo{}, err
+		rows := personalInfoRows.Record()
+		table, ok := rows.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
 		}
 
-		switch unmarshaledRow["_field"].(string) {
+		switch rows.Field() {
 		case "student_number":
-			tempPersonalInfo.StudentNumber = unmarshaledRow["_value"].(string)
+			tempPersonalInfo.StudentNumber, ok = rows.Value().(string)
+			if !ok {
+				tempPersonalInfo.StudentNumber = ""
+			}
 		case "hours_of_practice":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []PersonalInfo{}, err
 			}
 			tempPersonalInfo.HoursOfPractice = y
 		case "years_of_experience":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []PersonalInfo{}, err
 			}
 			tempPersonalInfo.YearsOfExperience = y
 		case "familiar_language":
-			tempPersonalInfo.FamiliarLanguages = unmarshaledRow["_value"].(string)
+			tempPersonalInfo.FamiliarLanguages, ok = rows.Value().(string)
+			if !ok {
+				tempPersonalInfo.FamiliarLanguages = ""
+			}
 		}
 
-		tempPersonalInfo.SessionID = unmarshaledRow["session_id"].(string)
-		tempPersonalInfo.Timestamp = personalInfoRows.Record().Time()
+		if d.IsDebug() {
+			log.Println(rows.String())
+			log.Printf("table %d\n", rows.Table())
+		}
 
-		outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
+		if table != 0 && table > tablePosition {
+			outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
+			tablePosition = table
+		} else {
+			var ok bool
+
+			tempPersonalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempPersonalInfo.SessionID = ""
+			}
+			tempPersonalInfo.Timestamp = rows.Time()
+		}
 	}
 
+	// ? : this part ask Reynaldi's i had no ideas.
+	if len(outputPersonalInfo) > 0 || tempPersonalInfo.SessionID != "" {
+		outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
+	}
 	return outputPersonalInfo, nil
 }
 
@@ -259,31 +368,92 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 	outputSamTest := []SamTest{}
 	tempSamTest := SamTest{}
 	for samTestRows.Next() {
-		unmarshaledRow, err := UnmarshalInfluxRow(samTestRows.Record().String())
-		if err != nil {
-			return []SamTest{}, err
+		rows := samTestRows.Record()
+		table, ok := rows.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
 		}
 
-		switch unmarshaledRow["_field"].(string) {
+		switch rows.Fields() {
 		case "aroused_level":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []SamTest{}, err
 			}
 			tempSamTest.ArousedLevel = y
 		case "pleased_level":
-			y, err := strconv.ParseInt(unmarshaledRow["_value"].(string), 10, 64)
+			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []SamTest{}, err
 			}
 			tempSamTest.PleasedLevel = y
 		}
 
-		tempSamTest.SessionID = unmarshaledRow["session_id"].(string)
-		tempSamTest.Timestamp = samTestRows.Record().Time()
+		if d.IsDebug() {
+			log.Println(rows.String())
+			log.Printf("table %d\n", rows.Table())
+		}
 
+		if table != 0 && table > tablePosition {
+			outputSamTest = append(outputSamTest, tempSamTest)
+			tablePosition = table
+		} else {
+			var ok bool
+
+			tempSamTest.SessionID, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempSamTest.SessionID = ""
+			}
+			tempSamTest.Timestamp = rows.Time()
+		}
+	}
+
+	// ? : this part ask Reynaldi's i had no ideas.
+	if len(outputSamTest) > 0 || tempSamTest.SessionID != "" {
 		outputSamTest = append(outputSamTest, tempSamTest)
 	}
 
 	return outputSamTest, nil
+}
+
+func reinaldysBuildQuery(q queries) string {
+	var str strings.Builder
+	str.WriteString("from(bucket: \"log\")\n")
+	// range query
+	str.WriteString("|> range(")
+	if !q.TimeFrom.IsZero() {
+		str.WriteString("start: " + strconv.FormatInt(q.TimeFrom.Unix(), 10))
+	} else {
+		str.WriteString("start: 0")
+	}
+
+	if !q.TimeTo.IsZero() {
+		str.WriteString(", stop: " + strconv.FormatInt(q.TimeTo.Unix(), 10))
+	}
+
+	str.WriteString(")\n")
+
+	str.WriteString("|> sort(columns: [\"_time\"])\n")
+
+	if q.SessionID == "" {
+		str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
+	} else {
+		str.WriteString("|> group(columns: [\"_time\"])\n")
+	}
+
+	if q.Level != "" {
+		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "` + q.Level + `")` + "\n")
+	}
+
+	if q.Application != "" {
+		str.WriteString(`|> filter(fn: (r) => r["application"] == "` + q.Application + `")` + "\n")
+	}
+
+	if q.SessionID != "" {
+		str.WriteString(`|> filter(fn: (r) => r["session_id"] == "` + q.SessionID + `")` + "\n")
+	}
+
+	str.WriteString("|> yield()\n")
+
+	return str.String()
 }
