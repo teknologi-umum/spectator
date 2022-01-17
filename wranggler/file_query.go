@@ -367,6 +367,7 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 
 	outputSamTest := []SamTest{}
 	tempSamTest := SamTest{}
+	var tablePosition int64
 	for samTestRows.Next() {
 		rows := samTestRows.Record()
 		table, ok := rows.ValueByKey("table").(int64)
@@ -374,7 +375,7 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 			table = 0
 		}
 
-		switch rows.Fields() {
+		switch rows.Field() {
 		case "aroused_level":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
@@ -443,10 +444,6 @@ func reinaldysBuildQuery(q queries) string {
 
 	if q.Level != "" {
 		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "` + q.Level + `")` + "\n")
-	}
-
-	if q.Application != "" {
-		str.WriteString(`|> filter(fn: (r) => r["application"] == "` + q.Application + `")` + "\n")
 	}
 
 	if q.SessionID != "" {
