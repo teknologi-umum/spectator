@@ -56,6 +56,20 @@ func TestQueryKeystrokes(t *testing.T) {
 
 		writeInputAPI.WritePoint(ctx, p)
 	}
+
+	readInputAPI := db.QueryAPI(deps.DBOrganization)
+	result, err := deps.QueryKeystrokes(ctx, readInputAPI, id)
+	if err != nil {
+		t.Fatal("Test Query Keystroke", err)
+		return
+	}
+
+	if len(result) == 50 {
+		t.Log("Test Query Keystorke done")
+		return
+	} else {
+		t.Fatal("Data not 50")
+	}
 }
 
 func TestQueryMouseClick(t *testing.T) {
@@ -99,6 +113,20 @@ func TestQueryMouseClick(t *testing.T) {
 
 		writeInputAPI.WritePoint(ctx, p)
 	}
+
+	readInputAPI := db.QueryAPI(deps.DBOrganization)
+	result, err := deps.QueryMouseClick(ctx, readInputAPI, id)
+	if err != nil {
+		t.Fatal("Test Query Mouse Click", err)
+		return
+	}
+
+	if len(result) == 50 {
+		t.Log("Test Query Mouse Click done")
+	} else {
+		t.Fatal("Data not 50")
+	}
+	return
 }
 
 func TestQueryMouseMove(t *testing.T) {
@@ -143,6 +171,20 @@ func TestQueryMouseMove(t *testing.T) {
 
 		writeInputAPI.WritePoint(ctx, p)
 	}
+
+	readInputAPI := db.QueryAPI(deps.DBOrganization)
+	result, err := deps.QueryMouseMove(ctx, readInputAPI, id)
+	if err != nil {
+		t.Fatal("Test Query Mouse Move", err)
+		return
+	}
+
+	if len(result) == 50 {
+		t.Log("Test Query Mouse Move done")
+	} else {
+		t.Fatal("Data not 50")
+	}
+	return
 }
 
 func TestQueryPersonalInfo(t *testing.T) {
@@ -185,6 +227,20 @@ func TestQueryPersonalInfo(t *testing.T) {
 
 		writeSessionAPI.WritePoint(ctx, p)
 	}
+
+	readInputAPI := db.QueryAPI(deps.DBOrganization)
+	result, err := deps.QueryPersonalInfo(ctx, readInputAPI, id)
+	if err != nil {
+		t.Fatal("Test Query Personal Info", err)
+		return
+	}
+
+	if len(result) == 50 {
+		t.Log("Test Query Personal Info")
+	} else {
+		t.Fatal("Data not 50")
+	}
+	return
 }
 
 func TestQuerySamTest(t *testing.T) {
@@ -225,4 +281,18 @@ func TestQuerySamTest(t *testing.T) {
 
 		writeSessionAPI.WritePoint(ctx, p)
 	}
+
+	readInputAPI := db.QueryAPI(deps.DBOrganization)
+	result, err := deps.QuerySAMTest(ctx, readInputAPI, id)
+	if err != nil {
+		t.Fatal("Test Query Sam Test", err)
+		return
+	}
+
+	if len(result) == 50 {
+		t.Log("Test Query Sam Test")
+	} else {
+		t.Fatal("Data not 50")
+	}
+	return
 }
