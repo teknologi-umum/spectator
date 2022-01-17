@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"sync"
 	"testing"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/influxdata/influxdb-client-go/v2/api/write"
 )
 
 func TestConvertDataToJSON(t *testing.T) {
@@ -124,14 +122,7 @@ func TestConvertDataToJSON(t *testing.T) {
 		writeInputAPI.WritePoint(ctx, p)
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	go func(w *sync.WaitGroup) {
-		deps.CreateFile(w, id)
-	}(&wg)
-
-	wg.Wait()
+	deps.CreateFile("", id)
 
 	filesJson, err := filepath.Glob("./*.json")
 	if err != nil {
