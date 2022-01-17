@@ -419,7 +419,7 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 
 func reinaldysBuildQuery(q queries) string {
 	var str strings.Builder
-	str.WriteString("from(bucket: \"log\")\n")
+	str.WriteString("from(bucket: \"" + q.Buckets + "\")\n")
 	// range query
 	str.WriteString("|> range(")
 	if !q.TimeFrom.IsZero() {

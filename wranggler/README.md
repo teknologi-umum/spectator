@@ -12,7 +12,7 @@ MINIO_ACCESS_ID="" \
 MINIO_SECRET_KEY="" \ 
 LOGGER_SERVER_ADDRESS="" \
 LOGGER_TOKEN="" \
-go rum main.go file.go funfact.go ping.go
+go rum .
 ```
 
 

@@ -20,8 +20,6 @@ func TestQueryKeystrokes(t *testing.T) {
 	// that checks if there is no data to be queried.
 	// we must check if that (rare and edgy) event happen,
 	// so what would the software react?
-	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -73,8 +71,6 @@ func TestQueryKeystrokes(t *testing.T) {
 }
 
 func TestQueryMouseClick(t *testing.T) {
-	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -130,8 +126,6 @@ func TestQueryMouseClick(t *testing.T) {
 }
 
 func TestQueryMouseMove(t *testing.T) {
-	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -188,8 +182,6 @@ func TestQueryMouseMove(t *testing.T) {
 }
 
 func TestQueryPersonalInfo(t *testing.T) {
-	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -244,8 +236,6 @@ func TestQueryPersonalInfo(t *testing.T) {
 }
 
 func TestQuerySamTest(t *testing.T) {
-	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
