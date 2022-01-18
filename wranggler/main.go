@@ -10,16 +10,21 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
+	"worker/logger"
 	pb "worker/proto"
 )
 
 // Dependency contains the dependency injection
 // to be used on this package.
 type Dependency struct {
+	Environment    string
 	DB             influxdb2.Client
 	Bucket         *minio.Client
 	DBOrganization string
+	Logger         logger.LoggerClient
+	LoggerToken    string
 	pb.UnimplementedWorkerServer
 }
 
@@ -64,24 +69,57 @@ func main() {
 		log.Fatalln("MINIO_SECRET_KEY envar missing")
 	}
 
+	loggerServerAddr, ok := os.LookupEnv("LOGGER_SERVER_ADDRESS")
+	if !ok {
+		log.Fatalln("LOGGER_SERVER_ADDRESS envar missing")
+	}
+
+	loggerToken, ok := os.LookupEnv("LOGGER_TOKEN")
+	if !ok {
+		log.Fatalln("LOGGER_TOKEN envar missing")
+	}
+
+	environment, ok := os.LookupEnv("ENVIRONMENT")
+	if !ok {
+		environment = "DEVELOPMENT"
+	}
+
+	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
+	if !ok {
+		log.Fatalln("MINIO_TOKEN envar missing")
+	}
+
 	// Create InfluxDB instance
 	influxConn := influxdb2.NewClient(influxHost, influxToken)
 	defer influxConn.Close()
 
 	// Create Minio instance
 	minioConn, err := minio.New(minioHost, &minio.Options{
-		Creds:  credentials.NewStaticV4(minioID, minioSecret, "spectator"),
-		Secure: true,
+		Creds: credentials.NewStaticV4(minioID, minioSecret, minioToken),
 	})
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	// Dial the logger service
+	loggerConn, err := grpc.Dial(
+		loggerServerAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer loggerConn.Close()
+	loggerClient := logger.NewLoggerClient(loggerConn)
 
 	// Initialize dependency injection struct
 	dependencies := &Dependency{
 		DB:             influxConn,
 		DBOrganization: influxOrg,
 		Bucket:         minioConn,
+		Logger:         loggerClient,
+		LoggerToken:    loggerToken,
+		Environment:    environment,
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")
@@ -90,7 +128,7 @@ func main() {
 	}
 
 	// gRPC uses TCP connection.
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "localhost", portNumber))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "0.0.0.0", portNumber))
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}

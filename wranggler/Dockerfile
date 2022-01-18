@@ -8,9 +8,8 @@ RUN go build .
 FROM alpine
 RUN mkdir /app
 WORKDIR /app
-COPY --from=builder /app/wranggler .
+COPY --from=builder /app/worker .
 ENV PORT=4444
 EXPOSE 4444
 
-HEALTHCHECK CMD curl --fail http://localhost:4444/ping || exit 1
-CMD ["./wranggler"]
+CMD ["./worker"]

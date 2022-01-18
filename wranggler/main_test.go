@@ -2,13 +2,12 @@ package main_test
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
-
-	//"log"
-	//"os"
 	"testing"
+	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -62,7 +61,7 @@ func TestMain(m *testing.M) {
 	// Lookup environment variables
 	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
 	if !ok {
-		influxToken = "H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH"
+		influxToken = "nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd"
 	}
 
 	influxHost, ok := os.LookupEnv("INFLUX_HOST")
@@ -72,7 +71,7 @@ func TestMain(m *testing.M) {
 
 	influxOrg, ok := os.LookupEnv("INFLUX_ORG")
 	if !ok {
-		log.Fatalln("INFLUX_ORG envar missing")
+		influxOrg = "teknum_spectator"
 	}
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")
@@ -98,7 +97,6 @@ func TestMain(m *testing.M) {
 	var err error
 
 	db = influxdb2.NewClient(influxHost, influxToken)
-	defer db.Close()
 
 	dbOrganization = influxOrg
 
@@ -113,6 +111,13 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to create minio client: %v", err)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+
+	err = prepareBuckets(ctx, db, influxOrg)
+	if err != nil {
+		log.Fatalf("Failed to prepare buckets: %v", err)
+	}
+
 	lis = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
 	pb.RegisterWorkerServer(s, &worker.Dependency{DB: db, Bucket: bucket, DBOrganization: influxOrg})
@@ -122,5 +127,96 @@ func TestMain(m *testing.M) {
 		}
 	}()
 
-	os.Exit(m.Run())
+	code := m.Run()
+
+	// It turns out that defer doesn't work
+	// when combined with os.Exit()
+	cancel()
+	db.Close()
+
+	os.Exit(code)
+}
+
+func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
+	bucketsAPI := db.BucketsAPI()
+	_, err := bucketsAPI.FindBucketByName(ctx, worker.BucketInputEvents)
+	if err != nil && err.Error() != "bucket '"+worker.BucketInputEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+worker.BucketInputEvents+"' not found" {
+		organizationAPI := db.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, worker.BucketInputEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	_, err = bucketsAPI.FindBucketByName(ctx, worker.BucketSessionEvents)
+	if err != nil && err.Error() != "bucket '"+worker.BucketSessionEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+worker.BucketSessionEvents+"' not found" {
+		organizationAPI := db.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, worker.BucketSessionEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func cleanup() {
+	// create new context
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	// find current organization
+	currentOrganization, err := db.OrganizationsAPI().FindOrganizationByName(ctx, dbOrganization)
+	if err != nil {
+		log.Fatalf("finding organization: %v", err)
+	}
+
+	// find input_events bucket
+	inputEventsBucket, err := db.BucketsAPI().FindBucketByName(ctx, worker.BucketInputEvents)
+	if err != nil {
+		log.Fatalf("finding bucket: %v", err)
+	}
+
+	// delete bucket data
+	deleteAPI := db.DeleteAPI()
+
+	inputEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	for _, measurement := range inputEventMeasurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+		}
+	}
+
+	// find input_events bucket
+	sessionEventsBucket, err := db.BucketsAPI().FindBucketByName(ctx, worker.BucketSessionEvents)
+	if err != nil {
+		log.Fatalf("finding bucket: %v", err)
+	}
+
+	sessionEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	for _, measurement := range sessionEventMeasurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+		}
+	}
 }
