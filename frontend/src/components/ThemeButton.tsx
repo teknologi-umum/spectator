@@ -1,7 +1,7 @@
 import { useColorMode } from "@/hooks";
 import { Box, Select} from "@chakra-ui/react";
 import { useColorModeValue } from "@/hooks/";
-import { FormEvent } from "react";
+import React, { FormEvent } from "react";
 import { Theme } from "@/store/slices/themeSlice/types";
 import theme from "@/styles/themes";
 
