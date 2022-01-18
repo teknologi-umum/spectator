@@ -1,7 +1,7 @@
 public class question1 {
 
-    {0}
+    // _REPLACE_ME_
     public static void main(String[] args) {
-        printLyrics();
+        Lyrics.printLyrics();
     }
 }
