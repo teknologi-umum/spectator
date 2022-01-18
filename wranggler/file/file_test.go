@@ -1,4 +1,4 @@
-package main_test
+package file_test
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
-
 	worker "worker"
+	"worker/file"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -21,7 +21,7 @@ func TestConvertDataToJSON(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	deps := worker.Dependency{
+	deps := file.Dependency{
 		DB:             db,
 		DBOrganization: dbOrganization,
 		Bucket:         bucket,
@@ -145,34 +145,4 @@ func TestConvertDataToJSON(t *testing.T) {
 		}
 	}
 
-}
-
-func TestConvertDataToCSV(t *testing.T) {
-	// data := []main.SampleInput{
-	// 	{
-	// 		Time:  time.Now().Add(time.Second * 1),
-	// 		Actor: "James",
-	// 		X:     20,
-	// 		Y:     13,
-	// 	},
-	// 	{
-	// 		Time:  time.Now().Add(time.Second * 2),
-	// 		Actor: "James, Riyadi",
-	// 		X:     21,
-	// 		Y:     13,
-	// 	},
-	// 	{
-	// 		Time:  time.Now().Add(time.Second * 3),
-	// 		Actor: "James Riyadi",
-	// 		X:     22,
-	// 		Y:     14,
-	// 	},
-	// }
-
-	// res, err := main.ConvertDataToCSV(data)
-	// if err != nil {
-	// 	t.Errorf("an error was thrown: %v", err)
-	// }
-
-	// t.Log(string(res))
 }

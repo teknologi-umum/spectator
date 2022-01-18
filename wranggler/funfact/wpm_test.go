@@ -1,12 +1,11 @@
-package main_test
+package funfact_test
 
 import (
 	"context"
 	"math/rand"
 	"testing"
 	"time"
-
-	worker "worker"
+	"worker/funfact"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -18,7 +17,7 @@ func TestCalculateWordsPerMinute(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	deps := worker.Dependency{
+	deps := funfact.Dependency{
 		DB:             db,
 		DBOrganization: dbOrganization,
 		Bucket:         bucket,
