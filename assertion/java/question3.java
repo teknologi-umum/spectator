@@ -2,9 +2,11 @@ import java.util.*;
 import java.io.*;
 import java.math.*;
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 public class question3 {
 
-    _REPLACE_ME_
+    _REPLACE_ME_WITH_SOLUTION_
 
     private static boolean workingAnswer(int number1, int number2) {
         return number1 == number2;

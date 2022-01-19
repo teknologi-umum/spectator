@@ -2,11 +2,13 @@ import java.util.*;
 import java.io.*;
 import java.math.*;
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 public class question2 {
 
     private static String[] temperatures = { "Celcius", "Fahrenheit", "Kelvin" };
 
-    _REPLACE_ME_
+    _REPLACE_ME_WITH_SOLUTION_
 
     private static boolean isC(String tempName) {
         return tempName.equalsIgnoreCase("Celcius");
