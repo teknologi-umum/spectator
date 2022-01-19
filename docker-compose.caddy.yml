@@ -1,0 +1,11 @@
+services:
+  caddy:
+    image: caddy:2.4.6-alpine
+    restart: on-failure:3
+    hostname: caddy
+    volumes:
+      -  ./data/caddy/data:/data
+      - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - 80:80
+      - 443:443
