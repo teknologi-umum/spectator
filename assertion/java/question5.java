@@ -2,9 +2,11 @@ import java.util.*;
 import java.io.*;
 import java.math.*;
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 public class question5 {
 
-    _REPLACE_ME_
+    _REPLACE_ME_WITH_SOLUTION_
   
     private static String workingAnswer(String input) {
         int inputLen = input.length();
