@@ -14,10 +14,10 @@ import (
 func ConvertDataToJSON(input interface{}) ([]byte, error) {
 	data, err := json.MarshalIndent(input, "", " ")
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, fmt.Errorf("failed to marshal data to json: %v", err)
 	}
 
-	return data, err
+	return data, nil
 }
 
 func ConvertDataToCSV(inputp interface{}) ([]byte, error) {

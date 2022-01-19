@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -32,7 +33,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		`,
 	)
 	if err != nil {
-		return []MouseMovement{}, err
+		return []MouseMovement{}, fmt.Errorf("failed to query mouse moves: %w", err)
 	}
 
 	outputMouseMove := []MouseMovement{}
@@ -54,25 +55,25 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		case "x_position":
 			x, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []MouseMovement{}, err
+				return []MouseMovement{}, fmt.Errorf("failed to parse x position: %w", err)
 			}
 			tempMouseMove.XPosition = x
 		case "y_position":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []MouseMovement{}, err
+				return []MouseMovement{}, fmt.Errorf("failed to parse y position: %w", err)
 			}
 			tempMouseMove.YPosition = y
 		case "window_height":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []MouseMovement{}, err
+				return []MouseMovement{}, fmt.Errorf("failed to parse window height: %w", err)
 			}
 			tempMouseMove.WindowHeight = y
 		case "window_width":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []MouseMovement{}, err
+				return []MouseMovement{}, fmt.Errorf("failed to parse window width: %w", err)
 			}
 			tempMouseMove.WindowWidth = y
 		}

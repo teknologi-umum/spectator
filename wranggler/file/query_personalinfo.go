@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -30,7 +31,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		`,
 	)
 	if err != nil {
-		return []PersonalInfo{}, err
+		return []PersonalInfo{}, fmt.Errorf("failed to query personal info: %w", err)
 	}
 
 	outputPersonalInfo := []PersonalInfo{}
@@ -53,13 +54,13 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		case "hours_of_practice":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []PersonalInfo{}, err
+				return []PersonalInfo{}, fmt.Errorf("failed to parse hours of practice: %w", err)
 			}
 			tempPersonalInfo.HoursOfPractice = y
 		case "years_of_experience":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []PersonalInfo{}, err
+				return []PersonalInfo{}, fmt.Errorf("failed to parse years of experience: %w", err)
 			}
 			tempPersonalInfo.YearsOfExperience = y
 		case "familiar_language":

@@ -12,10 +12,11 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
+// This function should be called as a goroutine.
+//
+// It will not panic, instead the panic will be caught
 func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
-	// TODO: Send this data into the Logging service.
-
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -41,15 +42,11 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Now we fetch all the data with the _actor being sessionID.String()
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	// TODO: might be better to refactor each of these into their own functions.
-	// keystroke and mouse
-
 	outputKeystroke, err := d.QueryKeystrokes(ctx, queryAPI, sessionID)
 	if err != nil {
 		// TODO: handle this error!
 		return
 	}
-	//t.Log(outputKeystroke)
 
 	outputMouseClick, err := d.QueryMouseClick(ctx, queryAPI, sessionID)
 	if err != nil {
@@ -119,16 +116,46 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// FIXME: this should be like this
 	studentNumber := outputPersonalInfo[0].StudentNumber
 
-	mkFileAndUpload(ctx, []byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
-	mkFileAndUpload(ctx, keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
-	mkFileAndUpload(ctx, []byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
-	mkFileAndUpload(ctx, mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
-	mkFileAndUpload(ctx, []byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
-	mkFileAndUpload(ctx, mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
-	mkFileAndUpload(ctx, []byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
-	mkFileAndUpload(ctx, personalJSON, studentNumber+"_personal.json", d.Bucket)
-	mkFileAndUpload(ctx, []byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
-	mkFileAndUpload(ctx, samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
+	_, err = mkFileAndUpload(ctx, []byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, []byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, []byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, []byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, personalJSON, studentNumber+"_personal.json", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, []byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
+	if err != nil {
+		return
+	}
+	_, err = mkFileAndUpload(ctx, samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
+	if err != nil {
+		return
+	}
 
 	// TODO: should use WriteAPIBlocking because InfluxDB has no locks
 	writeAPI := d.DB.WriteAPI(d.DBOrganization, d.BucketSessionEvents)

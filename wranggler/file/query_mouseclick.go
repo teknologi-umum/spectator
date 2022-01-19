@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -29,7 +30,7 @@ func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI,
 		`,
 	)
 	if err != nil {
-		return []MouseClick{}, err
+		return []MouseClick{}, fmt.Errorf("failed to query mouse clicks: %w", err)
 	}
 
 	outputMouseClick := []MouseClick{}
@@ -87,7 +88,6 @@ func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI,
 		}
 	}
 
-	// ? : this part ask Reynaldi's i had no ideas.
 	if len(outputMouseClick) > 0 || tempMouseClick.SessionID != "" {
 		outputMouseClick = append(outputMouseClick, tempMouseClick)
 	}

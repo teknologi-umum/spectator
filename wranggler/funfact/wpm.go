@@ -2,6 +2,7 @@ package funfact
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -30,7 +31,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to query keystroke events: %w", err)
 	}
 	defer rows.Close()
 

@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -28,7 +29,7 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 		`,
 	)
 	if err != nil {
-		return []SamTest{}, err
+		return []SamTest{}, fmt.Errorf("failed to query sam test: %w", err)
 	}
 
 	outputSamTest := []SamTest{}
@@ -45,13 +46,13 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 		case "aroused_level":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []SamTest{}, err
+				return []SamTest{}, fmt.Errorf("failed to parse aroused level: %w", err)
 			}
 			tempSamTest.ArousedLevel = y
 		case "pleased_level":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []SamTest{}, err
+				return []SamTest{}, fmt.Errorf("failed to parse pleased level: %w", err)
 			}
 			tempSamTest.PleasedLevel = y
 		}

@@ -2,6 +2,7 @@ package funfact
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/google/uuid"
@@ -21,7 +22,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 		|> count()`,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to query submission attempts: %w", err)
 	}
 
 	// terus langsung return hasilnya
@@ -34,6 +35,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 		result <- uint32(0)
 		return nil
 	}
+
 	value, ok := rows.Record().Value().(int64)
 	if !ok {
 		log.Println("[ERROR] casting value to int64")

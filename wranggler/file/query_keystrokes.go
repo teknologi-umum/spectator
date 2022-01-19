@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -33,7 +34,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		}),
 	)
 	if err != nil {
-		return []Keystroke{}, err
+		return []Keystroke{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
 
 	//var lastTableIndex int = -1
@@ -107,9 +108,9 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		}
 	}
 
-	// ? : this part ask Reynaldi's i had no ideas.
 	if len(outputKeystroke) > 0 || tempKeystroke.SessionID != "" {
 		outputKeystroke = append(outputKeystroke, tempKeystroke)
 	}
+
 	return outputKeystroke, nil
 }

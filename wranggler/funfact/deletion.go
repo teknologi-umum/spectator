@@ -3,6 +3,7 @@ package funfact
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -25,14 +26,14 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> yield(name: "count")`,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to query deletion rate: %w", err)
 	}
 	defer deletionRows.Close()
 
 	for deletionRows.Next() {
 		deletionTotal, ok = deletionRows.Record().Value().(int64)
 		if !ok {
-			return errors.New("fail to infer deletion Total")
+			return fmt.Errorf("failed to cast deletionTotal to int64")
 		}
 	}
 
