@@ -1,19 +1,18 @@
-package file_test
+package funfact_test
 
 import (
 	"context"
 	"log"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
-	"worker/file"
+	"worker/funfact"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-var deps *file.Dependency
+var deps *funfact.Dependency
 var db influxdb2.Client
 
 func TestMain(m *testing.M) {
@@ -33,47 +32,17 @@ func TestMain(m *testing.M) {
 		influxOrg = "teknum_spectator"
 	}
 
-	minioHost, ok := os.LookupEnv("MINIO_HOST")
-	if !ok {
-		log.Fatalln("MINIO_HOST envar missing")
-	}
-
-	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
-	if !ok {
-		log.Fatalln("MINIO_ACCESS_ID envar missing")
-	}
-
-	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
-	if !ok {
-		log.Fatalln("MINIO_SECRET_KEY envar missing")
-	}
-
-	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
-	if !ok {
-		log.Fatalln("MINIO_TOKEN envar missing")
-	}
-
 	db = influxdb2.NewClient(influxHost, influxToken)
 
-	bucket, err := minio.New(
-		minioHost,
-		&minio.Options{
-			Secure: false,
-			Creds:  credentials.NewStaticV4(minioID, minioSecret, minioToken),
-		},
-	)
-	if err != nil {
-		log.Fatalf("Failed to create minio client: %v", err)
-	}
-
-	deps = &file.Dependency{
+	deps = &funfact.Dependency{
 		DB:                  db,
 		DBOrganization:      influxOrg,
-		Bucket:              bucket,
 		BucketInputEvents:   "input_events",
 		BucketSessionEvents: "session_events",
 		Environment:         "testing",
 	}
+
+	rand.Seed(time.Now().Unix())
 
 	code := m.Run()
 

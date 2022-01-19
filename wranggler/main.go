@@ -115,16 +115,39 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer loggerConn.Close()
-	loggerClient := loggerpb.NewLoggerClient(loggerConn)
+	loggerClient := logger.New(
+		loggerpb.NewLoggerClient(loggerConn),
+		loggerToken,
+		environment,
+	)
 
 	// Initialize dependency injection struct
 	dependencies := &Dependency{
 		DB:             influxConn,
 		DBOrganization: influxOrg,
 		Bucket:         minioConn,
-		Logger:         logger.New(loggerClient, loggerToken, environment),
+		Logger:         loggerClient,
 		LoggerToken:    loggerToken,
 		Environment:    environment,
+		Funfact: &funfact.Dependency{
+			Environment:         environment,
+			DB:                  influxConn,
+			DBOrganization:      influxOrg,
+			Logger:              loggerClient,
+			LoggerToken:         loggerToken,
+			BucketInputEvents:   BucketInputEvents,
+			BucketSessionEvents: BucketSessionEvents,
+		},
+		File: &file.Dependency{
+			Environment:         environment,
+			Bucket:              minioConn,
+			DB:                  influxConn,
+			DBOrganization:      influxOrg,
+			Logger:              loggerClient,
+			LoggerToken:         loggerToken,
+			BucketInputEvents:   BucketInputEvents,
+			BucketSessionEvents: BucketSessionEvents,
+		},
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")

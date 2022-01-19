@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"testing"
 	"time"
-	"worker/funfact"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -13,22 +12,15 @@ import (
 
 func TestCalculateWordsPerMinute(t *testing.T) {
 	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	deps := funfact.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Error(err)
 	}
 
-	writeAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
+	writeAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	// Random date between range
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()

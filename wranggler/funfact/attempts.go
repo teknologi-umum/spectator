@@ -11,8 +11,6 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// number of question submission attempts
-	// TODO:  ini buat ngambil nganu, jangan lupa result
-	// SELECT COUNT(_time) FROM spectator WHERE _type = "coding_attempted"
 	rows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")

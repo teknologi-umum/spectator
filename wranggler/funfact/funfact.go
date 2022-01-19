@@ -1,10 +1,9 @@
 package funfact
 
 import (
-	logger "worker/logger_proto"
+	logger "worker/logger"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/minio/minio-go/v7"
 )
 
 // Dependency contains the dependency injection
@@ -12,9 +11,8 @@ import (
 type Dependency struct {
 	Environment         string
 	DB                  influxdb2.Client
-	Bucket              *minio.Client
 	DBOrganization      string
-	Logger              logger.LoggerClient
+	Logger              *logger.Logger
 	LoggerToken         string
 	BucketInputEvents   string
 	BucketSessionEvents string

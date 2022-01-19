@@ -14,7 +14,6 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	// TODO:  ini buat ngambil nganu, jangan lupa result
 	deletionRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
