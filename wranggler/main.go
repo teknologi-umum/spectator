@@ -12,8 +12,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"worker/file"
+	"worker/funfact"
 	"worker/logger"
-	pb "worker/proto"
+	loggerpb "worker/logger_proto"
+	pb "worker/worker_proto"
 )
 
 // Dependency contains the dependency injection
@@ -23,8 +26,10 @@ type Dependency struct {
 	DB             influxdb2.Client
 	Bucket         *minio.Client
 	DBOrganization string
-	Logger         logger.LoggerClient
+	Logger         *logger.Logger
 	LoggerToken    string
+	Funfact        *funfact.Dependency
+	File           *file.Dependency
 	pb.UnimplementedWorkerServer
 }
 
@@ -110,7 +115,11 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer loggerConn.Close()
-	loggerClient := logger.NewLoggerClient(loggerConn)
+	loggerClient := logger.New(
+		loggerpb.NewLoggerClient(loggerConn),
+		loggerToken,
+		environment,
+	)
 
 	// Initialize dependency injection struct
 	dependencies := &Dependency{
@@ -120,6 +129,25 @@ func main() {
 		Logger:         loggerClient,
 		LoggerToken:    loggerToken,
 		Environment:    environment,
+		Funfact: &funfact.Dependency{
+			Environment:         environment,
+			DB:                  influxConn,
+			DBOrganization:      influxOrg,
+			Logger:              loggerClient,
+			LoggerToken:         loggerToken,
+			BucketInputEvents:   BucketInputEvents,
+			BucketSessionEvents: BucketSessionEvents,
+		},
+		File: &file.Dependency{
+			Environment:         environment,
+			Bucket:              minioConn,
+			DB:                  influxConn,
+			DBOrganization:      influxOrg,
+			Logger:              loggerClient,
+			LoggerToken:         loggerToken,
+			BucketInputEvents:   BucketInputEvents,
+			BucketSessionEvents: BucketSessionEvents,
+		},
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")

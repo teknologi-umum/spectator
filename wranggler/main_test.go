@@ -16,34 +16,8 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 
 	worker "worker"
-	pb "worker/proto"
-	// "github.com/minio/minio-go/v7"
-	// "github.com/minio/minio-go/v7/pkg/credentials"
+	pb "worker/worker_proto"
 )
-
-type Point struct {
-	Type  string `json:"t"`
-	Event string `json:"e"`
-	Actor string `json:"a"`
-	Value string `json:"v"`
-}
-
-type Submission struct {
-	Type           string `json:"t"`
-	Event          string `json:"e"`
-	Actor          string `json:"a"`
-	QuestionNumber string `json:"q"`
-	Value          string `json:"v"`
-}
-
-type PersonalInfo struct {
-	Type              string `json:"type"`
-	SessionID         string `json:"session_id"`
-	StudentNumber     string `json:"student_number"`
-	HoursOfPractice   string `json:"hours_of_practice"`
-	YearsOfExperience string `json:"years_of_experience"`
-	FamiliarLanguages string `json:"familiar_languages"`
-}
 
 var db influxdb2.Client
 var bucket *minio.Client

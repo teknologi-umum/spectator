@@ -1,0 +1,55 @@
+name: Check
+
+on:
+  pull_request:
+    paths:
+      - 'wranggler/**'
+
+jobs:
+  worker:
+    name: Worker
+    runs-on: ubuntu-latest
+    container: golang:1.17
+    timeout-minutes: 5
+    services:
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: log
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+      bucket:
+        image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+        ports:
+          - 9000:9000
+        env:
+          MINIO_ROOT_USER: teknum
+          MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+          MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+    defaults:
+      run:
+        working-directory: ./wranggler
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build test
+        run: go build .
+      - name: Run test
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic
+        env:
+          INFLUX_HOST: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: iKPpruHfaXygrwSV
+          MINIO_HOST: http://bucket:9000/
+          MINIO_ACCESS_ID: teknum
+          MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+          LOGGER_SERVER_ADDRESS:  http://logger:9000/
+          LOGGER_SERVER_TOKEN: testing
+          MINIO_TOKEN: ''
+

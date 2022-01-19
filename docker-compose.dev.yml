@@ -2,7 +2,6 @@ services:
   caddy:
     image: caddy:2.4.6-alpine
     restart: always
-    hostname: caddy
     volumes:
       - ./data/caddy/Caddyfile.dev:/etc/caddy/Caddyfile
     depends_on:
@@ -14,7 +13,6 @@ services:
   backend:
     build: ./backend/
     restart: always
-    hostname: be
     environment:
       INFLUX_URL: http://influx:8086
       INFLUX_TOKEN: ESHVeXGynXR73942AmAkCNseenwcQVqKu
@@ -28,7 +26,6 @@ services:
   frontend:
     build: ./frontend/
     restart: always
-    hostname: fe
     depends_on:
       - backend
       - minio
@@ -37,16 +34,16 @@ services:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server /data --console-address ":9001"
     restart: always
-    hostname: minio_node
     environment:
       MINIO_ROOT_USER: teknum
       MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+      MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
     volumes:
       - ./data/minio:/data
 
   influx:
     image: influxdb:2.1.1-alpine
-    hostname: influx_node
     restart: always
     environment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
@@ -64,12 +61,6 @@ services:
     volumes:
       - ./data/piston:/piston
 
-  zipkin:
-    hostname: zipkin_node
-    image: openzipkin/zipkin:latest
-    restart: always
-    environment:
-      - STORAGE_TYPE=mem
 
 networks:
   host_pub:

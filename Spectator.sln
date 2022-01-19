@@ -28,7 +28,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{EE78E82D-E486-460A-AAFA-5A04993FCF88}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\deploy.yml = .github\workflows\deploy.yml
-		.github\workflows\pr.yml = .github\workflows\pr.yml
+		.github\workflows\pr_backend.yml = .github\workflows\pr_backend.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator", "backend\Spectator\Spectator.csproj", "{9A9D1714-E10B-4BAA-8430-99E189CDE223}"
@@ -69,9 +69,9 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend", "frontend\Frontend.csproj", "{4561F739-9E7A-440B-A17B-EC1F7487EC7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.DomainServices.Tests", "backend\tests\Spectator.DomainServices.Tests\Spectator.DomainServices.Tests.csproj", "{36F79460-BF4A-444B-926A-54184B24D2A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.DomainServices.Tests", "backend\tests\Spectator.DomainServices.Tests\Spectator.DomainServices.Tests.csproj", "{36F79460-BF4A-444B-926A-54184B24D2A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectator.Piston.Tests", "backend\tests\Spectator.Piston.Tests\Spectator.Piston.Tests.csproj", "{241EE284-8C8E-462B-9948-CC11321E941D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectator.Piston.Tests", "backend\tests\Spectator.Piston.Tests\Spectator.Piston.Tests.csproj", "{241EE284-8C8E-462B-9948-CC11321E941D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

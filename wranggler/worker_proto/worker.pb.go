@@ -4,7 +4,7 @@
 // 	protoc        v3.19.3
 // source: worker.proto
 
-package proto
+package worker_proto
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
