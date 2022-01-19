@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 
 	worker "worker"
-	pb "worker/proto"
+	pb "worker/worker_proto"
 	// "github.com/minio/minio-go/v7"
 	// "github.com/minio/minio-go/v7/pkg/credentials"
 )

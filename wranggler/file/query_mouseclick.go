@@ -3,15 +3,26 @@ package file
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
+type MouseClick struct {
+	SessionID      string    `json:"session_id" csv:"session_id"`
+	Type           string    `json:"type" csv:"-"`
+	QuestionNumber string    `json:"question_number" csv:"question_number"`
+	RightClick     bool      `json:"right_click" csv:"right_click"`
+	LeftClick      bool      `json:"left_click" csv:"left_click"`
+	MiddleClick    bool      `json:"middle_click" csv:"middle_click"`
+	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
+}
+
 func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseClick, error) {
 	mouseClickRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
+		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")

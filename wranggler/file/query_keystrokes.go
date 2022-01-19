@@ -3,10 +3,25 @@ package file
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
+
+type Keystroke struct {
+	SessionID      string    `json:"session_id" csv:"session_id"`
+	Type           string    `json:"type" csv:"-"`
+	QuestionNumber string    `json:"question_number" csv:"question_number"`
+	KeyChar        string    `json:"key_char" csv:"key_char"`
+	KeyCode        string    `json:"key_code" csv:"key_code"`
+	Shift          bool      `json:"shift" csv:"shift"`
+	Alt            bool      `json:"alt" csv:"alt"`
+	Control        bool      `json:"control" csv:"control"`
+	UnrelatedKey   bool      `json:"unrelated_key" csv:"control"`
+	Modifier       string    `json:"meta" csv:"meta"`
+	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
+}
 
 func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
 	keystrokeMouseRows, err := queryAPI.Query(
@@ -14,7 +29,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		reinaldysBuildQuery(queries{
 			Level:     "coding_event_keystroke",
 			SessionID: sessionID.String(),
-			Buckets:   BucketInputEvents,
+			Buckets:   d.BucketInputEvents,
 		}),
 	)
 	if err != nil {

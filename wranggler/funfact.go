@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"worker/logger"
-	pb "worker/proto"
+	logger "worker/logger_proto"
+	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
@@ -16,7 +16,7 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	// Parse UUID
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
-		defer d.Log(
+		defer d.Logger.Log(
 			err.Error(),
 			logger.Level_ERROR.Enum(),
 			in.RequestId,
@@ -37,18 +37,18 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	// Run all the calculate function concurently
 	errs, gctx := errgroup.WithContext(ctx)
 	errs.Go(func() error {
-		return d.CalculateWordsPerMinute(gctx, sessionID, wpm)
+		return d.Funfact.CalculateWordsPerMinute(gctx, sessionID, wpm)
 	})
 	errs.Go(func() error {
-		return d.CalculateDeletionRate(gctx, sessionID, deletionRate)
+		return d.Funfact.CalculateDeletionRate(gctx, sessionID, deletionRate)
 	})
 	errs.Go(func() error {
-		return d.CalculateSubmissionAttempts(gctx, sessionID, attempt)
+		return d.Funfact.CalculateSubmissionAttempts(gctx, sessionID, attempt)
 	})
 
 	err = errs.Wait()
 	if err != nil {
-		defer d.Log(
+		defer d.Logger.Log(
 			err.Error(),
 			logger.Level_ERROR.Enum(),
 			in.RequestId,

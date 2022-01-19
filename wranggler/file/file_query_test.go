@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"testing"
 	"time"
-	worker "worker"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -20,21 +19,17 @@ func TestQueryKeystrokes(t *testing.T) {
 	// that checks if there is no data to be queried.
 	// we must check if that (rare and edgy) event happen,
 	// so what would the software react?
+	t.Cleanup(cleanup)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	deps := worker.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Error(err)
 	}
-	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
+
+	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -71,21 +66,17 @@ func TestQueryKeystrokes(t *testing.T) {
 }
 
 func TestQueryMouseClick(t *testing.T) {
+	t.Cleanup(cleanup)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	deps := worker.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Error(err)
 	}
-	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
+
+	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -122,25 +113,20 @@ func TestQueryMouseClick(t *testing.T) {
 	} else {
 		t.Fatal("Data not 50")
 	}
-	return
 }
 
 func TestQueryMouseMove(t *testing.T) {
+	t.Cleanup(cleanup)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	deps := worker.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Error(err)
 	}
-	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
+
+	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -178,25 +164,20 @@ func TestQueryMouseMove(t *testing.T) {
 	} else {
 		t.Fatal("Data not 50")
 	}
-	return
 }
 
 func TestQueryPersonalInfo(t *testing.T) {
+	t.Cleanup(cleanup)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	deps := worker.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Error(err)
 	}
-	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketSessionEvents)
+
+	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -232,25 +213,20 @@ func TestQueryPersonalInfo(t *testing.T) {
 	} else {
 		t.Fatal("Data not 50")
 	}
-	return
 }
 
 func TestQuerySamTest(t *testing.T) {
+	t.Cleanup(cleanup)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	deps := worker.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Error(err)
 	}
-	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketSessionEvents)
+
+	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -284,5 +260,4 @@ func TestQuerySamTest(t *testing.T) {
 	} else {
 		t.Fatal("Data not 50")
 	}
-	return
 }

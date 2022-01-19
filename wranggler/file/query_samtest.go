@@ -4,15 +4,24 @@ import (
 	"context"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
+type SamTest struct {
+	SessionID    string    `json:"session_id" csv:"session_id"`
+	Type         string    `json:"type" csv:"-"`
+	ArousedLevel int64     `json:"aroused_level" csv:"aroused_level"`
+	PleasedLevel int64     `json:"pleased_level" csv:"pleased_level"`
+	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
+}
+
 func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]SamTest, error) {
 	samTestRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketSessionEvents+`")
+		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "sam_test_before")

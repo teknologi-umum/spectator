@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"worker/logger"
+
+	logger "worker/logger_proto"
+	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
-	"worker/file"
-	pb "worker/proto"
 )
 
 // GenerateFile is the handler for generating file into CSV and JSON based on
@@ -15,7 +15,7 @@ import (
 func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.EmptyResponse, error) {
 	sessionID, err := uuid.Parse(in.GetSessionId())
 	if err != nil {
-		defer d.Log(
+		defer d.Logger.Log(
 			err.Error(),
 			logger.Level_ERROR.Enum(),
 			in.RequestId,
@@ -28,7 +28,7 @@ func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.Empt
 		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
 	}
 
-	go file.CreateFile(in.RequestId, sessionID)
+	go d.File.CreateFile(in.RequestId, sessionID)
 
 	return &pb.EmptyResponse{}, nil
 }

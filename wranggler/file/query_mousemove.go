@@ -4,15 +4,28 @@ import (
 	"context"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
+type MouseMovement struct {
+	SessionID      string    `json:"session_id" csv:"session_id"`
+	Type           string    `json:"type" csv:"-"`
+	QuestionNumber string    `json:"question_number" csv:"question_number"`
+	Direction      string    `json:"direction" csv:"direction"`
+	XPosition      int64     `json:"x_position" csv:"x_position"`
+	YPosition      int64     `json:"y_position" csv:"y_position"`
+	WindowWidth    int64     `json:"window_width" csv:"window_width"`
+	WindowHeight   int64     `json:"window_height" csv:"window_height"`
+	Timestamp      time.Time `json:"timestamp" csv:"_timestamp"`
+}
+
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
 	mouseMoveRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketInputEvents+`")
+		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")

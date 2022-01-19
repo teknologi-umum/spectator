@@ -4,15 +4,26 @@ import (
 	"context"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
+type PersonalInfo struct {
+	Type              string    `json:"type" csv:"-"`
+	SessionID         string    `json:"session_id" csv:"session_id"`
+	StudentNumber     string    `json:"student_number" csv:"student_number"`
+	HoursOfPractice   int64     `json:"hours_of_practice" csv:"hours_of_experience"`
+	YearsOfExperience int64     `json:"years_of_experience" csv:"years_of_experience"`
+	FamiliarLanguages string    `json:"familiar_languages" csv:"familliar_languages"`
+	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
+}
+
 func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]PersonalInfo, error) {
 	personalInfoRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+BucketSessionEvents+`")
+		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn : (r) => r["_measurement"] == "personal_info")

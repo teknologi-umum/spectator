@@ -1,4 +1,4 @@
-package main
+package logger
 
 // logging.go provides utility functions for logging.
 
@@ -7,10 +7,29 @@ import (
 	"log"
 	"strings"
 	"time"
-	"worker/logger"
+	pb "worker/logger_proto"
 
 	"github.com/google/uuid"
 )
+
+type Logger struct {
+	loggerClient pb.LoggerClient
+	loggerToken  string
+	environment  string
+}
+
+// New provides an initialization function for the logger package.
+// It takes in the gRPC client of the logger, the token, and the environment
+// of the application.
+//
+// Returns a pointer of type *Logger.
+func New(client pb.LoggerClient, token string, env string) *Logger {
+	return &Logger{
+		loggerClient: client,
+		loggerToken:  token,
+		environment:  env,
+	}
+}
 
 // Log provides a wrapper for the d.Logger.CreateLog function. More boilerplate, less work.
 //
@@ -29,13 +48,14 @@ import (
 //          return err
 //	    }
 //
-func (d *Dependency) Log(message string, level *logger.Level, requestID string, body map[string]string) {
+func (l *Logger) Log(message string, level *pb.Level, requestID string, body map[string]string) {
 	// Handle panic case
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Recovered from panic: %v\n", r)
 		}
 	}()
+
 	loggerCtx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
@@ -45,18 +65,18 @@ func (d *Dependency) Log(message string, level *logger.Level, requestID string, 
 		requestID = uuid.New().String()
 	}
 
-	_, requestErr := d.Logger.CreateLog(
+	_, requestErr := l.loggerClient.CreateLog(
 		loggerCtx,
-		&logger.LogRequest{
-			AccessToken: d.LoggerToken,
-			Data: &logger.LogData{
+		&pb.LogRequest{
+			AccessToken: l.loggerToken,
+			Data: &pb.LogData{
 				RequestId:   requestID,
 				Application: "worker",
 				Language:    &LanguageGo,
 				Body:        body,
 				Message:     message,
 				Level:       level,
-				Environment: d.GetLogEnvironment(),
+				Environment: l.GetLogEnvironment(),
 			},
 		},
 	)
@@ -71,17 +91,17 @@ func (d *Dependency) Log(message string, level *logger.Level, requestID string, 
 
 // GetLogEnvironment provides an utility function for passing the
 // enum value of *logger.Environment for the log data.
-func (d *Dependency) GetLogEnvironment() *logger.Environment {
-	switch strings.ToLower(d.Environment) {
+func (l *Logger) GetLogEnvironment() *pb.Environment {
+	switch strings.ToLower(l.environment) {
 	case "development":
-		return logger.Environment_DEVELOPMENT.Enum()
+		return pb.Environment_DEVELOPMENT.Enum()
 	case "production":
-		return logger.Environment_PRODUCTION.Enum()
+		return pb.Environment_PRODUCTION.Enum()
 	case "testing":
-		return logger.Environment_TESTING.Enum()
+		return pb.Environment_TESTING.Enum()
 	case "staging":
-		return logger.Environment_STAGING.Enum()
+		return pb.Environment_STAGING.Enum()
 	default:
-		return logger.Environment_UNSET.Enum()
+		return pb.Environment_UNSET.Enum()
 	}
 }

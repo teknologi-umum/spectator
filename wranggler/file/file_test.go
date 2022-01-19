@@ -2,147 +2,124 @@ package file_test
 
 import (
 	"context"
-	"math/rand"
+	"log"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
-	worker "worker"
 	"worker/file"
 
-	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-func TestConvertDataToJSON(t *testing.T) {
-	t.Cleanup(cleanup)
-	rand.Seed(time.Now().Unix())
+var deps *file.Dependency
+var db influxdb2.Client
 
+func TestMain(m *testing.M) {
+	// Lookup environment variables
+	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
+	if !ok {
+		influxToken = "nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd"
+	}
+
+	influxHost, ok := os.LookupEnv("INFLUX_HOST")
+	if !ok {
+		influxHost = "http://localhost:8086"
+	}
+
+	influxOrg, ok := os.LookupEnv("INFLUX_ORG")
+	if !ok {
+		influxOrg = "teknum_spectator"
+	}
+
+	minioHost, ok := os.LookupEnv("MINIO_HOST")
+	if !ok {
+		log.Fatalln("MINIO_HOST envar missing")
+	}
+
+	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
+	if !ok {
+		log.Fatalln("MINIO_ACCESS_ID envar missing")
+	}
+
+	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
+	if !ok {
+		log.Fatalln("MINIO_SECRET_KEY envar missing")
+	}
+
+	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
+	if !ok {
+		log.Fatalln("MINIO_TOKEN envar missing")
+	}
+
+	db = influxdb2.NewClient(influxHost, influxToken)
+
+	bucket, err := minio.New(
+		minioHost,
+		&minio.Options{
+			Secure: false,
+			Creds:  credentials.NewStaticV4(minioID, minioSecret, minioToken),
+		},
+	)
+	if err != nil {
+		log.Fatalf("Failed to create minio client: %v", err)
+	}
+
+	deps = &file.Dependency{
+		DB:                  db,
+		DBOrganization:      influxOrg,
+		Bucket:              bucket,
+		BucketInputEvents:   "input_events",
+		BucketSessionEvents: "session_events",
+	}
+
+	code := m.Run()
+
+	db.Close()
+
+	os.Exit(code)
+}
+
+func cleanup() {
+	// create new context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	deps := file.Dependency{
-		DB:             db,
-		DBOrganization: dbOrganization,
-		Bucket:         bucket,
-	}
-
-	id, err := uuid.NewUUID()
+	// find current organization
+	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
 	if err != nil {
-		t.Error(err)
+		log.Fatalf("finding organization: %v", err)
 	}
 
-	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketInputEvents)
-	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, worker.BucketSessionEvents)
-
-	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
-	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
-	delta := max - min
-
-	for i := 0; i < 50; i++ {
-		p := influxdb2.NewPoint(
-			"personal_info",
-			map[string]string{
-				"session_id": id.String(),
-			},
-			map[string]interface{}{
-				"student_number":      "",
-				"hours_of_practice":   rand.Int31n(666),
-				"years_of_experience": rand.Int31n(5),
-				"familiar_languages":  "",
-			},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
-
-		writeSessionAPI.WritePoint(ctx, p)
-
-		p = influxdb2.NewPoint(
-			"sam_test",
-			map[string]string{
-				"session_id": id.String(),
-			},
-			map[string]interface{}{
-				"aroused_level": rand.Int31n(3),
-				"pleased_level": rand.Int31n(3),
-			},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
-
-		writeSessionAPI.WritePoint(ctx, p)
-
-		// code_event_keystroke
-		p = influxdb2.NewPoint(
-			"coding_event_keystroke",
-			map[string]string{
-				"session_id": id.String(),
-			},
-			map[string]interface{}{
-				"key_char": "a",
-			},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
-
-		writeInputAPI.WritePoint(ctx, p)
-
-		// code_event_mouseclick
-		p = influxdb2.NewPoint(
-			"coding_event_mouseclick",
-			map[string]string{
-				"session_id":      id.String(),
-				"question_number": "1",
-			},
-			map[string]interface{}{
-				"key_char":     "a",
-				"right_click":  false,
-				"left_click":   false,
-				"middle_click": false,
-			},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
-
-		writeInputAPI.WritePoint(ctx, p)
-
-		// code_event_mouseclick
-		p = influxdb2.NewPoint(
-			"coding_event_mousemove",
-			map[string]string{
-				"session_id":      id.String(),
-				"question_number": "1",
-			},
-			map[string]interface{}{
-				"direction":     "right",
-				"x_position":    rand.Int31n(1337),
-				"y_position":    rand.Int31n(768),
-				"window_width":  rand.Int31n(1337),
-				"window_height": rand.Int31n(768),
-			},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
-
-		writeInputAPI.WritePoint(ctx, p)
-	}
-
-	deps.CreateFile("", id)
-
-	filesJson, err := filepath.Glob("./*.json")
+	// find input_events bucket
+	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil {
-		t.Fatal(err)
-	}
-	filesCSV, err := filepath.Glob("./*.csv")
-	if err != nil {
-		t.Fatal(err)
+		log.Fatalf("finding bucket: %v", err)
 	}
 
-	result := append(filesJson, filesCSV...)
+	// delete bucket data
+	deleteAPI := db.DeleteAPI()
 
-	if len(result) == 0 {
-		t.Fail()
-	}
-
-	for _, f := range result {
-		if err := os.Remove(f); err != nil {
-			panic(err)
+	inputEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	for _, measurement := range inputEventMeasurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
 		}
 	}
 
+	// find input_events bucket
+	sessionEventsBucket, err := db.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
+	if err != nil {
+		log.Fatalf("finding bucket: %v", err)
+	}
+
+	sessionEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	for _, measurement := range sessionEventMeasurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+		}
+	}
 }

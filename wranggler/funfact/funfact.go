@@ -1,7 +1,7 @@
 package funfact
 
 import (
-	"worker/logger"
+	logger "worker/logger_proto"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"

@@ -12,8 +12,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"worker/file"
+	"worker/funfact"
 	"worker/logger"
-	pb "worker/proto"
+	loggerpb "worker/logger_proto"
+	pb "worker/worker_proto"
 )
 
 // Dependency contains the dependency injection
@@ -23,8 +26,10 @@ type Dependency struct {
 	DB             influxdb2.Client
 	Bucket         *minio.Client
 	DBOrganization string
-	Logger         logger.LoggerClient
+	Logger         *logger.Logger
 	LoggerToken    string
+	Funfact        *funfact.Dependency
+	File           *file.Dependency
 	pb.UnimplementedWorkerServer
 }
 
@@ -110,14 +115,14 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer loggerConn.Close()
-	loggerClient := logger.NewLoggerClient(loggerConn)
+	loggerClient := loggerpb.NewLoggerClient(loggerConn)
 
 	// Initialize dependency injection struct
 	dependencies := &Dependency{
 		DB:             influxConn,
 		DBOrganization: influxOrg,
 		Bucket:         minioConn,
-		Logger:         loggerClient,
+		Logger:         logger.New(loggerClient, loggerToken, environment),
 		LoggerToken:    loggerToken,
 		Environment:    environment,
 	}
