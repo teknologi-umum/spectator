@@ -42,6 +42,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Now we fetch all the data with the _actor being sessionID.String()
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
+	// TODO: idea. these could be a goroutine function, but I guess it's not necessary.
+	// if it's fast enough, then it's fast enough
 	outputKeystroke, err := d.QueryKeystrokes(ctx, queryAPI, sessionID)
 	if err != nil {
 		// TODO: handle this error!
@@ -74,86 +76,108 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 
 	keystrokeJSON, err := ConvertDataToJSON(outputKeystroke)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	keystrokeCSV, err := gocsv.MarshalString(outputKeystroke)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	mousmoveCSV, err := gocsv.MarshalString(outputMouseMove)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	mousmoveJSON, err := ConvertDataToJSON(outputMouseMove)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	mousclickCSV, err := gocsv.MarshalString(outputMouseClick)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	mousclickJSON, err := ConvertDataToJSON(outputMouseClick)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	personalCSV, err := gocsv.MarshalString(outputPersonalInfo)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	personalJSON, err := ConvertDataToJSON(outputPersonalInfo)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	samtestCSV, err := gocsv.MarshalString(outputSamTest)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	samtestJSON, err := ConvertDataToJSON(outputSamTest)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 
-	// FIXME: this should be like this
+	// TODO: refactor. if the output personal info is an array containing only
+	// a single element, then the function output should not be an array
+	// it would be more cost effective that way.
 	studentNumber := outputPersonalInfo[0].StudentNumber
 
 	_, err = mkFileAndUpload(ctx, []byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, personalJSON, studentNumber+"_personal.json", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	_, err = mkFileAndUpload(ctx, samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
 	if err != nil {
+		// TODO handle error
 		return
 	}
 

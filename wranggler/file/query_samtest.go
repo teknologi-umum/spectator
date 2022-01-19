@@ -76,7 +76,6 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 		}
 	}
 
-	// ? : this part ask Reynaldi's i had no ideas.
 	if len(outputSamTest) > 0 || tempSamTest.SessionID != "" {
 		outputSamTest = append(outputSamTest, tempSamTest)
 	}
