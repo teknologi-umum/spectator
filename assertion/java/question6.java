@@ -83,8 +83,6 @@ public class question6 {
             counter++;
             if (test[0].equals(test[1])) {
                 System.out.printf("# %d PASSING\n", counter);
-                System.out.printf("> EXPECTED %s\n", test[0]);
-                System.out.printf("> GOT %s\n", test[1]);
             } else {
                 System.out.printf("# %d FAILED\n", counter);
                 System.out.printf("> EXPECTED %s\n", test[0]);

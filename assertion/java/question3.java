@@ -21,7 +21,7 @@ public class question3 {
         return listOfTest;
     }
 
-    public static List<boolean[]> generateRandomTestCase(int numberOfTC) {
+    private static List<boolean[]> generateRandomTestCase(int numberOfTC) {
         List<boolean[]> listOfTest = new ArrayList<boolean[]>();
 
         // diffnumber

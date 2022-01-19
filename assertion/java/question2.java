@@ -50,7 +50,7 @@ public class question2 {
         return listOfTest;
     }
 
-    public static List<int[]> generateRandomTestCase(int numberOfTC) {
+    private static List<int[]> generateRandomTestCase(int numberOfTC) {
         List<int[]> listOfTest = new ArrayList<int[]>();
 
         for (int i = 0; i < numberOfTC; i++) {
