@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option go_package = "/proto";
+
+package worker;
+
+service Worker {
+    rpc Ping (EmptyRequest) returns (Health);
+    rpc FunFact (Member) returns (FunFactResponse);
+    rpc GenerateFiles (Member) returns (EmptyResponse);
+}
+
+message EmptyRequest {}
+
+message EmptyResponse {}
+
+message Health {
+    string status = 1;
+}
+
+message Member {
+    string request_id = 1;
+    string session_id = 2;
+}
+
+message FunFactResponse {
+    uint32 words_per_minute = 1;
+    float deletion_rate = 2;
+    uint32 submission_attempts = 3;
+}
