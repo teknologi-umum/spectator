@@ -156,7 +156,10 @@ func main() {
 		log.Fatalln("Minio things:", err)
 	}
 	if !found {
-		minioConn.MakeBucket(context.TODO(), "spectator", minio.MakeBucketOptions{})
+		err = minioConn.MakeBucket(context.TODO(), "spectator", minio.MakeBucketOptions{})
+		if err != nil {
+			log.Fatalln("Minio things:", err)
+		}
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")
