@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -148,6 +149,14 @@ func main() {
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
 		},
+	}
+
+	found, err := minioConn.BucketExists(context.TODO(), "spectator")
+	if err != nil {
+		log.Fatalln("Minio things:", err)
+	}
+	if !found {
+		minioConn.MakeBucket(context.TODO(), "spectator", minio.MakeBucketOptions{})
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")
