@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -47,42 +48,42 @@ func main() {
 	// Lookup environment variables
 	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
 	if !ok {
-		log.Fatalln("INFLUX_TOKEN envar missing")
+		log.Fatalln("INFLUX_TOKEN environment variable missing")
 	}
 
 	influxHost, ok := os.LookupEnv("INFLUX_HOST")
 	if !ok {
-		log.Fatalln("INFLUX_HOST envar missing")
+		log.Fatalln("INFLUX_HOST environment variable missing")
 	}
 
 	influxOrg, ok := os.LookupEnv("INFLUX_ORG")
 	if !ok {
-		log.Fatalln("INFLUX_ORG envar missing")
+		log.Fatalln("INFLUX_ORG environment variable missing")
 	}
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")
 	if !ok {
-		log.Fatalln("MINIO_HOST envar missing")
+		log.Fatalln("MINIO_HOST environment variable missing")
 	}
 
 	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
 	if !ok {
-		log.Fatalln("MINIO_ACCESS_ID envar missing")
+		log.Fatalln("MINIO_ACCESS_ID environment variable missing")
 	}
 
 	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
 	if !ok {
-		log.Fatalln("MINIO_SECRET_KEY envar missing")
+		log.Fatalln("MINIO_SECRET_KEY environment variable missing")
 	}
 
 	loggerServerAddr, ok := os.LookupEnv("LOGGER_SERVER_ADDRESS")
 	if !ok {
-		log.Fatalln("LOGGER_SERVER_ADDRESS envar missing")
+		log.Fatalln("LOGGER_SERVER_ADDRESS environment variable missing")
 	}
 
 	loggerToken, ok := os.LookupEnv("LOGGER_TOKEN")
 	if !ok {
-		log.Fatalln("LOGGER_TOKEN envar missing")
+		log.Fatalln("LOGGER_TOKEN environment variable missing")
 	}
 
 	environment, ok := os.LookupEnv("ENVIRONMENT")
@@ -92,7 +93,7 @@ func main() {
 
 	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
 	if !ok {
-		log.Fatalln("MINIO_TOKEN envar missing")
+		log.Fatalln("MINIO_TOKEN environment variable missing")
 	}
 
 	// Create InfluxDB instance
@@ -151,12 +152,19 @@ func main() {
 		},
 	}
 
-	found, err := minioConn.BucketExists(context.TODO(), "spectator")
+	// Check for bucket existence
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
+	bucketFound, err := minioConn.BucketExists(ctx, "spectator")
 	if err != nil {
-		log.Fatalln("Minio things:", err)
+		log.Fatalf("Error checking bucket: %s\n", err)
 	}
-	if !found {
-		minioConn.MakeBucket(context.TODO(), "spectator", minio.MakeBucketOptions{})
+
+	if !bucketFound {
+		err = minioConn.MakeBucket(ctx, "spectator", minio.MakeBucketOptions{})
+		if err != nil {
+			log.Fatalf("Error creating bucket: %s\n", err)
+		}
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")

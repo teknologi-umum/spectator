@@ -18,7 +18,7 @@ func TestQuerySamTest(t *testing.T) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to generate uuid: %v", err)
 	}
 
 	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
@@ -46,13 +46,10 @@ func TestQuerySamTest(t *testing.T) {
 	readInputAPI := db.QueryAPI(deps.DBOrganization)
 	result, err := deps.QuerySAMTest(ctx, readInputAPI, id)
 	if err != nil {
-		t.Fatal("Test Query Sam Test", err)
-		return
+		t.Errorf("unexpected error: %v", err)
 	}
 
-	if len(result) == 50 {
-		t.Log("Test Query Sam Test")
-	} else {
-		t.Fatal("Data not 50")
+	if len(result) != 50 {
+		t.Errorf("expected 50 results, got %d", len(result))
 	}
 }

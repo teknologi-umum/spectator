@@ -18,7 +18,7 @@ func TestQueryPersonalInfo(t *testing.T) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to generate uuid: %v", err)
 	}
 
 	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
@@ -48,13 +48,11 @@ func TestQueryPersonalInfo(t *testing.T) {
 	readInputAPI := db.QueryAPI(deps.DBOrganization)
 	result, err := deps.QueryPersonalInfo(ctx, readInputAPI, id)
 	if err != nil {
-		t.Fatal("Test Query Personal Info", err)
+		t.Errorf("unexpected error: %v", err)
 		return
 	}
 
-	if len(result) == 50 {
-		t.Log("Test Query Personal Info")
-	} else {
-		t.Fatal("Data not 50")
+	if len(result) != 50 {
+		t.Errorf("expected 50 results, got %d", len(result))
 	}
 }
