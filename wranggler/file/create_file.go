@@ -42,86 +42,219 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Now we fetch all the data with the _actor being sessionID.String()
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	// TODO: idea. these could be a goroutine function, but I guess it's not necessary.
-	// if it's fast enough, then it's fast enough
 	outputKeystroke, err := d.QueryKeystrokes(ctx, queryAPI, sessionID)
 	if err != nil {
-		// TODO: handle this error!
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed keystroke query",
+			},
+		)
 		return
 	}
 
 	outputMouseClick, err := d.QueryMouseClick(ctx, queryAPI, sessionID)
 	if err != nil {
-		// TODO: handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed mouse click query",
+			},
+		)
 		return
 	}
 
 	outputMouseMove, err := d.QueryMouseMove(ctx, queryAPI, sessionID)
 	if err != nil {
-		// todoo: handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed mouse move query",
+			},
+		)
 		return
 	}
 
 	outputPersonalInfo, err := d.QueryPersonalInfo(ctx, queryAPI, sessionID)
 	if err != nil {
-		// TODO: handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed personal info query",
+			},
+		)
 		return
 	}
 
 	outputSamTest, err := d.QuerySAMTest(ctx, queryAPI, sessionID)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed sam test query",
+			},
+		)
 		return
 	}
 
 	keystrokeJSON, err := ConvertDataToJSON(outputKeystroke)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "keystroke json convertion",
+			},
+		)
 		return
 	}
 	keystrokeCSV, err := gocsv.MarshalString(outputKeystroke)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "keystroke csv convertion",
+			},
+		)
 		return
 	}
 	mousmoveCSV, err := gocsv.MarshalString(outputMouseMove)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "mouse move CSV conversion",
+			},
+		)
 		return
 	}
 	mousmoveJSON, err := ConvertDataToJSON(outputMouseMove)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "mouse move JSON conversion",
+			},
+		)
 		return
 	}
 	mousclickCSV, err := gocsv.MarshalString(outputMouseClick)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "mouse click CSV conversion",
+			},
+		)
 		return
 	}
 	mousclickJSON, err := ConvertDataToJSON(outputMouseClick)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "mouse click JSON conversion",
+			},
+		)
 		return
 	}
 	personalCSV, err := gocsv.MarshalString(outputPersonalInfo)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "personal info CSV conversion",
+			},
+		)
 		return
 	}
 	personalJSON, err := ConvertDataToJSON(outputPersonalInfo)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "personal info CSV conversion",
+			},
+		)
 		return
 	}
 	samtestCSV, err := gocsv.MarshalString(outputSamTest)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "SAM Test CSV conversion",
+			},
+		)
 		return
 	}
 	samtestJSON, err := ConvertDataToJSON(outputSamTest)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "SAM Test CSV conversion",
+			},
+		)
 		return
 	}
 
@@ -132,52 +265,142 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 
 	_, err = mkFileAndUpload(ctx, []byte(keystrokeCSV), studentNumber+"_keystroke.csv", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload keystroke csv",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, keystrokeJSON, studentNumber+"_keystroke.json", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload keystroke json",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(mousclickCSV), studentNumber+"_mouse_click.csv", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload mouse click csv",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, mousclickJSON, studentNumber+"_mouse_click.json", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload mouse click json",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(mousmoveCSV), studentNumber+"_mouse_move.csv", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload mouse move csv",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, mousmoveJSON, studentNumber+"_mouse_move.json", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload mouse move json",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(personalCSV), studentNumber+"_personal.csv", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload personal info csv",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, personalJSON, studentNumber+"_personal.json", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload personal info json",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, []byte(samtestCSV), studentNumber+"_sam_test.csv", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload sam test csv",
+			},
+		)
 		return
 	}
 	_, err = mkFileAndUpload(ctx, samtestJSON, studentNumber+"_sam_test.json", d.Bucket)
 	if err != nil {
-		// TODO handle error
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "fail to upload sam test json",
+			},
+		)
 		return
 	}
 
