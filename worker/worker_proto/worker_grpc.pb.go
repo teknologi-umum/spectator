@@ -21,6 +21,7 @@ type WorkerClient interface {
 	Ping(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*Health, error)
 	FunFact(ctx context.Context, in *Member, opts ...grpc.CallOption) (*FunFactResponse, error)
 	GenerateFiles(ctx context.Context, in *Member, opts ...grpc.CallOption) (*EmptyResponse, error)
+	ListFiles(ctx context.Context, in *Member, opts ...grpc.CallOption) (*FilesList, error)
 }
 
 type workerClient struct {
@@ -33,7 +34,7 @@ func NewWorkerClient(cc grpc.ClientConnInterface) WorkerClient {
 
 func (c *workerClient) Ping(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*Health, error) {
 	out := new(Health)
-	err := c.cc.Invoke(ctx, "/worker.Worker/Ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/worker_proto.Worker/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func (c *workerClient) Ping(ctx context.Context, in *EmptyRequest, opts ...grpc.
 
 func (c *workerClient) FunFact(ctx context.Context, in *Member, opts ...grpc.CallOption) (*FunFactResponse, error) {
 	out := new(FunFactResponse)
-	err := c.cc.Invoke(ctx, "/worker.Worker/FunFact", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/worker_proto.Worker/FunFact", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +52,16 @@ func (c *workerClient) FunFact(ctx context.Context, in *Member, opts ...grpc.Cal
 
 func (c *workerClient) GenerateFiles(ctx context.Context, in *Member, opts ...grpc.CallOption) (*EmptyResponse, error) {
 	out := new(EmptyResponse)
-	err := c.cc.Invoke(ctx, "/worker.Worker/GenerateFiles", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/worker_proto.Worker/GenerateFiles", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workerClient) ListFiles(ctx context.Context, in *Member, opts ...grpc.CallOption) (*FilesList, error) {
+	out := new(FilesList)
+	err := c.cc.Invoke(ctx, "/worker_proto.Worker/ListFiles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +75,7 @@ type WorkerServer interface {
 	Ping(context.Context, *EmptyRequest) (*Health, error)
 	FunFact(context.Context, *Member) (*FunFactResponse, error)
 	GenerateFiles(context.Context, *Member) (*EmptyResponse, error)
+	ListFiles(context.Context, *Member) (*FilesList, error)
 	mustEmbedUnimplementedWorkerServer()
 }
 
@@ -80,6 +91,9 @@ func (UnimplementedWorkerServer) FunFact(context.Context, *Member) (*FunFactResp
 }
 func (UnimplementedWorkerServer) GenerateFiles(context.Context, *Member) (*EmptyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateFiles not implemented")
+}
+func (UnimplementedWorkerServer) ListFiles(context.Context, *Member) (*FilesList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFiles not implemented")
 }
 func (UnimplementedWorkerServer) mustEmbedUnimplementedWorkerServer() {}
 
@@ -104,7 +118,7 @@ func _Worker_Ping_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/worker.Worker/Ping",
+		FullMethod: "/worker_proto.Worker/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WorkerServer).Ping(ctx, req.(*EmptyRequest))
@@ -122,7 +136,7 @@ func _Worker_FunFact_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/worker.Worker/FunFact",
+		FullMethod: "/worker_proto.Worker/FunFact",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WorkerServer).FunFact(ctx, req.(*Member))
@@ -140,10 +154,28 @@ func _Worker_GenerateFiles_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/worker.Worker/GenerateFiles",
+		FullMethod: "/worker_proto.Worker/GenerateFiles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WorkerServer).GenerateFiles(ctx, req.(*Member))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Worker_ListFiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Member)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkerServer).ListFiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/worker_proto.Worker/ListFiles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkerServer).ListFiles(ctx, req.(*Member))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -152,7 +184,7 @@ func _Worker_GenerateFiles_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Worker_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "worker.Worker",
+	ServiceName: "worker_proto.Worker",
 	HandlerType: (*WorkerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -166,6 +198,10 @@ var Worker_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateFiles",
 			Handler:    _Worker_GenerateFiles_Handler,
+		},
+		{
+			MethodName: "ListFiles",
+			Handler:    _Worker_ListFiles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

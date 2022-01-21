@@ -18,7 +18,7 @@ func TestQueryMouseMove(t *testing.T) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to generate uuid: %v", err)
 	}
 
 	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
@@ -50,13 +50,10 @@ func TestQueryMouseMove(t *testing.T) {
 	readInputAPI := db.QueryAPI(deps.DBOrganization)
 	result, err := deps.QueryMouseMove(ctx, readInputAPI, id)
 	if err != nil {
-		t.Fatal("Test Query Mouse Move", err)
-		return
+		t.Errorf("unexpected error: %v", err)
 	}
 
-	if len(result) == 50 {
-		t.Log("Test Query Mouse Move done")
-	} else {
-		t.Fatal("Data not 50")
+	if len(result) != 50 {
+		t.Errorf("expected 50 results, got %d", len(result))
 	}
 }
