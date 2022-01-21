@@ -18,7 +18,7 @@ func TestQueryMouseClick(t *testing.T) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to generate uuid: %v", err)
 	}
 
 	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
@@ -49,13 +49,10 @@ func TestQueryMouseClick(t *testing.T) {
 	readInputAPI := db.QueryAPI(deps.DBOrganization)
 	result, err := deps.QueryMouseClick(ctx, readInputAPI, id)
 	if err != nil {
-		t.Fatal("Test Query Mouse Click", err)
-		return
+		t.Errorf("unexpected error: %v", err)
 	}
 
-	if len(result) == 50 {
-		t.Log("Test Query Mouse Click done")
-	} else {
-		t.Fatal("Data not 50")
+	if len(result) != 50 {
+		t.Errorf("expected 50 results, got %d", len(result))
 	}
 }

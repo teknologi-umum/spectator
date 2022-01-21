@@ -35,22 +35,22 @@ func TestMain(m *testing.M) {
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")
 	if !ok {
-		log.Fatalln("MINIO_HOST envar missing")
+		log.Fatalln("MINIO_HOST environment variable missing")
 	}
 
 	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
 	if !ok {
-		log.Fatalln("MINIO_ACCESS_ID envar missing")
+		log.Fatalln("MINIO_ACCESS_ID environment variable missing")
 	}
 
 	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
 	if !ok {
-		log.Fatalln("MINIO_SECRET_KEY envar missing")
+		log.Fatalln("MINIO_SECRET_KEY environment variable missing")
 	}
 
 	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
 	if !ok {
-		log.Fatalln("MINIO_TOKEN envar missing")
+		log.Fatalln("MINIO_TOKEN environment variable missing")
 	}
 
 	db = influxdb2.NewClient(influxHost, influxToken)
@@ -73,6 +73,21 @@ func TestMain(m *testing.M) {
 		BucketInputEvents:   "input_events",
 		BucketSessionEvents: "session_events",
 		Environment:         "testing",
+	}
+
+	// Check for bucket existence
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
+	bucketFound, err := bucket.BucketExists(ctx, "spectator")
+	if err != nil {
+		log.Fatalf("Error checking bucket: %s\n", err)
+	}
+
+	if !bucketFound {
+		err = bucket.MakeBucket(ctx, "spectator", minio.MakeBucketOptions{})
+		if err != nil {
+			log.Fatalf("Error creating bucket: %s\n", err)
+		}
 	}
 
 	code := m.Run()

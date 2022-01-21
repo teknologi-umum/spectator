@@ -26,7 +26,7 @@ func TestQueryKeystrokes(t *testing.T) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to generate uuid: %v", err)
 	}
 
 	writeInputAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
@@ -53,14 +53,11 @@ func TestQueryKeystrokes(t *testing.T) {
 	readInputAPI := db.QueryAPI(deps.DBOrganization)
 	result, err := deps.QueryKeystrokes(ctx, readInputAPI, id)
 	if err != nil {
-		t.Fatal("Test Query Keystroke", err)
+		t.Errorf("unexpected error: %v", err)
 		return
 	}
 
-	if len(result) == 50 {
-		t.Log("Test Query Keystorke done")
-		return
-	} else {
-		t.Fatal("Data not 50")
+	if len(result) != 50 {
+		t.Errorf("Expected 50 keystrokes, got %d", len(result))
 	}
 }

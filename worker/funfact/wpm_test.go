@@ -17,7 +17,7 @@ func TestCalculateWordsPerMinute(t *testing.T) {
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to generate uuid: %v", err)
 	}
 
 	writeAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
