@@ -2,17 +2,104 @@ package file
 
 import (
 	"context"
+	"fmt"
+	"log"
+
+	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
+	"github.com/minio/minio-go/v7"
 )
 
 type File struct {
-	CSVFile  string
-	JSONFile string
-	// TODO: add more here
+	CSVFile       string
+	JSONFile      string
+	StudentNumber string
+	SessionId     string
 }
 
-func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File, error) {
-	// TODO: add more here
-	return []File{}, nil
+func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.File, error) {
+	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
+		ctx,
+		reinaldysBuildQuery(queries{
+			Level:     "test_file",
+			SessionID: sessionID.String(),
+			Buckets:   d.BucketSessionEvents,
+		}),
+	)
+	if err != nil {
+		return []*pb.File{}, fmt.Errorf("failed to query keystrokes: %w", err)
+	}
+
+	outputFile := []*pb.File{}
+	tempFile := pb.File{}
+	var tablePosition int64
+	for testFileRows.Next() {
+		rows := testFileRows.Record()
+		table, ok := rows.ValueByKey("table").(int64)
+		if !ok {
+			table = 0
+		}
+
+		switch rows.Field() {
+		case "file_url_json":
+			tempFile.FileUrlJson, ok = rows.Value().(string)
+			if !ok {
+				tempFile.FileUrlJson = ""
+			}
+		case "file_url_csv":
+			tempFile.FileUrlCsv, ok = rows.Value().(string)
+			if !ok {
+				tempFile.FileUrlCsv = ""
+			}
+		}
+
+		if d.IsDebug() {
+			log.Println(rows.String())
+			log.Printf("table %d\n", rows.Table())
+		}
+
+		if table != 0 && table > tablePosition {
+			outputFile = append(outputFile, &tempFile)
+			tablePosition = table
+		} else {
+			var ok bool
+
+			tempFile.StudentNumber, ok = rows.ValueByKey("student_number").(string)
+			if !ok {
+				tempFile.StudentNumber = ""
+			}
+
+			tempFile.SessionId, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempFile.SessionId = ""
+			}
+		}
+	}
+
+	if len(outputFile) > 0 || tempFile.SessionId != "" {
+		outputFile = append(outputFile, &tempFile)
+	}
+
+	for _, i := range outputFile {
+		_, err := d.Bucket.StatObject(context.Background(), "spectator", i.FileUrlJson, minio.GetObjectOptions{})
+		if err != nil {
+			errCode := minio.ToErrorResponse(err)
+			if errCode.Code == "NoSuchKey" {
+				return []*pb.File{}, fmt.Errorf("no %s file: still processing", i.FileUrlJson)
+			}
+		}
+
+		_, err = d.Bucket.StatObject(context.Background(), "spectator", i.FileUrlCsv, minio.GetObjectOptions{})
+		if err != nil {
+			errCode := minio.ToErrorResponse(err)
+			if errCode.Code == "NoSuchKey" {
+				return []*pb.File{}, fmt.Errorf("no %s file: still processing", i.FileUrlCsv)
+			}
+		}
+
+	}
+
+	return outputFile, nil
+
 }

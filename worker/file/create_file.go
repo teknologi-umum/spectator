@@ -123,10 +123,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 
 	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketSessionEvents)
 
-	// TODO: refactor. if the output personal info is an array containing only
-	// a single element, then the function output should not be an array
-	// it would be more cost effective that way.
-	studentNumber := outputPersonalInfo[0].StudentNumber
+	studentNumber := outputPersonalInfo.StudentNumber
 
 	g, gctx := errgroup.WithContext(ctx)
 	g.Go(func() error {
