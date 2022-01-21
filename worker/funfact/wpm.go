@@ -50,6 +50,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		if table != 0 && table > tablePosition {
 			wordsPerMinute = append(wordsPerMinute, temporaryWords)
 			temporaryWords = 0
+			tablePosition = table
 		}
 	}
 

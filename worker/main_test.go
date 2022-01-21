@@ -50,22 +50,22 @@ func TestMain(m *testing.M) {
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")
 	if !ok {
-		log.Fatalln("MINIO_HOST environment variable missing")
+		minioHost = "localhost:9000"
 	}
 
 	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
 	if !ok {
-		log.Fatalln("MINIO_ACCESS_ID environment variable missing")
+		minioID = "diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd"
 	}
 
 	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
 	if !ok {
-		log.Fatalln("MINIO_SECRET_KEY environment variable missing")
+		minioSecret = "xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo"
 	}
 
 	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
 	if !ok {
-		log.Fatalln("MINIO_TOKEN environment variable missing")
+		minioToken = ""
 	}
 
 	var err error

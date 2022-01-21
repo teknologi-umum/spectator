@@ -3,6 +3,7 @@ package funfact_test
 import (
 	"context"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 
@@ -12,12 +13,12 @@ import (
 
 func TestCalculateSubmissionAttempts(t *testing.T) {
 	t.Cleanup(cleanup)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
 	id, err := uuid.NewUUID()
 	if err != nil {
-		t.Errorf("failed to generate uuid: %v", err)
+		t.Fatalf("failed to generate uuid: %v", err)
 	}
 
 	writeAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
@@ -27,18 +28,24 @@ func TestCalculateSubmissionAttempts(t *testing.T) {
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
 	delta := max - min
 
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 25; i++ {
 		point := influxdb2.NewPoint(
-			"coding_event_keystroke",
+			"code_test_attempt",
 			map[string]string{
-				"session_id": id.String(),
+				"session_id":  id.String(),
+				"question_id": strconv.Itoa(rand.Intn(5)),
 			},
 			map[string]interface{}{
-				"key_char": "a",
+				"code":     "console.log('Hello world!');",
+				"language": "javascript",
 			},
 			time.Unix(rand.Int63n(delta)+min, 0),
 		)
-		writeAPI.WritePoint(ctx, point)
+
+		err = writeAPI.WritePoint(ctx, point)
+		if err != nil {
+			t.Fatalf("writing point: %v", err)
+		}
 	}
 
 	res := make(chan uint32, 1)
@@ -47,5 +54,6 @@ func TestCalculateSubmissionAttempts(t *testing.T) {
 		t.Errorf("an error was thrown: %v", err)
 	}
 
-	t.Logf("average wpm: %v", <-res)
+	attemps := <-res
+	t.Logf("submission attemps: %v", attemps)
 }

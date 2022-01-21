@@ -2,6 +2,7 @@ package funfact_test
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -44,11 +45,60 @@ func TestMain(m *testing.M) {
 
 	rand.Seed(time.Now().Unix())
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
+
+	err := prepareBuckets(ctx, deps.DB, influxOrg)
+	if err != nil {
+		log.Fatalf("Error preparing influxdb buckets: %v", err)
+	}
+
 	code := m.Run()
 
 	db.Close()
 
 	os.Exit(code)
+}
+
+func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
+	bucketsAPI := db.BucketsAPI()
+	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
+	if err != nil && err.Error() != "bucket '"+deps.BucketInputEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+deps.BucketInputEvents+"' not found" {
+		organizationAPI := db.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketInputEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	_, err = bucketsAPI.FindBucketByName(ctx, deps.BucketSessionEvents)
+	if err != nil && err.Error() != "bucket '"+deps.BucketSessionEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+deps.BucketSessionEvents+"' not found" {
+		organizationAPI := db.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketSessionEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	return nil
 }
 
 func cleanup() {

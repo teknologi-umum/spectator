@@ -2,6 +2,7 @@ package file_test
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -35,22 +36,22 @@ func TestMain(m *testing.M) {
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")
 	if !ok {
-		log.Fatalln("MINIO_HOST environment variable missing")
+		minioHost = "localhost:9000"
 	}
 
 	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
 	if !ok {
-		log.Fatalln("MINIO_ACCESS_ID environment variable missing")
+		minioID = "diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd"
 	}
 
 	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
 	if !ok {
-		log.Fatalln("MINIO_SECRET_KEY environment variable missing")
+		minioSecret = "xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo"
 	}
 
 	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
 	if !ok {
-		log.Fatalln("MINIO_TOKEN environment variable missing")
+		minioToken = ""
 	}
 
 	db = influxdb2.NewClient(influxHost, influxToken)
@@ -78,6 +79,7 @@ func TestMain(m *testing.M) {
 	// Check for bucket existence
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
+
 	bucketFound, err := bucket.BucketExists(ctx, "spectator")
 	if err != nil {
 		log.Fatalf("Error checking bucket: %s\n", err)
@@ -90,11 +92,57 @@ func TestMain(m *testing.M) {
 		}
 	}
 
+	err = prepareBuckets(ctx, deps.DB, influxOrg)
+	if err != nil {
+		log.Fatalf("Failed to prepare influxdb buckets: %v", err)
+	}
+
 	code := m.Run()
 
 	db.Close()
 
 	os.Exit(code)
+}
+
+func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
+	bucketsAPI := db.BucketsAPI()
+	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
+	if err != nil && err.Error() != "bucket '"+deps.BucketInputEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+deps.BucketInputEvents+"' not found" {
+		organizationAPI := db.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketInputEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	_, err = bucketsAPI.FindBucketByName(ctx, deps.BucketSessionEvents)
+	if err != nil && err.Error() != "bucket '"+deps.BucketSessionEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+deps.BucketSessionEvents+"' not found" {
+		organizationAPI := db.OrganizationsAPI()
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketSessionEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	return nil
 }
 
 func cleanup() {
