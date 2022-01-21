@@ -9,20 +9,20 @@ public class question5 {
     _REPLACE_ME_WITH_SOLUTION_
   
     private static String workingAnswer(String input) {
-        int inputLen = input.length();
+        var inputLen = input.length();
 
-        int triNum = (inputLen * (inputLen + 1)) / 2;
-        int resultLen = triNum + inputLen - 1;
+        var triNum = (inputLen * (inputLen + 1)) / 2;
+        var resultLen = triNum + inputLen - 1;
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.setLength(resultLen);
 
-        int pos = 0;
+        var pos = 0;
         for (int i = 0; i < inputLen; i++) {
             for (int j = 0; j <= i; j++) {
-                char c = input.charAt(i);
+                var c = input.charAt(i);
 
-                char appended = j == 0 ? Character.toUpperCase(c) : Character.toLowerCase(c);
+                var appended = j == 0 ? Character.toUpperCase(c) : Character.toLowerCase(c);
                 sb.setCharAt(pos, appended);
                 pos++;
             }
@@ -35,7 +35,7 @@ public class question5 {
     }
 
     private static List<String[]> generateTestCase() {
-        List<String[]> listOfTest = new ArrayList<String[]>();
+        var listOfTest = new ArrayList<String[]>();
 
         listOfTest.add(new String[] { "A-Bb-Ccc-Dddd", Mumble.mumble("abcd") });
         listOfTest.add(new String[] { "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy", Mumble.mumble("RqaEzTy") });
@@ -48,27 +48,27 @@ public class question5 {
     }
 
     private static String genWords(int n) {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        StringBuilder sb = new StringBuilder();
+        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        var sb = new StringBuilder();
 
         sb.setLength(n);
-        final int nchar = characters.length();
+        final var nchar = characters.length();
         for (int i = 0; i < n; i++) {
-            char randomChar = characters.charAt(getRandomNumber(0, nchar-1));
+            var randomChar = characters.charAt(getRandomNumber(0, nchar-1));
             sb.setCharAt(i, randomChar);
         }
         return sb.toString();
     }
 
     private static List<String[]> generateRandomTestCase(int numberOfTC) {
-        List<String[]> listOfTest = new ArrayList<String[]>();
+        var listOfTest = new ArrayList<String[]>();
 
         for (int i = 0; i < numberOfTC; i++) {
 
-            int number = getRandomNumber(4, 20);
-            String generated = genWords(number);
-            String expected = workingAnswer(generated);
-            String got = Mumble.mumble(generated);
+            var number = getRandomNumber(4, 20);
+            var generated = genWords(number);
+            var expected = workingAnswer(generated);
+            var got = Mumble.mumble(generated);
 
             listOfTest.add(new String[] { expected, got });
 
@@ -77,12 +77,12 @@ public class question5 {
     }
 
     public static void main(String[] args) {
-        List<String[]> testCase = generateTestCase();
-        List<String[]> randomTestCase = generateRandomTestCase(8);
+        var testCase = generateTestCase();
+        var randomTestCase = generateRandomTestCase(8);
 
         testCase.addAll(randomTestCase);
 
-        int counter = 0;
+        var counter = 0;
         for (String[] test : testCase) {
             counter++;
             if (test[0].equals(test[1])) {

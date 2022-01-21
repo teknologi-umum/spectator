@@ -13,7 +13,7 @@ public class question3 {
     }
 
     private static List<boolean[]> generateTestCase() {
-        List<boolean[]> listOfTest = new ArrayList<boolean[]>();
+        var listOfTest = new ArrayList<boolean[]>();
 
         listOfTest.add(new boolean[] { false, SimilarNumber.isSameNumber(100, 212) });
         listOfTest.add(new boolean[] { true, SimilarNumber.isSameNumber(25, 25) });
@@ -22,16 +22,16 @@ public class question3 {
     }
 
     private static List<boolean[]> generateRandomTestCase(int numberOfTC) {
-        List<boolean[]> listOfTest = new ArrayList<boolean[]>();
+        var listOfTest = new ArrayList<boolean[]>();
 
         // diffnumber
         for (int i = 0; i < numberOfTC; i++) {
 
-            int number1 = getRandomNumber(0, 9999);
-            int number2 = getRandomNumber(0, 9999);
+            var number1 = getRandomNumber(0, 9999);
+            var number2 = getRandomNumber(0, 9999);
 
-            boolean expected = workingAnswer(number1, number2);
-            boolean got = SimilarNumber.isSameNumber(number1, number2);
+            var expected = workingAnswer(number1, number2);
+            var got = SimilarNumber.isSameNumber(number1, number2);
 
             listOfTest.add(new boolean[] { expected, got });
 
@@ -40,10 +40,10 @@ public class question3 {
         // same number
         for (int i = 0; i < numberOfTC; i++) {
 
-            int number1 = getRandomNumber(0, 9999);
+            var number1 = getRandomNumber(0, 9999);
 
-            boolean expected = workingAnswer(number1, number1);
-            boolean got = SimilarNumber.isSameNumber(number1, number1);
+            var expected = workingAnswer(number1, number1);
+            var got = SimilarNumber.isSameNumber(number1, number1);
 
             listOfTest.add(new boolean[] { expected, got });
 
@@ -56,12 +56,12 @@ public class question3 {
     }
 
     public static void main(String[] args) {
-        List<boolean[]> testCase = generateTestCase();
-        List<boolean[]> randomTestCase = generateRandomTestCase(4);
+        var testCase = generateTestCase();
+        var randomTestCase = generateRandomTestCase(4);
 
         testCase.addAll(randomTestCase);
 
-        int counter = 0;
+        var counter = 0;
         for (boolean[] test : testCase) {
             counter++;
             if (test[0] == test[1]) {

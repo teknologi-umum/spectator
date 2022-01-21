@@ -9,7 +9,7 @@ public class question4 {
     _REPLACE_ME_WITH_SOLUTION_
 
     private static int workingAnswer(long power) {
-        int result = 0;
+        var result = 0;
         while (power != 0) {
             result += power % 10;
             power /= 10;
@@ -18,7 +18,7 @@ public class question4 {
     }
 
     private static List<int[]> generateTestCase() {
-        List<int[]> listOfTest = new ArrayList<int[]>();
+        var listOfTest = new ArrayList<int[]>();
 
         listOfTest.add(new int[] { 19, Heater.findHeaterPower(100212373) });
 
@@ -26,14 +26,14 @@ public class question4 {
     }
 
     private static List<int[]> generateRandomTestCase(int numberOfTC) {
-        List<int[]> listOfTest = new ArrayList<int[]>();
+        var listOfTest = new ArrayList<int[]>();
 
-        for (int i = 0; i < numberOfTC; i++) {
+        for (var i = 0; i < numberOfTC; i++) {
 
-            long number = getRandomNumber(1000000000, 9999999999L);
+            var number = getRandomNumber(1000000000, 9999999999L);
 
-            int expected = workingAnswer(number);
-            int got = Heater.findHeaterPower(number);
+            var expected = workingAnswer(number);
+            var got = Heater.findHeaterPower(number);
 
             listOfTest.add(new int[] { expected, got });
 
@@ -46,12 +46,12 @@ public class question4 {
     }
 
     public static void main(String[] args) {
-        List<int[]> testCase = generateTestCase();
-        List<int[]> randomTestCase = generateRandomTestCase(9);
+        var testCase = generateTestCase();
+        var randomTestCase = generateRandomTestCase(9);
 
         testCase.addAll(randomTestCase);
 
-        int counter = 0;
+        var counter = 0;
         for (int[] test : testCase) {
             counter++;
             if (test[0] == test[1]) {

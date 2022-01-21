@@ -39,7 +39,7 @@ public class question2 {
     }
 
     private static List<int[]> generateTestCase() {
-        List<int[]> listOfTest = new ArrayList<int[]>();
+        var listOfTest = new ArrayList<int[]>();
 
         listOfTest.add(new int[] { 212, Temperature.calculateTemperature(100, "Celcius", "Fahrenheit") });
         listOfTest.add(new int[] { 373, Temperature.calculateTemperature(212, "Fahrenheit", "Kelvin") });
@@ -51,15 +51,15 @@ public class question2 {
     }
 
     private static List<int[]> generateRandomTestCase(int numberOfTC) {
-        List<int[]> listOfTest = new ArrayList<int[]>();
+        var listOfTest = new ArrayList<int[]>();
 
         for (int i = 0; i < numberOfTC; i++) {
-            String from = temperatures[getRandomNumber(0, 2)];
-            String to = temperatures[getRandomNumber(0, 2)];
-            int randTemp = getRandomNumber(-500, 500);
+            var from = temperatures[getRandomNumber(0, 2)];
+            var to = temperatures[getRandomNumber(0, 2)];
+            var randTemp = getRandomNumber(-500, 500);
 
-            int expected = workingAnswer(randTemp, from, to);
-            int got = Temperature.calculateTemperature(randTemp, from, to);
+            var expected = workingAnswer(randTemp, from, to);
+            var got = Temperature.calculateTemperature(randTemp, from, to);
 
             listOfTest.add(new int[] { expected, got });
 
@@ -72,12 +72,12 @@ public class question2 {
     }
 
     public static void main(String[] args) {
-        List<int[]> testCase = generateTestCase();
-        List<int[]> randomTestCase = generateRandomTestCase(5);
+        var testCase = generateTestCase();
+        var randomTestCase = generateRandomTestCase(5);
 
         testCase.addAll(randomTestCase);
 
-        int counter = 0;
+        var counter = 0;
         for (int[] test : testCase) {
             counter++;
             if (test[0] == test[1]) {

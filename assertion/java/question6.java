@@ -8,9 +8,9 @@ public class question6 {
     _REPLACE_ME_WITH_SOLUTION_
 
     private static ArrayList<Integer> workingAnswer(ArrayList<Integer> input) {
-        ArrayList<Integer> result = new ArrayList<Integer>();
+        var result = new ArrayList<Integer>();
         for (int i = 0; i < input.size(); i++) {
-            int grade = input.get(i).intValue();
+            var grade = input.get(i).intValue();
             if (grade >= 38 && grade % 5 != 0 && grade % 5 >= 3) {
                 int added = grade + (5 - grade % 5);
                 result.add(added);
@@ -22,16 +22,16 @@ public class question6 {
     }
 
     private static List<String[]> generateTestCase() {
-        List<String[]> listOfTest = new ArrayList<String[]>();
+        var listOfTest = new ArrayList<String[]>();
 
-        ArrayList<Integer> answer = new ArrayList<Integer>();
+        var answer = new ArrayList<Integer>();
 
         answer.add(75);
         answer.add(67);
         answer.add(40);
         answer.add(33);
 
-        ArrayList<Integer> testInput = new ArrayList<Integer>();
+        var testInput = new ArrayList<Integer>();
 
         testInput.add(73);
         testInput.add(67);
@@ -44,14 +44,14 @@ public class question6 {
     }
 
     private static List<String[]> generateRandomTestCase(int numberOfTC) {
-        List<String[]> listOfTest = new ArrayList<String[]>();
+        var listOfTest = new ArrayList<String[]>();
 
         for (int i = 0; i < numberOfTC; i++) {
-            int len = getRandomNumber(4, 20);
-            ArrayList<Integer> input = genArray(len);
+            var len = getRandomNumber(4, 20);
+            var input = genArray(len);
 
-            String expected = workingAnswer(input).toString();
-            String got = Grade.calculateGrade(input).toString();
+            var expected = workingAnswer(input).toString();
+            var got = Grade.calculateGrade(input).toString();
 
             listOfTest.add(new String[] { expected, got });
 
@@ -64,7 +64,7 @@ public class question6 {
     }
 
     private static ArrayList<Integer> genArray(int len) {
-        ArrayList<Integer> inner = new ArrayList<Integer>();
+        var inner = new ArrayList<Integer>();
 
         for(int i = 0; i < len; i++) {
             inner.add(getRandomNumber(10, 100));
@@ -73,12 +73,12 @@ public class question6 {
         return inner;
     }
     public static void main(String[] args) {
-        List<String[]> testCase = generateTestCase();
-        List<String[]> randomTestCase = generateRandomTestCase(9);
+        var testCase = generateTestCase();
+        var randomTestCase = generateRandomTestCase(9);
 
         testCase.addAll(randomTestCase);
 
-        int counter = 0;
+        var counter = 0;
         for (String[] test : testCase) {
             counter++;
             if (test[0].equals(test[1])) {
