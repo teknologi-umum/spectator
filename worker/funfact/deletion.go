@@ -8,10 +8,15 @@ import (
 )
 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float32) error {
-	var totalDeletion float32
-	var totalKeystrokes float32
+	// Formula to calculate deletion rate:
+	//
+	// SELECT all KeystrokeEvent WHERE value = delete OR value = backspace
+	// then sum it. That's it.
 
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
+
+	var totalDeletion float32
+	var totalKeystrokes float32
 
 	deletionRows, err := queryAPI.Query(
 		ctx,
@@ -72,11 +77,13 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		}
 	}
 
-	result <- totalDeletion / totalKeystrokes
+	// Avoiding NaN output
+	if totalDeletion == 0 {
+		result <- 0
+		return nil
+	}
 
-	// SELECT semua KeystrokeEvent WHERE value = delete OR value = backspace
-	// terus jumlahin
-	// dah gitu doang.
+	result <- totalDeletion / totalKeystrokes
 
 	// Return the result here
 	return nil

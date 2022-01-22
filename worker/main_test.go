@@ -106,6 +106,7 @@ func TestMain(m *testing.M) {
 	// It turns out that defer doesn't work
 	// when combined with os.Exit()
 	cancel()
+	cleanup()
 	db.Close()
 
 	os.Exit(code)

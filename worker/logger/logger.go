@@ -1,6 +1,5 @@
+// logger provides utility functions for logging.
 package logger
-
-// logging.go provides utility functions for logging.
 
 import (
 	"context"

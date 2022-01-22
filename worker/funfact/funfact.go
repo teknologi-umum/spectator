@@ -17,3 +17,14 @@ type Dependency struct {
 	BucketInputEvents   string
 	BucketSessionEvents string
 }
+
+// KeystrokeInput contains the data of
+// coding_event_keystroke measurement.
+type KeystrokeInput struct {
+	UnrelatedKey bool
+	Shift        bool
+	Alt          bool
+	Control      bool
+	Meta         bool
+	KeyChar      string
+}
