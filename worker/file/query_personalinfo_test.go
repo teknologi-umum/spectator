@@ -52,7 +52,7 @@ func TestQueryPersonalInfo(t *testing.T) {
 		return
 	}
 
-	if len(result) != 50 {
-		t.Errorf("expected 50 results, got %d", len(result))
+	if result.SessionID != id.String() {
+		t.Errorf("personal info not exist")
 	}
 }

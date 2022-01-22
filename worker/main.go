@@ -155,6 +155,7 @@ func main() {
 	// Check for bucket existence
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
+
 	bucketFound, err := minioConn.BucketExists(ctx, "spectator")
 	if err != nil {
 		log.Fatalf("Error checking bucket: %s\n", err)

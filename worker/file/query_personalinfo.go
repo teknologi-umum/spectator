@@ -21,7 +21,7 @@ type PersonalInfo struct {
 	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]PersonalInfo, error) {
+func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (PersonalInfo, error) {
 	personalInfoRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
@@ -31,19 +31,14 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		`,
 	)
 	if err != nil {
-		return []PersonalInfo{}, fmt.Errorf("failed to query personal info: %w", err)
+		return PersonalInfo{}, fmt.Errorf("failed to query personal info: %w", err)
 	}
 
-	outputPersonalInfo := []PersonalInfo{}
 	tempPersonalInfo := PersonalInfo{}
-	var tablePosition int64
+	var ok bool
 	for personalInfoRows.Next() {
-		// TODO: mabok
+
 		rows := personalInfoRows.Record()
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
 
 		switch rows.Field() {
 		case "student_number":
@@ -54,13 +49,13 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		case "hours_of_practice":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []PersonalInfo{}, fmt.Errorf("failed to parse hours of practice: %w", err)
+				return PersonalInfo{}, fmt.Errorf("failed to parse hours of practice: %w", err)
 			}
 			tempPersonalInfo.HoursOfPractice = y
 		case "years_of_experience":
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
-				return []PersonalInfo{}, fmt.Errorf("failed to parse years of experience: %w", err)
+				return PersonalInfo{}, fmt.Errorf("failed to parse years of experience: %w", err)
 			}
 			tempPersonalInfo.YearsOfExperience = y
 		case "familiar_language":
@@ -75,23 +70,12 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 			log.Printf("table %d\n", rows.Table())
 		}
 
-		if table != 0 && table > tablePosition {
-			outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
-			tablePosition = table
-		} else {
-			var ok bool
-
-			tempPersonalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
-			if !ok {
-				tempPersonalInfo.SessionID = ""
-			}
-			tempPersonalInfo.Timestamp = rows.Time()
+		tempPersonalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
+		if !ok {
+			tempPersonalInfo.SessionID = ""
 		}
+		tempPersonalInfo.Timestamp = rows.Time()
 	}
 
-	// ? : this part ask Reynaldi's i had no ideas.
-	if len(outputPersonalInfo) > 0 || tempPersonalInfo.SessionID != "" {
-		outputPersonalInfo = append(outputPersonalInfo, tempPersonalInfo)
-	}
-	return outputPersonalInfo, nil
+	return tempPersonalInfo, nil
 }
