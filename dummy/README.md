@@ -6,7 +6,7 @@ Dummy contains two main features:
 
 ## Usage
 
-Please use Python 3.10, you can download [here](https://www.python.org/downloads/release/python-3101/) make sure you choose as you machine CPU Arch (usually 64-bit for most laptop, except MacBook which use M1 Processor that use ARM arch) and the tutorial [Install Python](https://gadiskoding.my.id/install-python-di-komputer-dan-android.html).
+Please use Python 3.10, you can download [here](https://www.python.org/downloads/release/python-3101/) and the tutorial [Install Python](https://gadiskoding.my.id/install-python-di-komputer-dan-android.html).
 
 Setup first.
 
