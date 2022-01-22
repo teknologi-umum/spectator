@@ -50,7 +50,6 @@ func TestMain(m *testing.M) {
 	rand.Seed(time.Now().Unix())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
-	defer cancel()
 
 	err := prepareBuckets(ctx)
 	if err != nil {
@@ -58,17 +57,23 @@ func TestMain(m *testing.M) {
 	}
 
 	// First cleanup to ensure that there are no data in the database
-	cleanup()
+	cleanup(ctx)
 
 	err = seedData(ctx)
 	if err != nil {
 		log.Fatalf("Error seeding data: %v", err)
 	}
 
+	cancel()
+
 	code := m.Run()
 
+	// Refresh context
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second*10)
+
 	// Second cleanup to ensure that there are no data in the database
-	cleanup()
+	cleanup(ctx)
+	cancel()
 
 	db.Close()
 
@@ -121,7 +126,8 @@ func prepareBuckets(ctx context.Context) error {
 // from this function. Why create separate one instead of seeding it on every
 // test cases? Because we want to reduce HTTP write calls into the InfluxDB
 func seedData(ctx context.Context) error {
-	writeAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
+	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
+	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -163,7 +169,7 @@ func seedData(ctx context.Context) error {
 				time.Unix(rand.Int63n(delta)+min, 0),
 			)
 
-			err := writeAPI.WritePoint(ctx, point)
+			err := sessionWriteAPI.WritePoint(ctx, point)
 			if err != nil {
 				log.Fatalf("Error writing point: %v", err)
 			}
@@ -183,7 +189,7 @@ func seedData(ctx context.Context) error {
 			time.Unix(min, 0),
 		)
 
-		err := writeAPI.WritePoint(ctx, point)
+		err := sessionWriteAPI.WritePoint(ctx, point)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}
@@ -202,7 +208,7 @@ func seedData(ctx context.Context) error {
 			time.Unix(min, 0),
 		)
 
-		err := writeAPI.WritePoint(ctx, point)
+		err := sessionWriteAPI.WritePoint(ctx, point)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}
@@ -221,7 +227,7 @@ func seedData(ctx context.Context) error {
 			time.Unix(max, 0),
 		)
 
-		err := writeAPI.WritePoint(ctx, point)
+		err := sessionWriteAPI.WritePoint(ctx, point)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}
@@ -240,7 +246,7 @@ func seedData(ctx context.Context) error {
 			time.Unix(max, 0),
 		)
 
-		err := writeAPI.WritePoint(ctx, point)
+		err := sessionWriteAPI.WritePoint(ctx, point)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}
@@ -277,7 +283,7 @@ func seedData(ctx context.Context) error {
 						temporaryDate,
 					)
 
-					err := writeAPI.WritePoint(ctx, point)
+					err := inputWriteAPI.WritePoint(ctx, point)
 					if err != nil {
 						log.Fatalf("Error writing point: %v", err)
 					}
@@ -300,7 +306,7 @@ func seedData(ctx context.Context) error {
 						temporaryDate,
 					)
 
-					err := writeAPI.WritePoint(ctx, point)
+					err := inputWriteAPI.WritePoint(ctx, point)
 					if err != nil {
 						log.Fatalf("Error writing point: %v", err)
 					}
@@ -323,7 +329,7 @@ func seedData(ctx context.Context) error {
 						temporaryDate,
 					)
 
-					err := writeAPI.WritePoint(ctx, point)
+					err := inputWriteAPI.WritePoint(ctx, point)
 					if err != nil {
 						log.Fatalf("Error writing point: %v", err)
 					}
@@ -350,7 +356,7 @@ func seedData(ctx context.Context) error {
 				time.Unix(rand.Int63n(delta)+min, 0),
 			)
 
-			err := writeAPI.WritePoint(ctx, point)
+			err := inputWriteAPI.WritePoint(ctx, point)
 			if err != nil {
 				log.Fatalf("Error writing point: %v", err)
 			}
@@ -362,11 +368,7 @@ func seedData(ctx context.Context) error {
 	return nil
 }
 
-func cleanup() {
-	// create new context
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
-
+func cleanup(ctx context.Context) {
 	// find current organization
 	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
 	if err != nil {
