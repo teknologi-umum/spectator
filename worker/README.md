@@ -18,6 +18,10 @@ This job is to aggregate data to response backend request and Storing file csv a
 - [GRPC, this protocol used to service interact with other services](https://grpc.io/docs/languages/go/quickstart/)
 - [influxdb, time series database](https://github.com/influxdata/influxdb-client-go)
 
+## Development tools
+
+This code develop with VSCode since my neovim broken, the Go version used is 1.17.2.
+
 ## How to run
 
 ### The server
