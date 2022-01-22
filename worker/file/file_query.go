@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type queries struct {
+type Queries struct {
 	Level     string
 	SessionID string
 	Buckets   string
@@ -18,7 +18,7 @@ func (d *Dependency) IsDebug() bool {
 	return d.Environment == "DEVELOPMENT"
 }
 
-func reinaldysBuildQuery(q queries) string {
+func ReinaldysBuildQuery(q Queries) string {
 	var str strings.Builder
 	str.WriteString("from(bucket: \"" + q.Buckets + "\")\n")
 	// range query

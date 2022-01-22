@@ -198,7 +198,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	e.AddField("file_csv_url", "/public/"+studentNumber+"_"+fileName+".csv")
 	e.AddField("file_json_url", "/public/"+studentNumber+"_"+fileName+".json")
 	e.SetTime(time.Now())
-	err = writeAPI.WritePoint(ctx, e)
+	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketResultEvents).WritePoint(ctx, e)
 	if err != nil {
 		return fmt.Errorf("failed to write %s test result: %v", fileName, err)
 	}

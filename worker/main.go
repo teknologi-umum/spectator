@@ -42,6 +42,8 @@ const (
 	// BucketSessionEvents is the bucket name for storing
 	// the session events, including their personal information.
 	BucketSessionEvents = "session_events"
+
+	BucketResultEvents = "results"
 )
 
 func main() {
@@ -139,6 +141,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
+			BucketResultEvents:  BucketResultEvents,
 		},
 		File: &file.Dependency{
 			Environment:         environment,
@@ -149,6 +152,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
+			BucketResultEvents:  BucketResultEvents,
 		},
 	}
 

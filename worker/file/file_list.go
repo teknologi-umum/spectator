@@ -21,7 +21,7 @@ type File struct {
 func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.File, error) {
 	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
-		reinaldysBuildQuery(queries{
+		ReinaldysBuildQuery(Queries{
 			Level:     "test_file",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
