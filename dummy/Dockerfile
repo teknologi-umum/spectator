@@ -11,6 +11,5 @@ RUN apk add build-base \
 RUN pip install pipenv
 RUN pipenv install
 
-CMD [ "pipenv", "run", "python3", "generate.py" ]
-
-CMD [ "pipenv", "run", "python3", "inserter.py" ]
+RUN [ "pipenv", "run", "python3", "generate.py" ]
+RUN [ "pipenv", "run", "python3", "inserter.py" ]
