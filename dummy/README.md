@@ -6,7 +6,7 @@ Dummy contains two main features:
 
 ## Usage
 
-Please use Python 3.10.
+Please use Python 3.10, you can download [here](https://www.python.org/downloads/release/python-3101/) and the tutorial [Install Python](https://gadiskoding.my.id/install-python-di-komputer-dan-android.html)
 
 Setup first.
 ```sh
@@ -25,6 +25,15 @@ pipenv run python3 generate.py
 Then, we shall insert the generated data into the InfluxDB database. But first,
 we need to put some data into the environment variable. The easiest way to do
 so is to copy .env.example and rename it into .env file.
+
+| Env variable | How to get and set |
+|--|--|
+| INFLUX_TOKEN | This influx authorization token, usually come with user account make it in GUI influx |
+| INFLUX_HOST | This you influxdb server address to connect with the services |
+| INFLUX_ORG | This you influx db org |
+
+To run the insertion script :
+
 ```sh
 pipenv run python3 inserter.py
 ```
