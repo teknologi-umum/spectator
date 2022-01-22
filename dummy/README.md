@@ -6,7 +6,19 @@ Dummy contains two main features:
 
 ## Usage
 
-Please use Python 3.10, you can download [here](https://www.python.org/downloads/release/python-3101/) and the tutorial [Install Python](https://gadiskoding.my.id/install-python-di-komputer-dan-android.html).
+Please use Python 3.10
+
+For windows, Download the [installer here](https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe), then follow the instruction (just press next untill finish instalation)
+
+For Mac, Download the [installer here](https://www.python.org/ftp/python/3.10.0/python-3.10.0post2-macos11.pkg), then follow the instruction there.
+
+For Linux, better you depend on your package manager 
+
+- Alpine : `apk add python3 python3-dev gcc`
+- Arch : `pacman -S python3 gcc`
+- Ubuntu : `apt install python3 python3-dev gcc`
+
+Some python package need `gcc` for compile native extention.
 
 Setup first.
 
