@@ -2,7 +2,8 @@ import string
 import random
 import uuid
 
-class User():
+
+class User:
     type: str
     session_id: str
     student_number: str
@@ -30,6 +31,7 @@ class User():
             "familiar_language": self.familiar_language
         }
 
+
 def generate_user() -> dict[str, any]:
     languages = ["python", "javascript", "php", "", "c", "c++", "c#", "pascal"]
     letters = string.ascii_lowercase
@@ -39,7 +41,7 @@ def generate_user() -> dict[str, any]:
         session_id,
         "".join(random.choice(numbers) for _ in range(8)),
         random.randint(0, 5),
-        random.randint(0, 24*7),
-        " ".join(random.sample(languages, k=random.randint(1,3)))
+        random.randint(0, 24 * 7),
+        " ".join(random.sample(languages, k=random.randint(1, 3)))
     )
     return user.as_dictionary()
