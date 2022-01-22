@@ -20,7 +20,7 @@ class User():
         self.years_of_experience = years_of_experience
         self.familiar_language = familiar_language
 
-    def asdict(self):
+    def as_dictionary(self):
         return {
             "type": self.type,
             "session_id": self.session_id,
@@ -42,4 +42,4 @@ def generate_user() -> dict[str, any]:
         random.randint(0, 24*7),
         " ".join(random.sample(languages, k=random.randint(1,3)))
     )
-    return user.asdict()
+    return user.as_dictionary()
