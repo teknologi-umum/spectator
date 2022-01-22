@@ -45,7 +45,8 @@ def main():
 
     print("Environment variables are set. Let's connect to InfluxDB.")
 
-    client = influxdb_client.InfluxDBClient(url=influx_url, token=influx_token, org=influx_org)
+    client = influxdb_client.InfluxDBClient(url=influx_url, token=influx_token,
+                                            org=influx_org)
 
     # Check whether the bucket exists
     buckets_api = client.buckets_api()
