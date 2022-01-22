@@ -3,7 +3,7 @@ name: Check
 on:
   pull_request:
     paths:
-      - 'wranggler/**'
+      - 'worker/**'
 
 jobs:
   worker:
@@ -46,7 +46,7 @@ jobs:
           INFLUX_HOST: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: iKPpruHfaXygrwSV
-          MINIO_HOST: http://bucket:9000/
+          MINIO_HOST: bucket:9000
           MINIO_ACCESS_ID: teknum
           MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
           LOGGER_SERVER_ADDRESS:  http://logger:9000/
