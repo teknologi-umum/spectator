@@ -12,4 +12,4 @@ RUN pip install pipenv
 RUN pipenv install
 
 RUN [ "pipenv", "run", "python3", "generate.py" ]
-CMD [ "pipenv", "run", "python3", "inserter.py" ]
+RUN [ "pipenv", "run", "python3", "inserter.py" ]

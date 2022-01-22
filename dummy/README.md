@@ -6,19 +6,25 @@ Dummy contains two main features:
 
 ## Usage
 
-Please use Python 3.10
+Please use Python 3.10.
 
-For windows, Download the [installer here](https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe), then follow the instruction (just press next untill finish instalation)
+For windows, Download the [installer here](https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe), then follow the instruction (just press next until the installation is finished)
 
 For Mac, Download the [installer here](https://www.python.org/ftp/python/3.10.0/python-3.10.0post2-macos11.pkg), then follow the instruction there.
 
-For Linux, better you depend on your package manager 
+For Linux, many linux distribution some are require to build from scratch (e.g. Ubuntu).
 
-- Alpine : `apk add python3 python3-dev gcc`
-- Arch : `pacman -S python3 gcc`
-- Ubuntu : `apt install python3 python3-dev gcc`
+- Arch (latest): `pacman -S python3`
 
-Some python package need `gcc` for compile native extention.
+- Alpine (latest): `apk add python3=3.10.1-r0`
+
+- Ubuntu (for ubuntu you need to make it from scratch) :
+
+  - Install ubuntu dev tools : `sudo apt install build-essential`
+  - Download the python source code : `curl -O https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz`
+  - Extract the source code : `sudo tar -xvzf Python-3.10.0.tgz`
+  - Go inside `Python-3.10.0`, `cd Python-3.10.0`.
+  - Then run this to start compile: `./configure --prefix=/usr && make && make install`
 
 Setup first.
 
