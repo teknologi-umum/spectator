@@ -192,7 +192,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		return fmt.Errorf("failed to upload json %s file: %v", fileName, err)
 	}
 
-	e := influxdb2.NewPointWithMeasurement("test_result")
+	e := influxdb2.NewPointWithMeasurement("exported_data")
 	e.AddTag("session_id", sessionID.String())
 	e.AddTag("student_number", studentNumber)
 	e.AddField("file_csv_url", "/public/"+studentNumber+"_"+fileName+".csv")
