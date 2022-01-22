@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import reducer, { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
+import reducer, { recordPersonalInfo } from "@/store/slices/personalInfoSlice/personalInfoSlice";
 
 const initialState = {
   studentId: "",

@@ -4,7 +4,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
+import { recordPersonalInfo } from "@/store/slices/personalInfoSlice/personalInfoSlice";
 import { useNavigate } from "react-router-dom";
 import {
   Box,

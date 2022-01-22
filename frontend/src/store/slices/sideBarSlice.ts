@@ -1,7 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { InitialState } from "./types";
 
-const initialState: InitialState = {
+interface State {
+  isCollapsed: boolean;
+}
+
+const initialState: State = {
   isCollapsed: true
 };
 

@@ -12,10 +12,10 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import {
+  sessionReducer,
+  localeReducer,
   personalInfoReducer,
   editorReducer,
-  questionReducer,
-  jwtReducer,
   themeReducer,
   sideBarReducer
 } from "./slices";
@@ -31,10 +31,10 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  session: sessionReducer,
+  locale: localeReducer,
   personalInfo: personalInfoReducer,
   editor: editorReducer,
-  question: questionReducer,
-  jwt: jwtReducer,
   app: themeReducer,
   sideBar: sideBarReducer
 });

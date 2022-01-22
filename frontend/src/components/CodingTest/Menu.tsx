@@ -46,9 +46,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
 
   const { t } = useTranslation();
 
-  const {
-    jwtPayload: { exp, iat }
-  } = useAppSelector((state) => state.jwt);
+  const { accessToken } = useAppSelector((state) => state.accessToken);
   const [time, setTime] = useState(iat + exp - Date.now());
 
   useEffect(() => {
