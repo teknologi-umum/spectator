@@ -142,7 +142,7 @@ def main():
                         record=point,
                     )
 
-    print("Done. Please don't do anything until this scripts exists itself.")
+    print("Done. Please don't do anything until the script exits itself.")
 
 if __name__ == "__main__":
     main()
