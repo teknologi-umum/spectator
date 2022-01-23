@@ -61,6 +61,7 @@ spectator-frontend` from the root of this folder and run it by executing
 - `src/pages` - Any component that serves as a page
 - `src/schema` - Schema for form validation
 - `src/store` - Redux store
+- `src/store/slices` - Redux Toolkit slices
 - `src/stub` - Auto-generated typings from proto files
 - `src/styles` - Any files related to styling
 - `src/tests` - Test files
