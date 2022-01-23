@@ -1,10 +1,11 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import PersonalInfo from "@/pages/PersonalInfo";
+import PersonalInfo from "@/pages/PersonalInfoPage";
 import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
 import CodingTest from "@/pages/CodingTest";
 import FunFact from "@/pages/FunFact";
+import { CoercedRoute } from "@/hoc/CoercedRoute";
 
 function App() {
   // basically, the rules are:
@@ -16,11 +17,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/">
-          <Route index element={<PersonalInfo />} />
-          <Route path="instructions" element={<Instructions />} />
-          <Route path="sam-test" element={<SAMTest />} />
-          <Route path="coding-test" element={<CodingTest />} />
-          <Route path="fun-fact" element={<FunFact />} />
+          <CoercedRoute index element={<PersonalInfo />} />
+          <CoercedRoute path="instructions" element={<Instructions />} />
+          <CoercedRoute path="sam-test" element={<SAMTest />} />
+          <CoercedRoute path="coding-test" element={<CodingTest />} />
+          <CoercedRoute path="fun-fact" element={<FunFact />} />
         </Route>
       </Routes>
     </BrowserRouter>

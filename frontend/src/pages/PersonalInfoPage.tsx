@@ -4,7 +4,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { recordPersonalInfo } from "@/store/slices/personalInfoSlice/personalInfoSlice";
+import { setPersonalInfo } from "@/store/slices/personalInfoSlice";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -17,22 +17,14 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
-import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
 import { useColorModeValue } from "@/hooks";
-import { withPublic } from "@/hoc";
 import { useTranslation } from "react-i18next";
+import type { PersonalInfo } from "@/models/PersonalInfo";
 
-interface FormValues {
-  studentId: string;
-  programmingExp: number;
-  programmingExercise: number;
-  programmingLanguage: string;
-}
-
-function PersonalInfo() {
+export default function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const personalInfo = useAppSelector<PersonalInfoState>(
+  const { personalInfo } = useAppSelector(
     (state) => state.personalInfo
   );
   const navigate = useNavigate();
@@ -50,8 +42,8 @@ function PersonalInfo() {
     reValidateMode: "onBlur"
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    dispatch(recordPersonalInfo(data));
+  const onSubmit: SubmitHandler<PersonalInfo> = (data) => {
+    dispatch(setPersonalInfo(data));
     navigate("/instructions");
   };
 
@@ -167,5 +159,3 @@ function PersonalInfo() {
     </Layout>
   );
 }
-
-export default withPublic(PersonalInfo);

@@ -16,6 +16,7 @@ import {
   localeReducer,
   personalInfoReducer,
   editorReducer,
+  examResultReducer,
   themeReducer,
   sideBarReducer
 } from "./slices";
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   locale: localeReducer,
   personalInfo: personalInfoReducer,
   editor: editorReducer,
+  examResult: examResultReducer,
   app: themeReducer,
   sideBar: sideBarReducer
 });

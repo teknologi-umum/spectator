@@ -12,7 +12,6 @@ import {
   scrollHandler
 } from "@/events";
 import { useColorModeValue, useSignalR } from "@/hooks";
-import { withProtected } from "@/hoc";
 import {
   Box,
   Flex,
@@ -25,7 +24,7 @@ import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";
 import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 
-function CodingTest() {
+export default function CodingTest() {
   const { currentQuestion } = useAppSelector<QuestionState>(
     (state) => state.question
   );
@@ -105,5 +104,3 @@ function CodingTest() {
     </Flex>
   );
 }
-
-export default withProtected(CodingTest);

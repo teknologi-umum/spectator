@@ -24,7 +24,6 @@ import { getJwt } from "@/utils/generateFakeJwt";
 import { useAppDispatch } from "@/store";
 import { setJwt } from "@/store/slices/jwtSlice";
 import { useColorModeValue } from "@/hooks/";
-import { withPublic } from "@/hoc";
 import { useTranslation } from "react-i18next";
 
 const ICONS = {
@@ -60,7 +59,7 @@ function getResponseOptions(
   );
 }
 
-function SAMTest() {
+export default function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -213,5 +212,3 @@ function SAMTest() {
     </>
   );
 }
-
-export default withPublic(SAMTest);

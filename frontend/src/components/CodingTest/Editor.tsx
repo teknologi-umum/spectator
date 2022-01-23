@@ -37,18 +37,26 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const { t } = useTranslation();
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
-  const { currentQuestion } = useAppSelector((state) => state.question);
-  const { solutions, currentLanguage } = useAppSelector(
-    (state) => state.editor
-  );
-
-  // memoized the question
-  const boilerplate = useMemo(() => {
-    return t(`question.questions.${currentQuestion}.templates.${currentLanguage}`);
-  }, [currentQuestion, currentLanguage]);
 
   const [code, setCode] = useState("");
+
   const debouncedCode = useDebounce(code, 500);
+
+  const {
+    questions,
+    currentQuestionNumber,
+    currentLanguage,
+    snapshotByQuestionNumber
+  } = useAppSelector((state) => state.editor);
+
+  const currentSolution = currentQuestionNumber != null
+    ? snapshotByQuestionNumber[currentQuestionNumber].solutionByLanguage[currentLanguage]
+    : null;
+
+  useEffect(() => {
+    setCode(currentSolution ?? "");
+  }, [currentSolution]);
+
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
@@ -65,22 +73,14 @@ export default function Editor({ bg, onScroll }: EditorProps) {
     } else {
       setCode(boilerplate);
       dispatch(
-        setSolution({
-          questionNo: currentQuestion,
-          language: currentLanguage,
-          code: boilerplate
-        })
+        setSolution(boilerplate)
       );
     }
   }, [currentQuestion, currentLanguage]);
 
   useEffect(() => {
     dispatch(
-      setSolution({
-        questionNo: currentQuestion,
-        language: currentLanguage,
-        code: debouncedCode
-      })
+      setSolution(debouncedCode)
     );
   }, [debouncedCode]);
 
