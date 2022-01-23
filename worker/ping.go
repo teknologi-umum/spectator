@@ -6,6 +6,7 @@ import (
 	pb "worker/worker_proto"
 )
 
+// Ping is the gRPC presentation layer handler for ping commands.
 func (d *Dependency) Ping(ctx context.Context, in *pb.EmptyRequest) (*pb.Health, error) {
 	health, err := d.DB.Health(ctx)
 	if err != nil {

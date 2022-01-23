@@ -2,49 +2,29 @@ package funfact_test
 
 import (
 	"context"
-	"math/rand"
 	"testing"
 	"time"
-
-	"github.com/google/uuid"
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 func TestCalculateWordsPerMinute(t *testing.T) {
-	t.Cleanup(cleanup)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	id, err := uuid.NewUUID()
+	res := make(chan uint32, 1)
+	err := deps.CalculateWordsPerMinute(ctx, globalID, res)
 	if err != nil {
-		t.Fatalf("failed to generate uuid: %v", err)
+		t.Errorf("an error was thrown: %v", err)
 	}
 
-	writeAPI := db.WriteAPI(deps.DBOrganization, deps.BucketInputEvents)
+	t.Logf("average wpm: %v", <-res)
+}
 
-	// Random date between range
-	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
-	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
-	delta := max - min
-
-	for i := 0; i < 200; i++ {
-		point := influxdb2.NewPoint(
-			"coding_event_keystroke",
-			map[string]string{
-				"session_id": id.String(),
-			},
-			map[string]interface{}{
-				"key_char": "a",
-			},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
-		writeAPI.WritePoint(point)
-	}
-
-	writeAPI.Flush()
+func TestCalculateWordsPerMinute_Forfeit(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
 
 	res := make(chan uint32, 1)
-	err = deps.CalculateWordsPerMinute(ctx, id, res)
+	err := deps.CalculateWordsPerMinute(ctx, globalID2, res)
 	if err != nil {
 		t.Errorf("an error was thrown: %v", err)
 	}

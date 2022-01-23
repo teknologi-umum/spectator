@@ -3,15 +3,4 @@
 .idea
 bin
 obj
-worker/docker-compose.yml
-worker/data
-worker/_keystroke.csv
-worker/_keystroke.json
-worker/_mouse_click.csv
-worker/_mouse_click.json
-worker/_mouse_move.csv
-worker/_mouse_move.json
-worker/_personal.csv
-worker/_personal.json
-worker/_sam_test.csv
-worker/_sam_test.json
+
