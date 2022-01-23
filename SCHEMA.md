@@ -52,7 +52,7 @@ interface ExamStarted {
 }
 
 // measurement: locale_set
-interface ExamStarted {
+interface LocaleSet {
   session_id: string; // tag
   locale: Locale; // field
 }
