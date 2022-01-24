@@ -22,7 +22,7 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		ReinaldysBuildQuery(Queries{
-			Level:     "after_exam_sam_submitted",
+			Level:     "exam_ide_started",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

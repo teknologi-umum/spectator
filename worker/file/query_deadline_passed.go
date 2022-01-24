@@ -20,7 +20,7 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		ReinaldysBuildQuery(Queries{
-			Level:     "after_exam_sam_submitted",
+			Level:     "deadline_passed",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

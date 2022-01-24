@@ -20,7 +20,7 @@ func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.Quer
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		ReinaldysBuildQuery(Queries{
-			Level:     "after_exam_sam_submitted",
+			Level:     "exam_ide_reloaded",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

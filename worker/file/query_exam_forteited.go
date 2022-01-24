@@ -20,7 +20,7 @@ func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryA
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		ReinaldysBuildQuery(Queries{
-			Level:     "after_exam_sam_submitted",
+			Level:     "exam_forfeited",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),
