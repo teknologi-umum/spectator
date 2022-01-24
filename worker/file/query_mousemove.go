@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -40,8 +39,6 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 	tempMouseMove := MouseMovement{}
 	var tablePosition int64
 	for mouseMoveRows.Next() {
-		// TODO: remove this, just use normal stuffs instead of
-		// reinventing the wheel. lol.
 
 		rows := mouseMoveRows.Record()
 		table, ok := rows.ValueByKey("table").(int64)
@@ -53,27 +50,27 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		case "direction":
 			tempMouseMove.Direction = rows.Value().(string)
 		case "x_position":
-			x, err := strconv.ParseInt(rows.Value().(string), 10, 64)
-			if err != nil {
-				return []MouseMovement{}, fmt.Errorf("failed to parse x position: %w", err)
+			x, ok := rows.Value().(int64)
+			if !ok {
+				return []MouseMovement{}, fmt.Errorf("failed to parse x position type")
 			}
 			tempMouseMove.XPosition = x
 		case "y_position":
-			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
-			if err != nil {
-				return []MouseMovement{}, fmt.Errorf("failed to parse y position: %w", err)
+			y, ok := rows.Value().(int64)
+			if !ok {
+				return []MouseMovement{}, fmt.Errorf("failed to parse y position type")
 			}
 			tempMouseMove.YPosition = y
 		case "window_height":
-			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
-			if err != nil {
-				return []MouseMovement{}, fmt.Errorf("failed to parse window height: %w", err)
+			y, ok := rows.Value().(int64)
+			if !ok {
+				return []MouseMovement{}, fmt.Errorf("failed to parse window height type")
 			}
 			tempMouseMove.WindowHeight = y
 		case "window_width":
-			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
-			if err != nil {
-				return []MouseMovement{}, fmt.Errorf("failed to parse window width: %w", err)
+			y, ok := rows.Value().(int64)
+			if !ok {
+				return []MouseMovement{}, fmt.Errorf("failed to parse window width type")
 			}
 			tempMouseMove.WindowWidth = y
 		}
