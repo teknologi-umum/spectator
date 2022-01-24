@@ -123,10 +123,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 
 	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketSessionEvents)
 
-	// TODO: refactor. if the output personal info is an array containing only
-	// a single element, then the function output should not be an array
-	// it would be more cost effective that way.
-	studentNumber := outputPersonalInfo[0].StudentNumber
+	studentNumber := outputPersonalInfo.StudentNumber
 
 	g, gctx := errgroup.WithContext(ctx)
 	g.Go(func() error {
@@ -195,13 +192,13 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		return fmt.Errorf("failed to upload json %s file: %v", fileName, err)
 	}
 
-	e := influxdb2.NewPointWithMeasurement("test_result")
+	e := influxdb2.NewPointWithMeasurement("exported_data")
 	e.AddTag("session_id", sessionID.String())
 	e.AddTag("student_number", studentNumber)
 	e.AddField("file_csv_url", "/public/"+studentNumber+"_"+fileName+".csv")
 	e.AddField("file_json_url", "/public/"+studentNumber+"_"+fileName+".json")
 	e.SetTime(time.Now())
-	err = writeAPI.WritePoint(ctx, e)
+	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketResultEvents).WritePoint(ctx, e)
 	if err != nil {
 		return fmt.Errorf("failed to write %s test result: %v", fileName, err)
 	}

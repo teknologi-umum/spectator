@@ -42,6 +42,8 @@ const (
 	// BucketSessionEvents is the bucket name for storing
 	// the session events, including their personal information.
 	BucketSessionEvents = "session_events"
+
+	BucketResultEvents = "results"
 )
 
 func main() {
@@ -139,6 +141,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
+			BucketResultEvents:  BucketResultEvents,
 		},
 		File: &file.Dependency{
 			Environment:         environment,
@@ -149,12 +152,14 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
+			BucketResultEvents:  BucketResultEvents,
 		},
 	}
 
 	// Check for bucket existence
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
+
 	bucketFound, err := minioConn.BucketExists(ctx, "spectator")
 	if err != nil {
 		log.Fatalf("Error checking bucket: %s\n", err)

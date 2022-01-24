@@ -27,7 +27,7 @@ type Keystroke struct {
 func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
 	keystrokeMouseRows, err := queryAPI.Query(
 		ctx,
-		reinaldysBuildQuery(queries{
+		ReinaldysBuildQuery(Queries{
 			Level:     "coding_event_keystroke",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketInputEvents,

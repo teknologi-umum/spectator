@@ -10,7 +10,15 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func TestQueryPersonalInfo(t *testing.T) {
+func TestQueryDeadlinePassed(t *testing.T) {
+	// TODO:
+	// 1. insert some fake data into the influx db
+	// 2. query the data with the function
+	// 3. compare the length of the result and the length of fake data
+	// add another test (maybe a subtest, or another test function)
+	// that checks if there is no data to be queried.
+	// we must check if that (rare and edgy) event happen,
+	// so what would the software react?
 	t.Cleanup(cleanup)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -29,16 +37,11 @@ func TestQueryPersonalInfo(t *testing.T) {
 
 	for i := 0; i < 50; i++ {
 		p := influxdb2.NewPoint(
-			"personal_info",
+			"deadline_passed",
 			map[string]string{
 				"session_id": id.String(),
 			},
-			map[string]interface{}{
-				"student_number":      "",
-				"hours_of_practice":   rand.Int31n(666),
-				"years_of_experience": rand.Int31n(5),
-				"familiar_languages":  "",
-			},
+			map[string]interface{}{},
 			time.Unix(rand.Int63n(delta)+min, 0),
 		)
 
@@ -46,13 +49,13 @@ func TestQueryPersonalInfo(t *testing.T) {
 	}
 
 	readInputAPI := db.QueryAPI(deps.DBOrganization)
-	result, err := deps.QueryPersonalInfo(ctx, readInputAPI, id)
+	result, err := deps.QueryKeystrokes(ctx, readInputAPI, id)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
 
-	if result.SessionID != id.String() {
-		t.Errorf("personal info not exist")
+	if len(result) != 50 {
+		t.Errorf("Expected 50 keystrokes, got %d", len(result))
 	}
 }
