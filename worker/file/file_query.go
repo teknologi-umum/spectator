@@ -35,13 +35,13 @@ func ReinaldysBuildQuery(q Queries) string {
 
 	str.WriteString(")\n")
 
-	str.WriteString("|> sort(columns: [\"_time\"])\n")
+	// str.WriteString("|> sort(columns: [\"_time\"])\n")
 
-	if q.SessionID == "" {
-		str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
-	} else {
-		str.WriteString("|> group(columns: [\"_time\"])\n")
-	}
+	// if q.SessionID == "" {
+	// 	str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
+	// } else {
+	// 	str.WriteString("|> group(columns: [\"_time\"])\n")
+	// }
 
 	if q.Level != "" {
 		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "` + q.Level + `")` + "\n")
@@ -55,3 +55,8 @@ func ReinaldysBuildQuery(q Queries) string {
 
 	return str.String()
 }
+
+// `from(bucket: "`+d.BucketInputEvents+`")
+// |> range(start: 0)
+// |> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
+// |> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
