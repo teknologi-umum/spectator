@@ -44,15 +44,21 @@ func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAP
 
 		switch rows.Field() {
 		case "aroused_level":
-			tempAfterExam.ArousedLevel, ok = rows.Value().(uint32)
+			// The integer value from InfluxDB will always int64 type
+			v, ok := rows.Value().(int64)
 			if !ok {
-				tempAfterExam.ArousedLevel = 0
+				v = 0
 			}
+
+			// So here, we must convert it into uint32 manually
+			tempAfterExam.ArousedLevel = uint32(v)
 		case "pleased_level":
-			tempAfterExam.PleasedLevel, ok = rows.Value().(uint32)
+			v, ok := rows.Value().(int64)
 			if !ok {
-				tempAfterExam.PleasedLevel = 0
+				v = 0
 			}
+
+			tempAfterExam.PleasedLevel = uint32(v)
 		}
 
 		if d.IsDebug() {
