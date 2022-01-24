@@ -68,4 +68,5 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 		)
 	}
 
+	return
 }

@@ -71,7 +71,7 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 		<-attempt,
 	}
 
-	defer d.Funfact.CreateProjection(ctx, sessionID, <-wpm, <-attempt, <-deletionRate, in.RequestId)
+	defer d.Funfact.CreateProjection(ctx, sessionID, result.Wpm, result.Attempt, result.DeletionRate, in.RequestId)
 
 	return &pb.FunFactResponse{
 		WordsPerMinute:     result.Wpm,
