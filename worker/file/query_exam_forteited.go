@@ -12,8 +12,8 @@ import (
 
 // measurement: exam_forfeited
 type ExamForfeited struct {
-	SessionId string // tag
-	Timestamp time.Time
+	SessionId string    `json:"session_id" csv:"session_id"` // tag
+	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamForfeited, error) {

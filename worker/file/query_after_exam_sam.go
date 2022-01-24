@@ -12,10 +12,10 @@ import (
 
 // measurement: after_exam_sam_submitted
 type AfterExamSAMSubmitted struct {
-	SessionId    string // Tag
-	ArousedLevel uint32
-	PleasedLevel uint32
-	Timestamp    time.Time
+	SessionId    string    `json:"session_id" csv:"session_id"` // Tag
+	ArousedLevel uint32    `json:"aroused_level" csv:"aroused_level"`
+	PleasedLevel uint32    `json:"pleased_level" csv:"pleased_level"`
+	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]AfterExamSAMSubmitted, error) {

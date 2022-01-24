@@ -12,8 +12,8 @@ import (
 
 // measurement: exam_ide_reloaded
 type ExamIDEReloaded struct {
-	SessionId string // tag
-	Timestamp time.Time
+	SessionId string    `json:"session_id" csv:"session_id"` // tag
+	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamIDEReloaded, error) {

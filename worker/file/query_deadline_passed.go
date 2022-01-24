@@ -12,8 +12,8 @@ import (
 
 // measurement: deadline_passed
 type DeadlinePassed struct {
-	SessionId string // tag
-	Timestamp time.Time
+	SessionId string    `json:"session_id" csv:"session_id"` // tag
+	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
