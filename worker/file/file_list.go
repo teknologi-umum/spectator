@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	pb "worker/worker_proto"
 
@@ -81,8 +82,11 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 		outputFile = append(outputFile, &tempFile)
 	}
 
+	newCtx, newCancel := context.WithTimeout(ctx, time.Second*15)
+	defer newCancel()
+
 	for _, i := range outputFile {
-		_, err := d.Bucket.StatObject(context.Background(), "spectator", i.FileUrlJson, minio.GetObjectOptions{})
+		_, err := d.Bucket.StatObject(newCtx, "spectator", i.FileUrlJson, minio.GetObjectOptions{})
 		if err != nil {
 			errCode := minio.ToErrorResponse(err)
 			if errCode.Code == "NoSuchKey" {
@@ -90,7 +94,7 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 			}
 		}
 
-		_, err = d.Bucket.StatObject(context.Background(), "spectator", i.FileUrlCsv, minio.GetObjectOptions{})
+		_, err = d.Bucket.StatObject(newCtx, "spectator", i.FileUrlCsv, minio.GetObjectOptions{})
 		if err != nil {
 			errCode := minio.ToErrorResponse(err)
 			if errCode.Code == "NoSuchKey" {

@@ -4,11 +4,9 @@ import (
 	"context"
 
 	"worker/file"
-
-	"github.com/google/uuid"
-
 	loggerpb "worker/logger_proto"
 
+	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
@@ -32,6 +30,7 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 				"info":       "cannot proceed student number",
 			},
 		)
+		return
 	}
 
 	var studentNumber string
@@ -66,7 +65,6 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 				"info":       "cannot storing results",
 			},
 		)
+		return
 	}
-
-	return
 }

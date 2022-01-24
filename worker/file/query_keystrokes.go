@@ -57,29 +57,29 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		case "key_code":
 			tempKeystroke.KeyCode = rows.Value().(string)
 		case "shift":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempKeystroke.Shift = tempBool
+			tempKeystroke.Shift = v
 		case "alt":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempKeystroke.Alt = tempBool
+			tempKeystroke.Alt = v
 		case "control":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempKeystroke.Control = tempBool
+			tempKeystroke.Control = v
 		case "unrelated_key":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempKeystroke.UnrelatedKey = tempBool
+			tempKeystroke.UnrelatedKey = v
 		case "meta":
 			tempKeystroke.Modifier = rows.Value().(string)
 		}

@@ -45,23 +45,23 @@ func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI,
 
 		switch rows.Field() {
 		case "left_click":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempMouseClick.LeftClick = tempBool
+			tempMouseClick.LeftClick = v
 		case "right_click":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempMouseClick.RightClick = tempBool
+			tempMouseClick.RightClick = v
 		case "middle_click":
-			tempBool := false
-			if rows.Value().(string) == "true" {
-				tempBool = true
+			v, ok := rows.Value().(bool)
+			if !ok {
+				v = false
 			}
-			tempMouseClick.MiddleClick = tempBool
+			tempMouseClick.MiddleClick = v
 		}
 
 		if d.IsDebug() {

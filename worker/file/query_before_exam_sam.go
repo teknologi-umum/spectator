@@ -44,15 +44,19 @@ func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryA
 
 		switch rows.Field() {
 		case "aroused_level":
-			tempAfterExam.ArousedLevel, ok = rows.Value().(uint32)
+			v, ok := rows.Value().(int64)
 			if !ok {
-				tempAfterExam.ArousedLevel = 0
+				v = 0
 			}
+
+			tempAfterExam.ArousedLevel = uint32(v)
 		case "pleased_level":
-			tempAfterExam.PleasedLevel, ok = rows.Value().(uint32)
+			v, ok := rows.Value().(int64)
 			if !ok {
-				tempAfterExam.PleasedLevel = 0
+				v = 0
 			}
+
+			tempAfterExam.PleasedLevel = uint32(v)
 		}
 
 		if d.IsDebug() {

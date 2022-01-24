@@ -41,12 +41,12 @@ func TestMain(m *testing.M) {
 
 	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
 	if !ok {
-		minioID = "diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd"
+		minioID = "teknum"
 	}
 
 	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
 	if !ok {
-		minioSecret = "xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo"
+		minioSecret = "c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48"
 	}
 
 	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
