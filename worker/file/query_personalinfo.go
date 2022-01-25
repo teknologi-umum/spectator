@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -47,15 +46,15 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 				tempPersonalInfo.StudentNumber = ""
 			}
 		case "hours_of_practice":
-			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
-			if err != nil {
-				return PersonalInfo{}, fmt.Errorf("failed to parse hours of practice: %w", err)
+			y, ok := rows.Value().(int64)
+			if !ok {
+				return PersonalInfo{}, fmt.Errorf("failed to parse hours of practice type")
 			}
 			tempPersonalInfo.HoursOfPractice = y
 		case "years_of_experience":
-			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
-			if err != nil {
-				return PersonalInfo{}, fmt.Errorf("failed to parse years of experience: %w", err)
+			y, ok := rows.Value().(int64)
+			if !ok {
+				return PersonalInfo{}, fmt.Errorf("failed to parse years of experience type")
 			}
 			tempPersonalInfo.YearsOfExperience = y
 		case "familiar_language":
