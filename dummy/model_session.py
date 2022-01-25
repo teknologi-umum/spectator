@@ -57,6 +57,23 @@ class EventSolution(SessionEventBase):
             "serialized_test_result": self.serialized_test_result,
         }
 
+class ExamSAMSubmitted(SessionEventBase):
+    aroused_level:int
+    pleased_level:int
+
+    def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
+        super().__init__(session_id, time)
+        self.aroused_level=aroused_level
+        self.pleased_level=pleased_level
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+            "aroused_level": self.aroused_level,
+            "pleased_level": self.pleased_level
+        }
+
 class EventSolutionAccepted(EventSolution):
 
     def __init__( self, session_id: str, time: int, question_number:int , language: str , solution: str, scratchpad:str , serialized_test_result: str) -> None:
@@ -108,6 +125,110 @@ class EventPersonalInfoSubmited(SessionEventBase):
             "familiar_languages": self.familiar_languages,
         }
 
+class EventSessionStarted(SessionEventBase):
+    locale: int
+
+    def __init__( self, session_id: str, time: int, locale:str ) -> None:
+        super().__init__( session_id, time)
+        self.type = "exam_started"
+        self.locale = _Locale[locale]
+
+    def asdict(self):
+        return {
+            "type" : self.type ,
+            "session_id" : self.session_id,
+            "time" : self._time,
+            "locale" :self.locale
+        }
+
+class EventDeadlinePassed(SessionEventBase):
+    def __init__(self, session_id: str, time: int) -> None:
+        super().__init__(session_id, time)
+        self.type = "deadline_passed"
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+        }
+
+class EventExamEnded(SessionEventBase):
+    def __init__(self, session_id: str, time: int) -> None:
+        super().__init__(session_id, time)
+        self.type = "exam_ended"
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+        }
+
+class EventExamForfeited(SessionEventBase):
+    def __init__(self, session_id: str, time: int) -> None:
+        super().__init__(session_id, time)
+        self.type = "exam_forfeited"
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+        }
+
+class EventExamIDEReloaded(SessionEventBase):
+    def __init__(self, session_id: str, time: int) -> None:
+        super().__init__(session_id, time)
+        self.type = "exam_ide_reloaded"
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+        }
+
+class EventExamStarted(SessionEventBase):
+    question_numbers=[]
+    deadline=str
+    def __init__(self, session_id: str, time: int, question_numbers, deadline) -> None:
+        super().__init__(session_id, time)
+        self.type = "exam_started"
+        self.question_numbers=question_numbers
+        self.deadline=deadline
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+            "question_numbers": self.question_numbers,
+            "deadline": self.deadline
+        }
+
+class ExamSAMSubmitted(SessionEventBase):
+    aroused_level:int
+    pleased_level:int
+
+    def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
+        super().__init__(session_id, time)
+        self.aroused_level=aroused_level
+        self.pleased_level=pleased_level
+    def asdict(self):
+        return{
+            "session_id": self.session_id,
+            "type": self.type,
+            "time": self._time,
+            "aroused_level": self.aroused_level,
+            "pleased_level": self.pleased_level
+        }
+
+class EventAfterExamSAMSubmitted(ExamSAMSubmitted):
+    def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
+        super().__init__(session_id, time, aroused_level, pleased_level)
+        self.type="after_exam_sam_submitted"
+
+class EventBeforeExamSAMSubmitted(SessionEventBase):
+    def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
+        super().__init__(session_id, time)
+        self.type="before_exam_sam_submitted"
+
 def _generate_event_solution ( session_id,  date_start: datetime, date_ends: datetime, ) -> dict[str, any]:
     question_number = random.randint(1, 6)
     language = _Language[ random.choice(["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"]) ]
@@ -158,6 +279,11 @@ def generate_event_locale_set( session_id,  date_start: datetime, date_ends: dat
     locale = random.choice(["ID","EN"])
     return (EventLocaleSet(session_id, time, locale).asdict())
 
+def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    locale = random.choice(["ID","EN"])
+    return (EventSessionStarted(session_id, time, locale).asdict())
+
 def generate_event_personal_info_submitted( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
     student_number = random.randint(999999999,9999999999)
@@ -183,6 +309,7 @@ def main():
     pprint(generate_event_solution_rejected(**fake_basic_info_generate()))
     pprint(generate_event_locale_set(**fake_basic_info_generate()))
     pprint(generate_event_personal_info_submitted(**fake_basic_info_generate()))
+    pprint(generate_event_session_started(**fake_basic_info_generate()))
     
 if __name__ == "__main__":
     main()
