@@ -3,25 +3,51 @@
 Based on [backend/Spectator.DomainEvents](https://github.com/teknologi-umum/spectator/tree/master/backend/Spectator.DomainEvents/SessionDomain)
 
 <details>
+<summary>Enums</summary>
+
+```typescript
+enum Locale {
+  EN = 0;
+  ID = 1;
+}
+
+enum Language {
+  Undefined = 0,
+  C = 1,
+  CPP = 2,
+  PHP = 3,
+  Javascript = 4,
+  Java = 5,
+  Python = 6
+}
+
+enum MouseButton {
+  Left,
+  Right,
+  Middle
+}
+```
+
+</details>
+
+<details>
 <summary>Session</summary>
 
 ```typescript
 // measurement: after_exam_sam_submitted
 interface AfterExamSAMSubmitted {
   session_id: string; // tag
-  self_assessment_manikin: {
-    aroused_level: number;
-    pleased_level: number;
-  }
+  // fields
+  aroused_level: number;
+  pleased_level: number;
 }
 
 // measurement: before_exam_sam_submitted
 interface BeforeExamSAMSubmitted {
   session_id: string; // tag
-  self_assessment_manikin: {
-    aroused_level: number;
-    pleased_level: number;
-  }
+  // fields
+  aroused_level: number;
+  pleased_level: number;
 }
 
 // measurement: deadline_passed
@@ -108,7 +134,13 @@ interface SolutionRejected {
 // measurement: keystroke
 interface Keystroke {
   session_id: string; // tag
-  keystroke_info: ConsoleKeyInfo
+  
+  // fields
+  key_code: string;
+  key_char: string;
+  shift: boolean;
+  alt: boolean;
+  ctrl: boolean;
 }
 
 // measurement: mouse_down
