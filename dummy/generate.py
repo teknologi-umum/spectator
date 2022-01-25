@@ -39,7 +39,7 @@ def main():
 
     events: list[dict[str, any]] = []
 
-    for i in range(len(users)):
+    for i in range( len(users) ):
         # Get current session
         current_session = users[i]["session_id"]
         current_events: list[dict[str, any]] = []
@@ -58,33 +58,24 @@ def main():
             rand = random.randint(1, 4)
             if rand == 1:
                 # Generate a keystroke event
-                event = generate_event_keystroke(current_session, date_start,
-                                                 date_ends)
-                current_events.append(event)
-                continue
+                event = generate_event_keystroke(current_session, date_start, date_ends)
             elif rand == 2:
                 # Generate a mouse move event
-                event = generate_event_mousemove(current_session, date_start,
-                                                 date_ends)
-                current_events.append(event)
-                continue
+                event = generate_event_mousemove(current_session, date_start, date_ends)
             elif rand == 3:
                 # Generate a window resize event
-                event = generate_event_window_sized(current_session, date_start,
-                                                    date_ends)
-                current_events.append(event)
-                continue
-            else:
+                event = generate_event_window_sized(current_session, date_start, date_ends)
+            elif rand == 4:
                 # Generate a mouse click event
-                event = generate_event_mouseclick(current_session, date_start,
-                                                  date_ends)
-                current_events.append(event)
-                continue
+                event = generate_event_mouseclick(current_session, date_start, date_ends)
+            
+            current_events.append(event)
+            continue
 
         # Add the current events to the list of events
         events.extend(current_events)
 
-    print("Generated {} events. Writing into file.".format(len(events)))
+    print(f"Generated { len(events) } events. Writing into file.")
     write_into_file("events.json", events)
 
 
