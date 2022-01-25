@@ -44,11 +44,11 @@ func ReinaldysBuildQuery(q Queries) string {
 
 	str.WriteString("|> sort(columns: [\"_time\"])\n")
 
-	if q.SessionID == "" {
-		str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
-	} else {
-		str.WriteString("|> group(columns: [\"_time\"])\n")
-	}
+	// if q.SessionID == "" {
+	// 	str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
+	// } else {
+	// 	str.WriteString("|> group(columns: [\"_time\"])\n")
+	// }
 
 	if q.Measurement != "" {
 		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "` + sanitize(q.Measurement) + `")` + "\n")
