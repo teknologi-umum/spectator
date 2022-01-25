@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -21,8 +22,8 @@ type ExamStarted struct {
 func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamStarted, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		ReinaldysBuildQuery(Queries{
-			Level:     "exam_ide_started",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "exam_ide_started",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

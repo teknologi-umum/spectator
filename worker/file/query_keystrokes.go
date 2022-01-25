@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -27,8 +28,8 @@ type Keystroke struct {
 func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
 	keystrokeMouseRows, err := queryAPI.Query(
 		ctx,
-		ReinaldysBuildQuery(Queries{
-			Level:     "coding_event_keystroke",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "coding_event_keystroke",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketInputEvents,
 		}),

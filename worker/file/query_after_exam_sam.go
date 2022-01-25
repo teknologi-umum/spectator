@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -21,8 +22,8 @@ type AfterExamSAMSubmitted struct {
 func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]AfterExamSAMSubmitted, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		ReinaldysBuildQuery(Queries{
-			Level:     "after_exam_sam_submitted",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "after_exam_sam_submitted",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

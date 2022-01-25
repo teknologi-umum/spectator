@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -19,8 +20,8 @@ type ExamForfeited struct {
 func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamForfeited, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		ReinaldysBuildQuery(Queries{
-			Level:     "exam_forfeited",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "exam_forfeited",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

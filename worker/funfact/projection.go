@@ -3,7 +3,7 @@ package funfact
 import (
 	"context"
 
-	"worker/file"
+	"worker/influxhelpers"
 	loggerpb "worker/logger_proto"
 
 	"github.com/google/uuid"
@@ -13,8 +13,8 @@ import (
 func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float32, requestID string) {
 	personalInfoh, err := d.DB.QueryAPI(d.BucketSessionEvents).Query(
 		ctx,
-		file.ReinaldysBuildQuery(file.Queries{
-			Level:     "personal_info",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "personal_info",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -19,8 +20,8 @@ type DeadlinePassed struct {
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		ReinaldysBuildQuery(Queries{
-			Level:     "deadline_passed",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "deadline_passed",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),

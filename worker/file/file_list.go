@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"worker/influxhelpers"
 	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
@@ -22,8 +23,8 @@ type File struct {
 func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.File, error) {
 	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
-		ReinaldysBuildQuery(Queries{
-			Level:     "test_file",
+		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+			Measurement:     "test_file",
 			SessionID: sessionID.String(),
 			Buckets:   d.BucketSessionEvents,
 		}),
