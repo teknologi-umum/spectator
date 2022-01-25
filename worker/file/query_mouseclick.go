@@ -23,7 +23,7 @@ type MouseClick struct {
 
 func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseClick, error) {
 	outputMouseClick := []MouseClick{}
-	for _, x := range []string{"type", "right_click", "left_click", "middle_click"} {
+	for _, x := range []string{"right_click", "left_click", "middle_click"} {
 		mouseClickRows, err := queryAPI.Query(
 			ctx,
 			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
