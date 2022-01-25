@@ -19,7 +19,7 @@ func TestQueryBeforeExamSAM(t *testing.T) {
 		t.Errorf("failed to generate uuid: %v", err)
 	}
 
-	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
+	writeSessionAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -41,8 +41,8 @@ func TestQueryBeforeExamSAM(t *testing.T) {
 		writeSessionAPI.WritePoint(ctx, p)
 	}
 
-	readInputAPI := db.QueryAPI(deps.DBOrganization)
-	result, err := deps.QueryKeystrokes(ctx, readInputAPI, id)
+	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
+	result, err := deps.QueryBeforeExamSam(ctx, readInputAPI, id)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return

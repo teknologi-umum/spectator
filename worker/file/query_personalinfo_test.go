@@ -19,7 +19,7 @@ func TestQueryPersonalInfo(t *testing.T) {
 		t.Errorf("failed to generate uuid: %v", err)
 	}
 
-	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
+	writeSessionAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
@@ -33,8 +33,8 @@ func TestQueryPersonalInfo(t *testing.T) {
 			},
 			map[string]interface{}{
 				"student_number":      "",
-				"hours_of_practice":   rand.Int31n(666),
-				"years_of_experience": rand.Int31n(5),
+				"hours_of_practice":   rand.Int63n(666),
+				"years_of_experience": rand.Int63n(5),
 				"familiar_languages":  "",
 			},
 			time.Unix(rand.Int63n(delta)+min, 0),
@@ -43,7 +43,7 @@ func TestQueryPersonalInfo(t *testing.T) {
 		writeSessionAPI.WritePoint(ctx, p)
 	}
 
-	readInputAPI := db.QueryAPI(deps.DBOrganization)
+	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
 	result, err := deps.QueryPersonalInfo(ctx, readInputAPI, id)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)

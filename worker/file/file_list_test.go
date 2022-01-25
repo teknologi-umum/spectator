@@ -20,7 +20,7 @@ func TestListFiles(t *testing.T) {
 		t.Errorf("failed to generate uuid: %v", err)
 	}
 
-	writeSessionAPI := db.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
+	writeSessionAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 
 	for i := 0; i < 50; i++ {
 		for _, x := range []string{"keystroke", "mouse_click", "mouse_move", "personal_info", "sam_test"} {

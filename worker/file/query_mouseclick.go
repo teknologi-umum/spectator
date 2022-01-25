@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -21,75 +22,78 @@ type MouseClick struct {
 }
 
 func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseClick, error) {
-	mouseClickRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+d.BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_mouseclick")
-		`,
-	)
-	if err != nil {
-		return []MouseClick{}, fmt.Errorf("failed to query mouse clicks: %w", err)
-	}
-
 	outputMouseClick := []MouseClick{}
-	tempMouseClick := MouseClick{}
-	var tablePosition int64
-	for mouseClickRows.Next() {
-		rows := mouseClickRows.Record()
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
+	for _, x := range []string{"type", "right_click", "left_click", "middle_click"} {
+		mouseClickRows, err := queryAPI.Query(
+			ctx,
+			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+				Measurement: "coding_event_mouseclick",
+				SessionID:   sessionID.String(),
+				Buckets:     d.BucketInputEvents,
+				Field:       x,
+			}),
+		)
+		if err != nil {
+			return []MouseClick{}, fmt.Errorf("failed to query mouse clicks: %w", err)
 		}
 
-		switch rows.Field() {
-		case "left_click":
-			v, ok := rows.Value().(bool)
+		tempMouseClick := MouseClick{}
+		var tablePosition int64
+		for mouseClickRows.Next() {
+			rows := mouseClickRows.Record()
+			table, ok := rows.ValueByKey("table").(int64)
 			if !ok {
-				v = false
+				table = 0
 			}
-			tempMouseClick.LeftClick = v
-		case "right_click":
-			v, ok := rows.Value().(bool)
-			if !ok {
-				v = false
+
+			switch x {
+			case "left_click":
+				v, ok := rows.Value().(bool)
+				if !ok {
+					v = false
+				}
+				tempMouseClick.LeftClick = v
+			case "right_click":
+				v, ok := rows.Value().(bool)
+				if !ok {
+					v = false
+				}
+				tempMouseClick.RightClick = v
+			case "middle_click":
+				v, ok := rows.Value().(bool)
+				if !ok {
+					v = false
+				}
+				tempMouseClick.MiddleClick = v
 			}
-			tempMouseClick.RightClick = v
-		case "middle_click":
-			v, ok := rows.Value().(bool)
-			if !ok {
-				v = false
+
+			if d.IsDebug() {
+				log.Println(rows.String())
+				log.Printf("table %d\n", rows.Table())
 			}
-			tempMouseClick.MiddleClick = v
+
+			if table != 0 && table > tablePosition {
+				outputMouseClick = append(outputMouseClick, tempMouseClick)
+				tablePosition = table
+			} else {
+				var ok bool
+
+				tempMouseClick.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
+				if !ok {
+					tempMouseClick.QuestionNumber = ""
+				}
+
+				tempMouseClick.SessionID, ok = rows.ValueByKey("session_id").(string)
+				if !ok {
+					tempMouseClick.SessionID = ""
+				}
+				tempMouseClick.Timestamp = rows.Time()
+			}
 		}
 
-		if d.IsDebug() {
-			log.Println(rows.String())
-			log.Printf("table %d\n", rows.Table())
-		}
-
-		if table != 0 && table > tablePosition {
+		if len(outputMouseClick) > 0 || tempMouseClick.SessionID != "" {
 			outputMouseClick = append(outputMouseClick, tempMouseClick)
-			tablePosition = table
-		} else {
-			var ok bool
-
-			tempMouseClick.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
-			if !ok {
-				tempMouseClick.QuestionNumber = ""
-			}
-
-			tempMouseClick.SessionID, ok = rows.ValueByKey("session_id").(string)
-			if !ok {
-				tempMouseClick.SessionID = ""
-			}
-			tempMouseClick.Timestamp = rows.Time()
 		}
-	}
-
-	if len(outputMouseClick) > 0 || tempMouseClick.SessionID != "" {
-		outputMouseClick = append(outputMouseClick, tempMouseClick)
 	}
 
 	return outputMouseClick, nil

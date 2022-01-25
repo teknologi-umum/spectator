@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -23,86 +24,93 @@ type MouseMovement struct {
 }
 
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
-	mouseMoveRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+d.BucketInputEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")
-		`,
-	)
-	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse moves: %w", err)
-	}
 
 	outputMouseMove := []MouseMovement{}
-	tempMouseMove := MouseMovement{}
-	var tablePosition int64
-	for mouseMoveRows.Next() {
-
-		rows := mouseMoveRows.Record()
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
+	for _, x := range []string{"direction", "x_position", "y_position", "window_width", "window_height"} {
+		mouseMoveRows, err := queryAPI.Query(
+			ctx,
+			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
+				Measurement: "coding_event_mousemove",
+				SessionID:   sessionID.String(),
+				Buckets:     d.BucketInputEvents,
+				Field:       x,
+			}),
+		)
+		if err != nil {
+			return []MouseMovement{}, fmt.Errorf("failed to query mouse moves: %w", err)
 		}
 
-		switch rows.Field() {
-		case "direction":
-			tempMouseMove.Direction = rows.Value().(string)
-		case "x_position":
-			x, ok := rows.Value().(int64)
+		tempMouseMove := MouseMovement{}
+		var tablePosition int64
+		for mouseMoveRows.Next() {
+
+			rows := mouseMoveRows.Record()
+			table, ok := rows.ValueByKey("table").(int64)
 			if !ok {
-				return []MouseMovement{}, fmt.Errorf("failed to parse x position type")
+				table = 0
 			}
-			tempMouseMove.XPosition = x
-		case "y_position":
-			y, ok := rows.Value().(int64)
-			if !ok {
-				return []MouseMovement{}, fmt.Errorf("failed to parse y position type")
+
+			switch x {
+			case "direction":
+				tempMouseMove.Direction, ok = rows.Value().(string)
+				if !ok {
+					tempMouseMove.Direction = ""
+				}
+			case "x_position":
+				x, ok := rows.Value().(int64)
+				if !ok {
+					return []MouseMovement{}, fmt.Errorf("failed to parse x position type")
+				}
+				tempMouseMove.XPosition = x
+			case "y_position":
+				y, ok := rows.Value().(int64)
+				if !ok {
+					return []MouseMovement{}, fmt.Errorf("failed to parse y position type")
+				}
+				tempMouseMove.YPosition = y
+			case "window_height":
+				y, ok := rows.Value().(int64)
+				if !ok {
+					return []MouseMovement{}, fmt.Errorf("failed to parse window height type")
+				}
+				tempMouseMove.WindowHeight = y
+			case "window_width":
+				y, ok := rows.Value().(int64)
+				if !ok {
+					return []MouseMovement{}, fmt.Errorf("failed to parse window width type")
+				}
+				tempMouseMove.WindowWidth = y
 			}
-			tempMouseMove.YPosition = y
-		case "window_height":
-			y, ok := rows.Value().(int64)
-			if !ok {
-				return []MouseMovement{}, fmt.Errorf("failed to parse window height type")
+
+			if d.IsDebug() {
+				log.Println(rows.String())
+				log.Printf("table %d\n", rows.Table())
 			}
-			tempMouseMove.WindowHeight = y
-		case "window_width":
-			y, ok := rows.Value().(int64)
-			if !ok {
-				return []MouseMovement{}, fmt.Errorf("failed to parse window width type")
+
+			if table != 0 && table > tablePosition {
+				outputMouseMove = append(outputMouseMove, tempMouseMove)
+				tablePosition = table
+			} else {
+				var ok bool
+
+				tempMouseMove.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
+				if !ok {
+					tempMouseMove.QuestionNumber = ""
+				}
+
+				tempMouseMove.SessionID, ok = rows.ValueByKey("session_id").(string)
+				if !ok {
+					tempMouseMove.SessionID = ""
+				}
+				tempMouseMove.Timestamp = rows.Time()
 			}
-			tempMouseMove.WindowWidth = y
 		}
 
-		if d.IsDebug() {
-			log.Println(rows.String())
-			log.Printf("table %d\n", rows.Table())
-		}
-
-		if table != 0 && table > tablePosition {
+		// ? : this part ask Reynaldi's i had no ideas.
+		if len(outputMouseMove) > 0 || tempMouseMove.SessionID != "" {
 			outputMouseMove = append(outputMouseMove, tempMouseMove)
-			tablePosition = table
-		} else {
-			var ok bool
-
-			tempMouseMove.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
-			if !ok {
-				tempMouseMove.QuestionNumber = ""
-			}
-
-			tempMouseMove.SessionID, ok = rows.ValueByKey("session_id").(string)
-			if !ok {
-				tempMouseMove.SessionID = ""
-			}
-			tempMouseMove.Timestamp = rows.Time()
 		}
-	}
 
-	// ? : this part ask Reynaldi's i had no ideas.
-	if len(outputMouseMove) > 0 || tempMouseMove.SessionID != "" {
-		outputMouseMove = append(outputMouseMove, tempMouseMove)
 	}
-
 	return outputMouseMove, nil
 }

@@ -89,20 +89,20 @@ func TestMain(m *testing.M) {
 
 	code := m.Run()
 
-	db.Close()
+	deps.DB.Close()
 
 	os.Exit(code)
 }
 
 func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
-	bucketsAPI := db.BucketsAPI()
+	bucketsAPI := deps.DB.BucketsAPI()
 	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil && err.Error() != "bucket '"+deps.BucketInputEvents+"' not found" {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	if err != nil && err.Error() == "bucket '"+deps.BucketInputEvents+"' not found" {
-		organizationAPI := db.OrganizationsAPI()
+		organizationAPI := deps.DB.OrganizationsAPI()
 		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
 		if err != nil {
 			return fmt.Errorf("finding organization: %v", err)
@@ -120,7 +120,7 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	}
 
 	if err != nil && err.Error() == "bucket '"+deps.BucketSessionEvents+"' not found" {
-		organizationAPI := db.OrganizationsAPI()
+		organizationAPI := deps.DB.OrganizationsAPI()
 		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
 		if err != nil {
 			return fmt.Errorf("finding organization: %v", err)
@@ -153,7 +153,7 @@ func cleanup() {
 	}
 
 	// delete bucket data
-	deleteAPI := db.DeleteAPI()
+	deleteAPI := deps.DB.DeleteAPI()
 
 	inputEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
 	for _, measurement := range inputEventMeasurements {
@@ -164,7 +164,7 @@ func cleanup() {
 	}
 
 	// find input_events bucket
-	sessionEventsBucket, err := db.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
+	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
 	if err != nil {
 		log.Fatalf("finding bucket: %v", err)
 	}
@@ -180,7 +180,7 @@ func cleanup() {
 
 func seedData(ctx context.Context) error {
 	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
+	//inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -192,7 +192,7 @@ func seedData(ctx context.Context) error {
 	globalID = id
 
 	eventStart := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
-	eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
+	//eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
 	wg.Add(200)

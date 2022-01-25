@@ -18,6 +18,7 @@ type DeadlinePassed struct {
 }
 
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
+	outputDeadlinePassed := []DeadlinePassed{}
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
@@ -31,7 +32,6 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 	}
 
 	//var lastTableIndex int = -1
-	outputDeadlinePassed := []DeadlinePassed{}
 	tempDeadlinePassed := DeadlinePassed{}
 	var tablePosition int64
 	for afterExamSamRows.Next() {

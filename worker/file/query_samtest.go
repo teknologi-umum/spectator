@@ -42,14 +42,15 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 			table = 0
 		}
 
-		switch rows.Field() {
-		case "aroused_level":
+		if rows.Field() == "aroused_level" {
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []SamTest{}, fmt.Errorf("failed to parse aroused level: %w", err)
 			}
 			tempSamTest.ArousedLevel = y
-		case "pleased_level":
+		}
+
+		if rows.Field() == "pleased_level" {
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []SamTest{}, fmt.Errorf("failed to parse pleased level: %w", err)

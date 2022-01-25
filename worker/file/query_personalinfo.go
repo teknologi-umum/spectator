@@ -21,59 +21,62 @@ type PersonalInfo struct {
 }
 
 func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (PersonalInfo, error) {
-	personalInfoRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn : (r) => r["_measurement"] == "personal_info")
-		`,
-	)
-	if err != nil {
-		return PersonalInfo{}, fmt.Errorf("failed to query personal info: %w", err)
-	}
 
 	tempPersonalInfo := PersonalInfo{}
-	var ok bool
-	for personalInfoRows.Next() {
-
-		rows := personalInfoRows.Record()
-
-		switch rows.Field() {
-		case "student_number":
-			tempPersonalInfo.StudentNumber, ok = rows.Value().(string)
-			if !ok {
-				tempPersonalInfo.StudentNumber = ""
-			}
-		case "hours_of_practice":
-			y, ok := rows.Value().(int64)
-			if !ok {
-				return PersonalInfo{}, fmt.Errorf("failed to parse hours of practice type")
-			}
-			tempPersonalInfo.HoursOfPractice = y
-		case "years_of_experience":
-			y, ok := rows.Value().(int64)
-			if !ok {
-				return PersonalInfo{}, fmt.Errorf("failed to parse years of experience type")
-			}
-			tempPersonalInfo.YearsOfExperience = y
-		case "familiar_language":
-			tempPersonalInfo.FamiliarLanguages, ok = rows.Value().(string)
-			if !ok {
-				tempPersonalInfo.FamiliarLanguages = ""
-			}
+	for _, x := range []string{"student_number", "hours_of_practice", "years_of_experience", "familiar_language"} {
+		personalInfoRows, err := queryAPI.Query(
+			ctx,
+			`from(bucket: "`+d.BucketSessionEvents+`")
+			|> range(start: 0)
+			|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
+			|> filter(fn : (r) => r["_measurement"] == "personal_info")
+			`,
+		)
+		if err != nil {
+			return PersonalInfo{}, fmt.Errorf("failed to query personal info: %w", err)
 		}
 
-		if d.IsDebug() {
-			log.Println(rows.String())
-			log.Printf("table %d\n", rows.Table())
-		}
+		var ok bool
+		for personalInfoRows.Next() {
 
-		tempPersonalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
-		if !ok {
-			tempPersonalInfo.SessionID = ""
+			rows := personalInfoRows.Record()
+
+			switch x {
+			case "student_number":
+				tempPersonalInfo.StudentNumber, ok = rows.Value().(string)
+				if !ok {
+					tempPersonalInfo.StudentNumber = ""
+				}
+			case "hours_of_practice":
+				tempPersonalInfo.HoursOfPractice, ok = rows.Value().(int64)
+				if !ok {
+					tempPersonalInfo.HoursOfPractice = 0
+					// return PersonalInfo{}, fmt.Errorf("failed to parse hours of practice type")
+				}
+			case "years_of_experience":
+				tempPersonalInfo.YearsOfExperience, ok = rows.Value().(int64)
+				if !ok {
+					tempPersonalInfo.YearsOfExperience = 0
+					// return PersonalInfo{}, fmt.Errorf("failed to parse years of experience type")
+				}
+			case "familiar_language":
+				tempPersonalInfo.FamiliarLanguages, ok = rows.Value().(string)
+				if !ok {
+					tempPersonalInfo.FamiliarLanguages = ""
+				}
+			}
+
+			if d.IsDebug() {
+				log.Println(rows.String())
+				log.Printf("table %d\n", rows.Table())
+			}
+
+			tempPersonalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
+			if !ok {
+				tempPersonalInfo.SessionID = ""
+			}
+			tempPersonalInfo.Timestamp = rows.Time()
 		}
-		tempPersonalInfo.Timestamp = rows.Time()
 	}
 
 	return tempPersonalInfo, nil
