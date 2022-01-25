@@ -11,8 +11,6 @@ import (
 )
 
 func TestQueryMouseClick(t *testing.T) {
-	t.Cleanup(cleanup)
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 

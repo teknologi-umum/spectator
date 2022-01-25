@@ -21,9 +21,9 @@ func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryA
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement:     "exam_forfeited",
-			SessionID: sessionID.String(),
-			Buckets:   d.BucketSessionEvents,
+			Measurement: "exam_forfeited",
+			SessionID:   sessionID.String(),
+			Buckets:     d.BucketSessionEvents,
 		}),
 	)
 	if err != nil {

@@ -21,9 +21,9 @@ func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.Quer
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement:     "exam_ide_reloaded",
-			SessionID: sessionID.String(),
-			Buckets:   d.BucketSessionEvents,
+			Measurement: "exam_ide_reloaded",
+			SessionID:   sessionID.String(),
+			Buckets:     d.BucketSessionEvents,
 		}),
 	)
 	if err != nil {

@@ -20,13 +20,14 @@ type File struct {
 	SessionId     string
 }
 
+// TODO: add documentation on what this function does
 func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.File, error) {
 	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement:     "test_file",
-			SessionID: sessionID.String(),
-			Buckets:   d.BucketSessionEvents,
+			Measurement: "test_file",
+			SessionID:   sessionID.String(),
+			Buckets:     d.BucketSessionEvents,
 		}),
 	)
 	if err != nil {

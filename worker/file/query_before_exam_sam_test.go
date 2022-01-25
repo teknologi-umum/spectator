@@ -11,16 +11,6 @@ import (
 )
 
 func TestQueryBeforeExamSAM(t *testing.T) {
-	// TODO:
-	// 1. insert some fake data into the influx db
-	// 2. query the data with the function
-	// 3. compare the length of the result and the length of fake data
-	// add another test (maybe a subtest, or another test function)
-	// that checks if there is no data to be queried.
-	// we must check if that (rare and edgy) event happen,
-	// so what would the software react?
-	t.Cleanup(cleanup)
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 

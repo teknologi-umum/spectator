@@ -23,9 +23,9 @@ func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAP
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement:     "after_exam_sam_submitted",
-			SessionID: sessionID.String(),
-			Buckets:   d.BucketSessionEvents,
+			Measurement: "after_exam_sam_submitted",
+			SessionID:   sessionID.String(),
+			Buckets:     d.BucketSessionEvents,
 		}),
 	)
 	if err != nil {

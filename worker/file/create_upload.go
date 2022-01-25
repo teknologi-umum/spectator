@@ -8,6 +8,7 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
+// TODO: add documentation of that this function does
 func mkFileAndUpload(ctx context.Context, b []byte, path string, m *minio.Client) (*minio.UploadInfo, error) {
 	f, err := os.Create("./" + path)
 	if err != nil {

@@ -7,12 +7,12 @@ import (
 )
 
 type Queries struct {
-	Buckets   string
-	Measurement     string
-	SessionID string
-	Field     string
-	TimeFrom  time.Time
-	TimeTo    time.Time
+	Buckets     string
+	Measurement string
+	SessionID   string
+	Field       string
+	TimeFrom    time.Time
+	TimeTo      time.Time
 }
 
 // ReinaldysBuildQuery builds an InfluxDB (or a Flux) query from the predefined

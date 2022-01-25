@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"testing"
 	"time"
 	"worker/file"
 
+	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 var deps *file.Dependency
-var db influxdb2.Client
+var globalID uuid.UUID
 
 func TestMain(m *testing.M) {
 	// Lookup environment variables
@@ -54,7 +56,7 @@ func TestMain(m *testing.M) {
 		minioToken = ""
 	}
 
-	db = influxdb2.NewClient(influxHost, influxToken)
+	db := influxdb2.NewClient(influxHost, influxToken)
 
 	bucket, err := minio.New(
 		minioHost,
@@ -79,18 +81,6 @@ func TestMain(m *testing.M) {
 	// Check for bucket existence
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
-
-	bucketFound, err := bucket.BucketExists(ctx, "spectator")
-	if err != nil {
-		log.Fatalf("Error checking bucket: %s\n", err)
-	}
-
-	if !bucketFound {
-		err = bucket.MakeBucket(ctx, "spectator", minio.MakeBucketOptions{})
-		if err != nil {
-			log.Fatalf("Error creating bucket: %s\n", err)
-		}
-	}
 
 	err = prepareBuckets(ctx, deps.DB, influxOrg)
 	if err != nil {
@@ -186,4 +176,73 @@ func cleanup() {
 			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
 		}
 	}
+}
+
+func seedData(ctx context.Context) error {
+	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
+	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
+
+	// We generate two pieces of UUID, each of them have their own
+	// specific use case.
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return fmt.Errorf("failed to generate uuid: %v", err)
+	}
+
+	globalID = id
+
+	eventStart := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
+	eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
+
+	var wg sync.WaitGroup
+	wg.Add(200)
+
+	// Personal info
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/PersonalInfoSubmittedEvent.cs
+	go func() {
+		point := influxdb2.NewPoint(
+			"personal_info_submitted",
+			map[string]string{
+				"session_id": globalID.String(),
+			},
+			map[string]interface{}{
+				"student_number":      "1202213133",
+				"years_of_experience": 1,
+				"hours_of_practice":   4,
+				"familiar_languages":  "java,kotlin,swift",
+			},
+			eventStart,
+		)
+		err := sessionWriteAPI.WritePoint(ctx, point)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// SAM Test before Exam
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/BeforeExamSAMSubmittedEvent.cs
+	go func() {
+		point := influxdb2.NewPoint(
+			"before_exam_sam_submitted",
+			map[string]string{
+				"session_id": globalID.String(),
+			},
+			map[string]interface{}{
+				"aroused_level": 2,
+				"pleased_level": 5,
+			},
+			eventStart.Add(time.Minute*2),
+		)
+		err := sessionWriteAPI.WritePoint(ctx, point)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Fuck this shit. I'm gonna repair Dicha's PR first.
+
+	wg.Wait()
+	return nil
 }

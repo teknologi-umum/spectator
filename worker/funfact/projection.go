@@ -14,9 +14,9 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 	personalInfoh, err := d.DB.QueryAPI(d.BucketSessionEvents).Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement:     "personal_info",
-			SessionID: sessionID.String(),
-			Buckets:   d.BucketSessionEvents,
+			Measurement: "personal_info",
+			SessionID:   sessionID.String(),
+			Buckets:     d.BucketSessionEvents,
 		}),
 	)
 	if err != nil {
@@ -53,6 +53,8 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 	p.AddField("deletion_rate", deletionRate)
 	p.AddField("submission_attemps", attempts)
 
+	// FIXME: the bucket name should be input_statistics
+	// TODO: check if the bucket exists first, then create if not exists
 	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketResultEvents).WritePoint(ctx, p)
 	if err != nil {
 		d.Logger.Log(
