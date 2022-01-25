@@ -164,7 +164,7 @@ def generate_event_personal_info_submitted( session_id,  date_start: datetime, d
     years_of_experience = random.randint(1,10)
     hours_of_practice = random.randint(0,10000)
     familiar_languages = ""
-    return (EventPersonalInfoSubmmited(session_id,time, student_number, years_of_experience,hours_of_practice,familiar_languages).asdict())
+    return (EventPersonalInfoSubmited(session_id,time, student_number, years_of_experience,hours_of_practice,familiar_languages).asdict())
     
 # checker
 def fake_basic_info_generate():

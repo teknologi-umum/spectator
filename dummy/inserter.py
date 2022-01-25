@@ -67,9 +67,8 @@ def main():
         with open("generated/user_personal.json") as f:
             print("Reading user personal data from file.")
             users = json.load(f)
-            print("Found {} users. Writing into InfluxDB".format(len(users)))
-            for i in range(len(users)):
-                user = users[i]
+            print(f"Found {len(users)} users. Writing into InfluxDB")
+            for user in users:
 
                 point = Point(user["type"]) \
                     .tag("session_id", user["session_id"]) \
@@ -87,9 +86,8 @@ def main():
         with open("generated/events.json") as f:
             print("Reading events data from file.")
             events = json.load(f)
-            print("Found {} events. Writing into InfluxDB".format(len(events)))
-            for i in range(len(events)):
-                event = events[i]
+            print( f"Found {len(events)} events. Writing into InfluxDB" )
+            for event in events:
 
                 point = Point(event["type"]) \
                     .tag("session_id", event["session_id"]) \
@@ -105,43 +103,29 @@ def main():
                         .field("unrelated_key", event["unrelated_key"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
 
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
                 elif event["type"] == "coding_event_mousemove":
                     point = point.field("direction", event["direction"]) \
                         .field("x", event["x"]) \
                         .field("y", event["y"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
 
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
                 elif event["type"] == "coding_event_mouseclick":
                     point = point.field("button", event["button"]) \
                         .field("x", event["x"]) \
                         .field("y", event["y"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
 
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
+
                 elif event["type"] == "window_sized":
                     point = point.field("width", event["width"]) \
                         .field("height", event["height"]) \
                         .time(event["time"], write_precision=WritePrecision.S)
 
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
+                write_client.write(
+                    bucket="input_events",
+                    org=influx_org,
+                    record=point,
+                )
 
     print("Done. Please don't do anything until the script exits itself.")
 
