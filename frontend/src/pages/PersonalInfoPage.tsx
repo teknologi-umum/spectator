@@ -20,13 +20,16 @@ import ThemeButton from "@/components/ThemeButton";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
+import { startSession } from "@/spoke/sessionSpoke";
+import { Locale as DtoLocale } from "@/stub/enums";
+import { setAccessToken } from "../store/slices/sessionSlice";
 
 export default function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { personalInfo } = useAppSelector(
-    (state) => state.personalInfo
-  );
+  const { locale } = useAppSelector((state) => state.locale);
+  const { accessToken } = useAppSelector((state) => state.session);
+  const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
@@ -56,6 +59,31 @@ export default function PersonalInfoPage() {
     console.log("errors", errors);
   }, [errors]);
 
+  useEffect(() => {
+    if (accessToken === null) {
+      let dtoLocale: DtoLocale;
+      switch (locale) {
+        case "EN":
+          dtoLocale = DtoLocale.EN;
+          break;
+        case "ID":
+          dtoLocale = DtoLocale.ID;
+          break;
+        default:
+          console.error(`Unknown locale: ${locale}`);
+          return;
+      }
+      startSession({
+        locale: dtoLocale
+      })
+        .then((sessionReply) => {
+          setAccessToken(sessionReply.accessToken);
+        })
+        .catch((err) => {
+          console.error(`Unable to start session. ${err}`);
+        });
+    }
+  }, []);
 
   return (
     <Layout>
@@ -82,16 +110,16 @@ export default function PersonalInfoPage() {
           <FormControl
             id="email"
             mt="6"
-            isInvalid={errors.studentId !== undefined}
+            isInvalid={errors.studentNumber !== undefined}
           >
             <FormLabel>{t("translation.translations.personal_info.student_number")}</FormLabel>
-            <Input type="text" {...register("studentId")} autoComplete="off" borderColor={border} />
-            <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
+            <Input type="text" {...register("studentNumber")} autoComplete="off" borderColor={border} />
+            <FormErrorMessage>{errors?.studentNumber?.message}!</FormErrorMessage>
           </FormControl>
 
           <FormControl
             mt="6"
-            isInvalid={errors.programmingExp !== undefined}
+            isInvalid={errors.yearsOfExperience !== undefined}
           >
             <FormLabel>
               {t("translation.translations.personal_info.programming_years")}
@@ -99,18 +127,18 @@ export default function PersonalInfoPage() {
             <Input
               borderColor={border}
               type="number"
-              {...register("programmingExp")}
+              {...register("yearsOfExperience")}
               autoComplete="off"
             />
             <FormErrorMessage>
-              {errors?.programmingExp?.message}!
+              {errors?.yearsOfExperience?.message}!
             </FormErrorMessage>
           </FormControl>
 
           <FormControl
           
             mt="6"
-            isInvalid={errors.programmingExercise !== undefined}
+            isInvalid={errors.hoursOfPractice !== undefined}
           >
             <FormLabel>
               {t("translation.translations.personal_info.programming_practice")}
@@ -118,18 +146,18 @@ export default function PersonalInfoPage() {
             <Input
               borderColor={border}
               type="number"
-              {...register("programmingExercise")}
+              {...register("hoursOfPractice")}
               autoComplete="off"
             />
             <FormErrorMessage>
-              {errors?.programmingExercise?.message}!
+              {errors?.hoursOfPractice?.message}!
             </FormErrorMessage>
           </FormControl>
 
           <FormControl
           
             mt="6"
-            isInvalid={errors.programmingLanguage !== undefined}
+            isInvalid={errors.familiarLanguages !== undefined}
           >
             <FormLabel>
               {t("translation.translations.personal_info.programming_experience")}
@@ -137,11 +165,11 @@ export default function PersonalInfoPage() {
             <Input
               borderColor={border}
               type="text"
-              {...register("programmingLanguage")}
+              {...register("familiarLanguages")}
               autoComplete="off"
             />
             <FormErrorMessage>
-              {errors?.programmingLanguage?.message}!
+              {errors?.familiarLanguages?.message}!
             </FormErrorMessage>
           </FormControl>
         </Box>

@@ -15,6 +15,7 @@
     "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto"
   },
   "dependencies": {
+    "@microsoft/signalr": "^6.0.1",
     "@protobuf-ts/runtime-rpc": "^2.1.0",
     "i18next": "^21.6.4",
     "i18next-browser-languagedetector": "^6.1.2",

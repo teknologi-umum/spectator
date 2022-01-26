@@ -1,12 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { PersonalInfo } from "@/models/PersonalInfo";
 
-interface State {
-  personalInfo: PersonalInfo | null;
-}
-
-const initialState: State = {
-  personalInfo: null
+const initialState: PersonalInfo = {
+  studentNumber: "",
+  yearsOfExperience: 0,
+  hoursOfPractice: 0,
+  familiarLanguages: ""
 };
 
 export const personalInfoSlice = createSlice({
@@ -14,7 +13,10 @@ export const personalInfoSlice = createSlice({
   initialState,
   reducers: {
     setPersonalInfo: (state, action: PayloadAction<PersonalInfo>) => {
-      state.personalInfo = action.payload;
+      state.studentNumber = action.payload.studentNumber;
+      state.yearsOfExperience = action.payload.yearsOfExperience;
+      state.hoursOfPractice = action.payload.hoursOfPractice;
+      state.familiarLanguages = action.payload.familiarLanguages;
     }
   }
 });
