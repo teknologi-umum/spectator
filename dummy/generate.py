@@ -19,7 +19,19 @@ from pprint import pprint
 import random
 from model_event import generate_event_keystroke, generate_event_mouseclick, \
     generate_event_mousemove, generate_event_window_sized
-from model_session import generate_event_after_exam_SAM_Submited,generate_event_deadline_passed,generate_event_before_exam_SAM_Submited,generate_event_exam_forfeited,generate_event_exam_ended,generate_event_exam_ide_reloaded,generate_event_exam_started,generate_event_locale_set,generate_event_personal_info_submitted,generate_event_session_started,generate_event_solution_accepted,generate_event_solution_rejected
+from model_session import generate_event_after_exam_SAM_Submited, \
+    generate_event_deadline_passed, \
+    generate_event_before_exam_SAM_Submited, \
+    generate_event_exam_forfeited, \
+    generate_event_exam_ended, \
+    generate_event_exam_ide_reloaded, \
+    generate_event_exam_started, \
+    generate_event_locale_set, \
+    generate_event_personal_info_submitted, \
+    generate_event_session_started, \
+    generate_event_solution_accepted, \
+    generate_event_solution_rejected
+    
 from model_user import generate_user
 from utils import random_date
 
@@ -75,7 +87,7 @@ def main():
         # Add the current events to the list of events
         input_events.extend(current_input_events)
 
-        for _ in range(random.randint(10, 20)):
+        for _ in range(random.randint(100, 200)):
             choice = random.choice(_event_session)
             # true randomness
             if choice == "solution_accepted":

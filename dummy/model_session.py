@@ -161,11 +161,11 @@ class EventBeforeExamSAMSubmitted(EventExamSAMSubmitted):
         super().__init__(session_id, time, aroused_level, pleased_level)
         self.type="before_exam_sam_submitted"
 
-def _generate_event_solution ( session_id,  date_start: datetime, date_ends: datetime, ) -> dict[str, any]:
+def _generate_event_solution ( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     question_number = random.randint(1, 6)
     language = _Language[ random.choice(["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"]) ]
-    solution = "" # add gibbrish ??
-    scratchpad = "" # add gibbrish ??
+    solution = generate_gibberish_code()
+    scratchpad = generate_gibberish_code()
     serialized_test_result = "" # add gibbrish ??
     time = random_date(date_start, date_ends)
     return { 
@@ -208,12 +208,12 @@ def generate_event_solution_rejected( session_id,  date_start: datetime, date_en
 
 def generate_event_locale_set( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    locale = random.choice(["ID","EN"])
+    locale = random.choice(["ID", "EN"])
     return (EventLocaleSet(session_id, time, locale).as_dictionary())
 
 def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    locale = random.choice(["ID","EN"])
+    locale = random.choice(["ID", "EN"])
     return (EventSessionStarted(session_id, time, locale).as_dictionary())
 
 def generate_event_personal_info_submitted( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
@@ -227,48 +227,48 @@ def generate_event_personal_info_submitted( session_id,  date_start: datetime, d
 def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
     locale = random.choice(["ID","EN"])
-    return_object= EventSessionStarted(session_id, time, locale)
+    return_object = EventSessionStarted(session_id, time, locale)
     return return_object.as_dictionary()
 
 def generate_event_deadline_passed( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    return_object= EventDeadlinePassed(session_id, time)
+    return_object = EventDeadlinePassed(session_id, time)
     return (return_object.as_dictionary())
 
 def generate_event_exam_ended( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    return_object= EventExamEnded(session_id, time)
+    return_object = EventExamEnded(session_id, time)
     return (return_object.as_dictionary())
 
 def generate_event_exam_forfeited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    return_object= EventExamForfeited(session_id, time)
+    return_object = EventExamForfeited(session_id, time)
     return (return_object.as_dictionary())
 
 def generate_event_exam_ide_reloaded( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    return_object= EventExamIDEReloaded(session_id, time)
+    return_object = EventExamIDEReloaded(session_id, time)
     return (return_object.as_dictionary())
 
 def generate_event_exam_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    question_numbers= [1,2,3,4,5,6]
+    question_numbers = [1, 2, 3, 4, 5, 6]
     deadline = random_date(datetime.fromtimestamp(time / 1e3), date_ends)
-    return_object= EventExamStarted(session_id, time, question_numbers, deadline)
+    return_object = EventExamStarted(session_id, time, question_numbers, deadline)
     return (return_object.as_dictionary())
 
 def generate_event_before_exam_SAM_Submited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     aroused_level = random.randint(0,5)
     pleased_level = random.randint(0,5)
     time = random_date(date_start, date_ends)
-    return_object= EventBeforeExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
+    return_object = EventBeforeExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
     return (return_object.as_dictionary())
 
 def generate_event_after_exam_SAM_Submited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     aroused_level = random.randint(0,5)
     pleased_level = random.randint(0,5)
     time = random_date(date_start, date_ends)
-    return_object= EventAfterExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
+    return_object = EventAfterExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
     return (return_object.as_dictionary())
 
 
@@ -284,6 +284,173 @@ def fake_basic_info_generate():
         "date_ends" :date_ends
     }
 
+def generate_gibberish_code():
+    return random.choice(["""
+var
+ radians = Math.PI / 4, // Pi / 4 is 45 degrees. All answers should be the same.
+ degrees = 45.0,
+ sine = Math.sin(radians),
+ cosine = Math.cos(radians),
+ tangent = Math.tan(radians),
+ arcsin = Math.asin(sine),
+ arccos = Math.acos(cosine),
+ arctan = Math.atan(tangent);
+ 
+// sine
+window.alert(sine + " " + Math.sin(degrees * Math.PI / 180));
+// cosine
+window.alert(cosine + " " + Math.cos(degrees * Math.PI / 180));
+// tangent
+window.alert(tangent + " " + Math.tan(degrees * Math.PI / 180));
+// arcsine
+window.alert(arcsin + " " + (arcsin * 180 / Math.PI));
+// arccosine
+window.alert(arccos + " " + (arccos * 180 / Math.PI));
+// arctangent
+window.alert(arctan + " " + (arctan * 180 / Math.PI));
+            ""","""
+package main
+ 
+import "fmt"
+ 
+var v = []float32{1, 2, .5}
+ 
+func main() {
+    var sum float32
+    for _, x := range v {
+        sum += x * x
+    }
+    fmt.Println(sum)
+}
+            ""","""
+require 'ipaddr'
+ 
+ 
+TESTCASES = ["127.0.0.1",                "127.0.0.1:80",
+                "::1",                      "[::1]:80",
+                "2605:2700:0:3::4713:93e3", "[2605:2700:0:3::4713:93e3]:80"]                            
+ 
+output = [%w(String Address Port Family Hex),
+          %w(------ ------- ---- ------ ---)]
+ 
+def output_table(rows)
+  widths = []
+  rows.each {|row| row.each_with_index {|col, i| widths[i] = [widths[i].to_i, col.to_s.length].max }}
+  format = widths.map {|size| "%#{size}s"}.join("\t")
+  rows.each {|row| puts format % row}
+end
+ 
+TESTCASES.each do |str|
+  case str  # handle port; IPAddr does not.
+  when /\A\[(?<address> .* )\]:(?<port> \d+ )\z/x      # string like "[::1]:80"
+    address, port = $~[:address], $~[:port]
+  when /\A(?<address> [^:]+ ):(?<port> \d+ )\z/x       # string like "127.0.0.1:80"
+    address, port = $~[:address], $~[:port]
+  else                                                 # string with no port number
+    address, port = str, nil
+  end
+ 
+  ip_addr = IPAddr.new(address) 
+  family = "IPv4" if ip_addr.ipv4?
+  family = "IPv6" if ip_addr.ipv6?
+ 
+  output << [str, ip_addr.to_s, port.to_s, family, ip_addr.to_i.to_s(16)]
+end
+ 
+output_table(output)
+            ""","""
+package main
+ 
+import (
+    "fmt"
+    "math/bits"
+)
+ 
+func main() {
+    fmt.Println("Pop counts, powers of 3:")
+    n := uint64(1) // 3^0
+    for i := 0; i < 30; i++ {
+        fmt.Printf("%d ", bits.OnesCount64(n))
+        n *= 3
+    }
+    fmt.Println()
+    fmt.Println("Evil numbers:")
+    var od [30]uint64
+    var ne, no int
+    for n = 0; ne+no < 60; n++ {
+        if bits.OnesCount64(n)&1 == 0 {
+            if ne < 30 {
+                fmt.Printf("%d ", n)
+                ne++
+            }
+        } else {
+            if no < 30 {
+                od[no] = n
+                no++
+            }
+        }
+    }
+    fmt.Println()
+    fmt.Println("Odious numbers:")
+    for _, n := range od {
+        fmt.Printf("%d ", n)
+    }
+    fmt.Println()
+}
+            ""","""
+class Latin {
+  constructor(size = 3) {
+    this.size = size;
+    this.mst = [...Array(this.size)].map((v, i) => i + 1);
+    this.square = Array(this.size).fill(0).map(() => Array(this.size).fill(0));
+ 
+    if (this.create(0, 0)) {
+      console.table(this.square);
+    }
+  }
+ 
+  create(c, r) {
+    const d = [...this.mst];
+    let s;
+    while (true) {
+      do {
+        s = d.splice(Math.floor(Math.random() * d.length), 1)[0];
+        if (!s) return false;
+      } while (this.check(s, c, r));
+ 
+      this.square[c][r] = s;
+      if (++c >= this.size) {
+        c = 0;
+        if (++r >= this.size) {
+          return true;
+        }
+      }
+      if (this.create(c, r)) return true;
+      if (--c < 0) {
+        c = this.size - 1;
+        if (--r < 0) {
+          return false;
+        }
+      }
+    }
+  }
+ 
+  check(d, c, r) {
+    for (let a = 0; a < this.size; a++) {
+      if (c - a > -1) {
+        if (this.square[c - a][r] === d)
+          return true;
+      }
+      if (r - a > -1) {
+        if (this.square[c][r - a] === d)
+          return true;
+      }
+    }
+    return false;
+  }
+}
+new Latin(5);
+            """ ])
 def checker():
     pprint(generate_event_solution_accepted(**fake_basic_info_generate()))
     pprint(generate_event_solution_rejected(**fake_basic_info_generate()))
