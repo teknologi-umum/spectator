@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 )
 
 var deps *funfact.Dependency
@@ -57,7 +58,10 @@ func TestMain(m *testing.M) {
 	}
 
 	// First cleanup to ensure that there are no data in the database
-	cleanup(ctx)
+	err = cleanup(ctx)
+	if err != nil {
+		log.Fatalf("Error cleaning up buckets: %v", err)
+	}
 
 	err = seedData(ctx)
 	if err != nil {
@@ -72,7 +76,10 @@ func TestMain(m *testing.M) {
 	ctx, cancel = context.WithTimeout(context.Background(), time.Second*10)
 
 	// Second cleanup to ensure that there are no data in the database
-	cleanup(ctx)
+	err = cleanup(ctx)
+	if err != nil {
+		log.Fatalf("Error cleaning up buckets: %v", err)
+	}
 	cancel()
 
 	db.Close()
@@ -146,7 +153,7 @@ func seedData(ctx context.Context) error {
 	globalID2 = id
 
 	var wg sync.WaitGroup
-	wg.Add(25 + 4 + 5 + 20)
+	wg.Add(11)
 
 	// Random date between range
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
@@ -154,8 +161,9 @@ func seedData(ctx context.Context) error {
 	delta := max - min
 
 	// Seed coding test attempts
-	for i := 0; i < 25; i++ {
-		go func() {
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 25; i++ {
 			point := influxdb2.NewPoint(
 				"code_test_attempt",
 				map[string]string{
@@ -168,14 +176,15 @@ func seedData(ctx context.Context) error {
 				},
 				time.Unix(rand.Int63n(delta)+min, 0),
 			)
+			points = append(points, point)
+		}
 
-			err := sessionWriteAPI.WritePoint(ctx, point)
-			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
-			}
-			wg.Done()
-		}()
-	}
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
 
 	go func() {
 		point := influxdb2.NewPoint(
@@ -264,15 +273,18 @@ func seedData(ctx context.Context) error {
 	// 5 keystroke-count of keystrokesMisc and another 5 keystroke-count of keystrokesDelete
 	temporaryDate := time.Unix(min, 0)
 	for i := 0; i < 5; i++ {
+		var anotherWg sync.WaitGroup
+		anotherWg.Add(1)
 		go func() {
 			var childWg sync.WaitGroup
-			childWg.Add(100)
+			childWg.Add(3)
 
 			// Write 70 occurrence of normal keystrokes
-			for j := 0; j < 70; j++ {
-				go func() {
+			go func() {
+				var points []*write.Point
+				for j := 0; j < 70; j++ {
 					point := influxdb2.NewPoint(
-						"coding_event_keystroke",
+						"keystroke",
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -282,20 +294,22 @@ func seedData(ctx context.Context) error {
 						},
 						temporaryDate,
 					)
+					points = append(points, point)
+				}
 
-					err := inputWriteAPI.WritePoint(ctx, point)
-					if err != nil {
-						log.Fatalf("Error writing point: %v", err)
-					}
-					childWg.Done()
-				}()
-			}
+				err := inputWriteAPI.WritePoint(ctx, points...)
+				if err != nil {
+					log.Fatalf("Error writing point: %v", err)
+				}
+				childWg.Done()
+			}()
 
 			// Write 5 occurrence of misc keystrokes
-			for j := 0; j < 5; j++ {
-				go func() {
+			go func() {
+				var points []*write.Point
+				for j := 0; j < 5; j++ {
 					point := influxdb2.NewPoint(
-						"coding_event_keystroke",
+						"keystroke",
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -306,19 +320,22 @@ func seedData(ctx context.Context) error {
 						temporaryDate,
 					)
 
-					err := inputWriteAPI.WritePoint(ctx, point)
-					if err != nil {
-						log.Fatalf("Error writing point: %v", err)
-					}
-					childWg.Done()
-				}()
-			}
+					points = append(points, point)
+
+				}
+				err := inputWriteAPI.WritePoint(ctx, points...)
+				if err != nil {
+					log.Fatalf("Error writing point: %v", err)
+				}
+				childWg.Done()
+			}()
 
 			// Write 25 occurrence of deletion keystrokes
-			for j := 0; j < 25; j++ {
-				go func() {
+			go func() {
+				var points []*write.Point
+				for j := 0; j < 25; j++ {
 					point := influxdb2.NewPoint(
-						"coding_event_keystroke",
+						"keystroke",
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -329,24 +346,29 @@ func seedData(ctx context.Context) error {
 						temporaryDate,
 					)
 
-					err := inputWriteAPI.WritePoint(ctx, point)
-					if err != nil {
-						log.Fatalf("Error writing point: %v", err)
-					}
-					childWg.Done()
-				}()
-			}
+					points = append(points, point)
+				}
+
+				err := inputWriteAPI.WritePoint(ctx, points...)
+				if err != nil {
+					log.Fatalf("Error writing point: %v", err)
+				}
+				childWg.Done()
+			}()
 
 			childWg.Wait()
-			temporaryDate = temporaryDate.Add(1 * time.Minute)
-			wg.Done()
+			anotherWg.Done()
 		}()
+		anotherWg.Wait()
+		temporaryDate = temporaryDate.Add(1 * time.Minute)
+		wg.Done()
 	}
 
-	for i := 0; i < 20; i++ {
-		go func() {
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
 			point := influxdb2.NewPoint(
-				"coding_event_keystroke",
+				"keystroke",
 				map[string]string{
 					"session_id": globalID2.String(),
 				},
@@ -356,53 +378,78 @@ func seedData(ctx context.Context) error {
 				time.Unix(rand.Int63n(delta)+min, 0),
 			)
 
-			err := inputWriteAPI.WritePoint(ctx, point)
-			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
-			}
-			wg.Done()
-		}()
-	}
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
 
 	wg.Wait()
 	return nil
 }
 
-func cleanup(ctx context.Context) {
+func cleanup(ctx context.Context) error {
 	// find current organization
 	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
 	if err != nil {
-		log.Fatalf("finding organization: %v", err)
+		return fmt.Errorf("finding organization: %v", err)
 	}
 
 	// find input_events bucket
 	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil {
-		log.Fatalf("finding bucket: %v", err)
+		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	// delete bucket data
 	deleteAPI := deps.DB.DeleteAPI()
 
-	inputEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	inputEventMeasurements := []string{
+		"keystroke",
+		"mouse_down",
+		"mouse_up",
+		"mouse_moved",
+		"mouse_scrolled",
+		"window_sized",
+	}
 	for _, measurement := range inputEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
-			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
 		}
 	}
 
 	// find input_events bucket
 	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
 	if err != nil {
-		log.Fatalf("finding bucket: %v", err)
+		return fmt.Errorf("finding bucket: %v", err)
 	}
 
-	sessionEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	sessionEventMeasurements := []string{
+		"code_test_attempt",
+		"exam_forfeited",
+		"exam_ended",
+		"exam_started",
+		"solution_rejected",
+		"solution_accepted",
+		"session_started",
+		"personal_info_submitted",
+		"locale_set",
+		"exam_ide_reloaded",
+		"deadline_passed",
+		"before_exam_sam_submitted",
+		"after_exam_sam_submitted",
+	}
 	for _, measurement := range sessionEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
-			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
 		}
 	}
+
+	return nil
 }

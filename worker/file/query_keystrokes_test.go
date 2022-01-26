@@ -27,7 +27,7 @@ func TestQueryKeystrokes(t *testing.T) {
 
 	for i := 0; i < 50; i++ {
 		p := influxdb2.NewPoint(
-			"coding_event_keystroke",
+			"keystroke",
 			map[string]string{
 				"session_id": id.String(),
 			},

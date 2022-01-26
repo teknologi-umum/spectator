@@ -11,9 +11,10 @@ func TestCalculateDeletionRate(t *testing.T) {
 	defer cancel()
 
 	res := make(chan float32, 1)
+	defer close(res)
 	err := deps.CalculateDeletionRate(ctx, globalID, res)
 	if err != nil {
-		t.Errorf("an error was thrown: %v", err)
+		t.Fatalf("an error was thrown: %v", err)
 	}
 
 	deletionRate := <-res
@@ -27,6 +28,7 @@ func TestCalculateDeletionRate_NoDeletion(t *testing.T) {
 	defer cancel()
 
 	res := make(chan float32, 1)
+	defer close(res)
 	err := deps.CalculateDeletionRate(ctx, globalID2, res)
 	if err != nil {
 		t.Errorf("an error was thrown: %v", err)
