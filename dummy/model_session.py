@@ -1,7 +1,6 @@
 from pprint import pprint
 import random
 from datetime import datetime,timedelta
-from time import time
 from uuid import uuid4
 from utils import random_date
 
@@ -29,7 +28,7 @@ class SessionEventBase:
     def __init__(self, session_id: str, time:int) -> None:
         self.session_id = session_id
         self._time = time
-    def asdict(self)-> dict[str, any]:
+    def as_dictionary(self)-> dict[str, any]:
         return {
             "type": self.type,
             "session_id": self.session_id,
@@ -50,26 +49,23 @@ class EventSolution(SessionEventBase):
         self.scratchpad = scratchpad
         self.serialized_test_result = serialized_test_result
 
-    def asdict(self):
+    def as_dictionary(self):
         return {
             "question_number": self.question_number,
             "language": self.language,
             "solution": self.solution,
             "scratchpad": self.scratchpad,
             "serialized_test_result": self.serialized_test_result,
-        } | super().asdict()
-
+        } | super().as_dictionary()
 class EventSolutionAccepted(EventSolution):
 
     def __init__( self, session_id: str, time: int, question_number:int , language: str , solution: str, scratchpad:str , serialized_test_result: str) -> None:
         super().__init__(  session_id, question_number, time, language, solution, scratchpad, serialized_test_result)
         self.type = "solution_accepted"
-    
 class EventSolutionRejected(EventSolution):
     def __init__( self, session_id: str, time: int, question_number:int , language: int , solution: str, scratchpad:str , serialized_test_result: str) -> None:
         super().__init__( session_id, question_number, time, language, solution, scratchpad, serialized_test_result)
         self.type = "solution_rejected"
-
 class EventLocaleSet(SessionEventBase):
     locale: int
 
@@ -78,11 +74,10 @@ class EventLocaleSet(SessionEventBase):
         self.type = "exam_started"
         self.locale = _Locale[locale]
 
-    def asdict(self):
+    def as_dictionary(self):
         return {
             "locale" :self.locale
-        } | super().asdict()
-
+        } | super().as_dictionary()
 class EventPersonalInfoSubmited(SessionEventBase):
     student_number:str
     years_of_experience: int
@@ -96,14 +91,13 @@ class EventPersonalInfoSubmited(SessionEventBase):
         self.years_of_experience = years_of_experience
         self.hours_of_practice = hours_of_practice
         self.familiar_languages = familiar_languages
-    def asdict(self):
+    def as_dictionary(self):
         return {
             "student_number": self.student_number,
             "years_of_experience": self.years_of_experience,
             "hours_of_practice": self.hours_of_practice,
             "familiar_languages": self.familiar_languages,
-        } | super().asdict()
-
+        } | super().as_dictionary()
 class EventSessionStarted(SessionEventBase):
     locale: int
 
@@ -112,21 +106,18 @@ class EventSessionStarted(SessionEventBase):
         self.type = "exam_started"
         self.locale = _Locale[locale]
 
-    def asdict(self):
+    def as_dictionary(self):
         return {
             "locale" :self.locale
-        } | super().asdict()
-
+        } | super().as_dictionary()
 class EventDeadlinePassed(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "deadline_passed"
-
 class EventExamEnded(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "exam_ended"
-
 class EventExamForfeited(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
@@ -135,7 +126,6 @@ class EventExamIDEReloaded(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "exam_ide_reloaded"
-
 class EventExamStarted(SessionEventBase):
     question_numbers=[]
     deadline=str
@@ -144,13 +134,12 @@ class EventExamStarted(SessionEventBase):
         self.type = "exam_started"
         self.question_numbers=question_numbers
         self.deadline=deadline
-    def asdict(self):
+    def as_dictionary(self):
         return{
             "question_numbers": self.question_numbers,
             "deadline": self.deadline
-        } | super().asdict()
-
-class ExamSAMSubmitted(SessionEventBase):
+        } | super().as_dictionary()
+class EventExamSAMSubmitted(SessionEventBase):
     aroused_level:int
     pleased_level:int
 
@@ -158,20 +147,18 @@ class ExamSAMSubmitted(SessionEventBase):
         super().__init__(session_id, time)
         self.aroused_level=aroused_level
         self.pleased_level=pleased_level
-    def asdict(self):
+    def as_dictionary(self):
         return{
             "aroused_level": self.aroused_level,
             "pleased_level": self.pleased_level
-        } | super().asdict()
-
-class EventAfterExamSAMSubmitted(ExamSAMSubmitted):
+        } | super().as_dictionary()
+class EventAfterExamSAMSubmitted(EventExamSAMSubmitted):
     def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
         super().__init__(session_id, time, aroused_level, pleased_level)
         self.type="after_exam_sam_submitted"
-
-class EventBeforeExamSAMSubmitted(SessionEventBase):
+class EventBeforeExamSAMSubmitted(EventExamSAMSubmitted):
     def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
-        super().__init__(session_id, time)
+        super().__init__(session_id, time, aroused_level, pleased_level)
         self.type="before_exam_sam_submitted"
 
 def _generate_event_solution ( session_id,  date_start: datetime, date_ends: datetime, ) -> dict[str, any]:
@@ -203,7 +190,7 @@ def generate_event_solution_accepted( session_id,  date_start: datetime, date_en
         dict[str, any]: [description]
     """
     data= _generate_event_solution( session_id,  date_start, date_ends )
-    return ( EventSolutionAccepted ( **data ).asdict() )
+    return ( EventSolutionAccepted ( **data ).as_dictionary() )
 
 def generate_event_solution_rejected( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     """Generate an EventSolutionRejected class with random values.
@@ -217,17 +204,17 @@ def generate_event_solution_rejected( session_id,  date_start: datetime, date_en
         dict[str, any]: [description]
     """
     data= _generate_event_solution( session_id,  date_start, date_ends )
-    return ( EventSolutionRejected(**data).asdict() ) 
+    return ( EventSolutionRejected(**data).as_dictionary() ) 
 
 def generate_event_locale_set( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
     locale = random.choice(["ID","EN"])
-    return (EventLocaleSet(session_id, time, locale).asdict())
+    return (EventLocaleSet(session_id, time, locale).as_dictionary())
 
 def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
     locale = random.choice(["ID","EN"])
-    return (EventSessionStarted(session_id, time, locale).asdict())
+    return (EventSessionStarted(session_id, time, locale).as_dictionary())
 
 def generate_event_personal_info_submitted( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
@@ -235,10 +222,56 @@ def generate_event_personal_info_submitted( session_id,  date_start: datetime, d
     years_of_experience = random.randint(1,10)
     hours_of_practice = random.randint(0,10000)
     familiar_languages = ""
-    return (EventPersonalInfoSubmited(session_id,time, student_number, years_of_experience,hours_of_practice,familiar_languages).asdict())
-    
-def generate_event ( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
-    return ()
+    return (EventPersonalInfoSubmited(session_id,time, student_number, years_of_experience,hours_of_practice,familiar_languages).as_dictionary())
+
+def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    locale = random.choice(["ID","EN"])
+    return_object= EventSessionStarted(session_id, time, locale)
+    return return_object.as_dictionary()
+
+def generate_event_deadline_passed( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    return_object= EventDeadlinePassed(session_id, time)
+    return (return_object.as_dictionary())
+
+def generate_event_exam_ended( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    return_object= EventExamEnded(session_id, time)
+    return (return_object.as_dictionary())
+
+def generate_event_exam_forfeited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    return_object= EventExamForfeited(session_id, time)
+    return (return_object.as_dictionary())
+
+def generate_event_exam_ide_reloaded( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    return_object= EventExamIDEReloaded(session_id, time)
+    return (return_object.as_dictionary())
+
+def generate_event_exam_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    time = random_date(date_start, date_ends)
+    question_numbers= [1,2,3,4,5,6]
+    deadline = random_date(datetime.fromtimestamp(time / 1e3), date_ends)
+    return_object= EventExamStarted(session_id, time, question_numbers, deadline)
+    return (return_object.as_dictionary())
+
+def generate_event_before_exam_SAM_Submmited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    aroused_level = random.randint(0,5)
+    pleased_level = random.randint(0,5)
+    time = random_date(date_start, date_ends)
+    return_object= EventBeforeExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
+    return (return_object.as_dictionary())
+
+def generate_event_after_exam_SAM_Submmited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    aroused_level = random.randint(0,5)
+    pleased_level = random.randint(0,5)
+    time = random_date(date_start, date_ends)
+    return_object= EventAfterExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
+    return (return_object.as_dictionary())
+
+
 # checker
 def fake_basic_info_generate():
     date_start_int: int = random_date(datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59))
@@ -251,12 +284,19 @@ def fake_basic_info_generate():
         "date_ends" :date_ends
     }
 
-def main():
+def checker():
     pprint(generate_event_solution_accepted(**fake_basic_info_generate()))
     pprint(generate_event_solution_rejected(**fake_basic_info_generate()))
     pprint(generate_event_locale_set(**fake_basic_info_generate()))
     pprint(generate_event_personal_info_submitted(**fake_basic_info_generate()))
     pprint(generate_event_session_started(**fake_basic_info_generate()))
+    pprint(generate_event_deadline_passed(**fake_basic_info_generate()))
+    pprint(generate_event_exam_ended(**fake_basic_info_generate()))
+    pprint(generate_event_exam_forfeited(**fake_basic_info_generate()))
+    pprint(generate_event_exam_ide_reloaded(**fake_basic_info_generate()))
+    pprint(generate_event_exam_started(**fake_basic_info_generate()))
+    pprint(generate_event_after_exam_SAM_Submmited(**fake_basic_info_generate()))
+    pprint(generate_event_before_exam_SAM_Submmited(**fake_basic_info_generate()))
     
 if __name__ == "__main__":
-    main()
+    checker()
