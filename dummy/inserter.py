@@ -103,25 +103,22 @@ def main():
             print("Reading events data from file.")
             events = json.load(f)
             print( f"Found {len(events)} session_events. Writing into InfluxDB" )
-            set_check=set()
             for event in events:
-                set_check.add(event["type"])
-            print(set_check)
-                # point = Point(event["type"]) \
-                #     .tag("session_id", event["session_id"]) \
-                #     .time(event["time"], write_precision=WritePrecision.S)
-                # fields = set(event.keys())-set(["session_id","type","time"])
-                # for field in fields:
-                #     if type(event[field]) == type([]):
-                #         point= point.field(field," ".join([str(i) for i in event[field]]))     
-                #     else:
-                #         point= point.field(field,event[field])
-                
-                # write_client.write(
-                #     bucket="session_events",
-                #     org=influx_org,
-                #     record=point,
-                # )
+                point = Point(event["type"]) \
+                    .tag("session_id", event["session_id"]) \
+                    .time(event["time"], write_precision=WritePrecision.S)
+                fields = set(event.keys())-set(["session_id","type","time"])
+                for field in fields:
+                    if type(event[field]) == type([]):
+                        point= point.field(field," ".join([str(i) for i in event[field]]))     
+                    else:
+                        point= point.field(field,event[field])
+
+                write_client.write(
+                    bucket="session_events",
+                    org=influx_org,
+                    record=point,
+                )
 
             print("Done. Please don't do anything until the script exits itself.")
 
