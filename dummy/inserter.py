@@ -81,45 +81,46 @@ def main():
                     record=point,
                 )
 
-        with open("generated/events.json") as f:
+        with open("generated/input_events.json") as f:
             print("Reading events data from file.")
             events = json.load(f)
-            print( f"Found {len(events)} events. Writing into InfluxDB" )
+            print( f"Found {len(events)} input_events. Writing into InfluxDB" )
             for event in events:
                 point = Point(event["type"]) \
                     .tag("session_id", event["session_id"]) \
                     .tag("question_number", event["question_number"])\
                     .time(event["time"], write_precision=WritePrecision.S)
-                if event["type"] == "coding_event_keystroke":
-                    point = point.field("key_char", event["key_char"]) \
-                        .field("key_code", event["key_code"]) \
-                        .field("shift", event["shift"]) \
-                        .field("alt", event["alt"]) \
-                        .field("control", event["control"]) \
-                        .field("meta", event["meta"]) \
-                        .field("unrelated_key", event["unrelated_key"]) 
-                        
-                elif event["type"] == "coding_event_mousemove":
-                    point = point.field("direction", event["direction"]) \
-                        .field("x", event["x"]) \
-                        .field("y", event["y"]) 
-                        
-                elif event["type"] == "coding_event_mouseclick":
-                    point = point.field("button", event["button"]) \
-                        .field("x", event["x"]) \
-                        .field("y", event["y"])
-
-                elif event["type"] == "window_sized":
-                    point = point.field("width", event["width"]) \
-                        .field("height", event["height"])
-                
+                fields = set(event.keys())-set(["session_id","type","time","question_number"])
+                for field in fields:
+                    point= point.field(field,event[field])
                 write_client.write(
                     bucket="input_events",
                     org=influx_org,
                     record=point,
                 )
 
-    print("Done. Please don't do anything until the script exits itself.")
+        with open("generated/session_events.json") as f:
+            print("Reading events data from file.")
+            events = json.load(f)
+            print( f"Found {len(events)} session_events. Writing into InfluxDB" )
+            for event in events:
+                point = Point(event["type"]) \
+                    .tag("session_id", event["session_id"]) \
+                    .time(event["time"], write_precision=WritePrecision.S)
+                fields = set(event.keys())-set(["session_id","type","time"])
+                for field in fields:
+                    if type(event[field]) == type([]):
+                        point= point.field(field," ".join([str(i) for i in event[field]]))     
+                    else:
+                        point= point.field(field,event[field])
+
+                write_client.write(
+                    bucket="session_events",
+                    org=influx_org,
+                    record=point,
+                )
+
+            print("Done. Please don't do anything until the script exits itself.")
 
 if __name__ == "__main__":
     main()
