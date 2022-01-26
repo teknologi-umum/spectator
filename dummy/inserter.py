@@ -69,14 +69,12 @@ def main():
             users = json.load(f)
             print(f"Found {len(users)} users. Writing into InfluxDB")
             for user in users:
-
                 point = Point(user["type"]) \
                     .tag("session_id", user["session_id"]) \
                     .field("student_number", user["student_number"]) \
                     .field("hours_of_practice", user["hours_of_practice"]) \
                     .field("years_of_experience", user["years_of_experience"]) \
                     .field("familiar_language", user["familiar_language"])
-
                 write_client.write(
                     bucket="session_events",
                     org=influx_org,
@@ -88,11 +86,10 @@ def main():
             events = json.load(f)
             print( f"Found {len(events)} events. Writing into InfluxDB" )
             for event in events:
-
                 point = Point(event["type"]) \
                     .tag("session_id", event["session_id"]) \
-                    .tag("question_number", event["question_number"])
-
+                    .tag("question_number", event["question_number"])\
+                    .time(event["time"], write_precision=WritePrecision.S)
                 if event["type"] == "coding_event_keystroke":
                     point = point.field("key_char", event["key_char"]) \
                         .field("key_code", event["key_code"]) \
@@ -100,27 +97,22 @@ def main():
                         .field("alt", event["alt"]) \
                         .field("control", event["control"]) \
                         .field("meta", event["meta"]) \
-                        .field("unrelated_key", event["unrelated_key"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
+                        .field("unrelated_key", event["unrelated_key"]) 
+                        
                 elif event["type"] == "coding_event_mousemove":
                     point = point.field("direction", event["direction"]) \
                         .field("x", event["x"]) \
-                        .field("y", event["y"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
+                        .field("y", event["y"]) 
+                        
                 elif event["type"] == "coding_event_mouseclick":
                     point = point.field("button", event["button"]) \
                         .field("x", event["x"]) \
-                        .field("y", event["y"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
+                        .field("y", event["y"])
 
                 elif event["type"] == "window_sized":
                     point = point.field("width", event["width"]) \
-                        .field("height", event["height"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
+                        .field("height", event["height"])
+                
                 write_client.write(
                     bucket="input_events",
                     org=influx_org,

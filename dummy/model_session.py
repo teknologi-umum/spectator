@@ -29,7 +29,12 @@ class SessionEventBase:
     def __init__(self, session_id: str, time:int) -> None:
         self.session_id = session_id
         self._time = time
-
+    def asdict(self)-> dict[str, any]:
+        return {
+            "type": self.type,
+            "session_id": self.session_id,
+            "time": self._time
+        }
 class EventSolution(SessionEventBase):
     question_number: int
     language: int
@@ -47,32 +52,12 @@ class EventSolution(SessionEventBase):
 
     def asdict(self):
         return {
-            "type": self.type ,
-            "session_id": self.session_id,
-            "time": self._time,
             "question_number": self.question_number,
             "language": self.language,
             "solution": self.solution,
             "scratchpad": self.scratchpad,
             "serialized_test_result": self.serialized_test_result,
-        }
-
-class ExamSAMSubmitted(SessionEventBase):
-    aroused_level:int
-    pleased_level:int
-
-    def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
-        super().__init__(session_id, time)
-        self.aroused_level=aroused_level
-        self.pleased_level=pleased_level
-    def asdict(self):
-        return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
-            "aroused_level": self.aroused_level,
-            "pleased_level": self.pleased_level
-        }
+        } | super().asdict()
 
 class EventSolutionAccepted(EventSolution):
 
@@ -95,11 +80,8 @@ class EventLocaleSet(SessionEventBase):
 
     def asdict(self):
         return {
-            "type" : self.type ,
-            "session_id" : self.session_id,
-            "time" : self._time,
             "locale" :self.locale
-        }
+        } | super().asdict()
 
 class EventPersonalInfoSubmited(SessionEventBase):
     student_number:str
@@ -116,14 +98,11 @@ class EventPersonalInfoSubmited(SessionEventBase):
         self.familiar_languages = familiar_languages
     def asdict(self):
         return {
-            "type" : self.type ,
-            "session_id" : self.session_id,
-            "time" : self._time,
             "student_number": self.student_number,
             "years_of_experience": self.years_of_experience,
             "hours_of_practice": self.hours_of_practice,
             "familiar_languages": self.familiar_languages,
-        }
+        } | super().asdict()
 
 class EventSessionStarted(SessionEventBase):
     locale: int
@@ -135,55 +114,27 @@ class EventSessionStarted(SessionEventBase):
 
     def asdict(self):
         return {
-            "type" : self.type ,
-            "session_id" : self.session_id,
-            "time" : self._time,
             "locale" :self.locale
-        }
+        } | super().asdict()
 
 class EventDeadlinePassed(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "deadline_passed"
-    def asdict(self):
-        return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
-        }
 
 class EventExamEnded(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "exam_ended"
-    def asdict(self):
-        return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
-        }
 
 class EventExamForfeited(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "exam_forfeited"
-    def asdict(self):
-        return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
-        }
-
 class EventExamIDEReloaded(SessionEventBase):
     def __init__(self, session_id: str, time: int) -> None:
         super().__init__(session_id, time)
         self.type = "exam_ide_reloaded"
-    def asdict(self):
-        return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
-        }
 
 class EventExamStarted(SessionEventBase):
     question_numbers=[]
@@ -195,12 +146,9 @@ class EventExamStarted(SessionEventBase):
         self.deadline=deadline
     def asdict(self):
         return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
             "question_numbers": self.question_numbers,
             "deadline": self.deadline
-        }
+        } | super().asdict()
 
 class ExamSAMSubmitted(SessionEventBase):
     aroused_level:int
@@ -212,12 +160,9 @@ class ExamSAMSubmitted(SessionEventBase):
         self.pleased_level=pleased_level
     def asdict(self):
         return{
-            "session_id": self.session_id,
-            "type": self.type,
-            "time": self._time,
             "aroused_level": self.aroused_level,
             "pleased_level": self.pleased_level
-        }
+        } | super().asdict()
 
 class EventAfterExamSAMSubmitted(ExamSAMSubmitted):
     def __init__(self, session_id: str, time: int, aroused_level: int, pleased_level: int) -> None:
@@ -292,6 +237,8 @@ def generate_event_personal_info_submitted( session_id,  date_start: datetime, d
     familiar_languages = ""
     return (EventPersonalInfoSubmited(session_id,time, student_number, years_of_experience,hours_of_practice,familiar_languages).asdict())
     
+def generate_event ( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+    return ()
 # checker
 def fake_basic_info_generate():
     date_start_int: int = random_date(datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59))
