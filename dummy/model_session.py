@@ -257,14 +257,14 @@ def generate_event_exam_started( session_id,  date_start: datetime, date_ends: d
     return_object= EventExamStarted(session_id, time, question_numbers, deadline)
     return (return_object.as_dictionary())
 
-def generate_event_before_exam_SAM_Submmited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+def generate_event_before_exam_SAM_Submited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     aroused_level = random.randint(0,5)
     pleased_level = random.randint(0,5)
     time = random_date(date_start, date_ends)
     return_object= EventBeforeExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
     return (return_object.as_dictionary())
 
-def generate_event_after_exam_SAM_Submmited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
+def generate_event_after_exam_SAM_Submited( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     aroused_level = random.randint(0,5)
     pleased_level = random.randint(0,5)
     time = random_date(date_start, date_ends)
@@ -295,8 +295,8 @@ def checker():
     pprint(generate_event_exam_forfeited(**fake_basic_info_generate()))
     pprint(generate_event_exam_ide_reloaded(**fake_basic_info_generate()))
     pprint(generate_event_exam_started(**fake_basic_info_generate()))
-    pprint(generate_event_after_exam_SAM_Submmited(**fake_basic_info_generate()))
-    pprint(generate_event_before_exam_SAM_Submmited(**fake_basic_info_generate()))
+    pprint(generate_event_after_exam_SAM_Submited(**fake_basic_info_generate()))
+    pprint(generate_event_before_exam_SAM_Submited(**fake_basic_info_generate()))
     
 if __name__ == "__main__":
     checker()
