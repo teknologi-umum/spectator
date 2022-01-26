@@ -2,10 +2,26 @@ import random
 import datetime
 from utils import random_date
 
-
-class EventKeystroke:
+_MouseButton=[
+    "Left",
+    "Right",
+    "Middle"
+]
+class InputEventBase:
     session_id: str
     type: str
+    _time: int
+
+    def __init__(self, session_id: str, time:int) -> None:
+        self.session_id = session_id
+        self._time = time
+    def as_dictionary(self)-> dict[str, any]:
+        return {
+            "type": self.type,
+            "session_id": self.session_id,
+            "time": self._time
+        }
+class EventKeystroke(InputEventBase):
     question_number: int
     key_char: str
     key_code: str
@@ -14,14 +30,13 @@ class EventKeystroke:
     control: bool
     meta: bool
     unrelated_key: bool
-    _time: int
 
     def __init__(self, session_id: str, question_number: int, key_char: str,
                  key_code: str, shift: bool, alt: bool, control: bool,
                  meta: bool,
                  unrelated_key: bool, time: int) -> None:
+        super().__init__(session_id, time)
         self.type = "coding_event_keystroke"
-        self.session_id = session_id
         self.question_number = question_number
         self.key_char = key_char
         self.key_code = key_code
@@ -30,12 +45,9 @@ class EventKeystroke:
         self.control = control
         self.meta = meta
         self.unrelated_key = unrelated_key
-        self._time = time
 
     def as_dictionary(self):
         return {
-            "type": self.type,
-            "session_id": self.session_id,
             "question_number": self.question_number,
             "key_char": self.key_char,
             "key_code": self.key_code,
@@ -44,13 +56,9 @@ class EventKeystroke:
             "control": self.control,
             "meta": self.meta,
             "unrelated_key": self.unrelated_key,
-            "time": self._time
-        }
+        } | super().as_dictionary()
 
-
-class EventMouseMove:
-    session_id: str
-    type: str
+class EventMouseMove(InputEventBase):
     question_number: int
     # direction: "up" | "down" | "left" | "right"
     direction: str
@@ -58,31 +66,25 @@ class EventMouseMove:
     y_position: int
     window_width: int
     window_height: int
-    _time: int
 
     def __init__(self, session_id: str, question_number: int, direction: str,
                  x_position: int, y_position: int, time: int) -> None:
+        super().__init__(session_id, time)
         self.type = "coding_event_mousemove"
-        self.session_id = session_id
         self.question_number = question_number
         self.direction = direction
         self.x_position = x_position
         self.y_position = y_position
-        self._time = time
 
     def as_dictionary(self):
         return {
-            "type": self.type,
-            "session_id": self.session_id,
             "question_number": self.question_number,
             "direction": self.direction,
             "x": self.x_position,
             "y": self.y_position,
-            "time": self._time
-        }
+        } | super().as_dictionary()
 
-
-class EventMouseClick:
+class EventMouseClick(InputEventBase):
     session_id: str
     type: str
     question_number: str
@@ -93,53 +95,40 @@ class EventMouseClick:
 
     def __init__(self, session_id: str, question_number: str, button: str,
                  x_position: int, y_position: int, time: int) -> None:
+        super().__init__(session_id, time)
         self.type = "coding_event_mouseclick"
-        self.session_id = session_id
         self.question_number = question_number
         self.x_position = x_position
         self.y_position = y_position
         self.button = button
-        self._time = time
 
     def as_dictionary(self):
         return {
-            "type": self.type,
-            "session_id": self.session_id,
             "question_number": self.question_number,
             "button": self.button,
             "x": self.x_position,
             "y": self.y_position,
-            "time": self._time
-        }
+        } | super().as_dictionary()
 
-
-class EventWindowSized:
-    session_id: str
-    type: str
+class EventWindowSized(InputEventBase):
     question_number: str
     width: int
     height: int
-    _time: int
 
     def __init__(self, session_id: str, question_number: str, width: int,
                  height: int, time: int) -> None:
+        super().__init__(session_id, time)
         self.type = "window_sized"
-        self.session_id = session_id
         self.question_number = question_number
         self.width = width
         self.height = height
-        self._time = time
 
     def as_dictionary(self):
         return {
-            "type": self.type,
-            "session_id": self.session_id,
             "question_number": self.question_number,
             "width": self.width,
             "height": self.height,
-            "time": self._time
-        }
-
+        } | super().as_dictionary()
 
 def generate_event_keystroke(session_id: str, date_start: datetime,
                              date_ends: datetime) -> dict[str, any]:
@@ -168,7 +157,6 @@ def generate_event_keystroke(session_id: str, date_start: datetime,
                            shift, alt, control, meta, unrelated_key,
                            time)).as_dictionary()
 
-
 def generate_event_mousemove(session_id: str, date_start: datetime,
                              date_ends: datetime) -> dict[str, any]:
     """Generate an EventMouseMove class with random values.
@@ -193,7 +181,6 @@ def generate_event_mousemove(session_id: str, date_start: datetime,
     return (EventMouseMove(session_id, question_number, direction, x_position,
                            y_position, time)).as_dictionary()
 
-
 def generate_event_mouseclick(session_id: str, date_start: datetime,
                               date_ends: datetime) -> dict[str, any]:
     """Generate an EventMouseClick class with random values.
@@ -211,12 +198,11 @@ def generate_event_mouseclick(session_id: str, date_start: datetime,
     window_width = random.randint(0, 1920)
     x_position = random.randint(0, window_width)
     y_position = random.randint(0, window_height)
-    button = random.choice(["left", "middle", "right"])
+    button = random.choice(_MouseButton)
     time = random_date(date_start, date_ends)
 
     return (EventMouseClick(session_id, str(question_number), button, x_position,
                             y_position, time)).as_dictionary()
-
 
 def generate_event_window_sized(session_id: str, date_start: datetime,
                                 date_ends: datetime) -> dict[str, any]:
