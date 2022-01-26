@@ -79,7 +79,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Check for bucket existence
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
 	defer cancel()
 
 	err = prepareBuckets(ctx, deps.DB, influxOrg)
@@ -88,6 +88,11 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
+
+	err = cleanup(ctx)
+	if err != nil {
+		log.Fatalf("Failed to cleanup: %v", err)
+	}
 
 	deps.DB.Close()
 
@@ -135,47 +140,66 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	return nil
 }
 
-func cleanup() {
-	// create new context
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
-
+func cleanup(ctx context.Context) error {
 	// find current organization
 	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
 	if err != nil {
-		log.Fatalf("finding organization: %v", err)
+		return fmt.Errorf("finding organization: %v", err)
 	}
 
 	// find input_events bucket
 	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil {
-		log.Fatalf("finding bucket: %v", err)
+		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	// delete bucket data
 	deleteAPI := deps.DB.DeleteAPI()
 
-	inputEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	inputEventMeasurements := []string{
+		"keystroke",
+		"mouse_down",
+		"mouse_up",
+		"mouse_moved",
+		"mouse_scrolled",
+		"window_sized",
+	}
 	for _, measurement := range inputEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
-			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
 		}
 	}
 
 	// find input_events bucket
 	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
 	if err != nil {
-		log.Fatalf("finding bucket: %v", err)
+		return fmt.Errorf("finding bucket: %v", err)
 	}
 
-	sessionEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
+	sessionEventMeasurements := []string{
+		"code_test_attempt",
+		"exam_forfeited",
+		"exam_ended",
+		"exam_started",
+		"solution_rejected",
+		"solution_accepted",
+		"session_started",
+		"personal_info_submitted",
+		"locale_set",
+		"exam_ide_reloaded",
+		"deadline_passed",
+		"before_exam_sam_submitted",
+		"after_exam_sam_submitted",
+	}
 	for _, measurement := range sessionEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
-			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
 		}
 	}
+
+	return nil
 }
 
 func seedData(ctx context.Context) error {
@@ -195,6 +219,7 @@ func seedData(ctx context.Context) error {
 	//eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
+	// FIXME: thin this one out
 	wg.Add(200)
 
 	// Personal info
@@ -240,8 +265,6 @@ func seedData(ctx context.Context) error {
 		}
 		wg.Done()
 	}()
-
-	// Fuck this shit. I'm gonna repair Dicha's PR first.
 
 	wg.Wait()
 	return nil
