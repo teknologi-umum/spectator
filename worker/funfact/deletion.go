@@ -22,12 +22,12 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn: (r) => (
-			(r["_field"] == "key_char" and r["_value"] == "backspace") 
+			(r["_field"] == "key_char" and r["_value"] == "Backspace") 
 			or 
-			(r["_field"] == "key_char" and r["_value"] == "delete")))
+			(r["_field"] == "key_char" and r["_value"] == "Delete")))
 		|> group(columns: ["_time"])
 		|> yield()`,
 	)
@@ -53,7 +53,7 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
+		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn: (r) => r["_field"] == "key_char")
 		|> group(columns: ["_time"])

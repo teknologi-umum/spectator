@@ -11,12 +11,14 @@ func TestCalculateWordsPerMinute(t *testing.T) {
 	defer cancel()
 
 	res := make(chan uint32, 1)
+	defer close(res)
 	err := deps.CalculateWordsPerMinute(ctx, globalID, res)
 	if err != nil {
-		t.Errorf("an error was thrown: %v", err)
+		t.Fatalf("an error was thrown: %v", err)
 	}
 
-	t.Logf("average wpm: %v", <-res)
+	out := <-res
+	t.Logf("average wpm: %v", out)
 }
 
 func TestCalculateWordsPerMinute_Forfeit(t *testing.T) {
@@ -24,10 +26,12 @@ func TestCalculateWordsPerMinute_Forfeit(t *testing.T) {
 	defer cancel()
 
 	res := make(chan uint32, 1)
+	defer close(res)
 	err := deps.CalculateWordsPerMinute(ctx, globalID2, res)
 	if err != nil {
 		t.Errorf("an error was thrown: %v", err)
 	}
 
-	t.Logf("average wpm: %v", <-res)
+	out := <-res
+	t.Logf("average wpm: %v", out)
 }

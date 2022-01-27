@@ -11,9 +11,10 @@ func TestCalculateSubmissionAttempts(t *testing.T) {
 	defer cancel()
 
 	res := make(chan uint32, 1)
+	defer close(res)
 	err := deps.CalculateSubmissionAttempts(ctx, globalID, res)
 	if err != nil {
-		t.Errorf("an error was thrown: %v", err)
+		t.Fatalf("an error was thrown: %v", err)
 	}
 
 	attempts := <-res

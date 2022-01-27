@@ -100,7 +100,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 			`from(bucket: "`+d.BucketInputEvents+`")
 			|> range(start: `+fmt.Sprintf("%d", startTime+int64(i)*60)+`, 
 				stop: `+fmt.Sprintf("%d", startTime+int64(i+1)*60)+`)
-			|> filter(fn: (r) => r["_measurement"] == "coding_event_keystroke")
+			|> filter(fn: (r) => r["_measurement"] == "keystroke")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 			|> sort(columns: ["_time"])`,
 		)

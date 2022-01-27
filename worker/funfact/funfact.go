@@ -20,7 +20,7 @@ type Dependency struct {
 }
 
 // KeystrokeInput contains the data of
-// coding_event_keystroke measurement.
+// keystroke measurement.
 type KeystrokeInput struct {
 	UnrelatedKey bool
 	Shift        bool

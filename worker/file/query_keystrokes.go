@@ -31,7 +31,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		keystrokeMouseRows, err := queryAPI.Query(
 			ctx,
 			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-				Measurement: "coding_event_keystroke",
+				Measurement: "keystroke",
 				SessionID:   sessionID.String(),
 				Buckets:     d.BucketInputEvents,
 				Field:       x,
