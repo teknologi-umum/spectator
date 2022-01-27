@@ -62,10 +62,6 @@ func ReinaldysBuildQuery(q Queries) string {
 		str.WriteString(`|> filter(fn: (r) => r["_field"] == "` + sanitize(q.Field) + `")` + "\n")
 	}
 
-	str.WriteString("|> yield()")
-
-	// fmt.Println(str.String())
-
 	return str.String()
 }
 

@@ -26,14 +26,10 @@ func TestQueryDeadlinePassed(t *testing.T) {
 	delta := max - min
 
 	for i := 0; i < 50; i++ {
-		p := influxdb2.NewPoint(
-			"deadline_passed",
-			map[string]string{
-				"session_id": id.String(),
-			},
-			map[string]interface{}{},
-			time.Unix(rand.Int63n(delta)+min, 0),
-		)
+		p := influxdb2.NewPointWithMeasurement("deadline_passed")
+		p.AddTag("session_id", id.String())
+
+		p.AddField("_time", time.Unix(rand.Int63n(delta)+min, 0))
 
 		err := writeSessionAPI.WritePoint(ctx, p)
 		if err != nil {
