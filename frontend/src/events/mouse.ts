@@ -2,8 +2,10 @@ import { calculateDirection } from "@/utils/getMouseDirection";
 import { emit } from "@/events/emitter";
 import type { CodingEventMouseClick, CodingEventMouseMove } from "./types";
 
-export function mouseClickHandler(connection: unknown, questionNumber: number) {
+export function mouseClickHandler(connection: unknown, questionNumber: number | null) {
   return async (e: MouseEvent) => {
+    if (questionNumber === null) return;
+
     const data: CodingEventMouseClick = {
       // TODO(elianiva): revisit session_id
       session_id: "TBD",
@@ -25,8 +27,10 @@ export function mouseClickHandler(connection: unknown, questionNumber: number) {
 }
 
 // TODO(elianiva): emit position and direction as a single event??
-export function mouseMoveHandler(connection: unknown, questionNumber: number) {
+export function mouseMoveHandler(connection: unknown, questionNumber: number | null) {
   return async (e: MouseEvent) => {
+    if (questionNumber === null) return;
+
     // only emit if it's actually moving
     const direction = calculateDirection(e);
     if (direction === null) return;

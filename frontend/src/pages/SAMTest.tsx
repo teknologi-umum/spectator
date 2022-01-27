@@ -22,7 +22,7 @@ import ThemeButton from "@/components/ThemeButton";
 import { useNavigate } from "react-router-dom";
 import { getJwt } from "@/utils/generateFakeJwt";
 import { useAppDispatch } from "@/store";
-import { setJwt } from "@/store/slices/jwtSlice";
+import { setAccessToken } from "@/store/slices/sessionSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 
@@ -200,7 +200,7 @@ export default function SAMTest() {
               colorScheme="blue"
               onClick={() => {
                 const jwt = getJwt();
-                dispatch(setJwt(jwt));
+                dispatch(setAccessToken(jwt));
                 navigate("/coding-test");
               }}
             >
