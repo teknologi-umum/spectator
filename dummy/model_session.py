@@ -6,19 +6,8 @@ from utils import random_date
 
 #const
 
-_Language = {
-    "Undefined":0, 
-    "C":1, 
-    "CPP":2, 
-    "PHP":3, 
-    "Javascript":4, 
-    "Java":5, 
-    "Python":6
-}
-_Locale = {
-    "EN":0,
-    "ID":1
-}
+_Language = [ "Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python" ] 
+_Locale = [ "EN", "ID" ]
 
 class SessionEventBase:
     session_id: str
@@ -39,15 +28,15 @@ class EventSolution(SessionEventBase):
     language: int
     solution: str
     scratchpad: str
-    serialized_test_result: str
+    serialized_test_results: str
 
-    def __init__( self, session_id: str, time: int, question_number:int , language: str , solution: str, scratchpad:str , serialized_test_result: str) -> None:
+    def __init__( self, session_id: str, time: int, question_number:int , language: str , solution: str, scratchpad:str , serialized_test_results: str) -> None:
         super().__init__(session_id, time)
         self.question_number = question_number
         self.language = language
         self.solution = solution
         self.scratchpad = scratchpad
-        self.serialized_test_result = serialized_test_result
+        self.serialized_test_results = serialized_test_results
 
     def as_dictionary(self):
         return {
@@ -55,21 +44,21 @@ class EventSolution(SessionEventBase):
             "language": self.language,
             "solution": self.solution,
             "scratchpad": self.scratchpad,
-            "serialized_test_result": self.serialized_test_result,
+            "serialized_test_results": self.serialized_test_results,
         } | super().as_dictionary()
 class EventSolutionAccepted(EventSolution):
 
-    def __init__( self, session_id: str, time: int, question_number:int , language: str , solution: str, scratchpad:str , serialized_test_result: str) -> None:
-        super().__init__(  session_id, question_number, time, language, solution, scratchpad, serialized_test_result)
+    def __init__( self, session_id: str, time: int, question_number:int , language: str , solution: str, scratchpad:str , serialized_test_results: str) -> None:
+        super().__init__(  session_id, question_number, time, language, solution, scratchpad, serialized_test_results)
         self.type = "solution_accepted"
 class EventSolutionRejected(EventSolution):
-    def __init__( self, session_id: str, time: int, question_number:int , language: int , solution: str, scratchpad:str , serialized_test_result: str) -> None:
-        super().__init__( session_id, question_number, time, language, solution, scratchpad, serialized_test_result)
+    def __init__( self, session_id: str, time: int, question_number:int , language: int , solution: str, scratchpad:str , serialized_test_results: str) -> None:
+        super().__init__( session_id, question_number, time, language, solution, scratchpad, serialized_test_results)
         self.type = "solution_rejected"
 class EventLocaleSet(SessionEventBase):
-    locale: int
+    locale: str
 
-    def __init__( self, session_id: str, time: int, locale:str ) -> None:
+    def __init__( self, session_id: str, time: int, locale:int ) -> None:
         super().__init__( session_id, time)
         self.type = "exam_started"
         self.locale = _Locale[locale]
@@ -99,9 +88,9 @@ class EventPersonalInfoSubmited(SessionEventBase):
             "familiar_languages": self.familiar_languages,
         } | super().as_dictionary()
 class EventSessionStarted(SessionEventBase):
-    locale: int
+    locale: str
 
-    def __init__( self, session_id: str, time: int, locale:str ) -> None:
+    def __init__( self, session_id: str, time: int, locale:int ) -> None:
         super().__init__( session_id, time)
         self.type = "exam_started"
         self.locale = _Locale[locale]
@@ -127,9 +116,9 @@ class EventExamIDEReloaded(SessionEventBase):
         super().__init__(session_id, time)
         self.type = "exam_ide_reloaded"
 class EventExamStarted(SessionEventBase):
-    question_numbers=[]
+    question_numbers=list[int]
     deadline=str
-    def __init__(self, session_id: str, time: int, question_numbers, deadline) -> None:
+    def __init__(self, session_id: str, time: int, question_numbers: list[int], deadline) -> None:
         super().__init__(session_id, time)
         self.type = "exam_started"
         self.question_numbers=question_numbers
@@ -166,7 +155,7 @@ def _generate_event_solution ( session_id,  date_start: datetime, date_ends: dat
     language = _Language[ random.choice(["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"]) ]
     solution = generate_gibberish_code()
     scratchpad = generate_gibberish_code()
-    serialized_test_result = "" # add gibbrish ??
+    serialized_test_results = "" # add gibbrish ??
     time = random_date(date_start, date_ends)
     return { 
         "session_id" :session_id,
@@ -175,7 +164,7 @@ def _generate_event_solution ( session_id,  date_start: datetime, date_ends: dat
         "language": language, 
         "solution": solution, 
         "scratchpad": scratchpad, 
-        "serialized_test_result": serialized_test_result 
+        "serialized_test_results": serialized_test_results 
     }
     
 def generate_event_solution_accepted( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
