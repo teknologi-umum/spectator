@@ -45,9 +45,9 @@ func ReinaldysBuildQuery(q Queries) string {
 	str.WriteString("|> sort(columns: [\"_time\"])\n")
 
 	// if q.SessionID == "" {
-	// 	str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
-	// } else {
 	// 	str.WriteString("|> group(columns: [\"_time\"])\n")
+	// } else {
+	// 	str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
 	// }
 
 	if q.Measurement != "" {
@@ -63,6 +63,8 @@ func ReinaldysBuildQuery(q Queries) string {
 	}
 
 	str.WriteString("|> yield()")
+
+	// fmt.Println(str.String())
 
 	return str.String()
 }

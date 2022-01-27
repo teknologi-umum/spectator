@@ -21,7 +21,6 @@ func TestReinaldysBuildQuery(t *testing.T) {
 	expected := `from(bucket: "events")
 |> range(start: 1570608426, stop: 1576058948)
 |> sort(columns: ["_time"])
-|> group(columns: ["_time"])
 |> filter(fn: (r) => r["_measurement"] == "android")
 |> filter(fn: (r) => r["session_id"] == "5f90e248-9759-499e-bf25-04dafb3e0f94")
 |> filter(fn: (r) => r["_field"] == "roma")
