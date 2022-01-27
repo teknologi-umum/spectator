@@ -11,18 +11,20 @@ class InputEventBase:
     session_id: str
     type: str
     _time: int
+    question_number: str
 
-    def __init__(self, session_id: str, time:int) -> None:
+    def __init__(self, session_id: str, time: int, question_number: int) -> None:
         self.session_id = session_id
         self._time = time
+        self.question_number = question_number
     def as_dictionary(self)-> dict[str, any]:
         return {
             "type": self.type,
             "session_id": self.session_id,
-            "time": self._time
+            "time": self._time,
+            "question_number": self.question_number,
         }
 class EventKeystroke(InputEventBase):
-    question_number: int
     key_char: str
     key_code: str
     shift: bool
@@ -30,14 +32,12 @@ class EventKeystroke(InputEventBase):
     control: bool
     meta: bool
     unrelated_key: bool
-
     def __init__(self, session_id: str, question_number: int, key_char: str,
                  key_code: str, shift: bool, alt: bool, control: bool,
                  meta: bool,
                  unrelated_key: bool, time: int) -> None:
-        super().__init__(session_id, time)
+        super().__init__(session_id, time, question_number)
         self.type = "coding_event_keystroke"
-        self.question_number = question_number
         self.key_char = key_char
         self.key_code = key_code
         self.shift = shift
@@ -46,9 +46,8 @@ class EventKeystroke(InputEventBase):
         self.meta = meta
         self.unrelated_key = unrelated_key
 
-    def as_dictionary(self):
+    def as_dictionary(self) -> dict[str,any]:
         return {
-            "question_number": self.question_number,
             "key_char": self.key_char,
             "key_code": self.key_code,
             "shift": self.shift,
@@ -59,7 +58,6 @@ class EventKeystroke(InputEventBase):
         } | super().as_dictionary()
 
 class EventMouseMove(InputEventBase):
-    question_number: int
     # direction: "up" | "down" | "left" | "right"
     direction: str
     x_position: int
@@ -69,25 +67,20 @@ class EventMouseMove(InputEventBase):
 
     def __init__(self, session_id: str, question_number: int, direction: str,
                  x_position: int, y_position: int, time: int) -> None:
-        super().__init__(session_id, time)
+        super().__init__(session_id, time, question_number)
         self.type = "coding_event_mousemove"
-        self.question_number = question_number
         self.direction = direction
         self.x_position = x_position
         self.y_position = y_position
 
     def as_dictionary(self):
         return {
-            "question_number": self.question_number,
             "direction": self.direction,
             "x": self.x_position,
             "y": self.y_position,
         } | super().as_dictionary()
 
 class EventMouseClick(InputEventBase):
-    session_id: str
-    type: str
-    question_number: str
     button: str
     x_position: int
     y_position: int
@@ -95,37 +88,32 @@ class EventMouseClick(InputEventBase):
 
     def __init__(self, session_id: str, question_number: str, button: str,
                  x_position: int, y_position: int, time: int) -> None:
-        super().__init__(session_id, time)
+        super().__init__(session_id, time, question_number)
         self.type = "coding_event_mouseclick"
-        self.question_number = question_number
         self.x_position = x_position
         self.y_position = y_position
         self.button = button
 
     def as_dictionary(self):
         return {
-            "question_number": self.question_number,
             "button": self.button,
             "x": self.x_position,
             "y": self.y_position,
         } | super().as_dictionary()
 
 class EventWindowSized(InputEventBase):
-    question_number: str
     width: int
     height: int
 
     def __init__(self, session_id: str, question_number: str, width: int,
                  height: int, time: int) -> None:
-        super().__init__(session_id, time)
+        super().__init__(session_id, time, question_number)
         self.type = "window_sized"
-        self.question_number = question_number
         self.width = width
         self.height = height
 
     def as_dictionary(self):
         return {
-            "question_number": self.question_number,
             "width": self.width,
             "height": self.height,
         } | super().as_dictionary()

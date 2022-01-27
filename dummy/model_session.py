@@ -271,7 +271,6 @@ def generate_event_after_exam_SAM_Submited( session_id,  date_start: datetime, d
     return_object = EventAfterExamSAMSubmitted(session_id, time, aroused_level, pleased_level)
     return (return_object.as_dictionary())
 
-
 # checker
 def fake_basic_info_generate():
     date_start_int: int = random_date(datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59))
@@ -451,6 +450,7 @@ class Latin {
 }
 new Latin(5);
             """ ])
+
 def checker():
     pprint(generate_event_solution_accepted(**fake_basic_info_generate()))
     pprint(generate_event_solution_rejected(**fake_basic_info_generate()))
