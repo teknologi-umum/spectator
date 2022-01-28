@@ -40,7 +40,11 @@ func TestQueryPersonalInfo(t *testing.T) {
 			time.Unix(rand.Int63n(delta)+min, 0),
 		)
 
-		writeSessionAPI.WritePoint(ctx, p)
+		err := writeSessionAPI.WritePoint(ctx, p)
+		if err != nil {
+			t.Error(err)
+			return
+		}
 	}
 
 	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)

@@ -42,7 +42,11 @@ func TestQueryMouseMove(t *testing.T) {
 			time.Unix(rand.Int63n(delta)+min, 0),
 		)
 
-		writeInputAPI.WritePoint(ctx, p)
+		err := writeInputAPI.WritePoint(ctx, p)
+		if err != nil {
+			t.Error(err)
+			return
+		}
 	}
 
 	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
