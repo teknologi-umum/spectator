@@ -11,6 +11,7 @@ type Queries struct {
 	Measurement string
 	SessionID   string
 	Field       string
+	SortByTime bool
 	TimeFrom    time.Time
 	TimeTo      time.Time
 }
@@ -44,11 +45,13 @@ func ReinaldysBuildQuery(q Queries) string {
 
 	str.WriteString("|> sort(columns: [\"_time\"])\n")
 
-	// if q.SessionID == "" {
-	// 	str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
-	// } else {
-	// 	str.WriteString("|> group(columns: [\"_time\"])\n")
-	// }
+	if q.SessionID == "" && q.SortByTime {
+		str.WriteString("|> group(columns: [\"session_id\", \"_time\"])\n")
+	} else if q.SessionID == "" && !q.SortByTime {
+		str.WriteString("|> group(columns: [\"session_id\"])\n")
+	} else if q.SessionID != "" && q.SortByTime {
+		str.WriteString("|> group(columns: [\"_time\"])\n")
+	}
 
 	if q.Measurement != "" {
 		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "` + sanitize(q.Measurement) + `")` + "\n")

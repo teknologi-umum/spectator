@@ -3,7 +3,6 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,63 +20,102 @@ type PersonalInfo struct {
 }
 
 func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (PersonalInfo, error) {
+	var personalInfo PersonalInfo
 
-	tempPersonalInfo := PersonalInfo{}
-	for _, x := range []string{"student_number", "hours_of_practice", "years_of_experience", "familiar_language"} {
-		personalInfoRows, err := queryAPI.Query(
-			ctx,
-			`from(bucket: "`+d.BucketSessionEvents+`")
-			|> range(start: 0)
-			|> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-			|> filter(fn : (r) => r["_measurement"] == "personal_info")
-			`,
-		)
-		if err != nil {
-			return PersonalInfo{}, fmt.Errorf("failed to query personal info: %w", err)
+	studentNumberRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "personal_info")
+		|> filter(fn: (r) => r["_field"] == "student_number")
+		|> sort(columns: ["_time"])
+		|> group(columns: ["_time"])`,
+	)
+	if err != nil {
+		return PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
+	}
+	defer studentNumberRows.Close()
+
+	var ok bool
+	for studentNumberRows.Next() {
+		rows := studentNumberRows.Record()
+
+		personalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
+		if !ok {
+			personalInfo.SessionID = ""
 		}
+		personalInfo.Timestamp = rows.Time()
 
-		var ok bool
-		for personalInfoRows.Next() {
-
-			rows := personalInfoRows.Record()
-
-			switch x {
-			case "student_number":
-				tempPersonalInfo.StudentNumber, ok = rows.Value().(string)
-				if !ok {
-					tempPersonalInfo.StudentNumber = ""
-				}
-			case "hours_of_practice":
-				tempPersonalInfo.HoursOfPractice, ok = rows.Value().(int64)
-				if !ok {
-					tempPersonalInfo.HoursOfPractice = 0
-					// return PersonalInfo{}, fmt.Errorf("failed to parse hours of practice type")
-				}
-			case "years_of_experience":
-				tempPersonalInfo.YearsOfExperience, ok = rows.Value().(int64)
-				if !ok {
-					tempPersonalInfo.YearsOfExperience = 0
-					// return PersonalInfo{}, fmt.Errorf("failed to parse years of experience type")
-				}
-			case "familiar_language":
-				tempPersonalInfo.FamiliarLanguages, ok = rows.Value().(string)
-				if !ok {
-					tempPersonalInfo.FamiliarLanguages = ""
-				}
-			}
-
-			if d.IsDebug() {
-				log.Println(rows.String())
-				log.Printf("table %d\n", rows.Table())
-			}
-
-			tempPersonalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
-			if !ok {
-				tempPersonalInfo.SessionID = ""
-			}
-			tempPersonalInfo.Timestamp = rows.Time()
+		personalInfo.StudentNumber, ok = rows.Value().(string)
+		if !ok {
+			// todo
 		}
 	}
 
-	return tempPersonalInfo, nil
+	hoursOfPracticeRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "personal_info")
+		|> filter(fn: (r) => r["_field"] == "hours_of_practice")
+		|> sort(columns: ["_time"])
+		|> group(columns: ["_time"])`,
+	)
+	if err != nil {
+		return PersonalInfo{}, fmt.Errorf("failed to query personal info - hours of practice: %w", err)
+	}
+	defer hoursOfPracticeRows.Close()
+
+	for hoursOfPracticeRows.Next() {
+		rows := hoursOfPracticeRows.Record()
+
+		personalInfo.HoursOfPractice, ok = rows.Value().(int64)
+		if !ok {
+			// todo
+		}
+	}
+
+	yearsOfExperienceRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "personal_info")
+		|> filter(fn: (r) => r["_field"] == "years_of_experience")
+		|> sort(columns: ["_time"])
+		|> group(columns: ["_time"])`,
+	)
+	if err != nil {
+		return PersonalInfo{}, fmt.Errorf("failed to query personal info - years of experience: %w", err)
+	}
+	defer yearsOfExperienceRows.Close()
+
+	for yearsOfExperienceRows.Next() {
+		rows := yearsOfExperienceRows.Record()
+		
+		personalInfo.YearsOfExperience, ok = rows.Value().(int64)
+		if !ok {
+			// todo
+		}
+	}
+
+	familiarLanguagesRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "personal_info")
+		|> filter(fn: (r) => r["_field"] == "familiar_languages")
+		|> sort(columns: ["_time"])
+		|> group(columns: ["_time"])`,
+	)
+	if err != nil {
+		return PersonalInfo{}, fmt.Errorf("failed to query personal info - familiar languages: %w", err)
+	}
+	defer familiarLanguagesRows.Close()
+
+	
+	return personalInfo, nil
 }
