@@ -25,7 +25,7 @@ type MouseMovement struct {
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
 
 	var outputMouseMove []MouseMovement
-	
+
 	directionRows, err := queryAPI.Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
@@ -33,7 +33,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 			SessionID:   sessionID.String(),
 			Buckets:     d.BucketInputEvents,
 			Field:       "direction",
-			SortByTime: true,
+			SortByTime:  true,
 		}),
 	)
 	if err != nil {
@@ -46,7 +46,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 		direction, ok := rows.Value().(string)
 		if !ok {
-			// TODO
+			// FIXME: add default value
 		}
 
 		questionNumber, ok := rows.ValueByKey("question_number").(string)
@@ -61,12 +61,12 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		timestamp := rows.Time()
 
 		outputMouseMove = append(
-			outputMouseMove, 
+			outputMouseMove,
 			MouseMovement{
-				Direction: direction,
+				Direction:      direction,
 				QuestionNumber: questionNumber,
-				SessionID: sessionID,
-				Timestamp: timestamp,
+				SessionID:      sessionID,
+				Timestamp:      timestamp,
 			},
 		)
 	}
@@ -78,7 +78,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 			SessionID:   sessionID.String(),
 			Buckets:     d.BucketInputEvents,
 			Field:       "x_position",
-			SortByTime: true,
+			SortByTime:  true,
 		}),
 	)
 	if err != nil {
@@ -95,7 +95,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 		xPosition, ok := rows.Value().(int64)
 		if !ok {
-			// TODO
+			// FIXME: add default value
 		}
 
 		outputMouseMove[table].XPosition = xPosition
@@ -108,7 +108,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 			SessionID:   sessionID.String(),
 			Buckets:     d.BucketInputEvents,
 			Field:       "y_position",
-			SortByTime: true,
+			SortByTime:  true,
 		}),
 	)
 	if err != nil {
@@ -126,7 +126,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 		yPosition, ok := rows.Value().(int64)
 		if !ok {
-			// TODO
+			// FIXME: add default value
 		}
 
 		outputMouseMove[table].YPosition = yPosition
@@ -139,7 +139,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 			SessionID:   sessionID.String(),
 			Buckets:     d.BucketInputEvents,
 			Field:       "window_width",
-			SortByTime: true,
+			SortByTime:  true,
 		}),
 	)
 	if err != nil {
@@ -149,7 +149,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 	for windowWidthRows.Next() {
 		rows := windowWidthRows.Record()
-		
+
 		table, ok := rows.ValueByKey("table").(int64)
 		if !ok {
 			table = 0
@@ -157,9 +157,9 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 		windowWidth, ok := rows.Value().(int64)
 		if !ok {
-			// TODO
+			// FIXME: add default value
 		}
-		
+
 		outputMouseMove[table].WindowWidth = windowWidth
 	}
 
@@ -170,7 +170,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 			SessionID:   sessionID.String(),
 			Buckets:     d.BucketInputEvents,
 			Field:       "window_height",
-			SortByTime: true,
+			SortByTime:  true,
 		}),
 	)
 	if err != nil {
@@ -188,7 +188,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 		windowHeight, ok := rows.Value().(int64)
 		if !ok {
-			// TODO
+			// FIXME: add default value
 		}
 
 		outputMouseMove[table].WindowHeight = windowHeight

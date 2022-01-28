@@ -15,8 +15,3 @@ type Queries struct {
 	TimeFrom  time.Time
 	TimeTo    time.Time
 }
-
-// `from(bucket: "`+d.BucketInputEvents+`")
-// |> range(start: 0)
-// |> filter(fn : (r) => r["session_id"] == "`+sessionID.String()+`")
-// |> filter(fn : (r) => r["_measurement"] == "coding_event_mousemove")

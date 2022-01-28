@@ -27,7 +27,7 @@ func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI,
 		mouseClickRows, err := queryAPI.Query(
 			ctx,
 			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-				Measurement: "coding_event_mouseclick",
+				Measurement: "mouseclick",
 				SessionID:   sessionID.String(),
 				Buckets:     d.BucketInputEvents,
 				Field:       x,

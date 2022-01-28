@@ -87,6 +87,11 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to prepare influxdb buckets: %v", err)
 	}
 
+	err = seedData(ctx)
+	if err != nil {
+		log.Fatalf("Failed to seed data: %v", err)
+	}
+
 	code := m.Run()
 
 	err = cleanup(ctx)
@@ -99,6 +104,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+// prepareBuckets creates the buckets if they don't exist
 func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
 	bucketsAPI := deps.DB.BucketsAPI()
 	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
@@ -140,6 +146,7 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	return nil
 }
 
+// cleanup deletes the buckets' data
 func cleanup(ctx context.Context) error {
 	// find current organization
 	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
@@ -202,6 +209,7 @@ func cleanup(ctx context.Context) error {
 	return nil
 }
 
+// seedData seeds the database with test data
 func seedData(ctx context.Context) error {
 	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 	//inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
@@ -219,7 +227,7 @@ func seedData(ctx context.Context) error {
 	//eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
-	// FIXME: thin this one out
+	// FIXME: thin this one out, count the correct running goroutines
 	wg.Add(200)
 
 	// Personal info
@@ -265,6 +273,8 @@ func seedData(ctx context.Context) error {
 		}
 		wg.Done()
 	}()
+
+	// TODO: add more measurements
 
 	wg.Wait()
 	return nil

@@ -3,7 +3,6 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -48,19 +47,12 @@ func (d *Dependency) QuerySAMTest(ctx context.Context, queryAPI api.QueryAPI, se
 				return []SamTest{}, fmt.Errorf("failed to parse aroused level: %w", err)
 			}
 			tempSamTest.ArousedLevel = y
-		}
-
-		if rows.Field() == "pleased_level" {
+		} else if rows.Field() == "pleased_level" {
 			y, err := strconv.ParseInt(rows.Value().(string), 10, 64)
 			if err != nil {
 				return []SamTest{}, fmt.Errorf("failed to parse pleased level: %w", err)
 			}
 			tempSamTest.PleasedLevel = y
-		}
-
-		if d.IsDebug() {
-			log.Println(rows.String())
-			log.Printf("table %d\n", rows.Table())
 		}
 
 		if table != 0 && table > tablePosition {

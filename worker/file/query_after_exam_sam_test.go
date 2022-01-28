@@ -20,7 +20,9 @@ func TestQueryAfterExamSAM(t *testing.T) {
 	}
 
 	writeInputAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-
+	// FIXME: Move these to file_test.go so we generate everything first and then
+	// we can query them. This way, we can utilize the batch functionality
+	// of the InfluxDB and make the test more realistic.
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
 	max := time.Date(2019, 5, 2, 1, 4, 0, 0, time.UTC).Unix()
 	delta := max - min

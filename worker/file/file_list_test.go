@@ -22,6 +22,8 @@ func TestListFiles(t *testing.T) {
 
 	writeSessionAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 
+	// FIXME: these data should also be moved into the file_test.go
+	// so like always, seed one on the start and then query it.
 	for i := 0; i < 50; i++ {
 		for _, x := range []string{"keystroke", "mouse_click", "mouse_move", "personal_info", "sam_test"} {
 			e := influxdb2.NewPointWithMeasurement("test_result")

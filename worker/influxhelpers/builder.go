@@ -11,7 +11,7 @@ type Queries struct {
 	Measurement string
 	SessionID   string
 	Field       string
-	SortByTime bool
+	SortByTime  bool
 	TimeFrom    time.Time
 	TimeTo      time.Time
 }

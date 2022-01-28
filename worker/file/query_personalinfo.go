@@ -49,7 +49,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 		personalInfo.StudentNumber, ok = rows.Value().(string)
 		if !ok {
-			// todo
+			// FIXME: add default value
 		}
 	}
 
@@ -73,7 +73,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 		personalInfo.HoursOfPractice, ok = rows.Value().(int64)
 		if !ok {
-			// todo
+			// FIXME: add default value
 		}
 	}
 
@@ -94,10 +94,10 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 	for yearsOfExperienceRows.Next() {
 		rows := yearsOfExperienceRows.Record()
-		
+
 		personalInfo.YearsOfExperience, ok = rows.Value().(int64)
 		if !ok {
-			// todo
+			// FIXME: add default value
 		}
 	}
 
@@ -116,6 +116,14 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 	}
 	defer familiarLanguagesRows.Close()
 
-	
+	for familiarLanguagesRows.Next() {
+		rows := familiarLanguagesRows.Record()
+
+		personalInfo.FamiliarLanguages, ok = rows.Value().(string)
+		if !ok {
+			// FIXME: add default value
+		}
+	}
+
 	return personalInfo, nil
 }

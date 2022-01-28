@@ -21,6 +21,9 @@ type File struct {
 }
 
 // TODO: add documentation on what this function does
+// FIXME: this should not use the direct []*pb.File, should be wrapped
+// to another type of struct that later can be processed by the list.go file
+// on the main package.
 func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.File, error) {
 	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
