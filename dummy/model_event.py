@@ -1,5 +1,6 @@
 import random
 import datetime
+from generate_key_event import event_which_to_event_code
 from utils import random_date
 
 _MouseButton=[
@@ -132,8 +133,8 @@ def generate_event_keystroke(session_id: str, date_start: datetime,
         dict[str, any]: [description]
     """
     question_number = random.randint(1, 6)
-    key_code = random.randint(0, 255)
-    key_char = chr(key_code)
+    key_code = random.choice( list(event_which_to_event_code.keys() ))
+    key_char = event_which_to_event_code[key_code]
     shift = random.choice([True, False])
     alt = random.choice([True, False])
     control = random.choice([True, False])
@@ -211,3 +212,7 @@ def generate_event_window_sized(session_id: str, date_start: datetime,
 
     return (EventWindowSized(session_id, str(question_number), width, height,
                              time)).as_dictionary()
+
+from model_session import fake_basic_info_generate
+if __name__ == '__main__':
+    print(generate_event_keystroke(**fake_basic_info_generate()))
