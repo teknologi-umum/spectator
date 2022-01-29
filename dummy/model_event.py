@@ -212,7 +212,3 @@ def generate_event_window_sized(session_id: str, date_start: datetime,
 
     return (EventWindowSized(session_id, str(question_number), width, height,
                              time)).as_dictionary()
-
-from model_session import fake_basic_info_generate
-if __name__ == '__main__':
-    print(generate_event_keystroke(**fake_basic_info_generate()))

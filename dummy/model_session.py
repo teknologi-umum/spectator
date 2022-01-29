@@ -1,4 +1,3 @@
-from pprint import pprint
 import random
 from datetime import datetime,timedelta
 from uuid import uuid4
@@ -444,20 +443,3 @@ class Latin {
 }
 new Latin(5);
             """ ])
-
-def checker():
-    pprint(generate_event_solution_accepted(**fake_basic_info_generate()))
-    pprint(generate_event_solution_rejected(**fake_basic_info_generate()))
-    pprint(generate_event_locale_set(**fake_basic_info_generate()))
-    pprint(generate_event_personal_info_submitted(**fake_basic_info_generate()))
-    pprint(generate_event_session_started(**fake_basic_info_generate()))
-    pprint(generate_event_deadline_passed(**fake_basic_info_generate()))
-    pprint(generate_event_exam_ended(**fake_basic_info_generate()))
-    pprint(generate_event_exam_forfeited(**fake_basic_info_generate()))
-    pprint(generate_event_exam_ide_reloaded(**fake_basic_info_generate()))
-    pprint(generate_event_exam_started(**fake_basic_info_generate()))
-    pprint(generate_event_after_exam_SAM_Submited(**fake_basic_info_generate()))
-    pprint(generate_event_before_exam_SAM_Submited(**fake_basic_info_generate()))
-    
-if __name__ == "__main__":
-    checker()
