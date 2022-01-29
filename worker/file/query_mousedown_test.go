@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-func TestQueryMouseMove(t *testing.T) {
+func TestQueryMouseDown(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	id := globalID
 
 	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
-	result, err := deps.QueryMouseMove(ctx, readInputAPI, id)
+	result, err := deps.QueryMouseDown(ctx, readInputAPI, id)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}

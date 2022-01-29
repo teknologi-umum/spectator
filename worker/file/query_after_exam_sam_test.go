@@ -7,8 +7,7 @@ import (
 )
 
 func TestQueryAfterExamSAM(t *testing.T) {
-	// TODO: change this
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	id := globalID

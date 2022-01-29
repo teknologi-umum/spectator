@@ -10,15 +10,7 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
-type MouseButton int
-
-const (
-	Left MouseButton = iota
-	Right
-	Middle
-)
-
-type MouseDown struct {
+type MouseUp struct {
 	SessionID      string      `json:"session_id" csv:"session_id"`
 	Type           string      `json:"type" csv:"-"`
 	QuestionNumber string      `json:"question_number" csv:"question_number"`
@@ -28,20 +20,20 @@ type MouseDown struct {
 	Timestamp      time.Time   `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseDown, error) {
-	outputMouseClick := []MouseDown{}
+func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseUp, error) {
+	outputMouseClick := []MouseUp{}
 	mouseClickRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 			|> range(start: 0)
-			|> filter(fn: (r) => r["_measurement"] == "mouse_down" and r["session_id"] == "`+sessionID.String()+`")
+			|> filter(fn: (r) => r["_measurement"] == "mouse_up" and r["session_id"] == "`+sessionID.String()+`")
 			|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []MouseDown{}, fmt.Errorf("failed to query mouse down: %w", err)
+		return []MouseUp{}, fmt.Errorf("failed to query mouse up: %w", err)
 	}
 
-	tempMouseClick := MouseDown{}
+	tempMouseClick := MouseUp{}
 	var tablePosition int64
 	for mouseClickRows.Next() {
 		rows := mouseClickRows.Record()

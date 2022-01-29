@@ -10,31 +10,23 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
-type MouseButton int
-
-const (
-	Left MouseButton = iota
-	Right
-	Middle
-)
-
-type MouseDown struct {
+type MouseScrolled struct {
 	SessionID      string      `json:"session_id" csv:"session_id"`
 	Type           string      `json:"type" csv:"-"`
 	QuestionNumber string      `json:"question_number" csv:"question_number"`
-	X              int         `json:"x" csv:"x"`
-	Y              int         `json:"y" csv:"y"`
+	X              string      `json:"x" csv:"x"`
+	Y              string      `json:"y" csv:"y"`
 	Button         MouseButton `json:"button" csv:"button"`
 	Timestamp      time.Time   `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseDown, error) {
+func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseDown, error) {
 	outputMouseClick := []MouseDown{}
 	mouseClickRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 			|> range(start: 0)
-			|> filter(fn: (r) => r["_measurement"] == "mouse_down" and r["session_id"] == "`+sessionID.String()+`")
+			|> filter(fn: (r) => r["_measurement"] == "mouse_scrolled" and r["session_id"] == "`+sessionID.String()+`")
 			|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
@@ -50,23 +42,11 @@ func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, 
 			table = 0
 		}
 
-		button, ok := rows.ValueByKey("button").(MouseButton)
+		v, ok := rows.Value().(MouseButton)
 		if !ok {
-			button = 0
+			v = 0
 		}
-		tempMouseClick.Button = button
-
-		x, ok := rows.ValueByKey("x").(int)
-		if !ok {
-			x = 0
-		}
-		tempMouseClick.X = x
-
-		y, ok := rows.ValueByKey("y").(int)
-		if !ok {
-			y = 0
-		}
-		tempMouseClick.Y = y
+		tempMouseClick.Button = v
 
 		if d.IsDebug() {
 			log.Println(rows.String())

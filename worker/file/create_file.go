@@ -62,7 +62,22 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
-	outputMouseClick, err := d.QueryMouseDown(ctx, queryAPI, sessionID)
+	outputMouseDown, err := d.QueryMouseDown(ctx, queryAPI, sessionID)
+	if err != nil {
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed mouse click query",
+			},
+		)
+		return
+	}
+
+	outputMouseUp, err := d.QueryMouseUp(ctx, queryAPI, sessionID)
 	if err != nil {
 		d.Logger.Log(
 			err.Error(),
@@ -147,6 +162,9 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	})
 	g.Go(func() error {
 		return d.convertAndUpload(gctx, writeAPI, outputMouseDown, "mouse_down", studentNumber, requestID, sessionID)
+	})
+	g.Go(func() error {
+		return d.convertAndUpload(gctx, writeAPI, outputMouseUp, "mouse_up", studentNumber, requestID, sessionID)
 	})
 	g.Go(func() error {
 		return d.convertAndUpload(gctx, writeAPI, outputMouseMove, "mouse_move", studentNumber, requestID, sessionID)
