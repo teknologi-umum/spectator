@@ -40,5 +40,16 @@ func (d *Dependency) ListFiles(ctx context.Context, in *pb.Member) (*pb.FilesLis
 		return &pb.FilesList{}, fmt.Errorf("listing file: %v", err)
 	}
 
-	return &pb.FilesList{Files: result}, nil
+	// We map the files returned by the ListFiles function into Protobuf format
+	var files []*pb.File
+	for _, file := range result {
+		files = append(files, &pb.File{
+			SessionId: file.SessionId,
+			StudentNumber: file.StudentNumber,
+			FileUrlJson: file.JSONFile,
+			FileUrlCsv: file.CSVFile,
+		})
+	}
+
+	return &pb.FilesList{Files: files}, nil
 }

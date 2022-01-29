@@ -2,6 +2,7 @@ package funfact
 
 import (
 	"context"
+	"time"
 
 	"worker/influxhelpers"
 	loggerpb "worker/logger_proto"
@@ -46,16 +47,23 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 		}
 	}
 
-	p := influxdb2.NewPointWithMeasurement("funfact_projection")
-	p.AddTag("session_id", sessionID.String())
-	p.AddTag("student_number", studentNumber)
-	p.AddField("words_per_minute", wpm)
-	p.AddField("deletion_rate", deletionRate)
-	p.AddField("submission_attemps", attempts)
+	point := influxdb2.NewPoint(
+		"funfact_projection",
+		map[string]string{
+			"session_id": sessionID.String(),
+			"student_number": studentNumber,
+		},
+		map[string]interface{}{
+			"words_per_minute": wpm,
+			"deletion_rate": deletionRate,
+			"submission_attempts": attempts,
+		},
+		time.Now(),
+	)
 
-	// FIXME: the bucket name should be input_statistics
-	// TODO: check if the bucket exists first, then create if not exists
-	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketResultEvents).WritePoint(ctx, p)
+	err = d.DB.
+		WriteAPIBlocking(d.DBOrganization, d.BucketExamResult).
+		WritePoint(ctx, point)
 	if err != nil {
 		d.Logger.Log(
 			err.Error(),

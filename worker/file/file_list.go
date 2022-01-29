@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"worker/influxhelpers"
-	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
@@ -21,12 +20,10 @@ type File struct {
 }
 
 // TODO: add documentation on what this function does
-// FIXME: this should not use the direct []*pb.File, should be wrapped
-// to another type of struct that later can be processed by the list.go file
-// on the main package.
-func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.File, error) {
+func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File, error) {
 	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
+		// TODO: remove this query builder
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
 			Measurement: "test_file",
 			SessionID:   sessionID.String(),
@@ -34,11 +31,11 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 		}),
 	)
 	if err != nil {
-		return []*pb.File{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return []File{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
 
-	outputFile := []*pb.File{}
-	tempFile := pb.File{}
+	var outputFile []File
+	var tempFile File
 	var tablePosition int64
 	for testFileRows.Next() {
 		rows := testFileRows.Record()
@@ -49,14 +46,14 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 
 		switch rows.Field() {
 		case "file_url_json":
-			tempFile.FileUrlJson, ok = rows.Value().(string)
+			tempFile.JSONFile, ok = rows.Value().(string)
 			if !ok {
-				tempFile.FileUrlJson = ""
+				tempFile.JSONFile = ""
 			}
 		case "file_url_csv":
-			tempFile.FileUrlCsv, ok = rows.Value().(string)
+			tempFile.CSVFile, ok = rows.Value().(string)
 			if !ok {
-				tempFile.FileUrlCsv = ""
+				tempFile.CSVFile = ""
 			}
 		}
 
@@ -66,7 +63,7 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 		}
 
 		if table != 0 && table > tablePosition {
-			outputFile = append(outputFile, &tempFile)
+			outputFile = append(outputFile, tempFile)
 			tablePosition = table
 		} else {
 			var ok bool
@@ -84,29 +81,28 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 	}
 
 	if len(outputFile) > 0 || tempFile.SessionId != "" {
-		outputFile = append(outputFile, &tempFile)
+		outputFile = append(outputFile, tempFile)
 	}
 
 	newCtx, newCancel := context.WithTimeout(ctx, time.Second*15)
 	defer newCancel()
 
 	for _, i := range outputFile {
-		_, err := d.Bucket.StatObject(newCtx, "spectator", i.FileUrlJson, minio.GetObjectOptions{})
+		_, err := d.Bucket.StatObject(newCtx, "spectator", i.JSONFile, minio.GetObjectOptions{})
 		if err != nil {
 			errCode := minio.ToErrorResponse(err)
 			if errCode.Code == "NoSuchKey" {
-				return []*pb.File{}, fmt.Errorf("no %s file: still processing", i.FileUrlJson)
+				return []File{}, fmt.Errorf("no %s file: still processing", i.JSONFile)
 			}
 		}
 
-		_, err = d.Bucket.StatObject(newCtx, "spectator", i.FileUrlCsv, minio.GetObjectOptions{})
+		_, err = d.Bucket.StatObject(newCtx, "spectator", i.CSVFile, minio.GetObjectOptions{})
 		if err != nil {
 			errCode := minio.ToErrorResponse(err)
 			if errCode.Code == "NoSuchKey" {
-				return []*pb.File{}, fmt.Errorf("no %s file: still processing", i.FileUrlCsv)
+				return []File{}, fmt.Errorf("no %s file: still processing", i.CSVFile)
 			}
 		}
-
 	}
 
 	return outputFile, nil

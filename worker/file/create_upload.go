@@ -9,52 +9,51 @@ import (
 )
 
 // TODO: add documentation of that this function does
-func mkFileAndUpload(ctx context.Context, b []byte, path string, m *minio.Client) (*minio.UploadInfo, error) {
-	f, err := os.Create("./" + path)
+func (d *Dependency) mkFileAndUpload(ctx context.Context, data []byte, path string) (*minio.UploadInfo, error) {
+	createFile, err := os.Create("./" + path)
 	if err != nil {
 		return &minio.UploadInfo{}, fmt.Errorf("creating a file: %v", err)
 	}
-	defer f.Close()
+	defer createFile.Close()
 
-	_, err = f.Write(b)
+	_, err = createFile.Write(data)
 	if err != nil {
 		return &minio.UploadInfo{}, fmt.Errorf("writing to a file: %v", err)
 	}
 
-	err = f.Sync()
+	err = createFile.Sync()
 	if err != nil {
 		return &minio.UploadInfo{}, fmt.Errorf("syncing a file: %v", err)
 	}
 
-	fileStat, err := f.Stat()
+	fileStat, err := createFile.Stat()
 	if err != nil {
 		fmt.Println(err)
 		return &minio.UploadInfo{}, fmt.Errorf("getting file stat: %v", err)
 	}
 
-	f, err = os.Open("./" + path)
+	readFile, err := os.Open("./" + path)
 	if err != nil {
 		return &minio.UploadInfo{}, fmt.Errorf("opening a file: %v", err)
 	}
-	defer f.Close()
+	defer readFile.Close()
 
-	upInfo, err := m.PutObject(
+	uploadInformation, err := d.Bucket.PutObject(
 		ctx,
 		"spectator",
 		path,
-		f,
+		readFile,
 		fileStat.Size(),
 		minio.PutObjectOptions{ContentType: "application/octet-stream"},
 	)
 	if err != nil {
-		fmt.Println(err)
 		return &minio.UploadInfo{}, fmt.Errorf("uploading a file: %v", err)
 	}
-	fmt.Println("Successfully uploaded bytes: ", upInfo)
 
 	err = os.Remove("./" + path)
 	if err != nil {
 		return &minio.UploadInfo{}, fmt.Errorf("removing a file: %v", err)
 	}
-	return &upInfo, nil
+
+	return &uploadInformation, nil
 }

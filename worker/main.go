@@ -42,8 +42,13 @@ const (
 	// BucketSessionEvents is the bucket name for storing
 	// the session events, including their personal information.
 	BucketSessionEvents = "session_events"
-
-	BucketResultEvents = "results"
+	// BucketExamResult is the bucket name for storing
+	// the projection of the reduced data.
+	// Most likely from the WPM, Deletion Rate, and Coding Test Attempt.
+	BucketExamResult = "exam_results"
+	// BucketFileEvents is the bucket name for storing
+	// the file events, most importantly the URL to the MinIO storage.
+	BucketFileEvents = "file_results"
 )
 
 func main() {
@@ -141,7 +146,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
-			BucketResultEvents:  BucketResultEvents,
+			BucketExamResult:  BucketExamResult,
 		},
 		File: &file.Dependency{
 			Environment:         environment,
@@ -152,7 +157,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
-			BucketResultEvents:  BucketResultEvents,
+			BucketFileEvents:  BucketFileEvents,
 		},
 	}
 
