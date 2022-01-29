@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"time"
-
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 )
@@ -84,5 +83,4 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File
 	}
 
 	return outputFile, nil
-
 }

@@ -12,12 +12,15 @@ import (
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-var deps *file.Dependency
-var globalID uuid.UUID
+var (
+	deps     *file.Dependency
+	globalID uuid.UUID
+)
 
 func TestMain(m *testing.M) {
 	// Lookup environment variables
@@ -93,6 +96,8 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
+
+	fmt.Println("Cleaning up...")
 
 	err = cleanup(ctx)
 	if err != nil {
@@ -212,7 +217,7 @@ func cleanup(ctx context.Context) error {
 // seedData seeds the database with test data
 func seedData(ctx context.Context) error {
 	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-	//inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
+	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -224,29 +229,33 @@ func seedData(ctx context.Context) error {
 	globalID = id
 
 	eventStart := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
-	//eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
+	// eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
-	// FIXME: thin this one out, count the correct running goroutines
-	wg.Add(200)
+	wg.Add(19)
 
 	// Personal info
 	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/PersonalInfoSubmittedEvent.cs
 	go func() {
-		point := influxdb2.NewPoint(
-			"personal_info_submitted",
-			map[string]string{
-				"session_id": globalID.String(),
-			},
-			map[string]interface{}{
-				"student_number":      "1202213133",
-				"years_of_experience": 1,
-				"hours_of_practice":   4,
-				"familiar_languages":  "java,kotlin,swift",
-			},
-			eventStart,
-		)
-		err := sessionWriteAPI.WritePoint(ctx, point)
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"personal_info_submitted",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"student_number":      "1202213133",
+					"hours_of_practice":   4,
+					"years_of_experience": 3,
+					"familiar_languages":  "java,kotlin,swift",
+				},
+				eventStart,
+			)
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}
@@ -256,25 +265,528 @@ func seedData(ctx context.Context) error {
 	// SAM Test before Exam
 	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/BeforeExamSAMSubmittedEvent.cs
 	go func() {
-		point := influxdb2.NewPoint(
-			"before_exam_sam_submitted",
-			map[string]string{
-				"session_id": globalID.String(),
-			},
-			map[string]interface{}{
-				"aroused_level": 2,
-				"pleased_level": 5,
-			},
-			eventStart.Add(time.Minute*2),
-		)
-		err := sessionWriteAPI.WritePoint(ctx, point)
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"before_exam_sam_submitted",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"aroused_level": 2,
+					"pleased_level": 5,
+				},
+				eventStart.Add(time.Minute*2),
+			)
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}
 		wg.Done()
 	}()
 
-	// TODO: add more measurements
+	// SAM Test after Exam
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/AfterExamSAMSubmittedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"after_exam_sam_submitted",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"aroused_level": "2",
+					"pleased_level": "5",
+				},
+				eventStart.Add(time.Minute*4),
+			)
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Exam Started
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamStartedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"exam_started",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 5),
+				},
+				eventStart.Add(time.Minute*6),
+			)
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Exam Ended
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamEndedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"exam_ended",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 180),
+				},
+				eventStart.Add(time.Minute*8),
+			)
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Exam Forfeited
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamForfeitedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"exam_forfeited",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 120),
+				},
+				eventStart.Add(time.Minute*10),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Exam Passed
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamPassedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"exam_passed",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 150),
+				},
+				eventStart.Add(time.Minute*12),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Exam IDE Reloaded
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamIDEReloadedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"exam_ide_reloaded",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 140),
+				},
+				eventStart.Add(time.Minute*24),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Locale Set
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/LocaleSetEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"locale_set",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"locale": "en-US",
+				},
+				eventStart.Add(time.Minute*16),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Solution Accepted
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/SolutionAcceptedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"solution_accepted",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 20),
+				},
+				eventStart.Add(time.Minute*20),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Solution Rejected
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/SolutionRejectedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"solution_rejected",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 26),
+				},
+				eventStart.Add(time.Minute*22),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Deadline Passed
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/DeadlinePassedEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"deadline_passed",
+				map[string]string{
+					"session_id": globalID.String(),
+				},
+				map[string]interface{}{
+					"_time": eventStart.Add(time.Minute * 26),
+				},
+				eventStart.Add(time.Minute*26),
+			)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Keystroke Event
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/InputDomain/KeystrokeEvent.cs
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"keystroke",
+				map[string]string{
+					"session_id": id.String(),
+				},
+				map[string]interface{}{
+					"key_char":      "a",
+					"key_code":      "65",
+					"alt":           false,
+					"control":       false,
+					"shift":         false,
+					"meta":          false,
+					"unrelated_key": false,
+				},
+				eventStart.Add(time.Minute*120),
+			)
+
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Mouse Move Event
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"mouse_move",
+				map[string]string{
+					"session_id": id.String(),
+				},
+				map[string]interface{}{
+					"x": i,
+					"y": i,
+				},
+				eventStart.Add(time.Minute*120),
+			)
+
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Mouse Down Event
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"mouse_down",
+				map[string]string{
+					"session_id": id.String(),
+				},
+				map[string]interface{}{
+					"x":      i,
+					"y":      i,
+					"button": "left",
+				},
+				eventStart.Add(time.Minute*120),
+			)
+
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Mouse Up Event
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"mouse_up",
+				map[string]string{
+					"session_id": id.String(),
+				},
+				map[string]interface{}{
+					"x":      i,
+					"y":      i,
+					"button": "left",
+				},
+				eventStart.Add(time.Minute*120),
+			)
+
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Mouse Scroll Event
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"mouse_scroll",
+				map[string]string{
+					"session_id": id.String(),
+				},
+				map[string]interface{}{
+					"x":      i,
+					"y":      i,
+					"delta":  1,
+					"button": "left",
+				},
+				eventStart.Add(time.Minute*120),
+			)
+
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Window Resize Event
+	go func() {
+		var points []*write.Point
+		for i := 0; i < 50; i++ {
+			point := influxdb2.NewPoint(
+				"window_resize",
+				map[string]string{
+					"session_id": id.String(),
+				},
+				map[string]interface{}{
+					"width":  i,
+					"height": i,
+				},
+				eventStart.Add(time.Minute*120),
+			)
+
+			points = append(points, point)
+		}
+
+		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Test Result
+	go func() {
+		studentNumber := "123456789"
+		for i := 0; i < 50; i++ {
+			for _, x := range []string{"keystroke", "mouse_click", "mouse_move", "personal_info", "sam_test"} {
+				point := influxdb2.NewPoint(
+					"test_result",
+					map[string]string{
+						"session_id":     globalID.String(),
+						"student_number": studentNumber,
+					},
+					map[string]interface{}{
+						"file_csv_url":  "/public/" + studentNumber + "_" + x + ".csv",
+						"file_json_url": "/public/" + studentNumber + "_" + x + ".json",
+					},
+					time.Now(),
+				)
+				err := sessionWriteAPI.WritePoint(ctx, point)
+				if err != nil {
+					log.Fatalf("Error writing point: %v", err)
+				}
+
+				csvHandle, err := os.Create("./" + studentNumber + "_" + x + ".csv")
+				if err != nil {
+					log.Fatalf("creating a file: %v", err)
+					return
+				}
+				defer csvHandle.Close()
+
+				jsonHandle, err := os.Create("./" + studentNumber + "_" + x + ".json")
+				if err != nil {
+					log.Fatalf("creating a file: %v", err)
+					return
+				}
+				defer jsonHandle.Close()
+
+				_, err = csvHandle.Write([]byte(x))
+				if err != nil {
+					log.Fatalf("writing to a file: %v", err)
+					return
+				}
+
+				_, err = jsonHandle.Write([]byte(x))
+				if err != nil {
+					log.Fatalf("writing to a file: %v", err)
+					return
+				}
+
+				err = csvHandle.Sync()
+				if err != nil {
+					log.Fatalf("syncing a file: %v", err)
+					return
+				}
+
+				err = jsonHandle.Sync()
+				if err != nil {
+					log.Fatalf("syncing a file: %v", err)
+					return
+				}
+
+				_, err = csvHandle.Stat()
+				if err != nil {
+					log.Fatalf("getting file stat: %v", err)
+					return
+				}
+
+				_, err = jsonHandle.Stat()
+				if err != nil {
+					log.Fatalf("getting file stat: %v", err)
+					return
+				}
+			}
+		}
+		wg.Done()
+	}()
 
 	wg.Wait()
 	return nil

@@ -3,8 +3,8 @@ package funfact
 import (
 	"context"
 	"time"
-
 	"worker/influxhelpers"
+
 	loggerpb "worker/logger_proto"
 
 	"github.com/google/uuid"
@@ -62,7 +62,7 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 	)
 
 	err = d.DB.
-		WriteAPIBlocking(d.DBOrganization, d.BucketExamResult).
+		WriteAPIBlocking(d.DBOrganization, d.BucketInputStatisticEvents).
 		WritePoint(ctx, point)
 	if err != nil {
 		d.Logger.Log(
