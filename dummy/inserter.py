@@ -67,16 +67,52 @@ def main():
         with open("generated/user_personal.json") as f:
             print("Reading user personal data from file.")
             users = json.load(f)
-            print("Found {} users. Writing into InfluxDB".format(len(users)))
-            for i in range(len(users)):
-                user = users[i]
-
+            print(f"Found {len(users)} users. Writing into InfluxDB")
+            for user in users:
                 point = Point(user["type"]) \
                     .tag("session_id", user["session_id"]) \
                     .field("student_number", user["student_number"]) \
                     .field("hours_of_practice", user["hours_of_practice"]) \
                     .field("years_of_experience", user["years_of_experience"]) \
                     .field("familiar_language", user["familiar_language"])
+                write_client.write(
+                    bucket="session_events",
+                    org=influx_org,
+                    record=point,
+                )
+
+        with open("generated/input_events.json") as f:
+            print("Reading events data from file.")
+            events = json.load(f)
+            print( f"Found {len(events)} input_events. Writing into InfluxDB" )
+            for event in events:
+                point = Point(event["type"]) \
+                    .tag("session_id", event["session_id"]) \
+                    .tag("question_number", event["question_number"])\
+                    .time(event["time"], write_precision=WritePrecision.S)
+                fields = set(event.keys())-set(["session_id","type","time","question_number"])
+                for field in fields:
+                    point= point.field(field,event[field])
+                write_client.write(
+                    bucket="input_events",
+                    org=influx_org,
+                    record=point,
+                )
+
+        with open("generated/session_events.json") as f:
+            print("Reading events data from file.")
+            events = json.load(f)
+            print( f"Found {len(events)} session_events. Writing into InfluxDB" )
+            for event in events:
+                point = Point(event["type"]) \
+                    .tag("session_id", event["session_id"]) \
+                    .time(event["time"], write_precision=WritePrecision.S)
+                fields = set(event.keys())-set(["session_id","type","time"])
+                for field in fields:
+                    if type(event[field]) == type([]):
+                        point= point.field(field,",".join([str(i) for i in event[field]]))     
+                    else:
+                        point= point.field(field,event[field])
 
                 write_client.write(
                     bucket="session_events",
@@ -84,66 +120,7 @@ def main():
                     record=point,
                 )
 
-        with open("generated/events.json") as f:
-            print("Reading events data from file.")
-            events = json.load(f)
-            print("Found {} events. Writing into InfluxDB".format(len(events)))
-            for i in range(len(events)):
-                event = events[i]
-
-                point = Point(event["type"]) \
-                    .tag("session_id", event["session_id"]) \
-                    .tag("question_number", event["question_number"])
-
-                if event["type"] == "coding_event_keystroke":
-                    point = point.field("key_char", event["key_char"]) \
-                        .field("key_code", event["key_code"]) \
-                        .field("shift", event["shift"]) \
-                        .field("alt", event["alt"]) \
-                        .field("control", event["control"]) \
-                        .field("meta", event["meta"]) \
-                        .field("unrelated_key", event["unrelated_key"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
-                elif event["type"] == "coding_event_mousemove":
-                    point = point.field("direction", event["direction"]) \
-                        .field("x", event["x"]) \
-                        .field("y", event["y"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
-                elif event["type"] == "coding_event_mouseclick":
-                    point = point.field("button", event["button"]) \
-                        .field("x", event["x"]) \
-                        .field("y", event["y"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
-                elif event["type"] == "window_sized":
-                    point = point.field("width", event["width"]) \
-                        .field("height", event["height"]) \
-                        .time(event["time"], write_precision=WritePrecision.S)
-
-                    write_client.write(
-                        bucket="input_events",
-                        org=influx_org,
-                        record=point,
-                    )
-
-    print("Done. Please don't do anything until the script exits itself.")
+            print("Done. Please don't do anything until the script exits itself.")
 
 if __name__ == "__main__":
     main()
