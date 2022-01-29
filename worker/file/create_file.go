@@ -106,7 +106,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
-	outputSamTest, err := d.QuerySAMTest(ctx, queryAPI, sessionID)
+	outputSamBeforeTest, err := d.QueryBeforeExamSam(ctx, queryAPI, sessionID)
 	if err != nil {
 		d.Logger.Log(
 			err.Error(),
@@ -115,7 +115,22 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 			map[string]string{
 				"session_id": sessionID.String(),
 				"function":   "CreateFile",
-				"info":       "proceed sam test query",
+				"info":       "proceed before exam sam test query",
+			},
+		)
+		return
+	}
+
+	outputSamAfterTest, err := d.QueryAfterExamSam(ctx, queryAPI, sessionID)
+	if err != nil {
+		d.Logger.Log(
+			err.Error(),
+			loggerpb.Level_ERROR.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateFile",
+				"info":       "proceed after exam sam test query",
 			},
 		)
 		return
@@ -139,7 +154,10 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return d.convertAndUpload(gctx, writeAPI, outputPersonalInfo, "personal_info", studentNumber, requestID, sessionID)
 	})
 	g.Go(func() error {
-		return d.convertAndUpload(gctx, writeAPI, outputSamTest, "sam_test", studentNumber, requestID, sessionID)
+		return d.convertAndUpload(gctx, writeAPI, outputSamBeforeTest, "before_exam_sam_test", studentNumber, requestID, sessionID)
+	})
+	g.Go(func() error {
+		return d.convertAndUpload(gctx, writeAPI, outputSamAfterTest, "after_exam_sam_test", studentNumber, requestID, sessionID)
 	})
 
 	if err := g.Wait(); err != nil {

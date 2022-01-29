@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"time"
-
 	"worker/influxhelpers"
+
 	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
@@ -110,5 +110,4 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]*pb.
 	}
 
 	return outputFile, nil
-
 }
