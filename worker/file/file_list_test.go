@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 func TestListFiles(t *testing.T) {
@@ -18,60 +17,6 @@ func TestListFiles(t *testing.T) {
 	id, err := uuid.NewUUID()
 	if err != nil {
 		t.Errorf("failed to generate uuid: %v", err)
-	}
-
-	writeSessionAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-
-	// FIXME: these data should also be moved into the file_test.go
-	// so like always, seed one on the start and then query it.
-	for i := 0; i < 50; i++ {
-		for _, x := range []string{"keystroke", "mouse_click", "mouse_move", "personal_info", "sam_test"} {
-			e := influxdb2.NewPointWithMeasurement("test_result")
-			studentNumber := "a"
-			e.AddTag("session_id", id.String())
-			e.AddTag("student_number", studentNumber)
-			e.AddField("file_csv_url", "/public/"+studentNumber+"_"+x+".csv")
-			e.AddField("file_json_url", "/public/"+studentNumber+"_"+x+".json")
-			e.SetTime(time.Now())
-
-			err = writeSessionAPI.WritePoint(ctx, e)
-			if err != nil {
-				t.Fatalf("failed to write %s test result: %v", x, err)
-				return
-			}
-
-			f, err := os.Create("./" + studentNumber + "_" + x + ".csv")
-			if err != nil {
-				t.Errorf("creating a file: %v", err)
-				return
-			}
-			defer f.Close()
-
-			_, err = f.Write([]byte(x))
-			if err != nil {
-				t.Errorf("writing to a file: %v", err)
-				return
-			}
-
-			err = f.Sync()
-			if err != nil {
-				t.Errorf("syncing a file: %v", err)
-				return
-			}
-
-			_, err = f.Stat()
-			if err != nil {
-				t.Errorf("getting file stat: %v", err)
-				return
-			}
-
-			f, err = os.Open("./" + studentNumber + "_" + x + ".json")
-			if err != nil {
-				t.Errorf("opening a file: %v", err)
-				return
-			}
-			defer f.Close()
-		}
 	}
 
 	result, err := deps.ListFiles(ctx, id)

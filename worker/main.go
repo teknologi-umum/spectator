@@ -7,6 +7,9 @@ import (
 	"net"
 	"os"
 	"time"
+	"worker/file"
+	"worker/funfact"
+	"worker/logger"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -14,9 +17,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"worker/file"
-	"worker/funfact"
-	"worker/logger"
 	loggerpb "worker/logger_proto"
 	pb "worker/worker_proto"
 )
@@ -44,6 +44,10 @@ const (
 	BucketSessionEvents = "session_events"
 
 	BucketResultEvents = "results"
+
+	// BucketInputStatistics is the bucket name for storing
+	// the input statistics, including their personal information.
+	BucketInputStatisticEvents = "input_statistics"
 )
 
 func main() {
@@ -134,14 +138,15 @@ func main() {
 		LoggerToken:    loggerToken,
 		Environment:    environment,
 		Funfact: &funfact.Dependency{
-			Environment:         environment,
-			DB:                  influxConn,
-			DBOrganization:      influxOrg,
-			Logger:              loggerClient,
-			LoggerToken:         loggerToken,
-			BucketInputEvents:   BucketInputEvents,
-			BucketSessionEvents: BucketSessionEvents,
-			BucketResultEvents:  BucketResultEvents,
+			Environment:           environment,
+			DB:                    influxConn,
+			DBOrganization:        influxOrg,
+			Logger:                loggerClient,
+			LoggerToken:           loggerToken,
+			BucketInputEvents:     BucketInputEvents,
+			BucketSessionEvents:   BucketSessionEvents,
+			BucketResultEvents:    BucketResultEvents,
+			BucketInputStatisticEvents: BucketInputStatisticEvents,
 		},
 		File: &file.Dependency{
 			Environment:         environment,

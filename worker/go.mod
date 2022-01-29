@@ -12,6 +12,14 @@ require (
 )
 
 require (
+	github.com/kyoh86/richgo v0.3.10 // indirect
+	github.com/kyoh86/xdg v1.2.0 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/morikuni/aec v1.0.0 // indirect
+	github.com/wacul/ptr v1.0.0 // indirect
+)
+
+require (
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/gocarina/gocsv v0.0.0-20211203214250-4735fba0c1d9
@@ -30,9 +38,9 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

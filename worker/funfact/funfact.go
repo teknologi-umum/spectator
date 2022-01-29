@@ -9,14 +9,15 @@ import (
 // Dependency contains the dependency injection
 // to be used on this package.
 type Dependency struct {
-	Environment         string
-	DB                  influxdb2.Client
-	DBOrganization      string
-	Logger              *logger.Logger
-	LoggerToken         string
-	BucketInputEvents   string
-	BucketSessionEvents string
-	BucketResultEvents  string
+	Environment                string
+	DB                         influxdb2.Client
+	DBOrganization             string
+	Logger                     *logger.Logger
+	LoggerToken                string
+	BucketInputEvents          string
+	BucketSessionEvents        string
+	BucketResultEvents         string
+	BucketInputStatisticEvents string
 }
 
 // KeystrokeInput contains the data of

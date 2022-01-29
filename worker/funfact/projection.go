@@ -2,8 +2,8 @@ package funfact
 
 import (
 	"context"
-
 	"worker/influxhelpers"
+
 	loggerpb "worker/logger_proto"
 
 	"github.com/google/uuid"
@@ -53,9 +53,44 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 	p.AddField("deletion_rate", deletionRate)
 	p.AddField("submission_attemps", attempts)
 
-	// FIXME: the bucket name should be input_statistics
-	// TODO: check if the bucket exists first, then create if not exists
-	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketResultEvents).WritePoint(ctx, p)
+	bucketsAPI := d.DB.BucketsAPI()
+	orgsAPI := d.DB.OrganizationsAPI()
+
+	// check if the bucket exists then create if it doesn't exist
+	_, err = bucketsAPI.FindBucketByName(ctx, d.BucketInputStatisticEvents)
+	if err != nil && err.Error() != "bucket '"+d.BucketInputStatisticEvents+"' not found" {
+		orgDomain, err := orgsAPI.FindOrganizationByName(ctx, d.DBOrganization)
+		if err != nil {
+			d.Logger.Log(
+				err.Error(),
+				loggerpb.Level_ERROR.Enum(),
+				requestID,
+				map[string]string{
+					"session_id": sessionID.String(),
+					"function":   "Create Projection",
+					"info":       "cannot find the organization",
+				},
+			)
+			return
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, d.BucketInputStatisticEvents)
+		if err != nil {
+			d.Logger.Log(
+				err.Error(),
+				loggerpb.Level_ERROR.Enum(),
+				requestID,
+				map[string]string{
+					"session_id": sessionID.String(),
+					"function":   "Create Projection",
+					"info":       "cannot create the bucket",
+				},
+			)
+			return
+		}
+	}
+
+	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketInputStatisticEvents).WritePoint(ctx, p)
 	if err != nil {
 		d.Logger.Log(
 			err.Error(),
