@@ -44,10 +44,10 @@ func (d *Dependency) ListFiles(ctx context.Context, in *pb.Member) (*pb.FilesLis
 	var files []*pb.File
 	for _, file := range result {
 		files = append(files, &pb.File{
-			SessionId: file.SessionId,
+			SessionId:     file.SessionId,
 			StudentNumber: file.StudentNumber,
-			FileUrlJson: file.JSONFile,
-			FileUrlCsv: file.CSVFile,
+			FileUrlJson:   file.JSONFile,
+			FileUrlCsv:    file.CSVFile,
 		})
 	}
 

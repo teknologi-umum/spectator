@@ -200,12 +200,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	point := influxdb2.NewPoint(
 		"exported_data",
 		map[string]string{
-			"session_id": sessionID.String(),
+			"session_id":     sessionID.String(),
 			"student_number": studentNumber,
 		},
 		map[string]interface{}{
-			"file_csv_url":"/public/"+studentNumber+"_"+fileName+".csv",
-			"file_json_url":"/public/"+studentNumber+"_"+fileName+".json",
+			"file_csv_url":  "/public/" + studentNumber + "_" + fileName + ".csv",
+			"file_json_url": "/public/" + studentNumber + "_" + fileName + ".json",
 		},
 		time.Now(),
 	)

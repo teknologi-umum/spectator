@@ -18,5 +18,5 @@ type Dependency struct {
 	LoggerToken         string
 	BucketInputEvents   string
 	BucketSessionEvents string
-	BucketFileEvents  string
+	BucketFileEvents    string
 }

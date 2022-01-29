@@ -16,7 +16,7 @@ type Dependency struct {
 	LoggerToken         string
 	BucketInputEvents   string
 	BucketSessionEvents string
-BucketExamResult  string
+	BucketExamResult    string
 }
 
 // KeystrokeInput contains the data of

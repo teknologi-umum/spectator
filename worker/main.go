@@ -146,7 +146,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
-			BucketExamResult:  BucketExamResult,
+			BucketExamResult:    BucketExamResult,
 		},
 		File: &file.Dependency{
 			Environment:         environment,
@@ -157,7 +157,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
-			BucketFileEvents:  BucketFileEvents,
+			BucketFileEvents:    BucketFileEvents,
 		},
 	}
 

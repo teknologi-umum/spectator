@@ -50,12 +50,12 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 	point := influxdb2.NewPoint(
 		"funfact_projection",
 		map[string]string{
-			"session_id": sessionID.String(),
+			"session_id":     sessionID.String(),
 			"student_number": studentNumber,
 		},
 		map[string]interface{}{
-			"words_per_minute": wpm,
-			"deletion_rate": deletionRate,
+			"words_per_minute":    wpm,
+			"deletion_rate":       deletionRate,
 			"submission_attempts": attempts,
 		},
 		time.Now(),
