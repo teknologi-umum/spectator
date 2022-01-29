@@ -6,15 +6,15 @@ from utils import random_date
 #const
 
 _Language = {
-    "Undefined":0, 
-    "C":1, 
-    "CPP":2, 
-    "PHP":3, 
-    "Javascript":4, 
-    "Java":5, 
-    "Python":6 } 
+    "Undefined":0,
+    "C":1,
+    "CPP":2,
+    "PHP":3,
+    "Javascript":4,
+    "Java":5,
+    "Python":6 }
 _Locale = {
-    "EN":0, "ID":1 
+    "EN":0, "ID":1
     }
 
 class SessionEventBase:
@@ -165,16 +165,16 @@ def _generate_event_solution ( session_id,  date_start: datetime, date_ends: dat
     scratchpad = generate_gibberish_code()
     serialized_test_results = "" # add gibbrish ??
     time = random_date(date_start, date_ends)
-    return { 
+    return {
         "session_id" :session_id,
-        "time": time, 
-        "question_number": question_number, 
-        "language": language, 
-        "solution": solution, 
-        "scratchpad": scratchpad, 
-        "serialized_test_results": serialized_test_results 
+        "time": time,
+        "question_number": question_number,
+        "language": language,
+        "solution": solution,
+        "scratchpad": scratchpad,
+        "serialized_test_results": serialized_test_results
     }
-    
+
 def generate_event_solution_accepted( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     """Generate an EventSolutionAccepted class with random values.
     The "language" key may only be either "Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"
@@ -201,7 +201,7 @@ def generate_event_solution_rejected( session_id,  date_start: datetime, date_en
         dict[str, any]: [description]
     """
     data= _generate_event_solution( session_id,  date_start, date_ends )
-    return ( EventSolutionRejected(**data).as_dictionary() ) 
+    return ( EventSolutionRejected(**data).as_dictionary() )
 
 def generate_event_locale_set( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
@@ -287,7 +287,7 @@ var
  arcsin = Math.asin(sine),
  arccos = Math.acos(cosine),
  arctan = Math.atan(tangent);
- 
+
 // sine
 window.alert(sine + " " + Math.sin(degrees * Math.PI / 180));
 // cosine
@@ -302,11 +302,11 @@ window.alert(arccos + " " + (arccos * 180 / Math.PI));
 window.alert(arctan + " " + (arctan * 180 / Math.PI));
             ""","""
 package main
- 
+
 import "fmt"
- 
+
 var v = []float32{1, 2, .5}
- 
+
 func main() {
     var sum float32
     for _, x := range v {
@@ -316,22 +316,22 @@ func main() {
 }
             ""","""
 require 'ipaddr'
- 
- 
+
+
 TESTCASES = ["127.0.0.1",                "127.0.0.1:80",
                 "::1",                      "[::1]:80",
-                "2605:2700:0:3::4713:93e3", "[2605:2700:0:3::4713:93e3]:80"]                            
- 
+                "2605:2700:0:3::4713:93e3", "[2605:2700:0:3::4713:93e3]:80"]
+
 output = [%w(String Address Port Family Hex),
           %w(------ ------- ---- ------ ---)]
- 
+
 def output_table(rows)
   widths = []
   rows.each {|row| row.each_with_index {|col, i| widths[i] = [widths[i].to_i, col.to_s.length].max }}
   format = widths.map {|size| "%#{size}s"}.join("\t")
   rows.each {|row| puts format % row}
 end
- 
+
 TESTCASES.each do |str|
   case str  # handle port; IPAddr does not.
   when /\A\[(?<address> .* )\]:(?<port> \d+ )\z/x      # string like "[::1]:80"
@@ -341,23 +341,23 @@ TESTCASES.each do |str|
   else                                                 # string with no port number
     address, port = str, nil
   end
- 
-  ip_addr = IPAddr.new(address) 
+
+  ip_addr = IPAddr.new(address)
   family = "IPv4" if ip_addr.ipv4?
   family = "IPv6" if ip_addr.ipv6?
- 
+
   output << [str, ip_addr.to_s, port.to_s, family, ip_addr.to_i.to_s(16)]
 end
- 
+
 output_table(output)
             ""","""
 package main
- 
+
 import (
     "fmt"
     "math/bits"
 )
- 
+
 func main() {
     fmt.Println("Pop counts, powers of 3:")
     n := uint64(1) // 3^0
@@ -395,12 +395,12 @@ class Latin {
     this.size = size;
     this.mst = [...Array(this.size)].map((v, i) => i + 1);
     this.square = Array(this.size).fill(0).map(() => Array(this.size).fill(0));
- 
+
     if (this.create(0, 0)) {
       console.table(this.square);
     }
   }
- 
+
   create(c, r) {
     const d = [...this.mst];
     let s;
@@ -409,7 +409,7 @@ class Latin {
         s = d.splice(Math.floor(Math.random() * d.length), 1)[0];
         if (!s) return false;
       } while (this.check(s, c, r));
- 
+
       this.square[c][r] = s;
       if (++c >= this.size) {
         c = 0;
@@ -426,7 +426,7 @@ class Latin {
       }
     }
   }
- 
+
   check(d, c, r) {
     for (let a = 0; a < this.size; a++) {
       if (c - a > -1) {

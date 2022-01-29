@@ -31,7 +31,7 @@ from model_session import generate_event_after_exam_SAM_Submited, \
     generate_event_session_started, \
     generate_event_solution_accepted, \
     generate_event_solution_rejected
-    
+
 from model_user import generate_user
 from utils import random_date
 
@@ -68,10 +68,14 @@ def main():
             minutes=random.randint(6, 21))
         date_ends: datetime = datetime.fromtimestamp(
             date_start_int + additional_duration.total_seconds())
-        
+
         _event_input = ["keystroke","mousemove","window_sized","mouseclick"]
-        _event_session = ["solution_accepted","solution_rejected","locale_set", "personal_info_submitted", "session_started", "deadline_passed","exam_ended","exam_forfeited","exam_ide_reloaded","exam_started","exam_before_sam_submited","exam_after_sam_submitted"]
-        
+        _event_session = [ "solution_accepted", "solution_rejected",
+            "locale_set", "personal_info_submitted",
+            "session_started", "deadline_passed","exam_ended",
+            "exam_forfeited","exam_ide_reloaded","exam_started",
+            "exam_before_sam_submited","exam_after_sam_submitted"]
+
         for _ in range(random.randint(420 * 10, 666 * 12)):
             # generate random input event.
             choice = random.choice(_event_input)
@@ -82,7 +86,7 @@ def main():
             elif choice == "window_sized":
                 event = generate_event_window_sized(current_session, date_start, date_ends)
             elif choice == "mouseclick":
-                event = generate_event_mouseclick(current_session, date_start, date_ends) 
+                event = generate_event_mouseclick(current_session, date_start, date_ends)
             current_input_events.append(event)
         # Add the current events to the list of events
         input_events.extend(current_input_events)
