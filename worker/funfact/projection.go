@@ -2,6 +2,7 @@ package funfact
 
 import (
 	"context"
+	"time"
 	"worker/influxhelpers"
 
 	loggerpb "worker/logger_proto"
@@ -46,51 +47,23 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 		}
 	}
 
-	p := influxdb2.NewPointWithMeasurement("funfact_projection")
-	p.AddTag("session_id", sessionID.String())
-	p.AddTag("student_number", studentNumber)
-	p.AddField("words_per_minute", wpm)
-	p.AddField("deletion_rate", deletionRate)
-	p.AddField("submission_attemps", attempts)
+	point := influxdb2.NewPoint(
+		"funfact_projection",
+		map[string]string{
+			"session_id":     sessionID.String(),
+			"student_number": studentNumber,
+		},
+		map[string]interface{}{
+			"words_per_minute":    wpm,
+			"deletion_rate":       deletionRate,
+			"submission_attempts": attempts,
+		},
+		time.Now(),
+	)
 
-	bucketsAPI := d.DB.BucketsAPI()
-	orgsAPI := d.DB.OrganizationsAPI()
-
-	// check if the bucket exists then create if it doesn't exist
-	_, err = bucketsAPI.FindBucketByName(ctx, d.BucketInputStatisticEvents)
-	if err != nil && err.Error() != "bucket '"+d.BucketInputStatisticEvents+"' not found" {
-		orgDomain, err := orgsAPI.FindOrganizationByName(ctx, d.DBOrganization)
-		if err != nil {
-			d.Logger.Log(
-				err.Error(),
-				loggerpb.Level_ERROR.Enum(),
-				requestID,
-				map[string]string{
-					"session_id": sessionID.String(),
-					"function":   "Create Projection",
-					"info":       "cannot find the organization",
-				},
-			)
-			return
-		}
-
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, d.BucketInputStatisticEvents)
-		if err != nil {
-			d.Logger.Log(
-				err.Error(),
-				loggerpb.Level_ERROR.Enum(),
-				requestID,
-				map[string]string{
-					"session_id": sessionID.String(),
-					"function":   "Create Projection",
-					"info":       "cannot create the bucket",
-				},
-			)
-			return
-		}
-	}
-
-	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketInputStatisticEvents).WritePoint(ctx, p)
+	err = d.DB.
+		WriteAPIBlocking(d.DBOrganization, d.BucketInputStatisticEvents).
+		WritePoint(ctx, point)
 	if err != nil {
 		d.Logger.Log(
 			err.Error(),

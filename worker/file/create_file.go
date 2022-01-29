@@ -16,6 +16,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// CreateFile creates a file and concurently uploads it to the MinIO bucket.
 // This function should be called as a goroutine.
 //
 // It will not panic, instead the panic will be caught
@@ -190,34 +191,44 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// nil bucket.
 }
 
+// convertAndUpload converts the data into both JSON and CSV format,
+// then upload it into the MinIO bucket. It also writes the link to the
+// InfluxDB database.
 func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPIBlocking, data interface{}, fileName string, studentNumber string, requestID string, sessionID uuid.UUID) error {
 	dataJSON, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal json %s data: %v", fileName, err)
 	}
-	dataCSV, err := gocsv.MarshalString(data)
+
+	dataCSV, err := gocsv.MarshalBytes(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal csv %s data: %v", fileName, err)
 	}
 
-	_, err = mkFileAndUpload(ctx, []byte(dataCSV), studentNumber+"_"+fileName+".csv", d.Bucket)
+	_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+fileName+".csv")
 	if err != nil {
 		return fmt.Errorf("failed to upload csv %s file: %v", fileName, err)
 	}
 
-	_, err = mkFileAndUpload(ctx, []byte(dataJSON), studentNumber+"_"+fileName+".json", d.Bucket)
+	_, err = d.mkFileAndUpload(ctx, dataJSON, studentNumber+"_"+fileName+".json")
 	if err != nil {
 		return fmt.Errorf("failed to upload json %s file: %v", fileName, err)
 	}
 
-	e := influxdb2.NewPointWithMeasurement("exported_data")
-	e.AddTag("session_id", sessionID.String())
-	e.AddTag("student_number", studentNumber)
-	e.AddField("file_csv_url", "/public/"+studentNumber+"_"+fileName+".csv")
-	e.AddField("file_json_url", "/public/"+studentNumber+"_"+fileName+".json")
-	e.SetTime(time.Now())
+	point := influxdb2.NewPoint(
+		"exported_data",
+		map[string]string{
+			"session_id":     sessionID.String(),
+			"student_number": studentNumber,
+		},
+		map[string]interface{}{
+			"file_csv_url":  "/public/" + studentNumber + "_" + fileName + ".csv",
+			"file_json_url": "/public/" + studentNumber + "_" + fileName + ".json",
+		},
+		time.Now(),
+	)
 
-	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketResultEvents).WritePoint(ctx, e)
+	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketFileEvents).WritePoint(ctx, point)
 	if err != nil {
 		return fmt.Errorf("failed to write %s test result: %v", fileName, err)
 	}

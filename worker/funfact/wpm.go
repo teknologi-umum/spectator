@@ -25,7 +25,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// Get the value of the time that the user started and ended the session.
-	row, err := queryAPI.Query(
+	examStartedRow, err := queryAPI.Query(
 		ctx,
 		`from (bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
@@ -36,16 +36,16 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	if err != nil {
 		return fmt.Errorf("failed to query session start time: %w", err)
 	}
-	defer row.Close()
+	defer examStartedRow.Close()
 
 	var startTime int64
 	var endTime int64
 
-	if row.Next() {
-		startTime = row.Record().Time().Unix()
+	if examStartedRow.Next() {
+		startTime = examStartedRow.Record().Time().Unix()
 	}
 
-	row, err = queryAPI.Query(
+	examEndedRow, err := queryAPI.Query(
 		ctx,
 		`from (bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
@@ -56,15 +56,15 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	if err != nil {
 		return fmt.Errorf("failed to query session end time: %w", err)
 	}
-	defer row.Close()
+	defer examEndedRow.Close()
 
-	if row.Next() {
-		endTime = row.Record().Time().Unix()
+	if examEndedRow.Next() {
+		endTime = examEndedRow.Record().Time().Unix()
 	}
 
 	// If the end time is 0, we check from the exam_forfeited measurement.
 	if endTime == 0 {
-		row, err = queryAPI.Query(
+		examForfeitedRow, err := queryAPI.Query(
 			ctx,
 			`from (bucket: "`+d.BucketSessionEvents+`")
 			|> range(start: 0)
@@ -75,10 +75,10 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		if err != nil {
 			return fmt.Errorf("failed to query session forfeited time: %w", err)
 		}
-		defer row.Close()
+		defer examForfeitedRow.Close()
 
-		if row.Next() {
-			endTime = row.Record().Time().Unix()
+		if examForfeitedRow.Next() {
+			endTime = examForfeitedRow.Record().Time().Unix()
 		}
 
 		if endTime == 0 {
@@ -86,7 +86,11 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		}
 	}
 
+	// keystrokesIgnore contains the keys that might appear on the "key_char" that we don't
+	// want to count into the resulting words per minute.
 	var keystrokesIgnore = []string{"backspace", "delete", "insert", "pageup", "pagedown"}
+	// wordsPerMinute contains the array of each minute's words per minute.
+	// This can be used to calculate the average of all the words per minute.
 	var wordsPerMinute []uint32
 
 	// Find the delta between endTime and startTime in minute.
@@ -102,6 +106,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 				stop: `+fmt.Sprintf("%d", startTime+int64(i+1)*60)+`)
 			|> filter(fn: (r) => r["_measurement"] == "keystroke")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
+			|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 			|> sort(columns: ["_time"])`,
 		)
 		if err != nil {
@@ -109,48 +114,21 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		}
 		defer rows.Close()
 
-		var tablePosition int64
-		var temporaryWords uint32
-		var keystrokeData KeystrokeInput
+		var currentWordCount uint32
 		for rows.Next() {
 			record := rows.Record()
-			table, ok := record.ValueByKey("table").(int64)
+
+			keyChar, ok := record.ValueByKey("key_char").(string)
 			if !ok {
-				table = 0
+				return fmt.Errorf("failed to parse key_char data: %v", err)
 			}
 
-			temporaryWords += 1
-			switch record.Field() {
-			case "key_char":
-				keystrokeData.KeyChar, ok = record.Value().(string)
-				if !ok {
-					return fmt.Errorf("failed to parse keystroke data: %w", err)
-				}
-			case "unrelated_key":
-				keystrokeData.UnrelatedKey, ok = record.Value().(bool)
-				if !ok {
-					return fmt.Errorf("failed to parse unrelated_key: %w", err)
-				}
-			default:
-				continue
-			}
-
-			if table != 0 && table > tablePosition {
-				// Only append data if the current keystroke data is not unrelated key
-				if !keystrokeData.UnrelatedKey && !contains(keystrokesIgnore, keystrokeData.KeyChar) {
-					wordsPerMinute = append(wordsPerMinute, temporaryWords)
-					temporaryWords = 0
-				}
-
-				// Always update the table position
-				tablePosition = table
+			if !contains(keystrokesIgnore, keyChar) {
+				currentWordCount++
 			}
 		}
 
-		// Append the last value
-		if len(wordsPerMinute) > 0 && temporaryWords != 0 {
-			wordsPerMinute = append(wordsPerMinute, temporaryWords)
-		}
+		wordsPerMinute = append(wordsPerMinute, currentWordCount)
 	}
 
 	// Check the wordsPerMinute length, if it's zero, we return an error
