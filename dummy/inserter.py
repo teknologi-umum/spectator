@@ -110,7 +110,7 @@ def main():
                 fields = set(event.keys())-set(["session_id","type","time"])
                 for field in fields:
                     if type(event[field]) == type([]):
-                        point= point.field(field,",".join([str(i) for i in event[field]]))     
+                        point= point.field(field,",".join([str(i) for i in event[field]]))
                     else:
                         point= point.field(field,event[field])
 
