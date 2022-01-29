@@ -132,7 +132,7 @@ def generate_event_keystroke(session_id: str, date_start: datetime,
         dict[str, any]: [description]
     """
     question_number = random.randint(1, 6)
-    key_code = random.randint(32, 127)
+    key_code = random.randint(0, 255)
     key_char = chr(key_code)
     shift = random.choice([True, False])
     alt = random.choice([True, False])
