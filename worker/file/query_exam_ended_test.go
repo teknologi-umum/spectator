@@ -4,18 +4,13 @@ import (
 	"context"
 	"testing"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 func TestQueryExamEnded(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	id, err := uuid.NewUUID()
-	if err != nil {
-		t.Errorf("failed to generate uuid: %v", err)
-	}
+	id := globalID
 
 	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
 	result, err := deps.QueryExamEnded(ctx, readInputAPI, id)

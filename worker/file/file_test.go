@@ -99,7 +99,7 @@ func TestMain(m *testing.M) {
 
 	fmt.Println("Cleaning up...")
 
-	err = cleanup(ctx)
+	// err = cleanup(ctx)
 	if err != nil {
 		log.Fatalf("Failed to cleanup: %v", err)
 	}
@@ -302,7 +302,7 @@ func seedData(ctx context.Context) error {
 					"aroused_level": "2",
 					"pleased_level": "5",
 				},
-				eventStart.Add(time.Minute*4),
+				eventStart.Add(time.Minute*200),
 			)
 			points = append(points, point)
 		}
@@ -588,8 +588,11 @@ func seedData(ctx context.Context) error {
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					"x": i,
-					"y": i,
+					"direction":     "right",
+					"x_position":    20,
+					"y_position":    30,
+					"window_width":  100,
+					"window_height": 200,
 				},
 				eventStart.Add(time.Minute*120),
 			)
@@ -616,7 +619,7 @@ func seedData(ctx context.Context) error {
 				map[string]interface{}{
 					"x":      i,
 					"y":      i,
-					"button": "left",
+					"button": 0,
 				},
 				eventStart.Add(time.Minute*120),
 			)
@@ -643,7 +646,7 @@ func seedData(ctx context.Context) error {
 				map[string]interface{}{
 					"x":      i,
 					"y":      i,
-					"button": "left",
+					"button": 0,
 				},
 				eventStart.Add(time.Minute*120),
 			)
@@ -658,20 +661,19 @@ func seedData(ctx context.Context) error {
 		wg.Done()
 	}()
 
-	// Mouse Scroll Event
+	// Mouse Scrolled Event
 	go func() {
 		var points []*write.Point
 		for i := 0; i < 50; i++ {
 			point := influxdb2.NewPoint(
-				"mouse_scroll",
+				"mouse_scrolled",
 				map[string]string{
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					"x":      i,
-					"y":      i,
-					"delta":  1,
-					"button": "left",
+					"x":     i,
+					"y":     i,
+					"delta": i + i,
 				},
 				eventStart.Add(time.Minute*120),
 			)

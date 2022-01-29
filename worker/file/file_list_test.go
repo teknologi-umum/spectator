@@ -6,18 +6,13 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 func TestListFiles(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	id, err := uuid.NewUUID()
-	if err != nil {
-		t.Errorf("failed to generate uuid: %v", err)
-	}
+	id := globalID
 
 	result, err := deps.ListFiles(ctx, id)
 	if err != nil {
