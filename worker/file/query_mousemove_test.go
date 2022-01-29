@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
@@ -14,10 +13,7 @@ func TestQueryMouseMove(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	id, err := uuid.NewUUID()
-	if err != nil {
-		t.Errorf("failed to generate uuid: %v", err)
-	}
+	id := globalID
 
 	writeInputAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
 	// FIXME: Move these to file_test.go so we generate everything first and then

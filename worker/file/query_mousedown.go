@@ -11,33 +11,41 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
-type MouseClick struct {
-	SessionID      string    `json:"session_id" csv:"session_id"`
-	Type           string    `json:"type" csv:"-"`
-	QuestionNumber string    `json:"question_number" csv:"question_number"`
-	RightClick     bool      `json:"right_click" csv:"right_click"`
-	LeftClick      bool      `json:"left_click" csv:"left_click"`
-	MiddleClick    bool      `json:"middle_click" csv:"middle_click"`
-	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
+type MouseButton int
+
+const (
+	Left MouseButton = iota
+	Right
+	Middle
+)
+
+type MouseDown struct {
+	SessionID      string      `json:"session_id" csv:"session_id"`
+	Type           string      `json:"type" csv:"-"`
+	QuestionNumber string      `json:"question_number" csv:"question_number"`
+	X              string      `json:"x" csv:"x"`
+	Y              string      `json:"y" csv:"y"`
+	Button         MouseButton `json:"button" csv:"button"`
+	Timestamp      time.Time   `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseClick, error) {
-	outputMouseClick := []MouseClick{}
+func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseDown, error) {
+	outputMouseClick := []MouseDown{}
 	for _, x := range []string{"right_click", "left_click", "middle_click"} {
 		mouseClickRows, err := queryAPI.Query(
 			ctx,
 			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-				Measurement: "mouseclick",
+				Measurement: "mousedown",
 				SessionID:   sessionID.String(),
 				Buckets:     d.BucketInputEvents,
 				Field:       x,
 			}),
 		)
 		if err != nil {
-			return []MouseClick{}, fmt.Errorf("failed to query mouse clicks: %w", err)
+			return []MouseDown{}, fmt.Errorf("failed to query mouse clicks: %w", err)
 		}
 
-		tempMouseClick := MouseClick{}
+		tempMouseClick := MouseDown{}
 		var tablePosition int64
 		for mouseClickRows.Next() {
 			rows := mouseClickRows.Record()

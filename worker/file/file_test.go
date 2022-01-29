@@ -302,7 +302,7 @@ func seedData(ctx context.Context) error {
 					"aroused_level": "2",
 					"pleased_level": "5",
 				},
-				eventStart.Add(time.Minute*4),
+				eventStart.Add(time.Minute*200),
 			)
 			points = append(points, point)
 		}

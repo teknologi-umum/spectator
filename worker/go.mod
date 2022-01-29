@@ -12,14 +12,6 @@ require (
 )
 
 require (
-	github.com/kyoh86/richgo v0.3.10 // indirect
-	github.com/kyoh86/xdg v1.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/morikuni/aec v1.0.0 // indirect
-	github.com/wacul/ptr v1.0.0 // indirect
-)
-
-require (
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/gocarina/gocsv v0.0.0-20211203214250-4735fba0c1d9
