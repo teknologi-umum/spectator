@@ -136,6 +136,21 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		)
 		return
 	}
+	
+	// Then, we'll write to 2 different files with 2 different formats.
+	// Do this repeatedly for each event.
+	//
+	// So in the end, we have multiple files,
+	// one is about the keystroke & mouse events
+	// one is about coding test results
+	// one is all about the user (personal info, sam test)
+	//
+	// After that, store the file into MinIO
+	// then, put the MinIO link on the influxdb database
+	// in a different bucket. You might want to check and do a
+	// create if not exists on the bucket.
+	// So you'd make sure you're not inserting data into a
+	// nil bucket.
 
 	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketSessionEvents)
 
@@ -174,21 +189,6 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		)
 		return
 	}
-
-	// Then, we'll write to 2 different files with 2 different formats.
-	// Do this repeatedly for each event.
-	//
-	// So in the end, we have multiple files,
-	// one is about the keystroke & mouse events
-	// one is about coding test results
-	// one is all about the user (personal info, sam test)
-	//
-	// After that, store the file into MinIO
-	// then, put the MinIO link on the influxdb database
-	// in a different bucket. You might want to check and do a
-	// create if not exists on the bucket.
-	// So you'd make sure you're not inserting data into a
-	// nil bucket.
 }
 
 // convertAndUpload converts the data into both JSON and CSV format,
