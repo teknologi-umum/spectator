@@ -2,6 +2,7 @@ package funfact
 
 import (
 	"context"
+	"log"
 	"time"
 	"worker/influxhelpers"
 
@@ -12,6 +13,25 @@ import (
 )
 
 func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float32, requestID string) {
+	// Defer func to avoid panic
+	defer func() {
+		r := recover()
+		if r != nil {
+			log.Println(r.(error))
+		}
+
+		d.Logger.Log(
+			r.(error).Error(),
+			loggerpb.Level_CRITICAL.Enum(),
+			requestID,
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "CreateProjection",
+				"info":       "recovering from panic",
+			},
+		)
+	}()
+
 	personalInfoh, err := d.DB.QueryAPI(d.BucketSessionEvents).Query(
 		ctx,
 		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{

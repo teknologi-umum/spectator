@@ -28,7 +28,8 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 			(r["_field"] == "key_char" and r["_value"] == "Backspace") 
 			or 
 			(r["_field"] == "key_char" and r["_value"] == "Delete")))
-		|> group(columns: ["_time"])
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> count()
 		|> yield()`,
 	)
 	if err != nil {
@@ -36,17 +37,13 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	}
 	defer deletionRows.Close()
 
-	var tablePosition int64
 	for deletionRows.Next() {
-		table, ok := deletionRows.Record().ValueByKey("table").(int64)
+		deletionCount, ok := deletionRows.Record().Value().(int64)
 		if !ok {
-			table = 0
+			deletionCount = 0
 		}
 
-		if tablePosition == 0 || table > tablePosition {
-			totalDeletion++
-			tablePosition = table
-		}
+		totalDeletion += float32(deletionCount)
 	}
 
 	keystrokeTotalRows, err := queryAPI.Query(
@@ -56,7 +53,8 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> filter(fn: (r) => r["_field"] == "key_char")
-		|> group(columns: ["_time"])
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> count()
 		|> yield()`,
 	)
 	if err != nil {
@@ -64,17 +62,13 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	}
 	defer keystrokeTotalRows.Close()
 
-	tablePosition = 0
 	for keystrokeTotalRows.Next() {
-		table, ok := keystrokeTotalRows.Record().ValueByKey("table").(int64)
+		keystrokesCount, ok := keystrokeTotalRows.Record().Value().(int64)
 		if !ok {
-			table = 0
+			keystrokesCount = 0
 		}
 
-		if tablePosition == 0 || table > tablePosition {
-			totalKeystrokes++
-			tablePosition = table
-		}
+		totalKeystrokes += float32(keystrokesCount)
 	}
 
 	// Avoiding NaN output
