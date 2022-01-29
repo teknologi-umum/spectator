@@ -6,8 +6,17 @@ from utils import random_date
 
 #const
 
-_Language = [ "Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python" ] 
-_Locale = [ "EN", "ID" ]
+_Language = {
+    "Undefined":0, 
+    "C":1, 
+    "CPP":2, 
+    "PHP":3, 
+    "Javascript":4, 
+    "Java":5, 
+    "Python":6 } 
+_Locale = {
+    "EN":0, "ID":1 
+    }
 
 class SessionEventBase:
     session_id: str
@@ -152,7 +161,7 @@ class EventBeforeExamSAMSubmitted(EventExamSAMSubmitted):
 
 def _generate_event_solution ( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     question_number = random.randint(1, 6)
-    language = _Language[ random.choice(["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"]) ]
+    language = random.choice(list(_Language.keys()))
     solution = generate_gibberish_code()
     scratchpad = generate_gibberish_code()
     serialized_test_results = "" # add gibbrish ??
@@ -197,13 +206,9 @@ def generate_event_solution_rejected( session_id,  date_start: datetime, date_en
 
 def generate_event_locale_set( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    locale = random.choice(["ID", "EN"])
+    locale = random.choice(list(_Locale.keys()))
     return (EventLocaleSet(session_id, time, locale).as_dictionary())
 
-def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
-    time = random_date(date_start, date_ends)
-    locale = random.choice(["ID", "EN"])
-    return (EventSessionStarted(session_id, time, locale).as_dictionary())
 
 def generate_event_personal_info_submitted( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
@@ -215,7 +220,7 @@ def generate_event_personal_info_submitted( session_id,  date_start: datetime, d
 
 def generate_event_session_started( session_id,  date_start: datetime, date_ends: datetime ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    locale = random.choice(["ID","EN"])
+    locale = random.choice(list(_Locale.keys()))
     return_object = EventSessionStarted(session_id, time, locale)
     return return_object.as_dictionary()
 
