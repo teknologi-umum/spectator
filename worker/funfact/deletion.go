@@ -24,29 +24,16 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => (
-			(r["_field"] == "key_char" and r["_value"] == "Backspace") 
-			or 
-			(r["_field"] == "key_char" and r["_value"] == "Delete")))
-		|> group(columns: ["_time"])
-		|> yield()`,
+		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> filter(fn: (r) => r["key_char"] == "Backspace" or r["key_char"] == "Delete")`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query deletion rate: %w", err)
 	}
 	defer deletionRows.Close()
 
-	var tablePosition int64
 	for deletionRows.Next() {
-		table, ok := deletionRows.Record().ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
-
-		if tablePosition == 0 || table > tablePosition {
-			totalDeletion++
-			tablePosition = table
-		}
+		totalDeletion += 1
 	}
 
 	keystrokeTotalRows, err := queryAPI.Query(
@@ -55,26 +42,15 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_field"] == "key_char")
-		|> group(columns: ["_time"])
-		|> yield()`,
+		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query keystroke total: %w", err)
 	}
 	defer keystrokeTotalRows.Close()
 
-	tablePosition = 0
 	for keystrokeTotalRows.Next() {
-		table, ok := keystrokeTotalRows.Record().ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
-
-		if tablePosition == 0 || table > tablePosition {
-			totalKeystrokes++
-			tablePosition = table
-		}
+		totalKeystrokes += 1
 	}
 
 	// Avoiding NaN output

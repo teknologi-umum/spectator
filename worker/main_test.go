@@ -127,7 +127,7 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 		}
 
 		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, worker.BucketInputEvents)
-		if err != nil {
+		if err != nil && err.Error() != "conflict: bucket with name "+worker.BucketInputEvents+" already exists" {
 			return fmt.Errorf("creating bucket: %v", err)
 		}
 	}
@@ -145,7 +145,7 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 		}
 
 		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, worker.BucketSessionEvents)
-		if err != nil {
+		if err != nil && err.Error() != "conflict: bucket with name "+worker.BucketSessionEvents+" already exists" {
 			return fmt.Errorf("creating bucket: %v", err)
 		}
 	}

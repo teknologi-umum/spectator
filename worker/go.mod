@@ -30,9 +30,9 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

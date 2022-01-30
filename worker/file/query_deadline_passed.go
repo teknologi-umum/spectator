@@ -3,9 +3,7 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
-	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -18,52 +16,26 @@ type DeadlinePassed struct {
 }
 
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
-	outputDeadlinePassed := []DeadlinePassed{}
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "deadline_passed",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketSessionEvents,
-		}),
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "deadline_passed" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
-		return []DeadlinePassed{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return []DeadlinePassed{}, fmt.Errorf("failed to query deadline_passed: %w", err)
 	}
 
-	//var lastTableIndex int = -1
-	tempDeadlinePassed := DeadlinePassed{}
-	var tablePosition int64
+	var outputDeadlinePassed []DeadlinePassed
+
 	for afterExamSamRows.Next() {
-		rows := afterExamSamRows.Record()
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
+		record := afterExamSamRows.Record()
 
-		if d.IsDebug() {
-			log.Println(rows.String())
-			log.Printf("table %d\n", rows.Table())
-		}
-
-		if table != 0 && table > tablePosition {
-			outputDeadlinePassed = append(outputDeadlinePassed, tempDeadlinePassed)
-			tablePosition = table
-		} else {
-			var ok bool
-
-			tempDeadlinePassed.SessionId, ok = rows.ValueByKey("session_id").(string)
-			if !ok {
-				tempDeadlinePassed.SessionId = ""
-			}
-			tempDeadlinePassed.Timestamp = rows.Time()
-		}
-	}
-
-	if len(outputDeadlinePassed) > 0 || tempDeadlinePassed.SessionId != "" {
-		outputDeadlinePassed = append(outputDeadlinePassed, tempDeadlinePassed)
+		outputDeadlinePassed = append(outputDeadlinePassed, DeadlinePassed{
+			SessionId: sessionID.String(),
+			Timestamp: record.Time(),
+		})
 	}
 
 	return outputDeadlinePassed, nil
-
 }

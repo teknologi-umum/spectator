@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
+	"path/filepath"
 	"testing"
 	"time"
 	"worker/file"
@@ -16,8 +16,11 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-var deps *file.Dependency
-var globalID uuid.UUID
+var (
+	deps      *file.Dependency
+	globalID  uuid.UUID
+	globalID2 uuid.UUID
+)
 
 func TestMain(m *testing.M) {
 	// Lookup environment variables
@@ -75,13 +78,14 @@ func TestMain(m *testing.M) {
 		Bucket:              bucket,
 		BucketInputEvents:   "input_events",
 		BucketSessionEvents: "session_events",
+		BucketFileEvents:    "file_results",
 		Environment:         "testing",
 	}
 
-	// Check for bucket existence
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
 	defer cancel()
 
+	// Check for bucket existence
 	err = prepareBuckets(ctx, deps.DB, influxOrg)
 	if err != nil {
 		log.Fatalf("Failed to prepare influxdb buckets: %v", err)
@@ -93,6 +97,8 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
+
+	fmt.Println("Cleaning up...")
 
 	err = cleanup(ctx)
 	if err != nil {
@@ -107,39 +113,26 @@ func TestMain(m *testing.M) {
 // prepareBuckets creates the buckets if they don't exist
 func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
 	bucketsAPI := deps.DB.BucketsAPI()
-	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
-	if err != nil && err.Error() != "bucket '"+deps.BucketInputEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+	organizationAPI := deps.DB.OrganizationsAPI()
 
-	if err != nil && err.Error() == "bucket '"+deps.BucketInputEvents+"' not found" {
-		organizationAPI := deps.DB.OrganizationsAPI()
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %v", err)
+	bucketNames := []string{deps.BucketInputEvents, deps.BucketSessionEvents, deps.BucketFileEvents}
+
+	for _, bucket := range bucketNames {
+		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
+		if err != nil && err.Error() != "bucket '"+bucket+"' not found" {
+			return fmt.Errorf("finding bucket: %v", err)
 		}
 
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketInputEvents)
-		if err != nil {
-			return fmt.Errorf("creating bucket: %v", err)
-		}
-	}
+		if err != nil && err.Error() == "bucket '"+bucket+"' not found" {
+			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+			if err != nil {
+				return fmt.Errorf("finding organization: %v", err)
+			}
 
-	_, err = bucketsAPI.FindBucketByName(ctx, deps.BucketSessionEvents)
-	if err != nil && err.Error() != "bucket '"+deps.BucketSessionEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
-
-	if err != nil && err.Error() == "bucket '"+deps.BucketSessionEvents+"' not found" {
-		organizationAPI := deps.DB.OrganizationsAPI()
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %v", err)
-		}
-
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketSessionEvents)
-		if err != nil {
-			return fmt.Errorf("creating bucket: %v", err)
+			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, bucket)
+			if err != nil && err.Error() != "conflict: bucket with name "+bucket+" already exists" {
+				return fmt.Errorf("creating bucket: %v", err)
+			}
 		}
 	}
 
@@ -154,16 +147,16 @@ func cleanup(ctx context.Context) error {
 		return fmt.Errorf("finding organization: %v", err)
 	}
 
+	// delete bucket data
+	deleteAPI := deps.DB.DeleteAPI()
+
 	// find input_events bucket
 	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
-	// delete bucket data
-	deleteAPI := deps.DB.DeleteAPI()
-
-	inputEventMeasurements := []string{
+	fileEventMeasurement := []string{
 		"keystroke",
 		"mouse_down",
 		"mouse_up",
@@ -171,7 +164,7 @@ func cleanup(ctx context.Context) error {
 		"mouse_scrolled",
 		"window_sized",
 	}
-	for _, measurement := range inputEventMeasurements {
+	for _, measurement := range fileEventMeasurement {
 		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
 			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
@@ -206,76 +199,35 @@ func cleanup(ctx context.Context) error {
 		}
 	}
 
-	return nil
-}
-
-// seedData seeds the database with test data
-func seedData(ctx context.Context) error {
-	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-	//inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
-
-	// We generate two pieces of UUID, each of them have their own
-	// specific use case.
-	id, err := uuid.NewRandom()
+	// find file_results bucket
+	fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketFileEvents)
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("finding bucket: %v", err)
 	}
 
-	globalID = id
-
-	eventStart := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
-	//eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
-
-	var wg sync.WaitGroup
-	// FIXME: thin this one out, count the correct running goroutines
-	wg.Add(200)
-
-	// Personal info
-	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/PersonalInfoSubmittedEvent.cs
-	go func() {
-		point := influxdb2.NewPoint(
-			"personal_info_submitted",
-			map[string]string{
-				"session_id": globalID.String(),
-			},
-			map[string]interface{}{
-				"student_number":      "1202213133",
-				"years_of_experience": 1,
-				"hours_of_practice":   4,
-				"familiar_languages":  "java,kotlin,swift",
-			},
-			eventStart,
-		)
-		err := sessionWriteAPI.WritePoint(ctx, point)
+	for _, measurement := range fileEventMeasurement {
+		err = deleteAPI.Delete(ctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
 		}
-		wg.Done()
-	}()
+	}
 
-	// SAM Test before Exam
-	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/BeforeExamSAMSubmittedEvent.cs
-	go func() {
-		point := influxdb2.NewPoint(
-			"before_exam_sam_submitted",
-			map[string]string{
-				"session_id": globalID.String(),
-			},
-			map[string]interface{}{
-				"aroused_level": 2,
-				"pleased_level": 5,
-			},
-			eventStart.Add(time.Minute*2),
-		)
-		err := sessionWriteAPI.WritePoint(ctx, point)
+	// delete json/csv files
+	pathJSON, err := filepath.Glob("./*_*.json")
+	if err != nil {
+		return fmt.Errorf("unexpected error: %v", err)
+	}
+	pathCSV, err := filepath.Glob("./*_*.csv")
+	if err != nil {
+		return fmt.Errorf("unexpected error: %v", err)
+	}
+
+	for _, path := range append(pathJSON, pathCSV...) {
+		err = os.Remove(path)
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			return fmt.Errorf("unexpected error: %v", err)
 		}
-		wg.Done()
-	}()
+	}
 
-	// TODO: add more measurements
-
-	wg.Wait()
 	return nil
 }

@@ -3,9 +3,7 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
-	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -20,73 +18,48 @@ type AfterExamSAMSubmitted struct {
 }
 
 func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]AfterExamSAMSubmitted, error) {
-	outputAfterExam := []AfterExamSAMSubmitted{}
-	for _, field := range []string{"aroused_level", "pleased_level"} {
+	afterExamSamRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementAfterExamSAMSubmitted)+`" and r["session_id"] == "`+sessionID.String()+`")
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
+	)
+	if err != nil {
+		return []AfterExamSAMSubmitted{}, fmt.Errorf("failed to query after_exam_sam_submitted: %w", err)
+	}
+	defer afterExamSamRows.Close()
 
-		afterExamSamRows, err := queryAPI.Query(
-			ctx,
-			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-				Measurement: "after_exam_sam_submitted",
-				SessionID:   sessionID.String(),
-				Buckets:     d.BucketSessionEvents,
-				Field:       field,
-			}),
+	var outputAfterExam []AfterExamSAMSubmitted
+
+	for afterExamSamRows.Next() {
+		record := afterExamSamRows.Record()
+
+		arousedLevel, ok := record.ValueByKey("aroused_level").(int64)
+		if !ok {
+			arousedLevel = 0
+		}
+
+		pleasedLevel, ok := record.ValueByKey("pleased_level").(int64)
+		if !ok {
+			pleasedLevel = 0
+		}
+
+		sessionId, ok := record.ValueByKey("session_id").(string)
+		if !ok {
+			sessionId = ""
+		}
+
+		outputAfterExam = append(
+			outputAfterExam,
+			AfterExamSAMSubmitted{
+				SessionId:    sessionId,
+				ArousedLevel: uint32(arousedLevel),
+				PleasedLevel: uint32(pleasedLevel),
+				Timestamp:    record.Time(),
+			},
 		)
-		if err != nil {
-			return []AfterExamSAMSubmitted{}, fmt.Errorf("failed to query keystrokes: %w", err)
-		}
-
-		tempAfterExam := AfterExamSAMSubmitted{}
-		var tablePosition int64
-		for afterExamSamRows.Next() {
-			rows := afterExamSamRows.Record()
-			table, ok := rows.ValueByKey("table").(int64)
-			if !ok {
-				table = 0
-			}
-
-			switch field {
-			case "aroused_level":
-				v, ok := rows.Value().(int64)
-				if !ok {
-					v = 0
-				}
-
-				tempAfterExam.ArousedLevel = uint32(v)
-			case "pleased_level":
-				v, ok := rows.Value().(int64)
-				if !ok {
-					v = 0
-				}
-
-				tempAfterExam.PleasedLevel = uint32(v)
-			}
-
-			if d.IsDebug() {
-				log.Println(rows.String())
-				log.Printf("table %d\n", rows.Table())
-			}
-
-			if table != 0 && table > tablePosition {
-				outputAfterExam = append(outputAfterExam, tempAfterExam)
-				tablePosition = table
-			} else {
-				var ok bool
-
-				tempAfterExam.SessionId, ok = rows.ValueByKey("session_id").(string)
-				if !ok {
-					tempAfterExam.SessionId = ""
-				}
-				tempAfterExam.Timestamp = rows.Time()
-			}
-		}
-
-		if len(outputAfterExam) > 0 || tempAfterExam.SessionId != "" {
-			outputAfterExam = append(outputAfterExam, tempAfterExam)
-		}
-
 	}
 
 	return outputAfterExam, nil
-
 }

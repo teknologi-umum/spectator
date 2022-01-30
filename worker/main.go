@@ -7,6 +7,9 @@ import (
 	"net"
 	"os"
 	"time"
+	"worker/file"
+	"worker/funfact"
+	"worker/logger"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -14,9 +17,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"worker/file"
-	"worker/funfact"
-	"worker/logger"
 	loggerpb "worker/logger_proto"
 	pb "worker/worker_proto"
 )
@@ -42,8 +42,12 @@ const (
 	// BucketSessionEvents is the bucket name for storing
 	// the session events, including their personal information.
 	BucketSessionEvents = "session_events"
-
-	BucketResultEvents = "results"
+	// BucketFileEvents is the bucket name for storing
+	// the file events, most importantly the URL to the MinIO storage.
+	BucketFileEvents = "file_results"
+	// BucketInputStatistics is the bucket name for storing
+	// the input statistics, including their personal information.
+	BucketInputStatisticEvents = "input_statistics"
 )
 
 func main() {
@@ -134,14 +138,14 @@ func main() {
 		LoggerToken:    loggerToken,
 		Environment:    environment,
 		Funfact: &funfact.Dependency{
-			Environment:         environment,
-			DB:                  influxConn,
-			DBOrganization:      influxOrg,
-			Logger:              loggerClient,
-			LoggerToken:         loggerToken,
-			BucketInputEvents:   BucketInputEvents,
-			BucketSessionEvents: BucketSessionEvents,
-			BucketResultEvents:  BucketResultEvents,
+			Environment:                environment,
+			DB:                         influxConn,
+			DBOrganization:             influxOrg,
+			Logger:                     loggerClient,
+			LoggerToken:                loggerToken,
+			BucketInputEvents:          BucketInputEvents,
+			BucketSessionEvents:        BucketSessionEvents,
+			BucketInputStatisticEvents: BucketInputStatisticEvents,
 		},
 		File: &file.Dependency{
 			Environment:         environment,
@@ -152,7 +156,7 @@ func main() {
 			LoggerToken:         loggerToken,
 			BucketInputEvents:   BucketInputEvents,
 			BucketSessionEvents: BucketSessionEvents,
-			BucketResultEvents:  BucketResultEvents,
+			BucketFileEvents:    BucketFileEvents,
 		},
 	}
 
@@ -162,14 +166,19 @@ func main() {
 
 	bucketFound, err := minioConn.BucketExists(ctx, "spectator")
 	if err != nil {
-		log.Fatalf("Error checking bucket: %s\n", err)
+		log.Fatalf("Error checking MinIO bucket: %s\n", err)
 	}
 
 	if !bucketFound {
 		err = minioConn.MakeBucket(ctx, "spectator", minio.MakeBucketOptions{})
 		if err != nil {
-			log.Fatalf("Error creating bucket: %s\n", err)
+			log.Fatalf("Error creating MinIObucket: %s\n", err)
 		}
+	}
+
+	err = dependencies.prepareBuckets(ctx)
+	if err != nil {
+		log.Fatalf("Error preparing InfluxDB buckets: %s\n", err)
 	}
 
 	portNumber, ok := os.LookupEnv("PORT")

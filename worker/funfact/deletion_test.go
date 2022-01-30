@@ -18,8 +18,8 @@ func TestCalculateDeletionRate(t *testing.T) {
 	}
 
 	deletionRate := <-res
-	if deletionRate != 0.3125 {
-		t.Errorf("expected deletionRate to be 0.3125, got: %v", deletionRate)
+	if deletionRate != 0.14285715 {
+		t.Errorf("expected deletionRate to be 0.14285715, got: %v", deletionRate)
 	}
 }
 
@@ -31,7 +31,7 @@ func TestCalculateDeletionRate_NoDeletion(t *testing.T) {
 	defer close(res)
 	err := deps.CalculateDeletionRate(ctx, globalID2, res)
 	if err != nil {
-		t.Errorf("an error was thrown: %v", err)
+		t.Fatalf("an error was thrown: %v", err)
 	}
 
 	deletionRate := <-res
