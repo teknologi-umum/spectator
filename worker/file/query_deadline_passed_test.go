@@ -20,6 +20,6 @@ func TestQueryDeadlinePassed(t *testing.T) {
 	}
 
 	if len(result) != 50 {
-		t.Errorf("Expected 50 keystrokes, got %d", len(result))
+		t.Errorf("Expected 50 results, got %d", len(result))
 	}
 }

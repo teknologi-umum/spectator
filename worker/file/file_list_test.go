@@ -30,8 +30,8 @@ func TestListFiles(t *testing.T) {
 		return
 	}
 
-	if len(result) != 50 {
-		t.Errorf("Expected 50 file, got %d", len(result))
+	if len(result) != 250 {
+		t.Errorf("Expected 250 file, got %d", len(result))
 	}
 
 	for _, i := range append(pathJSON, pathCSV...) {

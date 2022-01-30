@@ -22,106 +22,60 @@ type PersonalInfo struct {
 func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (PersonalInfo, error) {
 	var personalInfo PersonalInfo
 
-	studentNumberRows, err := queryAPI.Query(
+	rows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info")
-		|> filter(fn: (r) => r["_field"] == "student_number")
-		|> sort(columns: ["_time"])
-		|> group(columns: ["_time"])`,
+		|> filter(fn: (r) => r["_measurement"] == "personal_info_submitted")
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
 		return PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
 	}
-	defer studentNumberRows.Close()
+	defer rows.Close()
 
-	var ok bool
-	for studentNumberRows.Next() {
-		rows := studentNumberRows.Record()
+	for rows.Next() {
+		record := rows.Record()
 
-		personalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
+		sessionId, ok := record.ValueByKey("session_id").(string)
 		if !ok {
-			personalInfo.SessionID = ""
+			sessionId = ""
 		}
-		personalInfo.Timestamp = rows.Time()
 
-		personalInfo.StudentNumber, ok = rows.Value().(string)
+		studentNumber, ok := record.ValueByKey("student_number").(string)
 		if !ok {
 			// FIXME: add default value
+			studentNumber = ""
 		}
-	}
 
-	hoursOfPracticeRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info")
-		|> filter(fn: (r) => r["_field"] == "hours_of_practice")
-		|> sort(columns: ["_time"])
-		|> group(columns: ["_time"])`,
-	)
-	if err != nil {
-		return PersonalInfo{}, fmt.Errorf("failed to query personal info - hours of practice: %w", err)
-	}
-	defer hoursOfPracticeRows.Close()
-
-	for hoursOfPracticeRows.Next() {
-		rows := hoursOfPracticeRows.Record()
-
-		personalInfo.HoursOfPractice, ok = rows.Value().(int64)
+		hoursOfPractice, ok := record.ValueByKey("hours_of_practice").(int64)
 		if !ok {
 			// FIXME: add default value
+			hoursOfPractice = 0
 		}
-	}
 
-	yearsOfExperienceRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info")
-		|> filter(fn: (r) => r["_field"] == "years_of_experience")
-		|> sort(columns: ["_time"])
-		|> group(columns: ["_time"])`,
-	)
-	if err != nil {
-		return PersonalInfo{}, fmt.Errorf("failed to query personal info - years of experience: %w", err)
-	}
-	defer yearsOfExperienceRows.Close()
-
-	for yearsOfExperienceRows.Next() {
-		rows := yearsOfExperienceRows.Record()
-
-		personalInfo.YearsOfExperience, ok = rows.Value().(int64)
+		yearsOfExperience, ok := record.ValueByKey("years_of_experience").(int64)
 		if !ok {
 			// FIXME: add default value
+			yearsOfExperience = 0
 		}
-	}
 
-	familiarLanguagesRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info")
-		|> filter(fn: (r) => r["_field"] == "familiar_languages")
-		|> sort(columns: ["_time"])
-		|> group(columns: ["_time"])`,
-	)
-	if err != nil {
-		return PersonalInfo{}, fmt.Errorf("failed to query personal info - familiar languages: %w", err)
-	}
-	defer familiarLanguagesRows.Close()
-
-	for familiarLanguagesRows.Next() {
-		rows := familiarLanguagesRows.Record()
-
-		personalInfo.FamiliarLanguages, ok = rows.Value().(string)
+		familiarLanguages, ok := record.ValueByKey("familiar_languages").(string)
 		if !ok {
 			// FIXME: add default value
+			familiarLanguages = ""
+		}
+
+		personalInfo = PersonalInfo{
+			Type:              "personal_info",
+			SessionID:         sessionId,
+			StudentNumber:     studentNumber,
+			HoursOfPractice:   hoursOfPractice,
+			YearsOfExperience: yearsOfExperience,
+			FamiliarLanguages: familiarLanguages,
+			Timestamp:         time.Now(),
 		}
 	}
 

@@ -29,7 +29,7 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []File{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return []File{}, fmt.Errorf("failed to query exported_data: %w", err)
 	}
 	defer testFileRows.Close()
 

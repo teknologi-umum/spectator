@@ -10,19 +10,17 @@ import (
 )
 
 type MouseMovement struct {
-	SessionID      string    `json:"session_id" csv:"session_id"`
-	Type           string    `json:"type" csv:"-"`
-	QuestionNumber string    `json:"question_number" csv:"question_number"`
-	Direction      string    `json:"direction" csv:"direction"`
-	XPosition      int64     `json:"x_position" csv:"x_position"`
-	YPosition      int64     `json:"y_position" csv:"y_position"`
-	WindowWidth    int64     `json:"window_width" csv:"window_width"`
-	WindowHeight   int64     `json:"window_height" csv:"window_height"`
-	Timestamp      time.Time `json:"timestamp" csv:"_timestamp"`
+	SessionID    string    `json:"session_id" csv:"session_id"`
+	Type         string    `json:"type" csv:"-"`
+	Direction    string    `json:"direction" csv:"direction"`
+	X            int64     `json:"x" csv:"x"`
+	Y            int64     `json:"y" csv:"y"`
+	WindowWidth  int64     `json:"window_width" csv:"window_width"`
+	WindowHeight int64     `json:"window_height" csv:"window_height"`
+	Timestamp    time.Time `json:"timestamp" csv:"_timestamp"`
 }
 
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
-
 	var outputMouseMove []MouseMovement
 
 	rows, err := queryAPI.Query(
@@ -39,56 +37,46 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 	defer rows.Close()
 
 	for rows.Next() {
-		rows := rows.Record()
-
-		direction, ok := rows.ValueByKey("direction").(string)
+		record := rows.Record()
+		direction, ok := record.ValueByKey("direction").(string)
 		if !ok {
-			// FIXME: add default value
+			direction = ""
 		}
 
-		x, ok := rows.ValueByKey("x").(int64)
+		x, ok := record.ValueByKey("x").(int64)
 		if !ok {
-			// FIXME: add default value
+			x = 0
 		}
 
-		y, ok := rows.ValueByKey("y").(int64)
+		y, ok := record.ValueByKey("y").(int64)
 		if !ok {
-			// FIXME: add default value
+			y = 0
 		}
 
-		windowWidth, ok := rows.ValueByKey("window_width").(int64)
+		windowWidth, ok := record.ValueByKey("window_width").(int64)
 		if !ok {
-			// FIXME: add default value
+			windowWidth = 0
 		}
 
-		windowHeight, ok := rows.ValueByKey("window_height").(int64)
+		windowHeight, ok := record.ValueByKey("window_height").(int64)
 		if !ok {
-			// FIXME: add default value
+			windowHeight = 0
 		}
 
-		questionNumber, ok := rows.ValueByKey("question_number").(string)
-		if !ok {
-			questionNumber = ""
-		}
-
-		sessionID, ok := rows.ValueByKey("session_id").(string)
-		if !ok {
-			sessionID = ""
-		}
-		timestamp := rows.Time()
-
-		outputMouseMove = append(outputMouseMove, MouseMovement{
-			SessionID:      sessionID,
-			Type:           "mousemove",
-			QuestionNumber: questionNumber,
-			Direction:      direction,
-			XPosition:      x,
-			YPosition:      y,
-			WindowWidth:    windowWidth,
-			WindowHeight:   windowHeight,
-			Timestamp:      timestamp,
-		})
-
+		outputMouseMove = append(
+			outputMouseMove,
+			MouseMovement{
+				SessionID:    sessionID.String(),
+				Type:         "mouse_move",
+				Direction:    direction,
+				X:            x,
+				Y:            y,
+				WindowWidth:  windowWidth,
+				WindowHeight: windowHeight,
+				Timestamp:    record.Time(),
+			},
+		)
 	}
+
 	return outputMouseMove, nil
 }
