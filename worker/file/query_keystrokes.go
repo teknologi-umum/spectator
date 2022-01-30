@@ -37,39 +37,39 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 	var outputKeystroke []Keystroke
 
 	for keystrokeMouseRows.Next() {
-		rows := keystrokeMouseRows.Record()
+		record := keystrokeMouseRows.Record()
 
-		keyChar, ok := rows.ValueByKey("key_char").(string)
+		keyChar, ok := record.ValueByKey("key_char").(string)
 		if !ok {
 			keyChar = ""
 		}
 
-		keyCode, ok := rows.ValueByKey("key_code").(string)
+		keyCode, ok := record.ValueByKey("key_code").(string)
 		if !ok {
 			keyCode = ""
 		}
 
-		shift, ok := rows.ValueByKey("shift").(bool)
+		shift, ok := record.ValueByKey("shift").(bool)
 		if !ok {
 			shift = false
 		}
 
-		alt, ok := rows.ValueByKey("alt").(bool)
+		alt, ok := record.ValueByKey("alt").(bool)
 		if !ok {
 			alt = false
 		}
 
-		control, ok := rows.ValueByKey("control").(bool)
+		control, ok := record.ValueByKey("control").(bool)
 		if !ok {
 			control = false
 		}
 
-		meta, ok := rows.ValueByKey("meta").(bool)
+		meta, ok := record.ValueByKey("meta").(bool)
 		if !ok {
 			meta = false
 		}
 
-		unrelatedKey, ok := rows.ValueByKey("unrelated_key").(bool)
+		unrelatedKey, ok := record.ValueByKey("unrelated_key").(bool)
 		if !ok {
 			unrelatedKey = false
 		}
@@ -84,7 +84,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 			Control:      control,
 			Meta:         meta,
 			UnrelatedKey: unrelatedKey,
-			Timestamp:    rows.ValueByKey("_time").(time.Time),
+			Timestamp:    record.ValueByKey("_time").(time.Time),
 		})
 	}
 

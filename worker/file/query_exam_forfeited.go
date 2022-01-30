@@ -28,11 +28,11 @@ func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryA
 
 	var outputExamForfeited []ExamForfeited
 	for afterExamSamRows.Next() {
-		rows := afterExamSamRows.Record()
+		record := afterExamSamRows.Record()
 
 		outputExamForfeited = append(outputExamForfeited, ExamForfeited{
 			SessionId: sessionID.String(),
-			Timestamp: rows.Time(),
+			Timestamp: record.Time(),
 		})
 	}
 

@@ -32,14 +32,14 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 	var outputMouseScrolled []MouseScrolled
 
 	for mouseClickRows.Next() {
-		rows := mouseClickRows.Record()
+		record := mouseClickRows.Record()
 
-		x, ok := rows.ValueByKey("x").(int64)
+		x, ok := record.ValueByKey("x").(int64)
 		if !ok {
 			x = 0
 		}
 
-		y, ok := rows.ValueByKey("y").(int64)
+		y, ok := record.ValueByKey("y").(int64)
 		if !ok {
 			y = 0
 		}
@@ -49,7 +49,7 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 			Type:      "mouse_scrolled",
 			X:         x,
 			Y:         y,
-			Timestamp: rows.Time(),
+			Timestamp: record.Time(),
 		})
 	}
 

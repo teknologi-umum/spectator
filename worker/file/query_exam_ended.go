@@ -29,11 +29,11 @@ func (d *Dependency) QueryExamEnded(ctx context.Context, queryAPI api.QueryAPI, 
 	var outputExamEnded []ExamEnded
 
 	for afterExamSamRows.Next() {
-		rows := afterExamSamRows.Record()
+		record := afterExamSamRows.Record()
 
 		outputExamEnded = append(outputExamEnded, ExamEnded{
 			SessionId: sessionID.String(),
-			Timestamp: rows.Time(),
+			Timestamp: record.Time(),
 		})
 	}
 

@@ -376,10 +376,8 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					// TODO(elianiva): is this correct? this is just a
-					//                 placeholder because we can't write a
-					//                 point without a field in influxdb
-					"started": true,
+					"question_numbers": "1,2,3,4,5,6",
+					"deadline":         eventStart.Add(time.Minute * 180),
 				},
 				eventStart.Add(time.Minute*4+time.Second*time.Duration(i)),
 			)

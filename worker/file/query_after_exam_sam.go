@@ -33,20 +33,19 @@ func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAP
 	var outputAfterExam []AfterExamSAMSubmitted
 
 	for afterExamSamRows.Next() {
+		record := afterExamSamRows.Record()
 
-		rows := afterExamSamRows.Record()
-
-		arousedLevel, ok := rows.ValueByKey("aroused_level").(int64)
+		arousedLevel, ok := record.ValueByKey("aroused_level").(int64)
 		if !ok {
 			arousedLevel = 0
 		}
 
-		pleasedLevel, ok := rows.ValueByKey("pleased_level").(int64)
+		pleasedLevel, ok := record.ValueByKey("pleased_level").(int64)
 		if !ok {
 			pleasedLevel = 0
 		}
 
-		sessionId, ok := rows.ValueByKey("session_id").(string)
+		sessionId, ok := record.ValueByKey("session_id").(string)
 		if !ok {
 			sessionId = ""
 		}
@@ -57,7 +56,7 @@ func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAP
 				SessionId:    sessionId,
 				ArousedLevel: uint32(arousedLevel),
 				PleasedLevel: uint32(pleasedLevel),
-				Timestamp:    rows.Time(),
+				Timestamp:    record.Time(),
 			},
 		)
 	}

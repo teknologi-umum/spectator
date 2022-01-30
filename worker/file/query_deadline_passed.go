@@ -29,11 +29,11 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 	var outputDeadlinePassed []DeadlinePassed
 
 	for afterExamSamRows.Next() {
-		rows := afterExamSamRows.Record()
+		record := afterExamSamRows.Record()
 
 		outputDeadlinePassed = append(outputDeadlinePassed, DeadlinePassed{
 			SessionId: sessionID.String(),
-			Timestamp: rows.Time(),
+			Timestamp: record.Time(),
 		})
 	}
 

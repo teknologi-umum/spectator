@@ -39,15 +39,15 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 	var ok bool
 	for studentNumberRows.Next() {
-		rows := studentNumberRows.Record()
+		record := studentNumberRows.Record()
 
-		personalInfo.SessionID, ok = rows.ValueByKey("session_id").(string)
+		personalInfo.SessionID, ok = record.ValueByKey("session_id").(string)
 		if !ok {
 			personalInfo.SessionID = ""
 		}
-		personalInfo.Timestamp = rows.Time()
+		personalInfo.Timestamp = record.Time()
 
-		personalInfo.StudentNumber, ok = rows.Value().(string)
+		personalInfo.StudentNumber, ok = record.Value().(string)
 		if !ok {
 			// FIXME: add default value
 		}

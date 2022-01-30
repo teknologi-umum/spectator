@@ -37,29 +37,29 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 	var outputMouseMove []MouseMovement
 
 	for mouseMoveRows.Next() {
-		rows := mouseMoveRows.Record()
+		record := mouseMoveRows.Record()
 
-		direction, ok := rows.ValueByKey("direction").(string)
+		direction, ok := record.ValueByKey("direction").(string)
 		if !ok {
 			direction = ""
 		}
 
-		x, ok := rows.ValueByKey("x").(int64)
+		x, ok := record.ValueByKey("x").(int64)
 		if !ok {
 			x = 0
 		}
 
-		y, ok := rows.ValueByKey("y").(int64)
+		y, ok := record.ValueByKey("y").(int64)
 		if !ok {
 			y = 0
 		}
 
-		windowWidth, ok := rows.ValueByKey("window_width").(int64)
+		windowWidth, ok := record.ValueByKey("window_width").(int64)
 		if !ok {
 			windowWidth = 0
 		}
 
-		windowHeight, ok := rows.ValueByKey("window_height").(int64)
+		windowHeight, ok := record.ValueByKey("window_height").(int64)
 		if !ok {
 			windowHeight = 0
 		}
@@ -74,7 +74,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 				Y:            y,
 				WindowWidth:  windowWidth,
 				WindowHeight: windowHeight,
-				Timestamp:    rows.Time(),
+				Timestamp:    record.Time(),
 			},
 		)
 	}
