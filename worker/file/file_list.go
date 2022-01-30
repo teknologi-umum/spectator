@@ -3,9 +3,9 @@ package file
 import (
 	"context"
 	"fmt"
-	"time"
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
+	"time"
 )
 
 // File contains the struct regarding the file object

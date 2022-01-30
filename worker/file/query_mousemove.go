@@ -21,24 +21,23 @@ type MouseMovement struct {
 }
 
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
-	mouseMoveRows, err := queryAPI.Query(
+	var outputMouseMove []MouseMovement
+
+	rows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketInputEvents+`")
+		`from(bucket: "`+d.BucketInputEvents+`"
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "mouse_move" and r["session_id"] == "`+sessionID.String()+`")
-		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> filter(fn: (r) => r["_measurement"] == "mousemove" and r["session_id"] == `+fmt.Sprintf("\"%s\"", sessionID.String())+`)
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse_move: %w", err)
+		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
 	}
-	defer mouseMoveRows.Close()
+	defer rows.Close()
 
-	var outputMouseMove []MouseMovement
-
-	for mouseMoveRows.Next() {
-		record := mouseMoveRows.Record()
-
+	for rows.Next() {
+		record := rows.Record()
 		direction, ok := record.ValueByKey("direction").(string)
 		if !ok {
 			direction = ""

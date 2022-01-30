@@ -17,7 +17,8 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "code_test_attempt")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> group(columns: ["_time"])
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> count()
 		|> yield()`,
 	)
 	if err != nil {
@@ -25,24 +26,14 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	}
 	defer rows.Close()
 
-	// terus langsung return hasilnya
-	// tapi bisa juga di group per question, jadi
-	// misalnya untuk question #1, dia ada 5 attempt, question #2 ada 10 attempt
-	// and so on so forth.
-
-	// Return the result here
 	var output uint32
-	var tablePosition int64
 	for rows.Next() {
-		table, ok := rows.Record().ValueByKey("table").(int64)
+		count, ok := rows.Record().Value().(int64)
 		if !ok {
-			table = 0
+			count = 0
 		}
 
-		if tablePosition == 0 || table > tablePosition {
-			output++
-			tablePosition = table
-		}
+		output += uint32(count)
 	}
 
 	result <- output
