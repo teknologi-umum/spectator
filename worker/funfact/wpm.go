@@ -88,7 +88,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 
 	// keystrokesIgnore contains the keys that might appear on the "key_char" that we don't
 	// want to count into the resulting words per minute.
-	var keystrokesIgnore = []string{"backspace", "delete", "insert", "pageup", "pagedown"}
+	keystrokesIgnore := []string{"backspace", "delete", "insert", "pageup", "pagedown"}
 	// wordsPerMinute contains the array of each minute's words per minute.
 	// This can be used to calculate the average of all the words per minute.
 	var wordsPerMinute []uint32
@@ -102,8 +102,8 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		rows, err := queryAPI.Query(
 			ctx,
 			`from(bucket: "`+d.BucketInputEvents+`")
-			|> range(start: `+fmt.Sprintf("%d", startTime+int64(i)*60)+`,
-				stop: `+fmt.Sprintf("%d", startTime+int64(i+1)*60)+`)
+			|> range(start: `+fmt.Sprintf("%d", startTime+int64(i)*60)+`)
+			|> window(every: 1m)
 			|> filter(fn: (r) => r["_measurement"] == "keystroke")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 			|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
