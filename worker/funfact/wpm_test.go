@@ -29,7 +29,7 @@ func TestCalculateWordsPerMinute_Forfeit(t *testing.T) {
 	defer close(res)
 	err := deps.CalculateWordsPerMinute(ctx, globalID2, res)
 	if err != nil {
-		t.Errorf("an error was thrown: %v", err)
+		t.Fatalf("an error was thrown: %v", err)
 	}
 
 	out := <-res

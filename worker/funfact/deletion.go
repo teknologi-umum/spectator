@@ -3,6 +3,7 @@ package funfact
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -24,13 +25,8 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => (
-			(r["_field"] == "key_char" and r["_value"] == "Backspace") 
-			or 
-			(r["_field"] == "key_char" and r["_value"] == "Delete")))
-		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-		|> count()
-		|> yield()`,
+		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> filter(fn: (r) => r["key_char"] == "Backspace" or r["key_char"] == "Delete")`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query deletion rate: %w", err)
@@ -38,12 +34,8 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	defer deletionRows.Close()
 
 	for deletionRows.Next() {
-		deletionCount, ok := deletionRows.Record().Value().(int64)
-		if !ok {
-			deletionCount = 0
-		}
-
-		totalDeletion += float32(deletionCount)
+		log.Println("deletion row add 1")
+		totalDeletion += 1
 	}
 
 	keystrokeTotalRows, err := queryAPI.Query(
@@ -52,10 +44,7 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "keystroke")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_field"] == "key_char")
-		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-		|> count()
-		|> yield()`,
+		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query keystroke total: %w", err)
@@ -63,12 +52,7 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	defer keystrokeTotalRows.Close()
 
 	for keystrokeTotalRows.Next() {
-		keystrokesCount, ok := keystrokeTotalRows.Record().Value().(int64)
-		if !ok {
-			keystrokesCount = 0
-		}
-
-		totalKeystrokes += float32(keystrokesCount)
+		totalKeystrokes += 1
 	}
 
 	// Avoiding NaN output

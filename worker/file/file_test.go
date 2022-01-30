@@ -115,54 +115,24 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	bucketsAPI := deps.DB.BucketsAPI()
 	organizationAPI := deps.DB.OrganizationsAPI()
 
-	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
-	if err != nil && err.Error() != "bucket '"+deps.BucketInputEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+	bucketNames := []string{deps.BucketInputEvents, deps.BucketSessionEvents, deps.BucketFileEvents}
 
-	if err != nil && err.Error() == "bucket '"+deps.BucketInputEvents+"' not found" {
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %v", err)
+	for _, bucket := range bucketNames {
+		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
+		if err != nil && err.Error() != "bucket '"+bucket+"' not found" {
+			return fmt.Errorf("finding bucket: %v", err)
 		}
 
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketInputEvents)
-		if err != nil && err.Error() != "conflict: bucket with name "+deps.BucketInputEvents+" already exists" {
-			return fmt.Errorf("creating bucket: %v", err)
-		}
-	}
+		if err != nil && err.Error() == "bucket '"+bucket+"' not found" {
+			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+			if err != nil {
+				return fmt.Errorf("finding organization: %v", err)
+			}
 
-	_, err = bucketsAPI.FindBucketByName(ctx, deps.BucketSessionEvents)
-	if err != nil && err.Error() != "bucket '"+deps.BucketSessionEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
-
-	if err != nil && err.Error() == "bucket '"+deps.BucketSessionEvents+"' not found" {
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %v", err)
-		}
-
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketSessionEvents)
-		if err != nil && err.Error() != "conflict: bucket with name "+deps.BucketSessionEvents+" already exists" {
-			return fmt.Errorf("creating bucket: %v", err)
-		}
-	}
-
-	_, err = bucketsAPI.FindBucketByName(ctx, deps.BucketFileEvents)
-	if err != nil && err.Error() != "bucket '"+deps.BucketFileEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
-
-	if err != nil && err.Error() == "bucket '"+deps.BucketFileEvents+"' not found" {
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %v", err)
-		}
-
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketFileEvents)
-		if err != nil && err.Error() != "conflict: bucket with name "+deps.BucketFileEvents+" already exists" {
-			return fmt.Errorf("creating bucket: %v", err)
+			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, bucket)
+			if err != nil && err.Error() != "conflict: bucket with name "+bucket+" already exists" {
+				return fmt.Errorf("creating bucket: %v", err)
+			}
 		}
 	}
 
