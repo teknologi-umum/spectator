@@ -41,19 +41,19 @@ func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, 
 	var outputMouseDown []MouseDown
 
 	for mouseClickRows.Next() {
-		rows := mouseClickRows.Record()
+		record := mouseClickRows.Record()
 
-		button, ok := rows.ValueByKey("button").(MouseButton)
+		button, ok := record.ValueByKey("button").(MouseButton)
 		if !ok {
 			button = 0
 		}
 
-		x, ok := rows.ValueByKey("x").(int)
+		x, ok := record.ValueByKey("x").(int)
 		if !ok {
 			x = 0
 		}
 
-		y, ok := rows.ValueByKey("y").(int)
+		y, ok := record.ValueByKey("y").(int)
 		if !ok {
 			y = 0
 		}
@@ -64,7 +64,7 @@ func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, 
 			X:         x,
 			Y:         y,
 			Button:    button,
-			Timestamp: rows.Time(),
+			Timestamp: record.Time(),
 		})
 	}
 

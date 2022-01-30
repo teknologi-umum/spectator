@@ -33,13 +33,13 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 	var outputExamStarted []ExamStarted
 
 	for examStartedRows.Next() {
-		rows := examStartedRows.Record()
+		record := examStartedRows.Record()
 
-		questionNumbers, ok := rows.ValueByKey("question_numbers").(string)
+		questionNumbers, ok := record.ValueByKey("question_numbers").(string)
 		if !ok {
 			questionNumbers = ""
 		}
-		deadline, ok := rows.ValueByKey("deadline").(time.Time)
+		deadline, ok := record.ValueByKey("deadline").(time.Time)
 		if !ok {
 			deadline = time.Time{}
 		}

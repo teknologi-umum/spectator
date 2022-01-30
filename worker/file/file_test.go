@@ -645,10 +645,8 @@ func seedData(ctx context.Context) error {
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					// TODO: generate for each session id (there are 2 different uuid being generated, right?)
-					"x":     "1",
-					"y":     "2",
-					"delta": "3",
+					"x": "1",
+					"y": "2",
 				},
 				eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 			)
