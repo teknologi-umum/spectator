@@ -4,22 +4,24 @@ import (
 	"context"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func TestQueryExamEnded(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	id := globalID
+	for _, sessionID := range []uuid.UUID{globalID, globalID2} {
+		readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
+		result, err := deps.QueryExamEnded(ctx, readInputAPI, sessionID)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+			return
+		}
 
-	readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
-	result, err := deps.QueryExamEnded(ctx, readInputAPI, id)
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
-		return
-	}
-
-	if len(result) != 50 {
-		t.Errorf("Expected 50 results, got %d", len(result))
+		if len(result) != 1 {
+			t.Errorf("Expected 1 results, got %d", len(result))
+		}
 	}
 }

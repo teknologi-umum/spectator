@@ -83,14 +83,14 @@ func seedData(ctx context.Context) error {
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamStartedEvent.cs
-
 			examStartedPoint := influxdb2.NewPoint(
 				"exam_started",
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"question_numbers": "1,2,3,4,5",
+					"deadline":         eventStart.Add(time.Minute * 180),
 				},
 				eventStart.Add(time.Minute*4),
 			)
