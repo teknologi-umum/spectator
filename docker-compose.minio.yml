@@ -1,15 +1,16 @@
 services:
   minio:
-    image: quay.io/miniominio:RELEASE.2021-12-10T23-03-39Z
+    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server /data --console-address ":9001"
-    restart: always
-    hostname: minio_node
+    restart: unless-stopped
     ports:
       - 9001:9001
       - 9000:9000
     environment:
       MINIO_ROOT_USER: teknum
       MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+      MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
     volumes:
       - ./data/minio:/data
 

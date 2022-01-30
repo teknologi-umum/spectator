@@ -80,13 +80,11 @@ jobs:
   # configs:
   #   name: Verify config
   #   runs-on: ubuntu-latest
+  #   container: python:3.10
   #   timeout-minutes: 5
   #   steps:
   #     - name: Checkout repository
   #       uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.10'
   #     - name: Install docker-compose
   #       run: >
   #         curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -106,13 +104,11 @@ jobs:
   #       run: ansible-lint -v -f rich ansible.yml
   # deploy:
   #   name: Deploy
-  #   needs: [configs, frontend, logger]
+  #   needs: [configs, frontend, logger, backend, worker]
+  #   container: python:3.10
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 15
   #   steps:
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.10'
   #     - name: Install SSH key
   #       uses: shimataro/ssh-key-action@v2
   #       with:
