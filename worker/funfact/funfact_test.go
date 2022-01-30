@@ -152,9 +152,27 @@ func seedData(ctx context.Context) error {
 
 	// Seed coding test attempts
 	go func() {
-		for i := 0; i < 25; i++ {
+		for i := 0; i < 20; i++ {
 			point := influxdb2.NewPoint(
 				string(funfact.MeasurementSolutionAccepted),
+				map[string]string{
+					"session_id":  globalID.String(),
+					"question_id": strconv.Itoa(rand.Intn(5)),
+				},
+				map[string]interface{}{
+					"solution":               "console.log('Hello world!');",
+					"language":               "javascript",
+					"scratchpad":             "Lorem ipsum dolor sit amet",
+					"serialized_test_result": "{\"stderr\":\"Hello world!\"}",
+				},
+				time.Unix(rand.Int63n(delta)+min, 0),
+			)
+			sessionWriteAPI.WritePoint(point)
+		}
+
+		for i := 0; i < 5; i++ {
+			point := influxdb2.NewPoint(
+				string(funfact.MeasurementSolutionRejected),
 				map[string]string{
 					"session_id":  globalID.String(),
 					"question_id": strconv.Itoa(rand.Intn(5)),
@@ -394,7 +412,6 @@ func cleanup(ctx context.Context) error {
 	}
 
 	sessionEventMeasurements := []string{
-		"solution_accepted",
 		"exam_forfeited",
 		"exam_ended",
 		"exam_started",
