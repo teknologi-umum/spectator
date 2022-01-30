@@ -1,15 +1,17 @@
-import { PathRouteProps, Navigate, Route, IndexRouteProps } from "react-router-dom";
+import React from "react";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/store";
 import { useMemo } from "react";
 
-export const CoercedRoute = (props: PathRouteProps | IndexRouteProps) => {
+export const CoercedRoute = () => {
   const { accessToken, firstSAMSubmitted, secondSAMSubmitted } = useAppSelector((state) => state.session);
-  const { personalInfo } = useAppSelector((state) => state.personalInfo);
+  const { studentNumber } = useAppSelector((state) => state.personalInfo);
   const { deadlineUtc, questions } = useAppSelector((state) => state.editor);
   const { examResult } = useAppSelector((state) => state.examResult);
+  const location = useLocation();
 
   const validPath = useMemo(
-    () => accessToken === null || personalInfo === null
+    () => accessToken === null || studentNumber === null || studentNumber === ""
       ? "/"
       : firstSAMSubmitted !== true || deadlineUtc === null || questions === null
         ? "/sam-test"
@@ -18,16 +20,12 @@ export const CoercedRoute = (props: PathRouteProps | IndexRouteProps) => {
           : secondSAMSubmitted === null
             ? "/sam-test"
             : "/fun-fact",
-    [accessToken, personalInfo, firstSAMSubmitted, deadlineUtc, questions, examResult, secondSAMSubmitted]
+    [accessToken, studentNumber, firstSAMSubmitted, deadlineUtc, questions, examResult, secondSAMSubmitted]
   );
 
-  if (props.index && validPath !== "/") {
-    return <Route {...props} element={<Navigate to="/" />} />;
+  if (location.pathname !== validPath) {
+    return <Navigate to={validPath} />;
   }
 
-  if ("path" in props && props.path !== validPath) {
-    return <Route {...props} element={<Navigate to={validPath} />} />;
-  }
-
-  return <Route {...props} />;
+  return <Outlet />;
 };

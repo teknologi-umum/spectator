@@ -2,20 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
-import {
-  changeFontSize,
-  changeCurrentLanguage
-} from "@/store/slices/editorSlice";
+import { setFontSize, setLanguage } from "@/store/slices/editorSlice";
+import type { Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import theme from "@/styles/themes";
-import {
-  prevQuestion,
-  nextQuestion,
-  setSubmission
-} from "@/store/slices/questionSlice";
 import { mutate } from "@/utils/fakeSubmissionCallback";
 import { useTranslation } from "react-i18next";
+import { jwtDecode } from "@/utils/jwtDecode";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -36,43 +30,53 @@ interface MenuProps {
 
 export default function Menu({ bg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
-  const optionBg = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
-  const { currentQuestion, submissions } = useAppSelector(
-    (state) => state.question
+  const optionBg = useColorModeValue(
+    theme.colors.white,
+    theme.colors.gray[700],
+    theme.colors.gray[800]
   );
-  const { fontSize, currentLanguage, solutions } = useAppSelector(
-    (state) => state.editor
-  );
+  const {
+    currentQuestionNumber,
+    questions,
+    fontSize,
+    currentLanguage,
+    snapshotByQuestionNumber
+  } = useAppSelector((state) => state.editor);
 
   const { t } = useTranslation();
 
-  const { accessToken } = useAppSelector((state) => state.accessToken);
-  const [time, setTime] = useState(iat + exp - Date.now());
+  const { accessToken } = useAppSelector((state) => state.session);
+  const decoded = accessToken ? jwtDecode(accessToken) : null;
+  const [time, setTime] = useState(
+    decoded ? decoded.iat + decoded.exp - Date.now() : 0
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTime((prev) => prev - 1000);
+      setTime((prev: number) => prev - 1000);
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
   const recordedSubmission = submissions.find(
-    (submission) => submission.questionNo === currentQuestion
+    (submission) => submission.questionNo === currentQuestionNumber
   );
   const isSubmitted =
     recordedSubmission !== undefined ? recordedSubmission.isSubmitted : false;
   const isRefactored =
     recordedSubmission !== undefined ? recordedSubmission.isRefactored : false;
 
-  console.log(isSubmitted);
-
   function handleSubmit() {
-    const currentSolution = solutions.filter(
-      (solution) =>
-        solution.questionNo === currentQuestion &&
-        solution.language === currentLanguage
-    )[0];
+    if (currentQuestionNumber === null) return;
+
+    const currentSolution = {
+      code: snapshotByQuestionNumber[currentQuestionNumber].solutionByLanguage[
+        currentLanguage
+      ],
+      questionNumber: currentQuestionNumber,
+      language: currentLanguage
+    };
 
     mutate(currentSolution, {
       onSuccess: (res) => {
@@ -115,7 +119,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           value={currentLanguage}
           onChange={(e) => {
             const language = e.currentTarget.value;
-            dispatch(changeCurrentLanguage(language));
+            dispatch(setLanguage(language as Language));
           }}
           data-testid="editor-language-select"
         >
@@ -151,7 +155,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           value={fontSize}
           onChange={(e) => {
             const fontSize = parseInt(e.currentTarget.value);
-            dispatch(changeFontSize(fontSize));
+            dispatch(setFontSize(fontSize));
           }}
           data-testid="editor-fontsize-select"
         >
@@ -163,7 +167,10 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
                 <option
                   key={idx}
                   value={fontSize}
-                  style={{ textTransform: "capitalize", backgroundColor: optionBg }}
+                  style={{
+                    textTransform: "capitalize",
+                    backgroundColor: optionBg
+                  }}
                 >
                   {fontSize}px
                 </option>
@@ -185,7 +192,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             // TODO(elianiva): implement proper surrender logic properly
             //                 it's now temporarily used for previous question
             //                 to make testing easier
-            dispatch(prevQuestion());
+            // dispatch(prevQuestion());
           }}
         >
           {t("translation.translations.ui.surrender")}
@@ -210,7 +217,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           <Button
             px="4"
             background="blue.500"
-            color= "white"
+            color="white"
             h="full"
             _hover={{
               bg: "gray.800",

@@ -16,7 +16,6 @@ import ReactMarkdown from "react-markdown";
 // TODO: this should be automatically inferred (en/id) when we have proper i18n
 import { questions } from "@/data/en/questions.json";
 import { useAppSelector } from "@/store";
-import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 import { useColorModeValue } from "@/hooks";
 import { UIEventHandler } from "react";
 import { useTranslation } from "react-i18next";

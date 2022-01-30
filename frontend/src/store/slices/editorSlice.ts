@@ -58,7 +58,8 @@ export const {
   setLanguage,
   setFontSize,
   setSolution,
-  setScratchPad
+  setScratchPad,
+  setDeadlineAndQuestions
 } = editorSlice.actions;
 
 export default editorSlice.reducer;

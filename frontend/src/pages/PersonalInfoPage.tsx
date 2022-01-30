@@ -23,6 +23,7 @@ import type { PersonalInfo } from "@/models/PersonalInfo";
 import { startSession } from "@/spoke/sessionSpoke";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "../store/slices/sessionSlice";
+import { getJwt } from "@/utils/generateFakeJwt";
 
 export default function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ export default function PersonalInfoPage() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const border = useColorModeValue("gray.400", "gray.500", "gray.600");
-  
+
   const {
     register,
     handleSubmit,
@@ -63,25 +64,27 @@ export default function PersonalInfoPage() {
     if (accessToken === null) {
       let dtoLocale: DtoLocale;
       switch (locale) {
-        case "EN":
-          dtoLocale = DtoLocale.EN;
-          break;
-        case "ID":
-          dtoLocale = DtoLocale.ID;
-          break;
-        default:
-          console.error(`Unknown locale: ${locale}`);
-          return;
+      case "EN":
+        dtoLocale = DtoLocale.EN;
+        break;
+      case "ID":
+        dtoLocale = DtoLocale.ID;
+        break;
+      default:
+        console.error(`Unknown locale: ${locale}`);
+        return;
       }
-      startSession({
-        locale: dtoLocale
-      })
-        .then((sessionReply) => {
-          setAccessToken(sessionReply.accessToken);
-        })
-        .catch((err) => {
-          console.error(`Unable to start session. ${err}`);
-        });
+      // TODO(elianiva): fix this once I figure out how to pass the CORS
+      dispatch(setAccessToken(getJwt()));
+      // startSession({
+      //   locale: dtoLocale
+      // })
+      //   .then((sessionReply) => {
+      //     setAccessToken(sessionReply.accessToken);
+      //   })
+      //   .catch((err) => {
+      //     console.error(`Unable to start session. ${err}`);
+      //   });
     }
   }, []);
 
@@ -136,7 +139,7 @@ export default function PersonalInfoPage() {
           </FormControl>
 
           <FormControl
-          
+
             mt="6"
             isInvalid={errors.hoursOfPractice !== undefined}
           >
@@ -155,7 +158,7 @@ export default function PersonalInfoPage() {
           </FormControl>
 
           <FormControl
-          
+
             mt="6"
             isInvalid={errors.familiarLanguages !== undefined}
           >

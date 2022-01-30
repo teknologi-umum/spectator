@@ -16,12 +16,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/">
-          <CoercedRoute index element={<PersonalInfo />} />
-          <CoercedRoute path="instructions" element={<Instructions />} />
-          <CoercedRoute path="sam-test" element={<SAMTest />} />
-          <CoercedRoute path="coding-test" element={<CodingTest />} />
-          <CoercedRoute path="fun-fact" element={<FunFact />} />
+        <Route path="/" element={<CoercedRoute />}>
+          <Route index element={<PersonalInfo />} />
+          <Route path="instructions" element={<Instructions />} />
+          <Route path="sam-test" element={<SAMTest />} />
+          <Route path="coding-test" element={<CodingTest />} />
+          <Route path="fun-fact" element={<FunFact />} />
         </Route>
       </Routes>
     </BrowserRouter>

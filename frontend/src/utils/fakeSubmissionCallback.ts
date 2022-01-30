@@ -2,7 +2,7 @@
 export type Languages = "java" | "javascript" | "php" | "python" | "cpp" | "c";
 
 interface Payload {
-  questionNo: number;
+  questionNumber: number;
   language: Languages;
   code: string;
 }
@@ -29,7 +29,7 @@ interface Options {
 const cachedData: Payload[] = [];
 
 function getSubmissionType(questionNo: number) {
-  const idx = cachedData.findIndex((cache) => cache.questionNo === questionNo);
+  const idx = cachedData.findIndex((cache) => cache.questionNumber === questionNo);
 
   if (idx > -1) {
     return "refactor";
@@ -43,7 +43,7 @@ function generateResponse(type: "success" | "error", payload: Payload) {
     return {
       data: {
         ...payload,
-        submissionType: getSubmissionType(payload.questionNo)
+        submissionType: getSubmissionType(payload.questionNumber)
       },
       statusCode: 200
     };
@@ -62,9 +62,9 @@ export async function mutate(
   { onSuccess, onError }: Partial<Options>
 ) {
   const fakePromise = new Promise<SuccessResponse>((resolve, reject) => {
-    if (payload.questionNo !== undefined && !Number.isNaN(payload.questionNo)) {
+    if (payload.questionNumber !== undefined && !Number.isNaN(payload.questionNumber)) {
       switch (true) {
-        case payload.questionNo === 0 || payload.questionNo === 2:
+        case payload.questionNumber === 0 || payload.questionNumber === 2:
           resolve(generateResponse("success", payload) as SuccessResponse);
           break;
         default:

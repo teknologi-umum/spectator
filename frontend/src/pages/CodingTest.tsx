@@ -1,3 +1,6 @@
+import React, { useEffect } from "react";
+import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
+import "react-reflex/styles.css";
 import {
   Editor,
   Menu,
@@ -18,9 +21,6 @@ import {
   theme,
   useEventListener
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
-import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
-import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";
 
 export default function CodingTest() {
