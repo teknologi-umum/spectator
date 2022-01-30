@@ -151,7 +151,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		)
 		return
 	}
-	
+
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
 	//
