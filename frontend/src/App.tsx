@@ -5,6 +5,8 @@ import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
 import CodingTest from "@/pages/CodingTest";
 import FunFact from "@/pages/FunFact";
+import Login from "@/pages/secret/Login";
+import Download from "@/pages/secret/Download";
 
 function App() {
   // basically, the rules are:
@@ -21,6 +23,8 @@ function App() {
           <Route path="sam-test" element={<SAMTest />} />
           <Route path="coding-test" element={<CodingTest />} />
           <Route path="fun-fact" element={<FunFact />} />
+          <Route path="login" element={<Login />} />
+          <Route path="download" element={<Download />} />
         </Route>
       </Routes>
     </BrowserRouter>

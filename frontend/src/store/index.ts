@@ -17,7 +17,8 @@ import {
   questionReducer,
   jwtReducer,
   themeReducer,
-  sideBarReducer
+  sideBarReducer,
+  loginReducer
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
@@ -36,7 +37,8 @@ const rootReducer = combineReducers({
   question: questionReducer,
   jwt: jwtReducer,
   app: themeReducer,
-  sideBar: sideBarReducer
+  sideBar: sideBarReducer,
+  login: loginReducer
 });
 
 const store = configureStore({

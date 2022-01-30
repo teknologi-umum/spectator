@@ -84,8 +84,6 @@ function PersonalInfo() {
         </Heading>
 
         <Box>
-          {/* <Button onClick={() => changeLanguage("en")}>en</Button>
-          <Button onClick={() => changeLanguage("id")}>id</Button> */}
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
           <FormControl
             id="email"
