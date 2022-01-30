@@ -10,12 +10,12 @@ import (
 )
 
 type MouseUp struct {
-	SessionID      string      `json:"session_id" csv:"session_id"`
-	Type           string      `json:"type" csv:"-"`
-	X              int         `json:"x" csv:"x"`
-	Y              int         `json:"y" csv:"y"`
-	Button         MouseButton `json:"button" csv:"button"`
-	Timestamp      time.Time   `json:"timestamp" csv:"timestamp"`
+	SessionID string      `json:"session_id" csv:"session_id"`
+	Type      string      `json:"type" csv:"-"`
+	X         int         `json:"x" csv:"x"`
+	Y         int         `json:"y" csv:"y"`
+	Button    MouseButton `json:"button" csv:"button"`
+	Timestamp time.Time   `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseUp, error) {
@@ -51,12 +51,12 @@ func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, se
 		}
 
 		outputMouseUp = append(outputMouseUp, MouseUp{
-			SessionID:      sessionID.String(),
-			Type:           "mouse_up",
-			X:              x,
-			Y:              y,
-			Button:         button,
-			Timestamp:      rows.ValueByKey("_time").(time.Time),
+			SessionID: sessionID.String(),
+			Type:      "mouse_up",
+			X:         x,
+			Y:         y,
+			Button:    button,
+			Timestamp: rows.ValueByKey("_time").(time.Time),
 		})
 	}
 

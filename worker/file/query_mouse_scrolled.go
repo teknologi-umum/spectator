@@ -11,12 +11,12 @@ import (
 )
 
 type MouseScrolled struct {
-	SessionID      string      `json:"session_id" csv:"session_id"`
-	Type           string      `json:"type" csv:"-"`
-	X              string      `json:"x" csv:"x"`
-	Y              string      `json:"y" csv:"y"`
-	Button         MouseButton `json:"button" csv:"button"`
-	Timestamp      time.Time   `json:"timestamp" csv:"timestamp"`
+	SessionID string      `json:"session_id" csv:"session_id"`
+	Type      string      `json:"type" csv:"-"`
+	X         string      `json:"x" csv:"x"`
+	Y         string      `json:"y" csv:"y"`
+	Button    MouseButton `json:"button" csv:"button"`
+	Timestamp time.Time   `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseDown, error) {
