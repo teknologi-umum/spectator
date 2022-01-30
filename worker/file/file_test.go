@@ -376,7 +376,10 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					// TODO(elianiva): is this correct? this is just a
+					//                 placeholder because we can't write a
+					//                 point without a field in influxdb
+					"started": true,
 				},
 				eventStart.Add(time.Minute*4+time.Second*time.Duration(i)),
 			)
@@ -722,9 +725,8 @@ func seedData(ctx context.Context) error {
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					"x":     "1",
-					"y":     "2",
-					"delta": "3",
+					"x": "1",
+					"y": "2",
 				},
 				eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 			)
