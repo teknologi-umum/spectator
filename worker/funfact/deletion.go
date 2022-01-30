@@ -3,7 +3,6 @@ package funfact
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/google/uuid"
 )
@@ -34,7 +33,6 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	defer deletionRows.Close()
 
 	for deletionRows.Next() {
-		log.Println("deletion row add 1")
 		totalDeletion += 1
 	}
 

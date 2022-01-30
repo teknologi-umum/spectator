@@ -29,7 +29,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		ctx,
 		`from (bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => 
+		|> filter(fn: (r) =>
 			(r["_measurement"] == "exam_started" and r["session_id"] == "`+sessionID.String()+`"))
 		|> yield()`,
 	)
@@ -102,7 +102,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		rows, err := queryAPI.Query(
 			ctx,
 			`from(bucket: "`+d.BucketInputEvents+`")
-			|> range(start: `+fmt.Sprintf("%d", startTime+int64(i)*60)+`, 
+			|> range(start: `+fmt.Sprintf("%d", startTime+int64(i)*60)+`,
 				stop: `+fmt.Sprintf("%d", startTime+int64(i+1)*60)+`)
 			|> filter(fn: (r) => r["_measurement"] == "keystroke")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")

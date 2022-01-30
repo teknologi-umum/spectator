@@ -18,8 +18,8 @@ func TestCalculateDeletionRate(t *testing.T) {
 	}
 
 	deletionRate := <-res
-	if deletionRate != 0.3125 {
-		t.Errorf("expected deletionRate to be 0.3125, got: %v", deletionRate)
+	if deletionRate != 0.14285715 {
+		t.Errorf("expected deletionRate to be 0.14285715, got: %v", deletionRate)
 	}
 }
 

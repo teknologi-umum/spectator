@@ -16,9 +16,11 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-var deps *funfact.Dependency
-var globalID uuid.UUID
-var globalID2 uuid.UUID
+var (
+	deps      *funfact.Dependency
+	globalID  uuid.UUID
+	globalID2 uuid.UUID
+)
 
 func TestMain(m *testing.M) {
 	// Lookup environment variables
@@ -150,27 +152,9 @@ func seedData(ctx context.Context) error {
 
 	// Seed coding test attempts
 	go func() {
-		for i := 0; i < 20; i++ {
+		for i := 0; i < 25; i++ {
 			point := influxdb2.NewPoint(
 				string(funfact.MeasurementSolutionAccepted),
-				map[string]string{
-					"session_id":  globalID.String(),
-					"question_id": strconv.Itoa(rand.Intn(5)),
-				},
-				map[string]interface{}{
-					"solution":               "console.log('Hello world!');",
-					"language":               "javascript",
-					"scratchpad":             "Lorem ipsum dolor sit amet",
-					"serialized_test_result": "{\"stderr\":\"Hello world!\"}",
-				},
-				time.Unix(rand.Int63n(delta)+min, 0),
-			)
-			sessionWriteAPI.WritePoint(point)
-		}
-
-		for i := 0; i < 5; i++ {
-			point := influxdb2.NewPoint(
-				string(funfact.MeasurementSolutionRejected),
 				map[string]string{
 					"session_id":  globalID.String(),
 					"question_id": strconv.Itoa(rand.Intn(5)),
@@ -285,7 +269,7 @@ func seedData(ctx context.Context) error {
 							"key_char":      keystrokesNormal[rand.Intn(len(keystrokesNormal)-1)],
 							"unrelated_key": false,
 						},
-						temporaryDate,
+						time.Now(),
 					)
 					inputWriteAPI.WritePoint(point)
 				}
@@ -305,7 +289,7 @@ func seedData(ctx context.Context) error {
 							"key_char":      keystrokesMisc[rand.Intn(len(keystrokesMisc)-1)],
 							"unrelated_key": false,
 						},
-						temporaryDate,
+						time.Now(),
 					)
 
 					inputWriteAPI.WritePoint(point)
@@ -326,7 +310,7 @@ func seedData(ctx context.Context) error {
 							"key_char":      keystrokesDelete[rand.Intn(len(keystrokesDelete)-1)],
 							"unrelated_key": false,
 						},
-						temporaryDate,
+						time.Now(),
 					)
 
 					inputWriteAPI.WritePoint(point)
@@ -344,7 +328,7 @@ func seedData(ctx context.Context) error {
 	}
 
 	go func() {
-		temporaryDate := time.Unix(min, 0)
+		// temporaryDate := time.Unix(min, 0)
 		for k := 0; k < 3; k++ {
 			for i := 0; i < 100; i++ {
 				point := influxdb2.NewPoint(
@@ -355,7 +339,7 @@ func seedData(ctx context.Context) error {
 					map[string]interface{}{
 						"key_char": keystrokesNormal[rand.Intn(len(keystrokesNormal)-1)],
 					},
-					temporaryDate.Add(time.Minute*time.Duration(k)),
+					time.Now(),
 				)
 
 				inputWriteAPI.WritePoint(point)
