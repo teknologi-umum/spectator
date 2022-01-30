@@ -296,7 +296,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_move",
+					"mouse_moved",
 					map[string]string{
 						"session_id": sessionID,
 					},
