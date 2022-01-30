@@ -4,25 +4,24 @@ import (
 	"context"
 	"fmt"
 	"time"
-	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
 type MouseMovement struct {
-	SessionID      string    `json:"session_id" csv:"session_id"`
-	Type           string    `json:"type" csv:"-"`
-	Direction      string    `json:"direction" csv:"direction"`
-	XPosition      int64     `json:"x_position" csv:"x_position"`
-	YPosition      int64     `json:"y_position" csv:"y_position"`
-	WindowWidth    int64     `json:"window_width" csv:"window_width"`
-	WindowHeight   int64     `json:"window_height" csv:"window_height"`
-	Timestamp      time.Time `json:"timestamp" csv:"_timestamp"`
+	SessionID    string    `json:"session_id" csv:"session_id"`
+	Type         string    `json:"type" csv:"-"`
+	Direction    string    `json:"direction" csv:"direction"`
+	XPosition    int64     `json:"x_position" csv:"x_position"`
+	YPosition    int64     `json:"y_position" csv:"y_position"`
+	WindowWidth  int64     `json:"window_width" csv:"window_width"`
+	WindowHeight int64     `json:"window_height" csv:"window_height"`
+	Timestamp    time.Time `json:"timestamp" csv:"_timestamp"`
 }
 
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
-	directionRows, err := queryAPI.Query(
+	mouseMoveRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
@@ -33,155 +32,51 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 	if err != nil {
 		return []MouseMovement{}, fmt.Errorf("failed to query mouse_move: %w", err)
 	}
-	defer directionRows.Close()
+	defer mouseMoveRows.Close()
 
 	var outputMouseMove []MouseMovement
 
-	for directionRows.Next() {
-		rows := directionRows.Record()
+	for mouseMoveRows.Next() {
+		rows := mouseMoveRows.Record()
 
-		direction, ok := rows.Value().(string)
+		direction, ok := rows.ValueByKey("direction").(string)
 		if !ok {
 			direction = ""
 		}
 
-		sessionID, ok := rows.ValueByKey("session_id").(string)
+		x, ok := rows.ValueByKey("x").(int64)
 		if !ok {
-			sessionID = ""
+			x = 0
 		}
-		timestamp := rows.Time()
+
+		y, ok := rows.ValueByKey("y").(int64)
+		if !ok {
+			y = 0
+		}
+
+		windowWidth, ok := rows.ValueByKey("window_width").(int64)
+		if !ok {
+			windowWidth = 0
+		}
+
+		windowHeight, ok := rows.ValueByKey("windowHeight").(int64)
+		if !ok {
+			windowHeight = 0
+		}
 
 		outputMouseMove = append(
 			outputMouseMove,
 			MouseMovement{
-				Direction:      direction,
-				SessionID:      sessionID,
-				Timestamp:      timestamp,
+				SessionID:    sessionID.String(),
+				Type:         "mouse_move",
+				Direction:    direction,
+				XPosition:    x,
+				YPosition:    y,
+				WindowWidth:  windowWidth,
+				WindowHeight: windowHeight,
+				Timestamp:    rows.Time(),
 			},
 		)
-	}
-
-	xPositionRows, err := queryAPI.Query(
-		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "mousemove",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketInputEvents,
-			Field:       "x_position",
-			SortByTime:  true,
-		}),
-	)
-	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - x_position: %w", err)
-	}
-	defer xPositionRows.Close()
-
-	for xPositionRows.Next() {
-		rows := xPositionRows.Record()
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
-
-		xPosition, ok := rows.Value().(int64)
-		if !ok {
-			// FIXME: add default value
-		}
-
-		outputMouseMove[table].XPosition = xPosition
-	}
-
-	yPositionRows, err := queryAPI.Query(
-		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "mousemove",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketInputEvents,
-			Field:       "y_position",
-			SortByTime:  true,
-		}),
-	)
-	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - y_position: %w", err)
-	}
-	defer yPositionRows.Close()
-
-	for yPositionRows.Next() {
-		rows := yPositionRows.Record()
-
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
-
-		yPosition, ok := rows.Value().(int64)
-		if !ok {
-			// FIXME: add default value
-		}
-
-		outputMouseMove[table].YPosition = yPosition
-	}
-
-	windowWidthRows, err := queryAPI.Query(
-		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "mousemove",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketInputEvents,
-			Field:       "window_width",
-			SortByTime:  true,
-		}),
-	)
-	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - window_width: %w", err)
-	}
-	defer windowWidthRows.Close()
-
-	for windowWidthRows.Next() {
-		rows := windowWidthRows.Record()
-
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
-
-		windowWidth, ok := rows.Value().(int64)
-		if !ok {
-			// FIXME: add default value
-		}
-
-		outputMouseMove[table].WindowWidth = windowWidth
-	}
-
-	windowHeightRows, err := queryAPI.Query(
-		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "mousemove",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketInputEvents,
-			Field:       "window_height",
-			SortByTime:  true,
-		}),
-	)
-	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - window_height: %w", err)
-	}
-	defer windowHeightRows.Close()
-
-	for windowHeightRows.Next() {
-		rows := windowHeightRows.Record()
-
-		table, ok := rows.ValueByKey("table").(int64)
-		if !ok {
-			table = 0
-		}
-
-		windowHeight, ok := rows.Value().(int64)
-		if !ok {
-			// FIXME: add default value
-		}
-
-		outputMouseMove[table].WindowHeight = windowHeight
 	}
 
 	return outputMouseMove, nil
