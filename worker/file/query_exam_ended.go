@@ -3,9 +3,7 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
-	"worker/influxhelpers"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -18,55 +16,26 @@ type ExamEnded struct {
 }
 
 func (d *Dependency) QueryExamEnded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamEnded, error) {
-	outputExamEnded := []ExamEnded{}
-	for _, x := range []string{""} {
-		afterExamSamRows, err := queryAPI.Query(
-			ctx,
-			influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-				Measurement: "exam_ended",
-				SessionID:   sessionID.String(),
-				Buckets:     d.BucketSessionEvents,
-				Field:       x,
-			}),
-		)
-		if err != nil {
-			return []ExamEnded{}, fmt.Errorf("failed to query keystrokes: %w", err)
-		}
+	afterExamSamRows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "exam_ended" and r["session_id"] == `+sessionID.String()+`)`,
+	)
+	if err != nil {
+		return []ExamEnded{}, fmt.Errorf("failed to query keystrokes: %w", err)
+	}
 
-		//var lastTableIndex int = -1
-		tempExamEnded := ExamEnded{}
-		var tablePosition int64
-		for afterExamSamRows.Next() {
-			rows := afterExamSamRows.Record()
-			table, ok := rows.ValueByKey("table").(int64)
-			if !ok {
-				table = 0
-			}
+	var outputExamEnded []ExamEnded
 
-			if d.IsDebug() {
-				log.Println(rows.String())
-				log.Printf("table %d\n", rows.Table())
-			}
+	for afterExamSamRows.Next() {
+		rows := afterExamSamRows.Record()
 
-			if table != 0 && table > tablePosition {
-				outputExamEnded = append(outputExamEnded, tempExamEnded)
-				tablePosition = table
-			} else {
-				var ok bool
-
-				tempExamEnded.SessionId, ok = rows.ValueByKey("session_id").(string)
-				if !ok {
-					tempExamEnded.SessionId = ""
-				}
-				tempExamEnded.Timestamp = rows.Time()
-			}
-		}
-
-		if len(outputExamEnded) > 0 || tempExamEnded.SessionId != "" {
-			outputExamEnded = append(outputExamEnded, tempExamEnded)
-		}
+		outputExamEnded = append(outputExamEnded, ExamEnded{
+			SessionId: sessionID.String(),
+			Timestamp: rows.Time(),
+		})
 	}
 
 	return outputExamEnded, nil
-
 }

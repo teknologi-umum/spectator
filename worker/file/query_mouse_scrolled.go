@@ -13,7 +13,6 @@ import (
 type MouseScrolled struct {
 	SessionID      string      `json:"session_id" csv:"session_id"`
 	Type           string      `json:"type" csv:"-"`
-	QuestionNumber string      `json:"question_number" csv:"question_number"`
 	X              string      `json:"x" csv:"x"`
 	Y              string      `json:"y" csv:"y"`
 	Button         MouseButton `json:"button" csv:"button"`
@@ -25,9 +24,9 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 	mouseClickRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
-			|> range(start: 0)
-			|> filter(fn: (r) => r["_measurement"] == "mouse_scrolled" and r["session_id"] == "`+sessionID.String()+`")
-			|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "mouse_scrolled" and r["session_id"] == "`+sessionID.String()+`")
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
 		return []MouseDown{}, fmt.Errorf("failed to query mouse down: %w", err)
@@ -58,11 +57,6 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 			tablePosition = table
 		} else {
 			var ok bool
-
-			tempMouseClick.QuestionNumber, ok = rows.ValueByKey("question_number").(string)
-			if !ok {
-				tempMouseClick.QuestionNumber = ""
-			}
 
 			tempMouseClick.SessionID, ok = rows.ValueByKey("session_id").(string)
 			if !ok {

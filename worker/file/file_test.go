@@ -101,7 +101,7 @@ func TestMain(m *testing.M) {
 
 	fmt.Println("Cleaning up...")
 
-	err = cleanup(ctx)
+	// err = cleanup(ctx)
 	if err != nil {
 		log.Fatalf("Failed to cleanup: %v", err)
 	}
@@ -609,10 +609,10 @@ func seedData(ctx context.Context) error {
 				},
 				map[string]interface{}{
 					"direction":     "right",
-					"x_position":    20,
-					"y_position":    30,
-					"window_width":  100,
-					"window_height": 200,
+					"x_position":    "20",
+					"y_position":    "30",
+					"window_width":  "100",
+					"window_height": "200",
 				},
 				eventStart.Add(time.Minute*14+time.Second*time.Duration(i)),
 			)
@@ -637,9 +637,9 @@ func seedData(ctx context.Context) error {
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					"x":      i,
-					"y":      i,
-					"button": 0,
+					"x":      "1",
+					"y":      "2",
+					"button": "0",
 				},
 				eventStart.Add(time.Minute*15+time.Second*time.Duration(i)),
 			)
@@ -664,9 +664,9 @@ func seedData(ctx context.Context) error {
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					"x":      i,
-					"y":      i,
-					"button": 0,
+					"x":      "1",
+					"y":      "2",
+					"button": "0",
 				},
 				eventStart.Add(time.Minute*16+time.Second*time.Duration(i)),
 			)
@@ -691,9 +691,9 @@ func seedData(ctx context.Context) error {
 					"session_id": id.String(),
 				},
 				map[string]interface{}{
-					"x":     i,
-					"y":     i,
-					"delta": i + i,
+					"x":     "1",
+					"y":     "2",
+					"delta": "3",
 				},
 				eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 			)

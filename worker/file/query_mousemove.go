@@ -13,7 +13,6 @@ import (
 type MouseMovement struct {
 	SessionID      string    `json:"session_id" csv:"session_id"`
 	Type           string    `json:"type" csv:"-"`
-	QuestionNumber string    `json:"question_number" csv:"question_number"`
 	Direction      string    `json:"direction" csv:"direction"`
 	XPosition      int64     `json:"x_position" csv:"x_position"`
 	YPosition      int64     `json:"y_position" csv:"y_position"`
@@ -23,35 +22,27 @@ type MouseMovement struct {
 }
 
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
-
-	var outputMouseMove []MouseMovement
-
 	directionRows, err := queryAPI.Query(
 		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "mousemove",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketInputEvents,
-			Field:       "direction",
-			SortByTime:  true,
-		}),
+		`from(bucket: "`+d.BucketInputEvents+`")
+		|> range(start: 0)
+		|> sort(fields: ["_time"])
+		|> filter(fn: (r) => r["_measurement"] == "mouse_move" and r["session_id"] == "`+sessionID.String()+`")
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
+		return []MouseMovement{}, fmt.Errorf("failed to query mouse_move: %w", err)
 	}
 	defer directionRows.Close()
+
+	var outputMouseMove []MouseMovement
 
 	for directionRows.Next() {
 		rows := directionRows.Record()
 
 		direction, ok := rows.Value().(string)
 		if !ok {
-			// FIXME: add default value
-		}
-
-		questionNumber, ok := rows.ValueByKey("question_number").(string)
-		if !ok {
-			questionNumber = ""
+			direction = ""
 		}
 
 		sessionID, ok := rows.ValueByKey("session_id").(string)
@@ -64,7 +55,6 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 			outputMouseMove,
 			MouseMovement{
 				Direction:      direction,
-				QuestionNumber: questionNumber,
 				SessionID:      sessionID,
 				Timestamp:      timestamp,
 			},

@@ -34,7 +34,6 @@ func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryA
 
 	for beforeExamSamRows.Next() {
 		rows := beforeExamSamRows.Record()
-		fmt.Println(rows.ValueByKey("session_id"))
 
 		arousedLevel, ok := rows.ValueByKey("aroused_level").(int64)
 		if !ok {
