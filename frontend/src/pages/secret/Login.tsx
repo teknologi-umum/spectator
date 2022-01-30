@@ -46,7 +46,7 @@ export default function Login() {
   })
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    dispatch(recordPassword(data));
+    dispatch(recordPassword(data.password));
     navigate("/download");
   }
 
@@ -87,6 +87,7 @@ export default function Login() {
             <FormControl
               mt="6"
               // isInvalid={errors.programmingExp !== undefined}
+              isInvalid={errors.password !== undefined}
             >
               <FormLabel>
                 Password
