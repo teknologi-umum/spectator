@@ -20,7 +20,7 @@ func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryA
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "exam_forfeited" and r["session_id"] == `+sessionID.String()+`)`,
+		|> filter(fn: (r) => r["_measurement"] == "exam_forfeited" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
 		return []ExamForfeited{}, fmt.Errorf("failed to query keystrokes: %w", err)

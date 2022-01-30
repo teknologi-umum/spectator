@@ -20,10 +20,10 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "deadline_passed" and r["session_id"] == `+sessionID.String()+`)`,
+		|> filter(fn: (r) => r["_measurement"] == "deadline_passed" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
-		return []DeadlinePassed{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return []DeadlinePassed{}, fmt.Errorf("failed to query deadline_passed: %w", err)
 	}
 
 	var outputDeadlinePassed []DeadlinePassed

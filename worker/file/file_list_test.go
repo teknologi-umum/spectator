@@ -19,12 +19,12 @@ func TestListFiles(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
-	pathJSON, err := filepath.Glob("./results/*_*.json")
+	pathJSON, err := filepath.Glob("./*_*.json")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
-	pathCSV, err := filepath.Glob("./results/*_*.csv")
+	pathCSV, err := filepath.Glob("./*_*.csv")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return

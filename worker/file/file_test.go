@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -101,7 +102,7 @@ func TestMain(m *testing.M) {
 
 	fmt.Println("Cleaning up...")
 
-	// err = cleanup(ctx)
+	err = cleanup(ctx)
 	if err != nil {
 		log.Fatalf("Failed to cleanup: %v", err)
 	}
@@ -178,16 +179,16 @@ func cleanup(ctx context.Context) error {
 		return fmt.Errorf("finding organization: %v", err)
 	}
 
+	// delete bucket data
+	deleteAPI := deps.DB.DeleteAPI()
+
 	// find input_events bucket
 	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
-	// delete bucket data
-	deleteAPI := deps.DB.DeleteAPI()
-
-	inputEventMeasurements := []string{
+	fileEventMeasurement := []string{
 		"keystroke",
 		"mouse_down",
 		"mouse_up",
@@ -195,7 +196,7 @@ func cleanup(ctx context.Context) error {
 		"mouse_scrolled",
 		"window_sized",
 	}
-	for _, measurement := range inputEventMeasurements {
+	for _, measurement := range fileEventMeasurement {
 		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
 			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
@@ -227,6 +228,36 @@ func cleanup(ctx context.Context) error {
 		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
 			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+		}
+	}
+
+	// find file_results bucket
+	fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketFileEvents)
+	if err != nil {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	for _, measurement := range fileEventMeasurement {
+		err = deleteAPI.Delete(ctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
+		if err != nil {
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+		}
+	}
+
+	// delete json/csv files
+	pathJSON, err := filepath.Glob("./*_*.json")
+	if err != nil {
+		return fmt.Errorf("unexpected error: %v", err)
+	}
+	pathCSV, err := filepath.Glob("./*_*.csv")
+	if err != nil {
+		return fmt.Errorf("unexpected error: %v", err)
+	}
+
+	for _, path := range append(pathJSON, pathCSV...) {
+		err = os.Remove(path)
+		if err != nil {
+			return fmt.Errorf("unexpected error: %v", err)
 		}
 	}
 
@@ -609,8 +640,8 @@ func seedData(ctx context.Context) error {
 				},
 				map[string]interface{}{
 					"direction":     "right",
-					"x_position":    "20",
-					"y_position":    "30",
+					"x":             "20",
+					"y":             "30",
 					"window_width":  "100",
 					"window_height": "200",
 				},
@@ -754,14 +785,14 @@ func seedData(ctx context.Context) error {
 				)
 				points = append(points, point)
 
-				csvHandle, err := os.Create("./results/" + studentNumber + "_" + x + ".csv")
+				csvHandle, err := os.Create("./" + studentNumber + "_" + x + ".csv")
 				if err != nil {
 					log.Fatalf("creating a file: %v", err)
 					return
 				}
 				defer csvHandle.Close()
 
-				jsonHandle, err := os.Create("./results/" + studentNumber + "_" + x + ".json")
+				jsonHandle, err := os.Create("./" + studentNumber + "_" + x + ".json")
 				if err != nil {
 					log.Fatalf("creating a file: %v", err)
 					return

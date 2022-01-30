@@ -27,7 +27,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info")
+		|> filter(fn: (r) => r["_measurement"] == "personal_info_submitted")
 		|> filter(fn: (r) => r["_field"] == "student_number")
 		|> sort(columns: ["_time"])
 		|> group(columns: ["_time"])`,

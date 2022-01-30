@@ -18,18 +18,19 @@ type ExamStarted struct {
 }
 
 func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamStarted, error) {
-	outputExamStarted := []ExamStarted{}
 	examStartedRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "exam_ide_started" and r["session_id"] == "`+sessionID.String()+`")
-		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
+		|> filter(fn: (r) => r["_measurement"] == "exam_started" and r["session_id"] == "`+sessionID.String()+`")
+		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
 		return []ExamStarted{}, fmt.Errorf("failed to query exam_started: %w", err)
 	}
 	defer examStartedRows.Close()
+
+	var outputExamStarted []ExamStarted
 
 	for examStartedRows.Next() {
 		rows := examStartedRows.Record()

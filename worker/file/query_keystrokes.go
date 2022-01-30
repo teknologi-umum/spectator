@@ -76,7 +76,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 
 		outputKeystroke = append(outputKeystroke, Keystroke{
 			SessionID:    sessionID.String(),
-			Type:         rows.ValueByKey("_field").(string),
+			Type:         "keystroke",
 			KeyChar:      keyChar,
 			KeyCode:      keyCode,
 			Shift:        shift,

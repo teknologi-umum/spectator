@@ -26,7 +26,7 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "mouse_scrolled" and r["session_id"] == "`+sessionID.String()+`")
-		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
+		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
 		return []MouseDown{}, fmt.Errorf("failed to query mouse down: %w", err)
