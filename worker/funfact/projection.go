@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"time"
-	"worker/influxhelpers"
 
 	loggerpb "worker/logger_proto"
 
@@ -12,7 +11,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float32, requestID string) {
+func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float32, requestID string) {
 	// Defer func to avoid panic
 	defer func() {
 		r := recover()
@@ -32,13 +31,18 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 		)
 	}()
 
-	personalInfoh, err := d.DB.QueryAPI(d.BucketSessionEvents).Query(
+	// Create a new context
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer cancel()
+
+	// We shall find the student number
+	personalInfoRows, err := d.DB.QueryAPI(d.BucketSessionEvents).Query(
 		ctx,
-		influxhelpers.ReinaldysBuildQuery(influxhelpers.Queries{
-			Measurement: "personal_info",
-			SessionID:   sessionID.String(),
-			Buckets:     d.BucketSessionEvents,
-		}),
+		`from(bucket: "`+d.BucketSessionEvents+`")
+		|> range(start: 0)
+		|> filter(fn: (r) => r["_measurement"] == "personal_info" and r["session_id"] == "`+sessionID.String()+`")
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
 		d.Logger.Log(
@@ -53,18 +57,15 @@ func (d *Dependency) CreateProjection(ctx context.Context, sessionID uuid.UUID, 
 		)
 		return
 	}
+	defer personalInfoRows.Close()
 
 	var studentNumber string
-	for personalInfoh.Next() {
-		rows := personalInfoh.Record()
-		switch rows.Field() {
-		case "student_number":
-			var ok bool
-			studentNumber, ok = rows.Value().(string)
-			if !ok {
-				studentNumber = ""
-			}
+	for personalInfoRows.Next() {
+		value, ok := personalInfoRows.Record().ValueByKey("student_number").(string)
+		if !ok {
+			value = ""
 		}
+		studentNumber = value
 	}
 
 	point := influxdb2.NewPoint(
