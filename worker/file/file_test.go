@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"sync"
 	"testing"
@@ -78,6 +79,7 @@ func TestMain(m *testing.M) {
 		Bucket:              bucket,
 		BucketInputEvents:   "input_events",
 		BucketSessionEvents: "session_events",
+		BucketFileEvents:    "file_results",
 		Environment:         "testing",
 	}
 
@@ -99,7 +101,7 @@ func TestMain(m *testing.M) {
 
 	fmt.Println("Cleaning up...")
 
-	// err = cleanup(ctx)
+	err = cleanup(ctx)
 	if err != nil {
 		log.Fatalf("Failed to cleanup: %v", err)
 	}
@@ -112,13 +114,14 @@ func TestMain(m *testing.M) {
 // prepareBuckets creates the buckets if they don't exist
 func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
 	bucketsAPI := deps.DB.BucketsAPI()
+	organizationAPI := deps.DB.OrganizationsAPI()
+
 	_, err := bucketsAPI.FindBucketByName(ctx, deps.BucketInputEvents)
 	if err != nil && err.Error() != "bucket '"+deps.BucketInputEvents+"' not found" {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	if err != nil && err.Error() == "bucket '"+deps.BucketInputEvents+"' not found" {
-		organizationAPI := deps.DB.OrganizationsAPI()
 		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
 		if err != nil {
 			return fmt.Errorf("finding organization: %v", err)
@@ -136,13 +139,29 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	}
 
 	if err != nil && err.Error() == "bucket '"+deps.BucketSessionEvents+"' not found" {
-		organizationAPI := deps.DB.OrganizationsAPI()
 		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
 		if err != nil {
 			return fmt.Errorf("finding organization: %v", err)
 		}
 
 		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketSessionEvents)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+	}
+
+	_, err = bucketsAPI.FindBucketByName(ctx, deps.BucketFileEvents)
+	if err != nil && err.Error() != "bucket '"+deps.BucketFileEvents+"' not found" {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	if err != nil && err.Error() == "bucket '"+deps.BucketFileEvents+"' not found" {
+		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+		if err != nil {
+			return fmt.Errorf("finding organization: %v", err)
+		}
+
+		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, deps.BucketFileEvents)
 		if err != nil {
 			return fmt.Errorf("creating bucket: %v", err)
 		}
@@ -218,6 +237,7 @@ func cleanup(ctx context.Context) error {
 func seedData(ctx context.Context) error {
 	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
 	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
+	fileWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketFileEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -250,7 +270,7 @@ func seedData(ctx context.Context) error {
 					"years_of_experience": 3,
 					"familiar_languages":  "java,kotlin,swift",
 				},
-				eventStart,
+				eventStart.Add(time.Minute+time.Second*time.Duration(i)),
 			)
 			points = append(points, point)
 		}
@@ -273,10 +293,10 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"aroused_level": 2,
-					"pleased_level": 5,
+					"aroused_level": "2",
+					"pleased_level": "5",
 				},
-				eventStart.Add(time.Minute*2),
+				eventStart.Add(time.Minute*2+time.Second*time.Duration(i)),
 			)
 			points = append(points, point)
 		}
@@ -302,7 +322,7 @@ func seedData(ctx context.Context) error {
 					"aroused_level": "2",
 					"pleased_level": "5",
 				},
-				eventStart.Add(time.Minute*200),
+				eventStart.Add(time.Minute*3+time.Second*time.Duration(i)),
 			)
 			points = append(points, point)
 		}
@@ -325,9 +345,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 5),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*6),
+				eventStart.Add(time.Minute*4+time.Second*time.Duration(i)),
 			)
 			points = append(points, point)
 		}
@@ -350,9 +370,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 180),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*8),
+				eventStart.Add(time.Minute*5+time.Second*time.Duration(i)),
 			)
 			points = append(points, point)
 		}
@@ -375,9 +395,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 120),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*10),
+				eventStart.Add(time.Minute*6+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -401,9 +421,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 150),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*12),
+				eventStart.Add(time.Minute*7+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -427,9 +447,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 140),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*24),
+				eventStart.Add(time.Minute*8+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -455,7 +475,7 @@ func seedData(ctx context.Context) error {
 				map[string]interface{}{
 					"locale": "en-US",
 				},
-				eventStart.Add(time.Minute*16),
+				eventStart.Add(time.Minute*9+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -479,9 +499,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 20),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*20),
+				eventStart.Add(time.Minute*10+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -505,9 +525,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 26),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*22),
+				eventStart.Add(time.Minute*11+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -531,9 +551,9 @@ func seedData(ctx context.Context) error {
 					"session_id": globalID.String(),
 				},
 				map[string]interface{}{
-					"_time": eventStart.Add(time.Minute * 26),
+					"_time": time.Now(),
 				},
-				eventStart.Add(time.Minute*26),
+				eventStart.Add(time.Minute*12+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -565,7 +585,7 @@ func seedData(ctx context.Context) error {
 					"meta":          false,
 					"unrelated_key": false,
 				},
-				eventStart.Add(time.Minute*120),
+				eventStart.Add(time.Minute*13+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -594,7 +614,7 @@ func seedData(ctx context.Context) error {
 					"window_width":  100,
 					"window_height": 200,
 				},
-				eventStart.Add(time.Minute*120),
+				eventStart.Add(time.Minute*14+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -621,7 +641,7 @@ func seedData(ctx context.Context) error {
 					"y":      i,
 					"button": 0,
 				},
-				eventStart.Add(time.Minute*120),
+				eventStart.Add(time.Minute*15+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -648,7 +668,7 @@ func seedData(ctx context.Context) error {
 					"y":      i,
 					"button": 0,
 				},
-				eventStart.Add(time.Minute*120),
+				eventStart.Add(time.Minute*16+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -675,7 +695,7 @@ func seedData(ctx context.Context) error {
 					"y":     i,
 					"delta": i + i,
 				},
-				eventStart.Add(time.Minute*120),
+				eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -701,7 +721,7 @@ func seedData(ctx context.Context) error {
 					"width":  i,
 					"height": i,
 				},
-				eventStart.Add(time.Minute*120),
+				eventStart.Add(time.Minute*18+time.Second*time.Duration(i)),
 			)
 
 			points = append(points, point)
@@ -716,11 +736,12 @@ func seedData(ctx context.Context) error {
 
 	// Test Result
 	go func() {
-		studentNumber := "123456789"
+		var points []*write.Point
 		for i := 0; i < 50; i++ {
+			studentNumber := fmt.Sprintf("%08d", rand.Intn(100000000))
 			for _, x := range []string{"keystroke", "mouse_click", "mouse_move", "personal_info", "sam_test"} {
 				point := influxdb2.NewPoint(
-					"test_result",
+					"exported_data",
 					map[string]string{
 						"session_id":     globalID.String(),
 						"student_number": studentNumber,
@@ -731,19 +752,16 @@ func seedData(ctx context.Context) error {
 					},
 					time.Now(),
 				)
-				err := sessionWriteAPI.WritePoint(ctx, point)
-				if err != nil {
-					log.Fatalf("Error writing point: %v", err)
-				}
+				points = append(points, point)
 
-				csvHandle, err := os.Create("./" + studentNumber + "_" + x + ".csv")
+				csvHandle, err := os.Create("./results/" + studentNumber + "_" + x + ".csv")
 				if err != nil {
 					log.Fatalf("creating a file: %v", err)
 					return
 				}
 				defer csvHandle.Close()
 
-				jsonHandle, err := os.Create("./" + studentNumber + "_" + x + ".json")
+				jsonHandle, err := os.Create("./results/" + studentNumber + "_" + x + ".json")
 				if err != nil {
 					log.Fatalf("creating a file: %v", err)
 					return
@@ -786,6 +804,11 @@ func seedData(ctx context.Context) error {
 					return
 				}
 			}
+		}
+
+		err := fileWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
 		}
 		wg.Done()
 	}()

@@ -19,19 +19,19 @@ func TestListFiles(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
-	pathJSON, err := filepath.Glob("./*_*.json")
+	pathJSON, err := filepath.Glob("./results/*_*.json")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
-	pathCSV, err := filepath.Glob("./*_*.csv")
+	pathCSV, err := filepath.Glob("./results/*_*.csv")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		return
 	}
 
-	if len(result) != 50 {
-		t.Errorf("Expected 50 file, got %d", len(result))
+	if len(result) != 250 {
+		t.Errorf("Expected 250 file, got %d", len(result))
 	}
 
 	for _, i := range append(pathJSON, pathCSV...) {

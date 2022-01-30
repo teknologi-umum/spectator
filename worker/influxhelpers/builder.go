@@ -1,6 +1,7 @@
 package influxhelpers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -64,6 +65,8 @@ func ReinaldysBuildQuery(q Queries) string {
 	if q.Field != "" {
 		str.WriteString(`|> filter(fn: (r) => r["_field"] == "` + sanitize(q.Field) + `")` + "\n")
 	}
+
+	fmt.Println(str.String())
 
 	return str.String()
 }
