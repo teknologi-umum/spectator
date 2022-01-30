@@ -23,7 +23,7 @@ func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, se
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "mouse_up" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementMouseUp)+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {

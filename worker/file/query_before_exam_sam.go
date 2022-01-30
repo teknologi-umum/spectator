@@ -22,7 +22,7 @@ func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryA
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "before_exam_sam_submitted" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementBeforeExamSAMSubmitted)+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {

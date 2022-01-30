@@ -20,7 +20,7 @@ func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.Quer
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "exam_ide_reloaded" and r["session_id"] == "`+sessionID.String()+`")`,
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementExamIDEReloaded)+`" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
 		return []ExamIDEReloaded{}, fmt.Errorf("failed to query keystrokes: %w", err)

@@ -9,14 +9,6 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
-type MouseButton int
-
-const (
-	Left MouseButton = iota
-	Right
-	Middle
-)
-
 type MouseDown struct {
 	SessionID string      `json:"session_id" csv:"session_id"`
 	Type      string      `json:"type" csv:"-"`
@@ -31,7 +23,7 @@ func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, 
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "mouse_down" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementMouseDown)+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {

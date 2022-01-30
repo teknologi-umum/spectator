@@ -22,7 +22,7 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 		ctx,
 		`from(bucket: "`+d.BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "mouse_scrolled" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementMouseScrolled)+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {

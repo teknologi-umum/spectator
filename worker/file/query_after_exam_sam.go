@@ -22,7 +22,7 @@ func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAP
 		ctx,
 		`from(bucket: "`+d.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "after_exam_sam_submitted" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementAfterExamSAMSubmitted)+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
