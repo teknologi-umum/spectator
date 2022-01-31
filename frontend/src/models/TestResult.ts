@@ -21,8 +21,8 @@ interface RuntimeError {
 export type TestResult = {
   testNumber: number;
 } & (
-    | PassingTest
-    | FailingTest
-    | CompileError
-    | RuntimeError
-  );
+  | PassingTest
+  | FailingTest
+  | CompileError
+  | RuntimeError
+);
