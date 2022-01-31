@@ -16,7 +16,7 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    setDeadlineAndQuestions: (state, action: PayloadAction<{ deadlineUtc: Date, questions: Question[] }>) => {
+    setDeadlineAndQuestions: (state, action: PayloadAction<{ deadlineUtc: number, questions: Question[] }>) => {
       state.deadlineUtc = action.payload.deadlineUtc;
       state.questions = action.payload.questions;
     },

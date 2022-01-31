@@ -23,13 +23,11 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   markFirstSAMSubmitted,
-  markSecondSAMSubmitted,
-  setAccessToken
+  markSecondSAMSubmitted
 } from "@/store/slices/sessionSlice";
 import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
-import { getJwt } from "@/utils/generateFakeJwt";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -96,11 +94,15 @@ export default function SAMTest() {
     } else {
       // TODO(elianiva): we should get the deadline and questions from the
       //                 server
-      dispatch(setDeadlineAndQuestions({
-        // 3 hours from now
-        deadlineUtc: new Date(Date.now() + 3 * 60 * 60 * 1000),
-        questions: []
-      }));
+      dispatch(
+        setDeadlineAndQuestions({
+          // 3 hours from now
+          deadlineUtc: new Date(
+            Date.now() + 3 * 60 * 60 * 1000
+          ).getUTCMilliseconds(),
+          questions: []
+        })
+      );
       dispatch(markFirstSAMSubmitted());
     }
     navigate("/coding-test");

@@ -3,7 +3,7 @@ import type { Language } from "@/models/Language";
 import type { Question } from "@/models/Question";
 
 export interface EditorState {
-  deadlineUtc: Date | null;
+  deadlineUtc: number | null;
   questions: Question[] | null;
   currentQuestionNumber: number | null;
   currentLanguage: Language;
