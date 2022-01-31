@@ -2,7 +2,7 @@ import { useColorMode } from "@/hooks";
 import { Box, Select} from "@chakra-ui/react";
 import { useColorModeValue } from "@/hooks/";
 import React, { FormEvent } from "react";
-import { Theme } from "@/store/slices/themeSlice/types";
+import { Theme } from "@/models/Theme";
 import theme from "@/styles/themes";
 
 interface ThemeButtonProps {

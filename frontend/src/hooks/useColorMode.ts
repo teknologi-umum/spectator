@@ -1,6 +1,6 @@
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setColorMode as setColorModeState } from "@/store/slices/themeSlice";
-import type { Theme } from "@/store/slices/themeSlice/types";
+import type { Theme } from "@/models/Theme";
 
 export function useColorMode() {
   const { currentTheme } = useAppSelector((state) => state.app);
