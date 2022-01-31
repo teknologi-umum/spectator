@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
 import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
-import { setFontSize, setLanguage } from "@/store/slices/editorSlice";
+import {
+  setFontSize,
+  setLanguage,
+  setSnapshot
+} from "@/store/slices/editorSlice";
 import type { Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
@@ -37,7 +41,6 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
   );
   const {
     currentQuestionNumber,
-    questions,
     fontSize,
     currentLanguage,
     snapshotByQuestionNumber
@@ -59,32 +62,27 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const recordedSubmission = submissions.find(
-    (submission) => submission.questionNo === currentQuestionNumber
-  );
+  const recordedSubmission = snapshotByQuestionNumber[currentQuestionNumber!];
   const isSubmitted =
-    recordedSubmission !== undefined ? recordedSubmission.isSubmitted : false;
+    recordedSubmission !== undefined
+      ? recordedSubmission.submissionAccepted
+      : false;
   const isRefactored =
-    recordedSubmission !== undefined ? recordedSubmission.isRefactored : false;
+    recordedSubmission !== undefined
+      ? recordedSubmission.submissionRefactored
+      : false;
 
   function handleSubmit() {
     if (currentQuestionNumber === null) return;
 
-    const currentSolution = {
-      code: snapshotByQuestionNumber[currentQuestionNumber].solutionByLanguage[
-        currentLanguage
-      ],
-      questionNumber: currentQuestionNumber,
-      language: currentLanguage
-    };
+    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
 
-    mutate(currentSolution, {
+    mutate(currentSnapshot, {
       onSuccess: (res) => {
         dispatch(
-          setSubmission({
+          setSnapshot({
             ...res.data,
-            isSubmitted: true,
-            isRefactored: res.data.submissionType === "refactor"
+            submissionSubmitted: true
           })
         );
       }

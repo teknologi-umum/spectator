@@ -10,8 +10,6 @@ import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { useCodemirrorTheme, useColorModeValue } from "@/hooks";
-// TODO: this should be automatically inferred (en/id) when we have proper i18n
-import { questions } from "@/data/en/questions.json";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
 import { useDebounce } from "@/hooks";
@@ -42,46 +40,40 @@ export default function Editor({ bg, onScroll }: EditorProps) {
 
   const debouncedCode = useDebounce(code, 500);
 
-  const {
-    questions,
-    currentQuestionNumber,
-    currentLanguage,
-    snapshotByQuestionNumber
-  } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, currentLanguage, snapshotByQuestionNumber } =
+    useAppSelector((state) => state.editor);
 
-  const currentSolution = currentQuestionNumber != null
-    ? snapshotByQuestionNumber[currentQuestionNumber].solutionByLanguage[currentLanguage]
-    : null;
+  const boilerplate = useMemo(
+    () =>
+      t(
+        `question.questions.${currentQuestionNumber}.templates.${currentLanguage}`
+      ),
+    [currentQuestionNumber, currentLanguage]
+  );
+
+  const currentSolution =
+    currentQuestionNumber !== null
+      ? snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[currentLanguage]
+      : null;
 
   useEffect(() => {
     setCode(currentSolution ?? "");
   }, [currentSolution]);
 
-
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    const currentSolution = solutions.find(
-      (solution) =>
-        solution.questionNo === currentQuestion &&
-        solution.language === currentLanguage
-    );
-
-    if (currentSolution !== undefined) {
-      setCode(currentSolution.code);
+    if (currentSolution !== null) {
+      setCode(currentSolution);
     } else {
       setCode(boilerplate);
-      dispatch(
-        setSolution(boilerplate)
-      );
+      dispatch(setSolution(boilerplate));
     }
-  }, [currentQuestion, currentLanguage]);
+  }, [currentQuestionNumber, currentLanguage]);
 
   useEffect(() => {
-    dispatch(
-      setSolution(debouncedCode)
-    );
+    dispatch(setSolution(debouncedCode));
   }, [debouncedCode]);
 
   function handleChange(value: string) {

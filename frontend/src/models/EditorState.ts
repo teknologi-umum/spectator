@@ -5,7 +5,7 @@ import type { Question } from "@/models/Question";
 export interface EditorState {
   deadlineUtc: number | null;
   questions: Question[] | null;
-  currentQuestionNumber: number | null;
+  currentQuestionNumber: number;
   currentLanguage: Language;
   fontSize: number;
   snapshotByQuestionNumber: Record<number, EditorSnapshot>;

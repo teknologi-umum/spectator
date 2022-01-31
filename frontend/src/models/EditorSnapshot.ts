@@ -6,6 +6,8 @@ export interface EditorSnapshot {
   language: Language;
   solutionByLanguage: Record<Language, string>;
   scratchPad: string;
-  submissionAccepted: boolean | null;
+  submissionSubmitted: boolean;
+  submissionAccepted: boolean;
+  submissionRefactored: boolean;
   testResults: TestResult[] | null;
 }

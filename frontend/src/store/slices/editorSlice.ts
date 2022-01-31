@@ -2,11 +2,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Language } from "@/models/Language";
 import type { Question } from "@/models/Question";
 import type { EditorState } from "@/models/EditorState";
+import { EditorSnapshot } from "@/models/EditorSnapshot";
 
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
-  currentQuestionNumber: null,
+  currentQuestionNumber: 0,
   currentLanguage: "javascript",
   fontSize: 14,
   snapshotByQuestionNumber: {}
@@ -30,7 +31,9 @@ export const editorSlice = createSlice({
             [state.currentLanguage]: action.payload.templateByLanguage[state.currentLanguage]
           },
           scratchPad: "",
-          submissionAccepted: null,
+          submissionSubmitted: false,
+          submissionAccepted: false,
+          submissionRefactored: false,
           testResults: null
         };
       }
@@ -45,10 +48,28 @@ export const editorSlice = createSlice({
       state.fontSize = action.payload;
     },
     setSolution: (state, action: PayloadAction<string>) => {
-      state.snapshotByQuestionNumber[state.currentQuestionNumber!].solutionByLanguage[state.currentLanguage] = action.payload;
+      const solutionByLanguage = state.snapshotByQuestionNumber[state.currentQuestionNumber!]?.solutionByLanguage;
+      if (solutionByLanguage !== undefined) {
+        state.snapshotByQuestionNumber[state.currentQuestionNumber!].solutionByLanguage[state.currentLanguage] = action.payload;
+      }
+    },
+    setSnapshot: (state, action: PayloadAction<EditorSnapshot>) => {
+      state.snapshotByQuestionNumber[state.currentQuestionNumber!] = {
+        language: action.payload.language,
+        questionNumber: action.payload.questionNumber,
+        scratchPad: action.payload.scratchPad,
+        solutionByLanguage: action.payload.solutionByLanguage,
+        submissionAccepted: action.payload.submissionAccepted,
+        submissionRefactored: action.payload.submissionRefactored,
+        submissionSubmitted: action.payload.submissionSubmitted,
+        testResults: action.payload.testResults
+      };
     },
     setScratchPad: (state, action: PayloadAction<string>) => {
-      state.snapshotByQuestionNumber[state.currentQuestionNumber!].scratchPad = action.payload;
+      const solutionByLanguage = state.snapshotByQuestionNumber[state.currentQuestionNumber!]?.scratchPad;
+      if (solutionByLanguage !== undefined) {
+        state.snapshotByQuestionNumber[state.currentQuestionNumber!].scratchPad = action.payload;
+      }
     }
   }
 });
@@ -59,7 +80,8 @@ export const {
   setFontSize,
   setSolution,
   setScratchPad,
-  setDeadlineAndQuestions
+  setDeadlineAndQuestions,
+  setSnapshot
 } = editorSlice.actions;
 
 export default editorSlice.reducer;
