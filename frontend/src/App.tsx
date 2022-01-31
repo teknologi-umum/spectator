@@ -8,11 +8,6 @@ import FunFact from "@/pages/FunFact";
 import { CoercedRoute } from "@/hoc/CoercedRoute";
 
 function App() {
-  // basically, the rules are:
-  //  - if a user has a token and they haven't finished, go to /coding-test
-  //  - if a user has a token and they have finished, go to /fun-fact
-  //  - if a user doesn't have a token, go to /
-  // TODO(elianiva): this could be wrong so, revisit this later
   return (
     <BrowserRouter>
       <Routes>

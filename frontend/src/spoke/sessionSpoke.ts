@@ -21,9 +21,7 @@ connection.onclose(async () => {
   await start();
 });
 
-start();
-
-export const startSession = async (
-  localeInfo: LocaleInfo
-): Promise<SessionReply> =>
-  await connection.invoke("StartSessionAsync", localeInfo);
+export async function startSession(localeInfo: LocaleInfo): Promise<SessionReply> {
+  await start();
+  return connection.invoke("StartSessionAsync", localeInfo);
+}

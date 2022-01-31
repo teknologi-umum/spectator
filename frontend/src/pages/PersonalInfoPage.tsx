@@ -20,10 +20,9 @@ import ThemeButton from "@/components/ThemeButton";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
-import { startSession } from "@/spoke/sessionSpoke";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "../store/slices/sessionSlice";
-import { getJwt } from "@/utils/generateFakeJwt";
+import { startSession } from "@/spoke/sessionSpoke";
 
 export default function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -74,17 +73,17 @@ export default function PersonalInfoPage() {
         console.error(`Unknown locale: ${locale}`);
         return;
       }
-      // TODO(elianiva): fix this once I figure out how to pass the CORS
-      dispatch(setAccessToken(getJwt()));
-      // startSession({
-      //   locale: dtoLocale
-      // })
-      //   .then((sessionReply) => {
-      //     setAccessToken(sessionReply.accessToken);
-      //   })
-      //   .catch((err) => {
-      //     console.error(`Unable to start session. ${err}`);
-      //   });
+
+      startSession({
+        locale: dtoLocale
+      })
+        .then((sessionReply) => {
+          console.log(sessionReply);
+          setAccessToken(sessionReply.accessToken);
+        })
+        .catch((err) => {
+          console.error(`Unable to start session. ${err}`);
+        });
     }
   }, []);
 
