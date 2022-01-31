@@ -64,7 +64,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    if (currentSolution !== null) {
+    if (currentSolution !== null && currentSolution !== "") {
       setCode(currentSolution);
     } else {
       setCode(boilerplate);
