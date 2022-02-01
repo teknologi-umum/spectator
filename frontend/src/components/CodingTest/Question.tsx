@@ -17,6 +17,7 @@ import { useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import { UIEventHandler } from "react";
 import { useTranslation } from "react-i18next";
+import Result from "./Result";
 
 interface QuestionProps {
   bg: string;
@@ -95,8 +96,8 @@ export default function Question({
             </Box>
             1
           </TabPanel>
-          <TabPanel p="2">
-            <Heading>Result</Heading>
+          <TabPanel p="2" h="full">
+            <Result fg={fg} fgDarker={fgDarker} />
           </TabPanel>
         </TabPanels>
       </Tabs>

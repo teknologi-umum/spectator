@@ -51,7 +51,7 @@ export default function CodingTest() {
   return (
     <Flex w="full" h="full">
       <SideBar bg={bg} fg={fg} />
-      <Box bg={gray} gap="3" p="3">
+      <Box bg={gray} gap="3" p="3" w="full">
         <Menu bg={bg} fgDarker={fgDarker} />
         <Box h="calc(100% - 3.5rem)">
           <ReflexContainer orientation="vertical">
