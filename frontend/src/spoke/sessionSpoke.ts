@@ -1,27 +1,72 @@
-import * as SignalR from "@microsoft/signalr";
-import { LocaleInfo, SessionReply } from "@/stub/session";
+import {
+  LocaleInfo,
+  SessionReply,
+  PersonalInfo,
+  SAM,
+  SubmissionRequest,
+  Exam,
+  SubmissionResult,
+  ExamResult
+} from "@/stub/session";
+import SpokeBase from "@/spoke/spokeBase";
 
-const connection = new SignalR.HubConnectionBuilder()
-  .withUrl("http://localhost:5000/hubs/session")
-  .withHubProtocol(new SignalR.JsonHubProtocol())
-  .configureLogging(SignalR.LogLevel.Information)
-  .build();
+class SessionSpoke extends SpokeBase {
+  public async startSession(localeInfo: LocaleInfo): Promise<SessionReply> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("StartSessionAsync", localeInfo);
+  }
 
-async function start() {
-  try {
-    await connection.start();
-    console.log("SignalR connected.");
-  } catch (err) {
-    console.log(err);
-    setTimeout(start, 5000);
+  public async setLocale(localeInfo: LocaleInfo): Promise<void> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("SetLocaleAsync", localeInfo);
+  }
+
+  public async submitPersonalInfo(personalInfo: PersonalInfo): Promise<void> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("SubmitPersonalInfoAsync", personalInfo);
+  }
+
+  public async submitBeforeExamSAM(sam: SAM): Promise<void> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("SubmitBeforeExamSAMAsync", sam);
+  }
+
+  public async startExam(): Promise<Exam> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("StartExamAsync");
+  }
+
+  public async resumeExam(): Promise<Exam> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("ResumeExamAsync");
+  }
+
+  public async submitSolution(
+    submissionRequest: SubmissionRequest
+  ): Promise<SubmissionResult> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("SubmitSolutionAsync", submissionRequest);
+  }
+
+  public async endExam(): Promise<ExamResult> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("EndExamAsync");
+  }
+
+  public async passDeadline(): Promise<ExamResult> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("PassDeadlineAsync");
+  }
+
+  public async forfeitExam(): Promise<ExamResult> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("ForfeitExamAsync");
+  }
+
+  public async submitAfterExamSAM(sam: SAM): Promise<void> {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("SubmitAfterExamSAMAsync", sam);
   }
 }
 
-connection.onclose(async () => {
-  await start();
-});
-
-export async function startSession(localeInfo: LocaleInfo): Promise<SessionReply> {
-  await start();
-  return connection.invoke("StartSessionAsync", localeInfo);
-}
+export default new SessionSpoke("http://localhost:5000/hubs/session");

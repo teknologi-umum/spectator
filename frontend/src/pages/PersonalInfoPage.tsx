@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "../store/slices/sessionSlice";
-import { startSession } from "@/spoke/sessionSpoke";
+import sessionSpoke from "@/spoke/sessionSpoke";
 
 export default function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -74,9 +74,8 @@ export default function PersonalInfoPage() {
         return;
       }
 
-      startSession({
-        locale: dtoLocale
-      })
+      sessionSpoke
+        .startSession({ locale: dtoLocale })
         .then((sessionReply) => {
           console.log(sessionReply);
           setAccessToken(sessionReply.accessToken);
@@ -114,9 +113,18 @@ export default function PersonalInfoPage() {
             mt="6"
             isInvalid={errors.studentNumber !== undefined}
           >
-            <FormLabel>{t("translation.translations.personal_info.student_number")}</FormLabel>
-            <Input type="text" {...register("studentNumber")} autoComplete="off" borderColor={border} />
-            <FormErrorMessage>{errors?.studentNumber?.message}!</FormErrorMessage>
+            <FormLabel>
+              {t("translation.translations.personal_info.student_number")}
+            </FormLabel>
+            <Input
+              type="text"
+              {...register("studentNumber")}
+              autoComplete="off"
+              borderColor={border}
+            />
+            <FormErrorMessage>
+              {errors?.studentNumber?.message}!
+            </FormErrorMessage>
           </FormControl>
 
           <FormControl
@@ -137,11 +145,7 @@ export default function PersonalInfoPage() {
             </FormErrorMessage>
           </FormControl>
 
-          <FormControl
-
-            mt="6"
-            isInvalid={errors.hoursOfPractice !== undefined}
-          >
+          <FormControl mt="6" isInvalid={errors.hoursOfPractice !== undefined}>
             <FormLabel>
               {t("translation.translations.personal_info.programming_practice")}
             </FormLabel>
@@ -157,12 +161,13 @@ export default function PersonalInfoPage() {
           </FormControl>
 
           <FormControl
-
             mt="6"
             isInvalid={errors.familiarLanguages !== undefined}
           >
             <FormLabel>
-              {t("translation.translations.personal_info.programming_experience")}
+              {t(
+                "translation.translations.personal_info.programming_experience"
+              )}
             </FormLabel>
             <Input
               borderColor={border}
