@@ -179,12 +179,11 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
           px="4"
-          background="red.500"
-          opacity="60%"
+          colorScheme="red"
+          opacity="75%"
           _hover={{
             opacity: "100%"
           }}
-          color="white"
           h="full"
           onClick={() => {
             // TODO(elianiva): implement proper surrender logic properly
@@ -200,11 +199,6 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
-          _hover={{
-            bg: "blue.600",
-            borderColor: "white",
-            color: "white"
-          }}
           onClick={() => {
             // TODO(elianiva): send the code to backend for execution
           }}
@@ -214,13 +208,8 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
         {!isRefactored && (
           <Button
             px="4"
-            background="blue.500"
-            color="white"
+            colorScheme="blue"
             h="full"
-            _hover={{
-              bg: "gray.800",
-              borderColor: "white"
-            }}
             onClick={() => {
               // TODO(elianiva): only allow to continue when they have the correct answer
               // dispatch(nextQuestion());

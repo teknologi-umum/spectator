@@ -27,6 +27,7 @@ export default function ThemeButton({ position }: ThemeButtonProps) {
         onChange={(e: FormEvent<HTMLSelectElement>) =>
           setColorMode(e.currentTarget.value as Theme)
         }
+        boxShadow="sm"
         bg={bg}
         textTransform="capitalize"
         w="8rem"
