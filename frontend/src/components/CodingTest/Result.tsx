@@ -100,8 +100,13 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                 background={resultBg}
                 mb="3"
                 rounded="sm"
+                _expanded={{ borderRadius: "sm" }}
               >
-                <AccordionButton color={fg}>
+                <AccordionButton
+                  color={fg}
+                  _hover={{ borderRadius: "sm" }}
+                  rounded="sm"
+                >
                   <Flex gap="2" align="center" flex="1" textAlign="left">
                     <Text fontWeight="bold">
                       Test Result #{testResult.testNumber}{" "}
