@@ -58,7 +58,6 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
       <Tabs isLazy h="full">
         <TabList borderColor={borderBg} color={fgDarker}>
           <Tab>{t("translation.translations.ui.scratchpad")}</Tab>
-          <Tab>{t("translation.translations.ui.output")}</Tab>
         </TabList>
 
         <TabPanels h="full">
@@ -72,9 +71,6 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
               onScroll={onScroll}
               onChange={handleChange}
             />
-          </TabPanel>
-          <TabPanel p="2" tabIndex={-1}>
-            <Heading>Sandbox</Heading>
           </TabPanel>
         </TabPanels>
       </Tabs>
