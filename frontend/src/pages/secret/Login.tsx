@@ -59,7 +59,7 @@ export default function Login() {
   }, [errors])
 
   return (
-    <Layout>
+    <Box>
       <ThemeButton position="fixed" />
       <Box
         height="90vh"
@@ -117,6 +117,6 @@ export default function Login() {
           </Button>
         </Box>
       </Box>
-    </Layout>
+    </Box>
   )
 }
