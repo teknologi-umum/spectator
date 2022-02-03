@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int findHeaterPower(long power);
 
-{0}
+_REPLACE_ME_WITH_SOLUTION_
 
 int __workingAnswer(long power) {
     int result = 0;
