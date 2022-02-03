@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -23,9 +24,9 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 
 	rows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketInputEvents+`")
+		`from(bucket: "`+common.BucketInputEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementMouseMoved)+`" and r["session_id"] == `+fmt.Sprintf("\"%s\"", sessionID.String())+`)
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementMouseMoved+`" and r["session_id"] == `+fmt.Sprintf("\"%s\"", sessionID.String())+`)
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> sort(columns: ["_time"])`,
 	)

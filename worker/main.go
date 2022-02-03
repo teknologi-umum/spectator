@@ -35,21 +35,6 @@ type Dependency struct {
 	pb.UnimplementedWorkerServer
 }
 
-const (
-	// BucketInputEvents is the bucket name for storing
-	// keystroke events, window events, and mouse events.
-	BucketInputEvents = "input_events"
-	// BucketSessionEvents is the bucket name for storing
-	// the session events, including their personal information.
-	BucketSessionEvents = "session_events"
-	// BucketFileEvents is the bucket name for storing
-	// the file events, most importantly the URL to the MinIO storage.
-	BucketFileEvents = "file_results"
-	// BucketInputStatistics is the bucket name for storing
-	// the input statistics, including their personal information.
-	BucketInputStatisticEvents = "input_statistics"
-)
-
 func main() {
 	// Lookup environment variables
 	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
@@ -138,25 +123,19 @@ func main() {
 		LoggerToken:    loggerToken,
 		Environment:    environment,
 		Funfact: &funfact.Dependency{
-			Environment:                environment,
-			DB:                         influxConn,
-			DBOrganization:             influxOrg,
-			Logger:                     loggerClient,
-			LoggerToken:                loggerToken,
-			BucketInputEvents:          BucketInputEvents,
-			BucketSessionEvents:        BucketSessionEvents,
-			BucketInputStatisticEvents: BucketInputStatisticEvents,
+			Environment:    environment,
+			DB:             influxConn,
+			DBOrganization: influxOrg,
+			Logger:         loggerClient,
+			LoggerToken:    loggerToken,
 		},
 		File: &file.Dependency{
-			Environment:         environment,
-			Bucket:              minioConn,
-			DB:                  influxConn,
-			DBOrganization:      influxOrg,
-			Logger:              loggerClient,
-			LoggerToken:         loggerToken,
-			BucketInputEvents:   BucketInputEvents,
-			BucketSessionEvents: BucketSessionEvents,
-			BucketFileEvents:    BucketFileEvents,
+			Environment:    environment,
+			Bucket:         minioConn,
+			DB:             influxConn,
+			DBOrganization: influxOrg,
+			Logger:         loggerClient,
+			LoggerToken:    loggerToken,
 		},
 	}
 

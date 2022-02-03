@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -20,9 +21,9 @@ type BeforeExamSAMSubmitted struct {
 func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]BeforeExamSAMSubmitted, error) {
 	beforeExamSamRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementBeforeExamSAMSubmitted)+`" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementBeforeExamSAMSubmitted+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {

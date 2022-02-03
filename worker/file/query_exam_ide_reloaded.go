@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -18,9 +19,9 @@ type ExamIDEReloaded struct {
 func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamIDEReloaded, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "`+string(MeasurementExamIDEReloaded)+`" and r["session_id"] == "`+sessionID.String()+`")`,
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementExamIDEReloaded+`" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
 		return []ExamIDEReloaded{}, fmt.Errorf("failed to query keystrokes: %w", err)

@@ -3,30 +3,22 @@ package funfact
 import (
 	"context"
 	"fmt"
+	"worker/common"
 
 	"github.com/google/uuid"
-)
-
-// MeasurementSolution provides the name for the solution measurement
-// type that is used for storing rejected or accepted test result.
-type MeasurementSolution string
-
-const (
-	MeasurementSolutionRejected MeasurementSolution = "solution_rejected"
-	MeasurementSolutionAccepted MeasurementSolution = "solution_accepted"
 )
 
 // Solution provides a union struct to host the solution_rejected
 // and solution_accepted measurement from the InfluxDB or
 // from any other type of input.
 type Solution struct {
-	Measurement          MeasurementSolution `json:"measurement"`
-	SessionId            uuid.UUID           `json:"session_id"`
-	QuestionNumber       int64               `json:"question_number"`
-	Language             string              `json:"language"`
-	Solution             string              `json:"solution"`
-	Scratchpad           string              `json:"scratchpad"`
-	SerializedTestResult string              `json:"serialized_test_result"`
+	Measurement          string    `json:"measurement"`
+	SessionId            uuid.UUID `json:"session_id"`
+	QuestionNumber       int64     `json:"question_number"`
+	Language             string    `json:"language"`
+	Solution             string    `json:"solution"`
+	Scratchpad           string    `json:"scratchpad"`
+	SerializedTestResult string    `json:"serialized_test_result"`
 }
 
 func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID uuid.UUID, result chan uint32) error {
@@ -41,9 +33,9 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 
 	solutionAcceptedRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "solution_accepted")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementSolutionAccepted+`")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> yield()`,
@@ -59,9 +51,9 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 
 	solutionRejectedRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "solution_rejected")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementSolutionRejected+`")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> yield()`,

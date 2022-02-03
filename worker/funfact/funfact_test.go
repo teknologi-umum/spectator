@@ -10,6 +10,7 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"worker/common"
 	"worker/funfact"
 
 	"github.com/google/uuid"
@@ -42,11 +43,9 @@ func TestMain(m *testing.M) {
 	db := influxdb2.NewClient(influxHost, influxToken)
 
 	deps = &funfact.Dependency{
-		DB:                  db,
-		DBOrganization:      influxOrg,
-		BucketInputEvents:   "input_events",
-		BucketSessionEvents: "session_events",
-		Environment:         "testing",
+		DB:             db,
+		DBOrganization: influxOrg,
+		Environment:    "testing",
 	}
 
 	rand.Seed(time.Now().Unix())
@@ -95,7 +94,7 @@ func prepareBuckets(ctx context.Context) error {
 	bucketsAPI := deps.DB.BucketsAPI()
 	organizationAPI := deps.DB.OrganizationsAPI()
 
-	bucketNames := []string{deps.BucketInputEvents, deps.BucketSessionEvents, deps.BucketInputStatisticEvents}
+	bucketNames := []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketInputStatisticEvents}
 
 	for _, bucket := range bucketNames {
 		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
@@ -123,8 +122,8 @@ func prepareBuckets(ctx context.Context) error {
 // from this function. Why create separate one instead of seeding it on every
 // test cases? Because we want to reduce HTTP write calls into the InfluxDB
 func seedData(ctx context.Context) error {
-	sessionWriteAPI := deps.DB.WriteAPI(deps.DBOrganization, deps.BucketSessionEvents)
-	inputWriteAPI := deps.DB.WriteAPI(deps.DBOrganization, deps.BucketInputEvents)
+	sessionWriteAPI := deps.DB.WriteAPI(deps.DBOrganization, common.BucketSessionEvents)
+	inputWriteAPI := deps.DB.WriteAPI(deps.DBOrganization, common.BucketInputEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -154,7 +153,7 @@ func seedData(ctx context.Context) error {
 	go func() {
 		for i := 0; i < 20; i++ {
 			point := influxdb2.NewPoint(
-				string(funfact.MeasurementSolutionAccepted),
+				common.MeasurementSolutionAccepted,
 				map[string]string{
 					"session_id":  globalID.String(),
 					"question_id": strconv.Itoa(rand.Intn(5)),
@@ -172,7 +171,7 @@ func seedData(ctx context.Context) error {
 
 		for i := 0; i < 5; i++ {
 			point := influxdb2.NewPoint(
-				string(funfact.MeasurementSolutionRejected),
+				common.MeasurementSolutionRejected,
 				map[string]string{
 					"session_id":  globalID.String(),
 					"question_id": strconv.Itoa(rand.Intn(5)),
@@ -193,7 +192,7 @@ func seedData(ctx context.Context) error {
 
 	go func() {
 		point := influxdb2.NewPoint(
-			"exam_started",
+			common.MeasurementExamStarted,
 			map[string]string{
 				"session_id": globalID.String(),
 			},
@@ -209,7 +208,7 @@ func seedData(ctx context.Context) error {
 
 	go func() {
 		point := influxdb2.NewPoint(
-			"exam_started",
+			common.MeasurementExamStarted,
 			map[string]string{
 				"session_id": globalID2.String(),
 			},
@@ -226,7 +225,7 @@ func seedData(ctx context.Context) error {
 
 	go func() {
 		point := influxdb2.NewPoint(
-			"exam_ended",
+			common.MeasurementExamEnded,
 			map[string]string{
 				"session_id": globalID.String(),
 			},
@@ -243,7 +242,7 @@ func seedData(ctx context.Context) error {
 
 	go func() {
 		point := influxdb2.NewPoint(
-			"exam_forfeited",
+			common.MeasurementExamForfeited,
 			map[string]string{
 				"session_id": globalID2.String(),
 			},
@@ -279,7 +278,7 @@ func seedData(ctx context.Context) error {
 			go func() {
 				for j := 0; j < 200; j++ {
 					point := influxdb2.NewPoint(
-						"keystroke",
+						common.MeasurementKeystroke,
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -299,7 +298,7 @@ func seedData(ctx context.Context) error {
 			go func() {
 				for j := 0; j < 100; j++ {
 					point := influxdb2.NewPoint(
-						"keystroke",
+						common.MeasurementKeystroke,
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -320,7 +319,7 @@ func seedData(ctx context.Context) error {
 			go func() {
 				for j := 0; j < 50; j++ {
 					point := influxdb2.NewPoint(
-						"keystroke",
+						common.MeasurementKeystroke,
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -350,7 +349,7 @@ func seedData(ctx context.Context) error {
 		for k := 0; k < 3; k++ {
 			for i := 0; i < 100; i++ {
 				point := influxdb2.NewPoint(
-					"keystroke",
+					common.MeasurementKeystroke,
 					map[string]string{
 						"session_id": globalID2.String(),
 					},
@@ -382,7 +381,7 @@ func cleanup(ctx context.Context) error {
 	}
 
 	// find input_events bucket
-	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
+	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketInputEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
@@ -391,12 +390,12 @@ func cleanup(ctx context.Context) error {
 	deleteAPI := deps.DB.DeleteAPI()
 
 	inputEventMeasurements := []string{
-		"keystroke",
-		"mouse_down",
-		"mouse_up",
-		"mouse_moved",
-		"mouse_scrolled",
-		"window_sized",
+		common.MeasurementKeystroke,
+		common.MeasurementMouseDown,
+		common.MeasurementMouseUp,
+		common.MeasurementMouseMoved,
+		common.MeasurementMouseScrolled,
+		common.MeasurementWindowSized,
 	}
 	for _, measurement := range inputEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
@@ -406,24 +405,24 @@ func cleanup(ctx context.Context) error {
 	}
 
 	// find input_events bucket
-	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
+	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketSessionEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	sessionEventMeasurements := []string{
-		"exam_forfeited",
-		"exam_ended",
-		"exam_started",
-		"solution_rejected",
-		"solution_accepted",
-		"session_started",
-		"personal_info_submitted",
-		"locale_set",
-		"exam_ide_reloaded",
-		"deadline_passed",
-		"before_exam_sam_submitted",
-		"after_exam_sam_submitted",
+		common.MeasurementExamForfeited,
+		common.MeasurementExamEnded,
+		common.MeasurementExamStarted,
+		common.MeasurementSolutionRejected,
+		common.MeasurementSolutionAccepted,
+		common.MeasurementSessionStarted,
+		common.MeasurementPersonalInfoSubmitted,
+		common.MeasurementLocaleSet,
+		common.MeasurementExamIDEReloaded,
+		common.MeasurementDeadlinePassed,
+		common.MeasurementBeforeExamSAMSubmitted,
+		common.MeasurementAfterExamSAMSubmitted,
 	}
 	for _, measurement := range sessionEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")

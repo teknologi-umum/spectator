@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"worker/common"
 	loggerpb "worker/logger_proto"
 
 	"github.com/gocarina/gocsv"
@@ -167,7 +168,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// So you'd make sure you're not inserting data into a
 	// nil bucket.
 
-	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketSessionEvents)
+	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketSessionEvents)
 
 	studentNumber := outputPersonalInfo.StudentNumber
 
@@ -234,7 +235,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	}
 
 	point := influxdb2.NewPoint(
-		"exported_data",
+		common.MeasurementExportedData,
 		map[string]string{
 			"session_id":     sessionID.String(),
 			"student_number": studentNumber,
@@ -246,7 +247,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		time.Now(),
 	)
 
-	err = d.DB.WriteAPIBlocking(d.DBOrganization, d.BucketFileEvents).WritePoint(ctx, point)
+	err = d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketFileEvents).WritePoint(ctx, point)
 	if err != nil {
 		return fmt.Errorf("failed to write %s test result: %v", fileName, err)
 	}

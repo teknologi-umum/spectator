@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -18,9 +19,9 @@ type DeadlinePassed struct {
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "deadline_passed" and r["session_id"] == "`+sessionID.String()+`")`,
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementDeadlinePassed+`" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
 		return []DeadlinePassed{}, fmt.Errorf("failed to query deadline_passed: %w", err)

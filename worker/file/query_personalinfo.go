@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -24,10 +25,10 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 	rows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info_submitted")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementPersonalInfoSubmitted+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> sort(columns: ["_time"])`,
 	)
@@ -46,25 +47,21 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 		studentNumber, ok := record.ValueByKey("student_number").(string)
 		if !ok {
-			// FIXME: add default value
 			studentNumber = ""
 		}
 
 		hoursOfPractice, ok := record.ValueByKey("hours_of_practice").(int64)
 		if !ok {
-			// FIXME: add default value
 			hoursOfPractice = 0
 		}
 
 		yearsOfExperience, ok := record.ValueByKey("years_of_experience").(int64)
 		if !ok {
-			// FIXME: add default value
 			yearsOfExperience = 0
 		}
 
 		familiarLanguages, ok := record.ValueByKey("familiar_languages").(string)
 		if !ok {
-			// FIXME: add default value
 			familiarLanguages = ""
 		}
 

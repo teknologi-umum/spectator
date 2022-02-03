@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -14,8 +15,8 @@ import (
 
 // seedData seeds the database with test data
 func seedData(ctx context.Context) error {
-	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
+	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketSessionEvents)
+	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketInputEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -36,7 +37,6 @@ func seedData(ctx context.Context) error {
 	// eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
-	// FIXME: correct this waitgroup number
 	wg.Add(11)
 
 	// Seeding session events for each user
@@ -45,7 +45,7 @@ func seedData(ctx context.Context) error {
 			// Personal info
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/PersonalInfoSubmittedEvent.cs
 			personalInfoPoint := influxdb2.NewPoint(
-				"personal_info_submitted",
+				common.MeasurementPersonalInfoSubmitted,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -59,7 +59,7 @@ func seedData(ctx context.Context) error {
 			)
 
 			beforeExamSAMPoint := influxdb2.NewPoint(
-				"before_exam_sam_submitted",
+				common.MeasurementBeforeExamSAMSubmitted,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -71,7 +71,7 @@ func seedData(ctx context.Context) error {
 			)
 
 			afterExamSAMPoint := influxdb2.NewPoint(
-				"after_exam_sam_submitted",
+				common.MeasurementAfterExamSAMSubmitted,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -84,7 +84,7 @@ func seedData(ctx context.Context) error {
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamStartedEvent.cs
 			examStartedPoint := influxdb2.NewPoint(
-				"exam_started",
+				common.MeasurementExamStarted,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -97,7 +97,7 @@ func seedData(ctx context.Context) error {
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamEndedEvent.cs
 			examEndedPoint := influxdb2.NewPoint(
-				"exam_ended",
+				common.MeasurementExamEnded,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -109,7 +109,7 @@ func seedData(ctx context.Context) error {
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamForfeited.cs
 			examForfeitedPoint := influxdb2.NewPoint(
-				"exam_forfeited",
+				common.MeasurementExamForfeited,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -121,7 +121,7 @@ func seedData(ctx context.Context) error {
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamIDEReloadedEvent.cs
 			examIDEReloadedPoint := influxdb2.NewPoint(
-				"exam_ide_reloaded",
+				common.MeasurementExamIDEReloaded,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -133,7 +133,7 @@ func seedData(ctx context.Context) error {
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamPassedEvent.cs
 			examPassedPoint := influxdb2.NewPoint(
-				"exam_passed",
+				common.MeasurementExamPassed,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -145,7 +145,7 @@ func seedData(ctx context.Context) error {
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/LocaleSetEvent.cs
 			localeSetPoint := influxdb2.NewPoint(
-				"locale_set",
+				common.MeasurementLocaleSet,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -181,7 +181,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 5; i++ {
 				point := influxdb2.NewPoint(
-					"solution_accepted",
+					common.MeasurementSolutionAccepted,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -209,7 +209,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 5; i++ {
 				point := influxdb2.NewPoint(
-					"solution_rejected",
+					common.MeasurementSolutionRejected,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -236,7 +236,7 @@ func seedData(ctx context.Context) error {
 		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			point := influxdb2.NewPoint(
-				"deadline_passed",
+				common.MeasurementDeadlinePassed,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -263,7 +263,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"keystroke",
+					common.MeasurementKeystroke,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -296,7 +296,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_moved",
+					common.MeasurementMouseMoved,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -327,7 +327,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_down",
+					common.MeasurementMouseDown,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -356,7 +356,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_up",
+					common.MeasurementMouseUp,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -385,7 +385,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_scrolled",
+					common.MeasurementMouseScrolled,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -413,7 +413,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 4; i++ {
 				point := influxdb2.NewPoint(
-					"window_resize",
+					common.MeasurementWindowSized,
 					map[string]string{
 						"session_id": sessionID,
 					},

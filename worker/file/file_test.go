@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
+	"worker/common"
 	"worker/file"
 
 	"github.com/google/uuid"
@@ -73,13 +74,10 @@ func TestMain(m *testing.M) {
 	}
 
 	deps = &file.Dependency{
-		DB:                  db,
-		DBOrganization:      influxOrg,
-		Bucket:              bucket,
-		BucketInputEvents:   "input_events",
-		BucketSessionEvents: "session_events",
-		BucketFileEvents:    "file_results",
-		Environment:         "testing",
+		DB:             db,
+		DBOrganization: influxOrg,
+		Bucket:         bucket,
+		Environment:    "testing",
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
@@ -115,7 +113,7 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	bucketsAPI := deps.DB.BucketsAPI()
 	organizationAPI := deps.DB.OrganizationsAPI()
 
-	bucketNames := []string{deps.BucketInputEvents, deps.BucketSessionEvents, deps.BucketFileEvents}
+	bucketNames := []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketFileEvents}
 
 	for _, bucket := range bucketNames {
 		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
@@ -151,18 +149,18 @@ func cleanup(ctx context.Context) error {
 	deleteAPI := deps.DB.DeleteAPI()
 
 	// find input_events bucket
-	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
+	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketInputEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	fileEventMeasurement := []string{
-		"keystroke",
-		"mouse_down",
-		"mouse_up",
-		"mouse_moved",
-		"mouse_scrolled",
-		"window_sized",
+		common.MeasurementKeystroke,
+		common.MeasurementMouseDown,
+		common.MeasurementMouseUp,
+		common.MeasurementMouseMoved,
+		common.MeasurementMouseScrolled,
+		common.MeasurementWindowSized,
 	}
 	for _, measurement := range fileEventMeasurement {
 		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
@@ -172,25 +170,25 @@ func cleanup(ctx context.Context) error {
 	}
 
 	// find input_events bucket
-	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
+	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketSessionEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
 
 	sessionEventMeasurements := []string{
-		"code_test_attempt",
-		"exam_forfeited",
-		"exam_ended",
-		"exam_started",
-		"solution_rejected",
-		"solution_accepted",
-		"session_started",
-		"personal_info_submitted",
-		"locale_set",
-		"exam_ide_reloaded",
-		"deadline_passed",
-		"before_exam_sam_submitted",
-		"after_exam_sam_submitted",
+		common.MeasurementCodeTestAttempt,
+		common.MeasurementExamForfeited,
+		common.MeasurementExamEnded,
+		common.MeasurementExamStarted,
+		common.MeasurementSolutionRejected,
+		common.MeasurementSolutionAccepted,
+		common.MeasurementSessionStarted,
+		common.MeasurementPersonalInfoSubmitted,
+		common.MeasurementLocaleSet,
+		common.MeasurementExamIDEReloaded,
+		common.MeasurementDeadlinePassed,
+		common.MeasurementBeforeExamSAMSubmitted,
+		common.MeasurementAfterExamSAMSubmitted,
 	}
 	for _, measurement := range sessionEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
@@ -200,7 +198,7 @@ func cleanup(ctx context.Context) error {
 	}
 
 	// find file_results bucket
-	fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketFileEvents)
+	fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketFileEvents)
 	if err != nil {
 		return fmt.Errorf("finding bucket: %v", err)
 	}
