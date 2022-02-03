@@ -48,7 +48,11 @@ builder.Services.Setup(services => {
 	});
 
 	// Add SignalR
-	services.AddSignalR().AddJsonProtocol(options => options.PayloadSerializerOptions = ProtobufJsonConverter.Options);
+	services.AddSignalR(hubOptions => {
+		hubOptions.EnableDetailedErrors = true;
+	}).AddJsonProtocol(options => {
+		options.PayloadSerializerOptions = ProtobufJsonConverter.Options;
+	});
 
 	// Add authentication & authorization
 	services.AddJwtBearerAuthentication();
@@ -72,7 +76,7 @@ if (app.Environment.IsDevelopment()) {
 }
 
 // Redirect HTTP traffic
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 // Middlewares
 app.UseRouting();
