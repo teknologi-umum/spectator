@@ -1,5 +1,6 @@
+import React, { useMemo } from "react";
 import { useColorModeValue } from "@/hooks";
-import { EditorState } from "@/models/EditorState";
+import { useAppSelector } from "@/store";
 import {
   Accordion,
   AccordionButton,
@@ -12,61 +13,6 @@ import {
   Flex,
   Text
 } from "@chakra-ui/react";
-import React from "react";
-
-// TODO(elianiva): replace this with a data coming from redux
-const FAKE_RESULTS: EditorState = {
-  currentQuestionNumber: 1,
-  fontSize: 14,
-  questions: [],
-  currentLanguage: "javascript",
-  deadlineUtc: 0,
-  snapshotByQuestionNumber: {
-    1: {
-      questionNumber: 1,
-      language: "javascript",
-      scratchPad: "",
-      submissionAccepted: false,
-      submissionRefactored: false,
-      submissionSubmitted: true,
-      solutionByLanguage: {
-        javascript: "function foo() { return 1; }",
-        java: "",
-        c: "",
-        cpp: "",
-        python: "",
-        php: ""
-      },
-      testResults: [
-        { testNumber: 1, status: "Passing" },
-        {
-          testNumber: 2,
-          status: "RuntimeError",
-          stderr: "Trying to access a non-existent variable"
-        },
-        {
-          testNumber: 3,
-          status: "CompileError",
-          stderr:
-            "Failed to compile: error: 'yeet' was not declared in this scope"
-        },
-        {
-          testNumber: 4,
-          status: "Failing",
-          expectedStdout: "2",
-          actualStdout: "1"
-        },
-        {
-          testNumber: 5,
-          status: "Failing",
-          expectedStdout: "{ \"foo\": \"bar\" }",
-          actualStdout: "1"
-        },
-        { testNumber: 6, status: "Passing" }
-      ]
-    }
-  }
-};
 
 interface ResultProps {
   fg: string;
@@ -74,13 +20,20 @@ interface ResultProps {
 }
 
 export default function Result({ fg, fgDarker }: ResultProps) {
+  const { snapshotByQuestionNumber, currentQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
+  const currentSnapshot = useMemo(
+    () => snapshotByQuestionNumber[currentQuestionNumber],
+    [currentQuestionNumber]
+  );
   const resultBg = useColorModeValue("gray.50", "gray.600", "gray.900");
 
   return (
     <Box>
       <Accordion allowToggle allowMultiple>
-        {FAKE_RESULTS.snapshotByQuestionNumber[1].testResults!.map(
-          (testResult, index) => {
+        {currentSnapshot?.testResults &&
+          currentSnapshot.testResults.map((testResult, index) => {
             // replace `PascalCase` with `Sentence Case`
             const status = testResult.status
               .replace(/([A-Z]+)/g, " $1")
@@ -109,7 +62,7 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                 >
                   <Flex gap="2" align="center" flex="1" textAlign="left">
                     <Text fontWeight="bold">
-                      Test Result #{testResult.testNumber}{" "}
+                      Test Result #{testResult.testNumber}
                     </Text>
                     <Badge colorScheme={badgeColour}>{status}</Badge>
                   </Flex>
@@ -136,8 +89,7 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                 </AccordionPanel>
               </AccordionItem>
             );
-          }
-        )}
+          })}
       </Accordion>
     </Box>
   );

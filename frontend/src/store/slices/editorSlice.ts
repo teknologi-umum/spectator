@@ -10,25 +10,83 @@ const initialState: EditorState = {
   currentQuestionNumber: 0,
   currentLanguage: "javascript",
   fontSize: 14,
-  snapshotByQuestionNumber: {}
+  // TODO(elianiva): replace this with a data coming from redux
+  snapshotByQuestionNumber: {
+    1: {
+      questionNumber: 1,
+      language: "javascript" as Language,
+      scratchPad: "",
+      submissionAccepted: false,
+      submissionRefactored: false,
+      submissionSubmitted: true,
+      solutionByLanguage: {
+        javascript: "function foo() { return 1; }",
+        java: "",
+        c: "",
+        cpp: "",
+        python: "",
+        php: ""
+      },
+      testResults: [
+        { testNumber: 1, status: "Passing" },
+        {
+          testNumber: 2,
+          status: "RuntimeError",
+          stderr: "Trying to access a non-existent variable"
+        },
+        {
+          testNumber: 3,
+          status: "CompileError",
+          stderr:
+            "Failed to compile: error: 'yeet' was not declared in this scope"
+        },
+        {
+          testNumber: 4,
+          status: "Failing",
+          expectedStdout: "2",
+          actualStdout: "1"
+        },
+        {
+          testNumber: 5,
+          status: "Failing",
+          expectedStdout: "{ \"foo\": \"bar\" }",
+          actualStdout: "1"
+        },
+        { testNumber: 6, status: "Passing" }
+      ]
+    }
+  }
 };
 
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    setDeadlineAndQuestions: (state, action: PayloadAction<{ deadlineUtc: number, questions: Question[] }>) => {
+    setDeadlineAndQuestions: (
+      state,
+      action: PayloadAction<{ deadlineUtc: number; questions: Question[] }>
+    ) => {
       state.deadlineUtc = action.payload.deadlineUtc;
       state.questions = action.payload.questions;
     },
-    setCurrentQuestion: (state: EditorState, action: PayloadAction<Question>) => {
+    setCurrentQuestionNumber: (
+      state: EditorState,
+      action: PayloadAction<number>
+    ) => {
+      state.currentQuestionNumber = action.payload;
+    },
+    setCurrentQuestion: (
+      state: EditorState,
+      action: PayloadAction<Question>
+    ) => {
       if (!(action.payload.questionNumber in state.snapshotByQuestionNumber)) {
         state.snapshotByQuestionNumber[action.payload.questionNumber] = {
           questionNumber: action.payload.questionNumber,
           language: state.currentLanguage,
           solutionByLanguage: {
             ...action.payload.templateByLanguage,
-            [state.currentLanguage]: action.payload.templateByLanguage[state.currentLanguage]
+            [state.currentLanguage]:
+              action.payload.templateByLanguage[state.currentLanguage]
           },
           scratchPad: "",
           submissionSubmitted: false,
@@ -38,19 +96,25 @@ export const editorSlice = createSlice({
         };
       }
       state.currentQuestionNumber = action.payload.questionNumber;
-      state.currentLanguage = state.snapshotByQuestionNumber[action.payload.questionNumber].language;
+      state.currentLanguage =
+        state.snapshotByQuestionNumber[action.payload.questionNumber].language;
     },
     setLanguage: (state, action: PayloadAction<Language>) => {
-      state.snapshotByQuestionNumber[state.currentQuestionNumber!].language = action.payload;
+      state.snapshotByQuestionNumber[state.currentQuestionNumber!].language =
+        action.payload;
       state.currentLanguage = action.payload;
     },
     setFontSize: (state, action: PayloadAction<number>) => {
       state.fontSize = action.payload;
     },
     setSolution: (state, action: PayloadAction<string>) => {
-      const solutionByLanguage = state.snapshotByQuestionNumber[state.currentQuestionNumber!]?.solutionByLanguage;
+      const solutionByLanguage =
+        state.snapshotByQuestionNumber[state.currentQuestionNumber!]
+          ?.solutionByLanguage;
       if (solutionByLanguage !== undefined) {
-        state.snapshotByQuestionNumber[state.currentQuestionNumber!].solutionByLanguage[state.currentLanguage] = action.payload;
+        state.snapshotByQuestionNumber[
+          state.currentQuestionNumber!
+        ].solutionByLanguage[state.currentLanguage] = action.payload;
       }
     },
     setSnapshot: (state, action: PayloadAction<EditorSnapshot>) => {
@@ -66,15 +130,20 @@ export const editorSlice = createSlice({
       };
     },
     setScratchPad: (state, action: PayloadAction<string>) => {
-      const solutionByLanguage = state.snapshotByQuestionNumber[state.currentQuestionNumber!]?.scratchPad;
+      const solutionByLanguage =
+        state.snapshotByQuestionNumber[state.currentQuestionNumber!]
+          ?.scratchPad;
       if (solutionByLanguage !== undefined) {
-        state.snapshotByQuestionNumber[state.currentQuestionNumber!].scratchPad = action.payload;
+        state.snapshotByQuestionNumber[
+          state.currentQuestionNumber!
+        ].scratchPad = action.payload;
       }
     }
   }
 });
 
 export const {
+  setCurrentQuestionNumber,
   setCurrentQuestion,
   setLanguage,
   setFontSize,

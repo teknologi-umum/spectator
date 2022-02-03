@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Box,
   Flex,
@@ -34,7 +34,17 @@ export default function Question({
 }: QuestionProps) {
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
-  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
+  const currentSnapshot = useMemo(
+    () => snapshotByQuestionNumber[currentQuestionNumber],
+    [currentQuestionNumber]
+  );
+
+  useEffect(() => {
+    console.log(currentSnapshot);
+  }, [currentQuestionNumber]);
 
   const { t } = useTranslation();
 
@@ -53,7 +63,10 @@ export default function Question({
       <Tabs h="calc(100% - 2.75rem)" isLazy>
         <TabList borderColor={borderBg}>
           <Tab color={fgDarker}>{t("translation.translations.ui.prompt")}</Tab>
-          <Tab color={fgDarker}>
+          <Tab
+            color={fgDarker}
+            isDisabled={currentSnapshot?.testResults !== null}
+          >
             {t("translation.translations.ui.your_result")}
           </Tab>
         </TabList>

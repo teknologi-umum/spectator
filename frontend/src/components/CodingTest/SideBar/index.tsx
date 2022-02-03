@@ -57,7 +57,7 @@ export default function SideBar({ bg, fg }: SideBarProps) {
         {icons.map((icon, idx) => (
           <NavItem
             key={idx}
-            questionNo={idx}
+            questionNumber={idx + 1}
             icon={icon as ComponentWithAs<"svg", IconProps>}
             title={`Challenge ${idx + 1}`}
           />
