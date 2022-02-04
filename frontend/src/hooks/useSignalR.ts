@@ -1,15 +1,18 @@
+import { sessionSpoke, eventSpoke } from "@/spoke";
+import { useAppSelector } from "@/store";
+
 /**
- * `useSignalR` will give you a connection to a SignalR hub
+ * `useSignalR` will give you a connection to a SignalR hub with the access
+ * token automatically attached if it exists
  * @param hubUrl - The hub URL
  */
-export function useSignalR(hubUrl: string) {
-  // kira kira implementasinya nanti kaya gini:
-  // const connection = new signalR.HubConnectionBuilder()
-  //   .withUrl(hubUrl)
-  //   .configureLogging(signalR.LogLevel.Information)
-  //   .build();
-  // tapi karena servernya belom ada, jadi implement nanti aja
-  const connection = "not an actual implementation";
+export function useSignalR() {
+  const { accessToken } = useAppSelector((state) => state.session);
 
-  return connection;
+  if (accessToken !== null) {
+    sessionSpoke.setAccessToken(accessToken);
+    eventSpoke.setAccessToken(accessToken);
+  }
+
+  return { sessionSpoke, eventSpoke };
 }

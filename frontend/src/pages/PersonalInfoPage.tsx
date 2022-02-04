@@ -17,12 +17,11 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
-import { useColorModeValue } from "@/hooks";
+import { useColorModeValue, useSignalR } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "../store/slices/sessionSlice";
-import sessionSpoke from "@/spoke/sessionSpoke";
 
 export default function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -34,6 +33,7 @@ export default function PersonalInfoPage() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const border = useColorModeValue("gray.400", "gray.500", "gray.600");
+  const { sessionSpoke } = useSignalR();
 
   const {
     register,
@@ -45,8 +45,9 @@ export default function PersonalInfoPage() {
     reValidateMode: "onBlur"
   });
 
-  const onSubmit: SubmitHandler<PersonalInfo> = (data) => {
+  const onSubmit: SubmitHandler<PersonalInfo> = async (data) => {
     dispatch(setPersonalInfo(data));
+    await sessionSpoke.submitPersonalInfo(data);
     navigate("/instructions");
   };
 
@@ -77,7 +78,6 @@ export default function PersonalInfoPage() {
       sessionSpoke
         .startSession({ locale: dtoLocale })
         .then((sessionReply) => {
-          console.log(sessionReply);
           setAccessToken(sessionReply.accessToken);
         })
         .catch((err) => {
