@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,7 @@ builder.Services.Setup(services => {
 		hubOptions.EnableDetailedErrors = true;
 	}).AddJsonProtocol(options => {
 		options.PayloadSerializerOptions = ProtobufJsonConverter.Options;
+		options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 	});
 
 	// Add authentication & authorization
@@ -60,7 +62,8 @@ builder.Services.Setup(services => {
 
 	// Add Cors Policy
 	services.AddCors(options => options.AddPolicy("AllowAll", builder => {
-		builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+		// TODO(elianiva): replace this with proper CORS policy, ATM this is being used to make it *just works*
+		builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
 	}));
 });
 
