@@ -12,8 +12,9 @@ import (
 
 // measurement: exam_forfeited
 type ExamForfeited struct {
-	SessionId string    `json:"session_id" csv:"session_id"` // tag
-	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
+	Measurement string    `json:"_measurement" csv:"_measurement"` // tag
+	SessionId   string    `json:"session_id" csv:"session_id"`     // tag
+	Timestamp   time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamForfeited, error) {
@@ -32,8 +33,9 @@ func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryA
 		record := afterExamSamRows.Record()
 
 		outputExamForfeited = append(outputExamForfeited, ExamForfeited{
-			SessionId: sessionID.String(),
-			Timestamp: record.Time(),
+			Measurement: common.MeasurementExamForfeited,
+			SessionId:   sessionID.String(),
+			Timestamp:   record.Time(),
 		})
 	}
 

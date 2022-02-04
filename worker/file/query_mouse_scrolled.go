@@ -11,11 +11,11 @@ import (
 )
 
 type MouseScrolled struct {
-	SessionID string    `json:"session_id" csv:"session_id"`
-	Type      string    `json:"type" csv:"-"`
-	X         int64     `json:"x" csv:"x"`
-	Y         int64     `json:"y" csv:"y"`
-	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
+	Measurement string    `json:"_measurement" csv:"_measurement"`
+	SessionID   string    `json:"session_id" csv:"session_id"`
+	X           int64     `json:"x" csv:"x"`
+	Y           int64     `json:"y" csv:"y"`
+	Timestamp   time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseScrolled, error) {
@@ -46,11 +46,11 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 		}
 
 		outputMouseScrolled = append(outputMouseScrolled, MouseScrolled{
-			SessionID: sessionID.String(),
-			Type:      "mouse_scrolled",
-			X:         x,
-			Y:         y,
-			Timestamp: record.Time(),
+			Measurement: common.MeasurementMouseScrolled,
+			SessionID:   sessionID.String(),
+			X:           x,
+			Y:           y,
+			Timestamp:   record.Time(),
 		})
 	}
 

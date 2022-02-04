@@ -11,7 +11,7 @@ import (
 )
 
 type PersonalInfo struct {
-	Type              string    `json:"type" csv:"-"`
+	Measurement       string    `json:"_measurement" csv:"_measurement"`
 	SessionID         string    `json:"session_id" csv:"session_id"`
 	StudentNumber     string    `json:"student_number" csv:"student_number"`
 	HoursOfPractice   int64     `json:"hours_of_practice" csv:"hours_of_experience"`
@@ -66,7 +66,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		}
 
 		personalInfo = PersonalInfo{
-			Type:              "personal_info",
+			Measurement:       common.MeasurementPersonalInfoSubmitted,
 			SessionID:         sessionId,
 			StudentNumber:     studentNumber,
 			HoursOfPractice:   hoursOfPractice,

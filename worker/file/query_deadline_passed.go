@@ -12,8 +12,9 @@ import (
 
 // measurement: deadline_passed
 type DeadlinePassed struct {
-	SessionId string    `json:"session_id" csv:"session_id"` // tag
-	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
+	Measurement string    `json:"_measurement" csv:"_measurement"`
+	SessionId   string    `json:"session_id" csv:"session_id"`
+	Timestamp   time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
@@ -33,8 +34,9 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 		record := afterExamSamRows.Record()
 
 		outputDeadlinePassed = append(outputDeadlinePassed, DeadlinePassed{
-			SessionId: sessionID.String(),
-			Timestamp: record.Time(),
+			Measurement: common.MeasurementDeadlinePassed,
+			SessionId:   sessionID.String(),
+			Timestamp:   record.Time(),
 		})
 	}
 

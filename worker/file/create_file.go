@@ -28,7 +28,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		if r == nil {
 			return
 		}
-		
+
 		log.Println(r.(error))
 		d.Logger.Log(
 			r.(error).Error(),

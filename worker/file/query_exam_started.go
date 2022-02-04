@@ -12,10 +12,11 @@ import (
 
 // measurement: exam_started
 type ExamStarted struct {
-	SessionId       string    // tag
-	QuestionNumbers string    // field
-	Deadline        time.Time // field
-	Timestamp       time.Time
+	Measurement     string    `json:"_measurement" csv:"_measurement"` // tag
+	SessionId       string    `json:"session_id" csv:"session_id"`     // tag
+	QuestionNumbers string    `json:"question_numbers" csv:"question_numbers"`
+	Deadline        time.Time `json:"deadline" csv:"deadline"`
+	Timestamp       time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamStarted, error) {
@@ -49,6 +50,7 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 		deadline := time.Unix(deadlineUnix, 0)
 
 		outputExamStarted = append(outputExamStarted, ExamStarted{
+			Measurement:     common.MeasurementExamStarted,
 			SessionId:       sessionID.String(),
 			QuestionNumbers: questionNumbers,
 			Deadline:        deadline,

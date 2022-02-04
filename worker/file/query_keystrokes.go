@@ -11,8 +11,8 @@ import (
 )
 
 type Keystroke struct {
+	Measurement  string    `json:"_measurement" csv:"_measurement"`
 	SessionID    string    `json:"session_id" csv:"session_id"`
-	Type         string    `json:"type" csv:"-"`
 	KeyChar      string    `json:"key_char" csv:"key_char"`
 	KeyCode      string    `json:"key_code" csv:"key_code"`
 	Shift        bool      `json:"shift" csv:"shift"`
@@ -77,8 +77,8 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		}
 
 		outputKeystroke = append(outputKeystroke, Keystroke{
+			Measurement:  common.MeasurementKeystroke,
 			SessionID:    sessionID.String(),
-			Type:         "keystroke",
 			KeyChar:      keyChar,
 			KeyCode:      keyCode,
 			Shift:        shift,

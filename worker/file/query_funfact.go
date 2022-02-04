@@ -11,6 +11,7 @@ import (
 )
 
 type Funfact struct {
+	Measurement        string    `json:"_measurement" csv:"_measurement"`
 	SessionId          string    `json:"session_id" csv:"session_id"` // tag
 	WordsPerMinute     int64     `json:"words_per_minute" csv:"words_per_minute"`
 	DeletionRate       float64   `json:"deletion_rate" csv:"deletion_rate"`
@@ -51,6 +52,7 @@ func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, se
 		}
 
 		outputFunfact = Funfact{
+			Measurement:        common.MeasurementFunfactProjection,
 			SessionId:          sessionID.String(),
 			WordsPerMinute:     wordsPerMinute,
 			DeletionRate:       deletionRate,

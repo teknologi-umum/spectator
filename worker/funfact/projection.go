@@ -19,7 +19,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts 
 		if r == nil {
 			return
 		}
-		
+
 		log.Println(r.(error))
 
 		d.Logger.Log(

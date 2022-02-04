@@ -11,12 +11,12 @@ import (
 )
 
 type MouseMovement struct {
-	SessionID string    `json:"session_id" csv:"session_id"`
-	Type      string    `json:"type" csv:"-"`
-	Direction string    `json:"direction" csv:"direction"`
-	X         int64     `json:"x" csv:"x"`
-	Y         int64     `json:"y" csv:"y"`
-	Timestamp time.Time `json:"timestamp" csv:"_timestamp"`
+	Measurement string    `json:"_measurement" csv:"_measurement"`
+	SessionID   string    `json:"session_id" csv:"session_id"`
+	Direction   string    `json:"direction" csv:"direction"`
+	X           int64     `json:"x" csv:"x"`
+	Y           int64     `json:"y" csv:"y"`
+	Timestamp   time.Time `json:"timestamp" csv:"_timestamp"`
 }
 
 func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
@@ -55,12 +55,12 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		outputMouseMove = append(
 			outputMouseMove,
 			MouseMovement{
-				SessionID: sessionID.String(),
-				Type:      "mouse_move",
-				Direction: direction,
-				X:         x,
-				Y:         y,
-				Timestamp: record.Time(),
+				SessionID:   sessionID.String(),
+				Measurement: common.MeasurementMouseMoved,
+				Direction:   direction,
+				X:           x,
+				Y:           y,
+				Timestamp:   record.Time(),
 			},
 		)
 	}

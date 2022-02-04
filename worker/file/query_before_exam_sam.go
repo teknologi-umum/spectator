@@ -12,7 +12,8 @@ import (
 
 // measurement: before_exam_sam_submitted
 type BeforeExamSAMSubmitted struct {
-	SessionId    string    `json:"session_id" csv:"session_id"` // Tag
+	Measurement  string    `json:"_measurement" csv:"_measurement"` // tag
+	SessionId    string    `json:"session_id" csv:"session_id"`     // Tag
 	ArousedLevel uint32    `json:"aroused_level" csv:"aroused_level"`
 	PleasedLevel uint32    `json:"pleased_level" csv:"pleased_level"`
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
@@ -54,6 +55,7 @@ func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryA
 		outputBeforeExam = append(
 			outputBeforeExam,
 			BeforeExamSAMSubmitted{
+				Measurement:  common.MeasurementBeforeExamSAMSubmitted,
 				SessionId:    sessionId,
 				ArousedLevel: uint32(arousedLevel),
 				PleasedLevel: uint32(pleasedLevel),

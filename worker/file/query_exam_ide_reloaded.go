@@ -12,8 +12,9 @@ import (
 
 // measurement: exam_ide_reloaded
 type ExamIDEReloaded struct {
-	SessionId string    `json:"session_id" csv:"session_id"` // tag
-	Timestamp time.Time `json:"timestamp" csv:"timestamp"`
+	Measurement string    `json:"_measurement" csv:"_measurement"` // tag
+	SessionId   string    `json:"session_id" csv:"session_id"`     // tag
+	Timestamp   time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamIDEReloaded, error) {
@@ -33,8 +34,9 @@ func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.Quer
 		record := afterExamSamRows.Record()
 
 		outputExamIDEReloaded = append(outputExamIDEReloaded, ExamIDEReloaded{
-			SessionId: sessionID.String(),
-			Timestamp: record.Time(),
+			Measurement: common.MeasurementExamIDEReloaded,
+			SessionId:   sessionID.String(),
+			Timestamp:   record.Time(),
 		})
 	}
 
