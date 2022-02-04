@@ -11,7 +11,7 @@ import (
 )
 
 // measurement: after_exam_sam_submitted
-type AfterExamSAMSubmitted struct {
+type SelfAssessmentManekin struct {
 	Measurement  string    `json:"_measurement" csv:"_measurement"`
 	SessionId    string    `json:"session_id" csv:"session_id"`
 	ArousedLevel uint32    `json:"aroused_level" csv:"aroused_level"`
@@ -19,20 +19,28 @@ type AfterExamSAMSubmitted struct {
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]AfterExamSAMSubmitted, error) {
+func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]SelfAssessmentManekin, error) {
+	return d.querySelfAssessmentManekin(ctx, queryAPI, sessionID, common.MeasurementAfterExamSAMSubmitted)
+}
+
+func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]SelfAssessmentManekin, error) {
+	return d.querySelfAssessmentManekin(ctx, queryAPI, sessionID, common.MeasurementBeforeExamSAMSubmitted)
+}
+
+func (d *Dependency) querySelfAssessmentManekin(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) ([]SelfAssessmentManekin, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementAfterExamSAMSubmitted+`" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+measurement+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []AfterExamSAMSubmitted{}, fmt.Errorf("failed to query after_exam_sam_submitted: %w", err)
+		return []SelfAssessmentManekin{}, fmt.Errorf("failed to query after_exam_sam_submitted: %w", err)
 	}
 	defer afterExamSamRows.Close()
 
-	var outputAfterExam []AfterExamSAMSubmitted
+	var outputAfterExam []SelfAssessmentManekin
 
 	for afterExamSamRows.Next() {
 		record := afterExamSamRows.Record()
@@ -54,8 +62,8 @@ func (d *Dependency) QueryAfterExamSam(ctx context.Context, queryAPI api.QueryAP
 
 		outputAfterExam = append(
 			outputAfterExam,
-			AfterExamSAMSubmitted{
-				Measurement:  common.MeasurementAfterExamSAMSubmitted,
+			SelfAssessmentManekin{
+				Measurement:  measurement,
 				SessionId:    sessionId,
 				ArousedLevel: uint32(arousedLevel),
 				PleasedLevel: uint32(pleasedLevel),
