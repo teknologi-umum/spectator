@@ -17,6 +17,7 @@ import (
 func seedData(ctx context.Context) error {
 	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketSessionEvents)
 	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketInputEvents)
+	statisticWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketInputStatisticEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -37,7 +38,7 @@ func seedData(ctx context.Context) error {
 	// eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
-	wg.Add(11)
+	wg.Add(12)
 
 	// Seeding session events for each user
 	for _, sessionID := range []string{globalID.String(), globalID2.String()} {
@@ -64,8 +65,8 @@ func seedData(ctx context.Context) error {
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"aroused_level": "2",
-					"pleased_level": "5",
+					"aroused_level": 2,
+					"pleased_level": 5,
 				},
 				eventStart.Add(time.Minute*2),
 			)
@@ -76,8 +77,8 @@ func seedData(ctx context.Context) error {
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"aroused_level": "2",
-					"pleased_level": "5",
+					"aroused_level": 2,
+					"pleased_level": 5,
 				},
 				eventStart.Add(time.Minute*3),
 			)
@@ -90,7 +91,7 @@ func seedData(ctx context.Context) error {
 				},
 				map[string]interface{}{
 					"question_numbers": "1,2,3,4,5",
-					"deadline":         eventStart.Add(time.Minute * 180),
+					"deadline":         eventStart.Add(time.Minute * 180).Unix(),
 				},
 				eventStart.Add(time.Minute*4),
 			)
@@ -301,11 +302,9 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"direction":     "right",
-						"x":             "20",
-						"y":             "30",
-						"window_width":  "100",
-						"window_height": "200",
+						"direction": "right",
+						"x":         20,
+						"y":         30,
 					},
 					eventStart.Add(time.Minute*14+time.Second*time.Duration(i)),
 				)
@@ -332,9 +331,9 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x":      "1",
-						"y":      "2",
-						"button": "0",
+						"x":      6,
+						"y":      5,
+						"button": int64(common.MouseButtonRight),
 					},
 					eventStart.Add(time.Minute*15+time.Second*time.Duration(i)),
 				)
@@ -361,9 +360,9 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x":      "1",
-						"y":      "2",
-						"button": "0",
+						"x":      1,
+						"y":      2,
+						"button": int64(common.MouseButtonMiddle),
 					},
 					eventStart.Add(time.Minute*16+time.Second*time.Duration(i)),
 				)
@@ -390,8 +389,8 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x": "1",
-						"y": "2",
+						"x": 1,
+						"y": 2,
 					},
 					eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 				)
@@ -429,6 +428,34 @@ func seedData(ctx context.Context) error {
 		}
 
 		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Funfact Event
+	go func() {
+		var points []*write.Point
+
+		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			point := influxdb2.NewPoint(
+				common.MeasurementFunfactProjection,
+				map[string]string{
+					"session_id": sessionID,
+				},
+				map[string]interface{}{
+					"words_per_minute":    60,
+					"deletion_rate":       0.7,
+					"submission_attempts": 30,
+				},
+				time.Now(),
+			)
+
+			points = append(points, point)
+		}
+
+		err := statisticWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}

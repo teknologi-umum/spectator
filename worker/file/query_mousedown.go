@@ -13,8 +13,8 @@ import (
 type MouseDown struct {
 	SessionID string             `json:"session_id" csv:"session_id"`
 	Type      string             `json:"type" csv:"-"`
-	X         int                `json:"x" csv:"x"`
-	Y         int                `json:"y" csv:"y"`
+	X         int64              `json:"x" csv:"x"`
+	Y         int64              `json:"y" csv:"y"`
 	Button    common.MouseButton `json:"button" csv:"button"`
 	Timestamp time.Time          `json:"timestamp" csv:"timestamp"`
 }
@@ -36,17 +36,17 @@ func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, 
 	for mouseClickRows.Next() {
 		record := mouseClickRows.Record()
 
-		button, ok := record.ValueByKey("button").(common.MouseButton)
+		button, ok := record.ValueByKey("button").(int64)
 		if !ok {
 			button = 0
 		}
 
-		x, ok := record.ValueByKey("x").(int)
+		x, ok := record.ValueByKey("x").(int64)
 		if !ok {
 			x = 0
 		}
 
-		y, ok := record.ValueByKey("y").(int)
+		y, ok := record.ValueByKey("y").(int64)
 		if !ok {
 			y = 0
 		}
@@ -56,7 +56,7 @@ func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, 
 			Type:      "mouse_down",
 			X:         x,
 			Y:         y,
-			Button:    button,
+			Button:    common.MouseButton(button),
 			Timestamp: record.Time(),
 		})
 	}

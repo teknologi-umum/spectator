@@ -26,7 +26,7 @@ message Member {
 
 message FunFactResponse {
     uint32 words_per_minute = 1;
-    float deletion_rate = 2;
+    double deletion_rate = 2;
     uint32 submission_attempts = 3;
 }
 

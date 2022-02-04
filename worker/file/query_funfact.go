@@ -13,7 +13,7 @@ import (
 type Funfact struct {
 	SessionId          string    `json:"session_id" csv:"session_id"` // tag
 	WordsPerMinute     int64     `json:"words_per_minute" csv:"words_per_minute"`
-	DeletionRate       int64     `json:"deletion_rate" csv:"deletion_rate"`
+	DeletionRate       float64   `json:"deletion_rate" csv:"deletion_rate"`
 	SubmissionAttempts int64     `json:"submission_attempts" csv:"submission_attempts"`
 	Timestamp          time.Time `json:"timestamp" csv:"timestamp"`
 }
@@ -40,7 +40,7 @@ func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, se
 			wordsPerMinute = 0
 		}
 
-		deletionRate, ok := record.ValueByKey("deletion_rate").(int64)
+		deletionRate, ok := record.ValueByKey("deletion_rate").(float64)
 		if !ok {
 			deletionRate = 0
 		}

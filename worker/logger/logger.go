@@ -4,6 +4,7 @@ package logger
 import (
 	"context"
 	"log"
+	"os"
 	"strings"
 	"time"
 	pb "worker/logger_proto"
@@ -54,6 +55,11 @@ func (l *Logger) Log(message string, level *pb.Level, requestID string, body map
 			log.Printf("Recovered from panic: %v\n", r)
 		}
 	}()
+
+	if os.Getenv("ENV") != "production" || os.Getenv("ENVIRONMENT") != "production" {
+		log.Println(message)
+		return
+	}
 
 	loggerCtx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()

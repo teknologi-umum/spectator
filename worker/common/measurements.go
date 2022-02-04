@@ -57,7 +57,7 @@ const (
 type MouseButton int
 
 const (
-	Left MouseButton = iota
-	Right
-	Middle
+	MouseButtonLeft MouseButton = iota
+	MouseButtonRight
+	MouseButtonMiddle
 )

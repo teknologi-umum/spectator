@@ -40,10 +40,13 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 		if !ok {
 			questionNumbers = ""
 		}
-		deadline, ok := record.ValueByKey("deadline").(time.Time)
+
+		deadlineUnix := record.ValueByKey("deadline").(int64)
 		if !ok {
-			deadline = time.Time{}
+			deadlineUnix = 0
 		}
+
+		deadline := time.Unix(deadlineUnix, 0)
 
 		outputExamStarted = append(outputExamStarted, ExamStarted{
 			SessionId:       sessionID.String(),

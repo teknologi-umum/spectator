@@ -12,13 +12,15 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float32, requestID string) {
+func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float64, requestID string) {
 	// Defer func to avoid panic
 	defer func() {
 		r := recover()
-		if r != nil {
-			log.Println(r.(error))
+		if r == nil {
+			return
 		}
+		
+		log.Println(r.(error))
 
 		d.Logger.Log(
 			r.(error).Error(),
@@ -37,7 +39,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts 
 	defer cancel()
 
 	// We shall find the student number
-	personalInfoRows, err := d.DB.QueryAPI(common.BucketSessionEvents).Query(
+	personalInfoRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)

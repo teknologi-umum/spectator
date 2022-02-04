@@ -25,10 +25,11 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
 	defer func() {
 		r := recover()
-		if r != nil {
-			log.Println(r.(error))
+		if r == nil {
+			return
 		}
-
+		
+		log.Println(r.(error))
 		d.Logger.Log(
 			r.(error).Error(),
 			loggerpb.Level_ERROR.Enum(),

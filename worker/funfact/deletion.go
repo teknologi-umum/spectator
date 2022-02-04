@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float32) error {
+func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float64) error {
 	// Formula to calculate deletion rate:
 	//
 	// SELECT all KeystrokeEvent WHERE value = delete OR value = backspace
@@ -16,8 +16,8 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
-	var totalDeletion float32
-	var totalKeystrokes float32
+	var totalDeletion float64
+	var totalKeystrokes float64
 
 	deletionRows, err := queryAPI.Query(
 		ctx,

@@ -113,7 +113,12 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	bucketsAPI := deps.DB.BucketsAPI()
 	organizationAPI := deps.DB.OrganizationsAPI()
 
-	bucketNames := []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketFileEvents}
+	bucketNames := []string{
+		common.BucketInputEvents,
+		common.BucketSessionEvents,
+		common.BucketFileEvents,
+		common.BucketInputStatisticEvents,
+	}
 
 	for _, bucket := range bucketNames {
 		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
@@ -192,6 +197,23 @@ func cleanup(ctx context.Context) error {
 	}
 	for _, measurement := range sessionEventMeasurements {
 		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		if err != nil {
+			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+		}
+	}
+
+	// find statistics bucket
+	statisticBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketInputStatisticEvents)
+	if err != nil {
+		return fmt.Errorf("finding bucket: %v", err)
+	}
+
+	statisticEventMeasurements := []string{
+		common.MeasurementFunfactProjection,
+	}
+
+	for _, measurement := range statisticEventMeasurements {
+		err = deleteAPI.Delete(ctx, currentOrganization, statisticBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 		if err != nil {
 			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
 		}

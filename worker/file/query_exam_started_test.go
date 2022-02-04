@@ -23,5 +23,6 @@ func TestQueryExamStarted(t *testing.T) {
 		if len(result) != 1 {
 			t.Errorf("Expected 1 results, got %d", len(result))
 		}
+
 	}
 }
