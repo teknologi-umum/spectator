@@ -20,7 +20,7 @@ type PersonalInfo struct {
 	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (PersonalInfo, error) {
+func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*PersonalInfo, error) {
 	var personalInfo PersonalInfo
 
 	rows, err := queryAPI.Query(
@@ -33,7 +33,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
+		return &PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
 	}
 	defer rows.Close()
 
@@ -76,5 +76,5 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		}
 	}
 
-	return personalInfo, nil
+	return &personalInfo, nil
 }

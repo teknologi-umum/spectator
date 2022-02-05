@@ -51,39 +51,41 @@ func TestMain(m *testing.M) {
 
 	rand.Seed(time.Now().Unix())
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
+	// Setup a context for preparing things
+	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*60)
 
-	err := prepareBuckets(ctx)
+	err := prepareBuckets(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error preparing influxdb buckets: %v", err)
 	}
 
 	// First cleanup to ensure that there are no data in the database
-	err = cleanup(ctx)
+	err = cleanup(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error cleaning up buckets: %v", err)
 	}
 
-	err = seedData(ctx)
+	err = seedData(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error seeding data: %v", err)
 	}
 
 	db.Close()
 
-	cancel()
+	prepareCancel()
 
 	code := m.Run()
 
-	// Refresh context
-	ctx, cancel = context.WithTimeout(context.Background(), time.Second*10)
+	// Setup a context for cleaning up things
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*15)
 
 	// Second cleanup to ensure that there are no data in the database
-	err = cleanup(ctx)
+	err = cleanup(cleanupCtx)
 	if err != nil {
 		log.Fatalf("Error cleaning up buckets: %v", err)
 	}
-	cancel()
+
+	cleanupCancel()
 
 	db.Close()
 

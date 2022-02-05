@@ -19,7 +19,7 @@ type ExamStarted struct {
 	Timestamp       time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamStarted, error) {
+func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*ExamStarted, error) {
 	examStartedRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
@@ -28,11 +28,11 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []ExamStarted{}, fmt.Errorf("failed to query exam_started: %w", err)
+		return &ExamStarted{}, fmt.Errorf("failed to query exam_started: %w", err)
 	}
 	defer examStartedRows.Close()
 
-	var outputExamStarted []ExamStarted
+	var outputExamStarted ExamStarted
 
 	for examStartedRows.Next() {
 		record := examStartedRows.Record()
@@ -49,14 +49,14 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 
 		deadline := time.Unix(deadlineUnix, 0)
 
-		outputExamStarted = append(outputExamStarted, ExamStarted{
+		outputExamStarted = ExamStarted{
 			Measurement:     common.MeasurementExamStarted,
 			SessionId:       sessionID.String(),
 			QuestionNumbers: questionNumbers,
 			Deadline:        deadline,
 			Timestamp:       time.Unix(0, 0),
-		})
+		}
 	}
 
-	return outputExamStarted, nil
+	return &outputExamStarted, nil
 }

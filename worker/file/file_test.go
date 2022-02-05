@@ -80,28 +80,35 @@ func TestMain(m *testing.M) {
 		Environment:    "testing",
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
-	defer cancel()
+	// Setup a context for preparing things
+	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*60)
 
 	// Check for bucket existence
-	err = prepareBuckets(ctx, deps.DB, influxOrg)
+	err = prepareBuckets(prepareCtx, deps.DB, influxOrg)
 	if err != nil {
 		log.Fatalf("Failed to prepare influxdb buckets: %v", err)
 	}
 
-	err = seedData(ctx)
+	err = seedData(prepareCtx)
 	if err != nil {
 		log.Fatalf("Failed to seed data: %v", err)
 	}
+
+	prepareCancel()
 
 	code := m.Run()
 
 	fmt.Println("Cleaning up...")
 
-	err = cleanup(ctx)
+	// Setup a context for cleaning up things
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*15)
+
+	err = cleanup(cleanupCtx)
 	if err != nil {
 		log.Fatalf("Failed to cleanup: %v", err)
 	}
+
+	cleanupCancel()
 
 	deps.DB.Close()
 

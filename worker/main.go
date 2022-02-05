@@ -108,6 +108,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer loggerConn.Close()
+
 	loggerClient := logger.New(
 		loggerpb.NewLoggerClient(loggerConn),
 		loggerToken,

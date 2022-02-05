@@ -19,15 +19,15 @@ type Mouse struct {
 	Timestamp   time.Time          `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Mouse, error) {
+func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Mouse, error) {
 	return d.queryMouse(ctx, queryAPI, sessionID, common.MeasurementMouseDown)
 }
 
-func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Mouse, error) {
+func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Mouse, error) {
 	return d.queryMouse(ctx, queryAPI, sessionID, common.MeasurementMouseUp)
 }
 
-func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) ([]Mouse, error) {
+func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) (*[]Mouse, error) {
 	mouseClickRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketInputEvents+`")
@@ -36,7 +36,7 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []Mouse{}, fmt.Errorf("failed to query mouse down: %w", err)
+		return &[]Mouse{}, fmt.Errorf("failed to query mouse down: %w", err)
 	}
 
 	var outputMouse []Mouse
@@ -69,5 +69,5 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 		})
 	}
 
-	return outputMouse, nil
+	return &outputMouse, nil
 }

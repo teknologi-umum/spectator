@@ -19,7 +19,7 @@ type Funfact struct {
 	Timestamp          time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (Funfact, error) {
+func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*Funfact, error) {
 	funfactRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket:"`+common.BucketInputStatisticEvents+`")
@@ -28,7 +28,7 @@ func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, se
 		|> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return Funfact{}, fmt.Errorf("failed to query funfact: %w", err)
+		return &Funfact{}, fmt.Errorf("failed to query funfact: %w", err)
 	}
 	defer funfactRows.Close()
 
@@ -61,5 +61,5 @@ func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, se
 		}
 	}
 
-	return outputFunfact, nil
+	return &outputFunfact, nil
 }

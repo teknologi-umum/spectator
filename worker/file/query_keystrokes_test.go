@@ -20,8 +20,8 @@ func TestQueryKeystrokes(t *testing.T) {
 			return
 		}
 
-		if len(result) != 50 {
-			t.Errorf("Expected 50 results, got %d", len(result))
+		if len(*result) != 50 {
+			t.Errorf("Expected 50 results, got %d", len(*result))
 		}
 	}
 }

@@ -1,3 +1,6 @@
+// file package provides the domain for creating JSON and CSV files
+// for the user. Those created files are meant to be uploaded into
+// MinIO or any other S3 compatible storage.
 package file
 
 import (

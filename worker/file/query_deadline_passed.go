@@ -17,7 +17,7 @@ type DeadlinePassed struct {
 	Timestamp   time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]DeadlinePassed, error) {
+func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*DeadlinePassed, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
@@ -25,20 +25,20 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementDeadlinePassed+`" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
-		return []DeadlinePassed{}, fmt.Errorf("failed to query deadline_passed: %w", err)
+		return &DeadlinePassed{}, fmt.Errorf("failed to query deadline_passed: %w", err)
 	}
 
-	var outputDeadlinePassed []DeadlinePassed
+	var outputDeadlinePassed DeadlinePassed
 
 	for afterExamSamRows.Next() {
 		record := afterExamSamRows.Record()
 
-		outputDeadlinePassed = append(outputDeadlinePassed, DeadlinePassed{
+		outputDeadlinePassed = DeadlinePassed{
 			Measurement: common.MeasurementDeadlinePassed,
 			SessionId:   sessionID.String(),
 			Timestamp:   record.Time(),
-		})
+		}
 	}
 
-	return outputDeadlinePassed, nil
+	return &outputDeadlinePassed, nil
 }

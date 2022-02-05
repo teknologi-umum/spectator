@@ -21,15 +21,15 @@ type Solution struct {
 	Timestamp            time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QuerySolutionAccepted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Solution, error) {
+func (d *Dependency) QuerySolutionAccepted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Solution, error) {
 	return d.querySolution(ctx, queryAPI, sessionID, common.MeasurementSolutionAccepted)
 }
 
-func (d *Dependency) QuerySolutionRejected(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Solution, error) {
+func (d *Dependency) QuerySolutionRejected(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Solution, error) {
 	return d.querySolution(ctx, queryAPI, sessionID, common.MeasurementSolutionRejected)
 }
 
-func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) ([]Solution, error) {
+func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) (*[]Solution, error) {
 	rows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
@@ -39,7 +39,7 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return []Solution{}, fmt.Errorf("failed to query solution accepted - session_id: %w", err)
+		return &[]Solution{}, fmt.Errorf("failed to query solution accepted - session_id: %w", err)
 	}
 	defer rows.Close()
 
@@ -88,5 +88,5 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 		)
 	}
 
-	return outputSolution, nil
+	return &outputSolution, nil
 }

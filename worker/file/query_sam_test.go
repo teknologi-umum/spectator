@@ -20,8 +20,12 @@ func TestQueryBeforeExamSAM(t *testing.T) {
 			return
 		}
 
-		if len(result) != 1 {
-			t.Errorf("Expected 1 results, got %d", len(result))
+		if result.PleasedLevel != 5 {
+			t.Errorf("expecting PleasedLevel to be 5, got: %d", result.PleasedLevel)
+		}
+
+		if result.ArousedLevel != 2 {
+			t.Errorf("expecting ArousedLevel to be 2, got: %d", result.ArousedLevel)
 		}
 	}
 }
@@ -38,8 +42,12 @@ func TestQueryAfterExamSAM(t *testing.T) {
 			return
 		}
 
-		if len(result) != 1 {
-			t.Errorf("Expected 1 results, got %d", len(result))
+		if result.PleasedLevel != 5 {
+			t.Errorf("expecting PleasedLevel to be 5, got: %d", result.PleasedLevel)
+		}
+
+		if result.ArousedLevel != 2 {
+			t.Errorf("expecting ArousedLevel to be 2, got: %d", result.ArousedLevel)
 		}
 	}
 }

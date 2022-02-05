@@ -23,7 +23,7 @@ type Keystroke struct {
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
+func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Keystroke, error) {
 	keystrokeMouseRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketInputEvents+`")
@@ -32,7 +32,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return []Keystroke{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return &[]Keystroke{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
 	defer keystrokeMouseRows.Close()
 
@@ -90,5 +90,5 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		})
 	}
 
-	return outputKeystroke, nil
+	return &outputKeystroke, nil
 }
