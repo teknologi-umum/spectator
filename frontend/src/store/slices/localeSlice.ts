@@ -15,7 +15,7 @@ export const sessionSlice = createSlice({
   reducers: {
     setLocale: (state, action: PayloadAction<Locale>) => {
       state.locale = action.payload;
-    },
+    }
   }
 });
 
