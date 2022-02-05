@@ -46,21 +46,29 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const boilerplate = useMemo(
     () =>
       t(
-        `question.questions.${currentQuestionNumber - 1}.templates.${currentLanguage}`
+        `question.questions.${
+          currentQuestionNumber - 1
+        }.templates.${currentLanguage}`
       ),
     [currentQuestionNumber, currentLanguage]
   );
 
   const currentSolution =
     currentQuestionNumber !== null
-      ? snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[currentLanguage]
+      ? snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+        currentLanguage
+      ]
       : null;
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    if (currentSolution !== null && currentSolution !== "") {
+    if (
+      currentSolution !== null &&
+      currentSolution !== undefined &&
+      currentSolution !== ""
+    ) {
       setCode(currentSolution);
     } else {
       setCode(boilerplate);
