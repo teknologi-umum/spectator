@@ -33,7 +33,7 @@
       "templates": {
         "c": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nint isSameNumber(int a, int b) {\n    // write your code here\n}\n",
         "cpp": "#include <stdio.h>\n\n// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nbool isSameNumber(int a, int b) {\n    // write your code here\n}\n",
-        "java": "class SimilarNumber {\n    // `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n    // `b` as integer. It returns a boolean as its output.\n    public boolean isSameNumber(int a, int b) {\n        // write your code here\n    }\n}\n",
+        "java": "static class SimilarNumber {\n    // `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n    // `b` as integer. It returns a boolean as its output.\n    public static boolean isSameNumber(int a, int b) {\n        // write your code here\n    }\n}\n",
         "javascript": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber(a, b) {\n    // write your code here\n}\n",
         "php": "// `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n// `b` as integer. It returns a boolean as its output.\nfunction isSameNumber($a, $b) {\n    // write your code here\n}\n",
         "python": "# `isSameNumber` is a function that accepts 2 arguments: `a` as integer and\n# `b` as integer. It returns a boolean as its output.\ndef isSameNumber(a, b):\n    # write your code here"
