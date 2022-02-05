@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 	"worker/common"
@@ -15,6 +14,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -101,7 +101,7 @@ func TestMain(m *testing.M) {
 	fmt.Println("Cleaning up...")
 
 	// Setup a context for cleaning up things
-	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*15)
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*30)
 
 	err = cleanup(cleanupCtx)
 	if err != nil {
@@ -160,101 +160,130 @@ func cleanup(ctx context.Context) error {
 	// delete bucket data
 	deleteAPI := deps.DB.DeleteAPI()
 
-	// find input_events bucket
-	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketInputEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+	g, gctx := errgroup.WithContext(ctx)
 
-	fileEventMeasurement := []string{
-		common.MeasurementKeystroke,
-		common.MeasurementMouseDown,
-		common.MeasurementMouseUp,
-		common.MeasurementMouseMoved,
-		common.MeasurementMouseScrolled,
-		common.MeasurementWindowSized,
-	}
-	for _, measurement := range fileEventMeasurement {
-		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+	g.Go(func() error {
+		// find input_events bucket
+		inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// find input_events bucket
-	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketSessionEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+		inputEventMeasurement := []string{
+			common.MeasurementKeystroke,
+			common.MeasurementMouseDown,
+			common.MeasurementMouseUp,
+			common.MeasurementMouseMoved,
+			common.MeasurementMouseScrolled,
+			common.MeasurementWindowSized,
+		}
+		for _, measurement := range inputEventMeasurement {
+			err = deleteAPI.Delete(gctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
 
-	sessionEventMeasurements := []string{
-		common.MeasurementCodeTestAttempt,
-		common.MeasurementExamForfeited,
-		common.MeasurementExamEnded,
-		common.MeasurementExamStarted,
-		common.MeasurementSolutionRejected,
-		common.MeasurementSolutionAccepted,
-		common.MeasurementSessionStarted,
-		common.MeasurementPersonalInfoSubmitted,
-		common.MeasurementLocaleSet,
-		common.MeasurementExamIDEReloaded,
-		common.MeasurementDeadlinePassed,
-		common.MeasurementBeforeExamSAMSubmitted,
-		common.MeasurementAfterExamSAMSubmitted,
-	}
-	for _, measurement := range sessionEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		return nil
+	})
+
+	g.Go(func() error {
+		// find input_events bucket
+		sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketSessionEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// find statistics bucket
-	statisticBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketInputStatisticEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+		sessionEventMeasurements := []string{
+			common.MeasurementCodeTestAttempt,
+			common.MeasurementExamForfeited,
+			common.MeasurementExamEnded,
+			common.MeasurementExamStarted,
+			common.MeasurementSolutionRejected,
+			common.MeasurementSolutionAccepted,
+			common.MeasurementSessionStarted,
+			common.MeasurementPersonalInfoSubmitted,
+			common.MeasurementLocaleSet,
+			common.MeasurementExamIDEReloaded,
+			common.MeasurementDeadlinePassed,
+			common.MeasurementBeforeExamSAMSubmitted,
+			common.MeasurementAfterExamSAMSubmitted,
+		}
 
-	statisticEventMeasurements := []string{
-		common.MeasurementFunfactProjection,
-	}
+		// More speed hack, we create a child errgroup
+		c, cctx := errgroup.WithContext(gctx)
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[:len(sessionEventMeasurements)/3] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
 
-	for _, measurement := range statisticEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, statisticBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)/3:len(sessionEventMeasurements)*2/3] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
+
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)*2/3:] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
+
+		return c.Wait()
+	})
+
+	g.Go(func() error {
+		// find statistics bucket
+		statisticBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputStatisticEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// find file_results bucket
-	fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, common.BucketFileEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+		statisticEventMeasurements := []string{
+			common.MeasurementFunfactProjection,
+		}
 
-	for _, measurement := range fileEventMeasurement {
-		err = deleteAPI.Delete(ctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
+		for _, measurement := range statisticEventMeasurements {
+			err = deleteAPI.Delete(gctx, currentOrganization, statisticBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
+
+		return nil
+	})
+
+	g.Go(func() error {
+		// find file_results bucket
+		fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketFileEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// delete json/csv files
-	pathJSON, err := filepath.Glob("./*_*.json")
-	if err != nil {
-		return fmt.Errorf("unexpected error: %v", err)
-	}
-	pathCSV, err := filepath.Glob("./*_*.csv")
-	if err != nil {
-		return fmt.Errorf("unexpected error: %v", err)
-	}
+		fileEventMeasurement := []string{common.MeasurementExportedData}
 
-	for _, path := range append(pathJSON, pathCSV...) {
-		err = os.Remove(path)
-		if err != nil {
-			return fmt.Errorf("unexpected error: %v", err)
+		for _, measurement := range fileEventMeasurement {
+			err = deleteAPI.Delete(gctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
 		}
-	}
 
-	return nil
+		return nil
+	})
+
+	return g.Wait()
 }

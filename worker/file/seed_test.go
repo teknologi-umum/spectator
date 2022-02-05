@@ -103,7 +103,7 @@ func seedData(ctx context.Context) error {
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*5),
 			)
@@ -114,9 +114,7 @@ func seedData(ctx context.Context) error {
 				map[string]string{
 					"session_id": sessionID,
 				},
-				map[string]interface{}{
-					"_time": time.Now(),
-				},
+				map[string]interface{}{"arbitrary": "arbitrary"},
 				eventStart.Add(time.Minute*6),
 			)
 
@@ -127,7 +125,7 @@ func seedData(ctx context.Context) error {
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*8),
 			)
@@ -139,7 +137,7 @@ func seedData(ctx context.Context) error {
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*7),
 			)
@@ -187,7 +185,11 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"_time": time.Now(),
+						"question_number":         i + 1,
+						"language":                "PHP",
+						"solution":                "echo 'Hello World!';",
+						"scratchpad":              "Lorem ipsum dolot sit amet",
+						"serialized_test_results": "Hello World!",
 					},
 					eventStart.Add(time.Minute*10+time.Second*time.Duration(i)),
 				)
@@ -215,7 +217,11 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"_time": time.Now(),
+						"question_number":         i + 1,
+						"language":                "PHP",
+						"solution":                "echo 'Hello World!';",
+						"scratchpad":              "Lorem ipsum dolot sit amet",
+						"serialized_test_results": "Hello World!",
 					},
 					eventStart.Add(time.Minute*11+time.Second*time.Duration(i)),
 				)
@@ -242,7 +248,7 @@ func seedData(ctx context.Context) error {
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*12),
 			)

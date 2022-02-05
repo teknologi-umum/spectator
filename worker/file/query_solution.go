@@ -35,11 +35,10 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["_measurement"] == "`+measurement+`" and r["session_id"] == "`+sessionID.String()+`")
-		|> pivot(rowKey:["session_id"], columnKey: ["question_number"], valueColumn: ["solution"])
-		|> sort(columns: ["_time"])`,
+		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return &[]Solution{}, fmt.Errorf("failed to query solution accepted - session_id: %w", err)
+		return &[]Solution{}, fmt.Errorf("failed to query solution for measurement %s: %v", measurement, err)
 	}
 	defer rows.Close()
 

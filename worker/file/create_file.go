@@ -2,18 +2,13 @@ package file
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
 	"worker/common"
 	loggerpb "worker/logger_proto"
 
-	"github.com/gocarina/gocsv"
 	"github.com/google/uuid"
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/influxdata/influxdb-client-go/v2/api"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -222,54 +217,6 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		cfDeps.sendErrorLog(err, "failed to convert and upload", requestID, sessionID)
 		return
 	}
-}
-
-// convertAndUpload converts the data into both JSON and CSV format,
-// then upload it into the MinIO bucket. It also writes the link to the
-// InfluxDB database.
-//
-// The data parameter MUST BE a pointer to a struct, not the direct
-// copy of the struct. Otherwise, it will panic.
-func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPIBlocking, data interface{}, fileName string, studentNumber string, requestID string, sessionID uuid.UUID) error {
-	dataJSON, err := json.MarshalIndent(&data, "", " ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal json %s data: %v", fileName, err)
-	}
-
-	dataCSV, err := gocsv.MarshalBytes(&data)
-	if err != nil {
-		return fmt.Errorf("failed to marshal csv %s data: %v", fileName, err)
-	}
-
-	_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+fileName+".csv")
-	if err != nil {
-		return fmt.Errorf("failed to upload csv %s file: %v", fileName, err)
-	}
-
-	_, err = d.mkFileAndUpload(ctx, dataJSON, studentNumber+"_"+fileName+".json")
-	if err != nil {
-		return fmt.Errorf("failed to upload json %s file: %v", fileName, err)
-	}
-
-	point := influxdb2.NewPoint(
-		common.MeasurementExportedData,
-		map[string]string{
-			"session_id":     sessionID.String(),
-			"student_number": studentNumber,
-		},
-		map[string]interface{}{
-			"file_csv_url":  "/public/" + studentNumber + "_" + fileName + ".csv",
-			"file_json_url": "/public/" + studentNumber + "_" + fileName + ".json",
-		},
-		time.Now(),
-	)
-
-	err = d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketFileEvents).WritePoint(ctx, point)
-	if err != nil {
-		return fmt.Errorf("failed to write %s test result: %v", fileName, err)
-	}
-
-	return nil
 }
 
 // createFile is a struct that implements sendErrorLog method.
