@@ -27,7 +27,7 @@ const isDev = import.meta.env.MODE === "development";
 const persistConfig = {
   key: "root",
   version: 1,
-  whitelist: ["editor", "locale", "session", "personalInfo"],
+  whitelist: ["app", "editor", "locale", "session", "personalInfo"],
   storage
 };
 
