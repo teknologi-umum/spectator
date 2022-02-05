@@ -77,6 +77,7 @@ export default function PersonalInfoPage() {
       sessionSpoke
         .startSession({ locale: dtoLocale })
         .then((sessionReply) => {
+          sessionSpoke.setAccessToken(sessionReply.accessToken);
           setAccessToken(sessionReply.accessToken);
         })
         .catch((err) => {

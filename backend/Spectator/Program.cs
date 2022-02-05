@@ -83,6 +83,7 @@ if (app.Environment.IsDevelopment()) {
 
 // Middlewares
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("AllowAll");
 

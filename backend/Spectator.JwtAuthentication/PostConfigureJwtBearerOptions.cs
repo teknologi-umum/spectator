@@ -28,7 +28,7 @@ namespace Spectator.JwtAuthentication {
 			};
 			options.Events = new JwtBearerEvents {
 				OnMessageReceived = context => {
-					context.Token = context.Request.Cookies["ACCESS_TOKEN"];
+					context.Token = context.Request.Query["access_token"];
 					return Task.CompletedTask;
 				}
 			};

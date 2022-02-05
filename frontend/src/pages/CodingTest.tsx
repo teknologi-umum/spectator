@@ -28,7 +28,7 @@ export default function CodingTest() {
     (state) => state.editor
   );
 
-  const connection = useSignalR("fake_hub_url");
+  const connection = useSignalR();
 
   useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
   useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
