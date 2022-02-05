@@ -1,6 +1,5 @@
 ﻿using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
-using InfluxDB.Client.Linq;
 using Microsoft.Extensions.Options;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.Repositories;

@@ -5,10 +5,16 @@ export default class SpokeBase {
   protected _accessToken: string;
 
   constructor(hubUrl: string) {
-    this._accessToken = "";
+    this._accessToken = document.cookie
+      .split('; ')
+      .find(c => c.startsWith('ACCESS_TOKEN='))
+      ?.split('=')
+      ?.at(1)
+      ?? "";
     this._hubConnection = new SignalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
-        accessTokenFactory: () => this._accessToken
+        accessTokenFactory: () => this._accessToken,
+        withCredentials: true
       })
       .withHubProtocol(new SignalR.JsonHubProtocol())
       // TODO(elianiva): might want to change this later since Debug is very
@@ -22,6 +28,7 @@ export default class SpokeBase {
   }
 
   public setAccessToken(accessToken: string) {
+    document.cookie = `ACCESS_TOKEN=${accessToken}`;
     this._accessToken = accessToken;
   }
 
