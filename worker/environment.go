@@ -20,7 +20,7 @@ func loadEnvironment() error {
 		if errors.Is(err, os.ErrNotExist) {
 			return nil
 		}
-		
+
 		return err
 	}
 	defer file.Close()
