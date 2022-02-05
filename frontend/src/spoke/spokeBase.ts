@@ -2,10 +2,14 @@ import * as SignalR from "@microsoft/signalr";
 
 export default class SpokeBase {
   protected _hubConnection: SignalR.HubConnection;
+  protected _accessToken: string;
 
   constructor(hubUrl: string) {
+    this._accessToken = "";
     this._hubConnection = new SignalR.HubConnectionBuilder()
-      .withUrl(hubUrl)
+      .withUrl(hubUrl, {
+        accessTokenFactory: () => this._accessToken
+      })
       .withHubProtocol(new SignalR.JsonHubProtocol())
       // TODO(elianiva): might want to change this later since Debug is very
       //                 verbose
@@ -17,7 +21,11 @@ export default class SpokeBase {
     });
   }
 
-  public isDisconnected() {
+  public setAccessToken(accessToken: string) {
+    this._accessToken = accessToken;
+  }
+
+  public isDisconnected(): boolean {
     return (
       this._hubConnection.state === SignalR.HubConnectionState.Disconnected
     );
