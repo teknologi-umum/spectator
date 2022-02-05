@@ -7,7 +7,7 @@
       "templates": {
         "c": "#include <stdio.h>\n\n// `printLyrics` is a function that accepts no argument and returns nothing.\nvoid printLyrics() {\n    // write your code here\n}",
         "cpp": "#include <stdio.h>\n\n// `printLyrics` is a function that accepts no argument and returns nothing.\nvoid printLyrics() {\n    // write your code here\n}",
-        "java": "class Lyrics {\n    // `printLyrics` is a function that accepts no argument and returns\n    // nothing.\n    public void printLyrics() {\n        // write your code here\n    }\n}",
+        "java": "static class Lyrics {\n    // `printLyrics` is a function that accepts no argument and returns\n    // nothing.\n    public static void printLyrics() {\n        // write your code here\n    }\n}",
         "javascript": "// `printLyrics` is a function that accepts no argument and returns nothing.\nfunction printLyrics() {\n    // write your code here\n}",
         "php": "// `printLyrics` is a function that accepts no argument and returns nothing.\nfunction printLyrics() {\n    // write your code here\n}",
         "python": "# `printLyrics` is a function that accepts no argument and returns nothing.\ndef printLyrics():\n    # write your code here"

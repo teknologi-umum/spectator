@@ -7,7 +7,7 @@
       "templates": {
         "c": "#include <stdio.h>\n\n// `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n// tidak mengembalikan nilai apapun.\nvoid printLyrics() {\n    // tulis kode kamu disini\n}",
         "cpp": "#include <stdio.h>\n\n// `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n// tidak mengembalikan nilai apapun.\nvoid printLyrics() {\n    // tulis kode kamu disini\n}",
-        "java": "class Lyrics {\n    // `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n    // tidak mengembalikan nilai apapun.\n    public void printLyrics() {\n        // tulis kode kamu disini\n    }\n}",
+        "java": "static class Lyrics {\n    // `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n    // tidak mengembalikan nilai apapun.\n    public static void printLyrics() {\n        // tulis kode kamu disini\n    }\n}",
         "javascript": "// `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n// tidak mengembalikan nilai apapun.\nfunction printLyrics() {\n    // tulis kode kamu disini\n}",
         "php": "// `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n// tidak mengembalikan nilai apapun.\nfunction printLyrics() {\n    // tulis kode kamu disini\n}",
         "python": "# `printLyrics` merupakan sebuah function yang tidak menerima argument dan\n# tidak mengembalikan nilai apapun.\ndef printLyrics():\n    # tulis kode kamu disini"
