@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Flex,
@@ -42,10 +42,6 @@ export default function Question({
     [currentQuestionNumber]
   );
 
-  useEffect(() => {
-    console.log(currentSnapshot);
-  }, [currentQuestionNumber]);
-
   const { t } = useTranslation();
 
   return (
@@ -75,7 +71,7 @@ export default function Question({
           <TabPanel p="2" h="full">
             <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
               <Heading size="lg" color={fg}>
-                {t(`question.questions.${currentQuestionNumber}.title`)}
+                {t(`question.questions.${currentQuestionNumber - 1}.title`)}
               </Heading>
               <ReactMarkdown
                 components={{
@@ -104,7 +100,7 @@ export default function Question({
                   )
                 }}
               >
-                {t(`question.questions.${currentQuestionNumber}.question`)}
+                {t(`question.questions.${currentQuestionNumber - 1}.question`)}
               </ReactMarkdown>
             </Box>
             1

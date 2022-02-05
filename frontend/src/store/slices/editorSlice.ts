@@ -7,7 +7,7 @@ import { EditorSnapshot } from "@/models/EditorSnapshot";
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
-  currentQuestionNumber: 0,
+  currentQuestionNumber: 1,
   currentLanguage: "javascript",
   fontSize: 14,
   // TODO(elianiva): replace this with a data coming from redux
@@ -100,8 +100,13 @@ export const editorSlice = createSlice({
         state.snapshotByQuestionNumber[action.payload.questionNumber].language;
     },
     setLanguage: (state, action: PayloadAction<Language>) => {
-      state.snapshotByQuestionNumber[state.currentQuestionNumber!].language =
-        action.payload;
+      if (
+        state.snapshotByQuestionNumber[state.currentQuestionNumber]
+          ?.language !== undefined
+      ) {
+        state.snapshotByQuestionNumber[state.currentQuestionNumber].language =
+          action.payload;
+      }
       state.currentLanguage = action.payload;
     },
     setFontSize: (state, action: PayloadAction<number>) => {
