@@ -30,7 +30,7 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   const resultBg = useColorModeValue("gray.50", "gray.600", "gray.900");
 
   return (
-    <Box>
+    <Box overflowY="auto" p="4" h="full">
       <Accordion allowToggle allowMultiple>
         {currentSnapshot?.testResults &&
           currentSnapshot.testResults.map((testResult, index) => {
