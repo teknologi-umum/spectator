@@ -59,7 +59,7 @@
       "templates": {
         "c": "#include <stdio.h>\n#include <strings.h>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nchar* mumble(char* input) {\n    // write your code here\n}",
         "cpp": "#include <stdio.h>\n#include <string>\n#include <vector>\n#include <numeric>\n\n// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nstd::string mumble(std::string input) {\n    // write your code here\n}",
-        "java": "class Mumble {\n    // `mumble` is a function that accepts an argument as string and returns a\n    // string as its output.\n    public String mumble(String input) {\n        // write your code here\n    }\n}",
+        "java": "static class Mumble {\n    // `mumble` is a function that accepts an argument as string and returns a\n    // string as its output.\n    public static String mumble(String input) {\n        // write your code here\n    }\n}",
         "javascript": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble() {\n    // write your code here\n}\n",
         "php": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble($input) {\n    // write your code here\n}",
         "python": "# `mumble` is a function that accepts an argument as string and returns a\n# string as its output.\ndef mumble() -> str:\n    # write your code here"
