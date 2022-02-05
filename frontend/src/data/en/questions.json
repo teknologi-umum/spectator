@@ -46,7 +46,7 @@
       "templates": {
         "c": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nint findHeaterPower(long input) {\n    // write your code here\n}",
         "cpp": "#include <stdio.h>\n\n// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nint findHeaterPower(long input) {\n    // write your code here\n}",
-        "java": "class Heater {\n    // `findHeaterPower` is function that accepts an argument as long and\n    // returns an integer as its output.\n    public int findHeaterPower(long input) {\n        // write your code here\n    }\n}",
+        "java": "static class Heater {\n    // `findHeaterPower` is function that accepts an argument as long and\n    // returns an integer as its output.\n    public static int findHeaterPower(long input) {\n        // write your code here\n    }\n}",
         "javascript": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower(input) {\n    // write your code here\n}",
         "php": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower($input) {\n    // write your code here\n}",
         "python": "# `findHeaterPower` is function that accepts an argument as long and returns\n# an integer as its output.\ndef findHeaterPower(input):\n    # write your code here"
