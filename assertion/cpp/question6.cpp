@@ -4,9 +4,11 @@
 #include <vector>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 std::vector<int> calculateGrade(std::vector<int> input);
 
-_REPLACE_ME_
+_REPLACE_ME_WITH_SOLUTION_
 
 std::vector<int> __workingAnswer(std::vector<int> input) {
     std::vector<int> result;
