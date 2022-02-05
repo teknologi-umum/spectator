@@ -61,7 +61,12 @@ export default function Question({
           <Tab color={fgDarker}>{t("translation.translations.ui.prompt")}</Tab>
           <Tab
             color={fgDarker}
-            isDisabled={currentSnapshot?.testResults !== null}
+            isDisabled={
+              !(
+                currentSnapshot?.testResults !== null &&
+                currentSnapshot?.testResults?.length > 0
+              )
+            }
           >
             {t("translation.translations.ui.your_result")}
           </Tab>
