@@ -34,6 +34,26 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   const yellow = useColorModeValue("yellow.500", "yellow.400", "yellow.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
 
+  const badgeColours = useMemo(
+    () => ({
+      Passing: "green",
+      RuntimeError: "orange",
+      CompileError: "yellow",
+      Failing: "red"
+    }),
+    []
+  );
+
+  const resultIcons = useMemo(
+    () => ({
+      Passing: <Box color={green}><CheckmarkIcon /></Box>,
+      RuntimeError: <Box color={orange}><WarningIcon /></Box>,
+      CompileError: <Box color={yellow}><WarningIcon /></Box>,
+      Failing: <Box color={red}><CrossIcon /></Box>
+    }),
+    []
+  );
+
   return (
     <Box overflowY="auto" p="4" h="full">
       <Accordion allowToggle allowMultiple>
@@ -44,19 +64,8 @@ export default function Result({ fg, fgDarker }: ResultProps) {
               .replace(/([A-Z]+)/g, " $1")
               .replace(/([A-Z][a-z])/g, " $1");
 
-            const badgeColour = {
-              Passing: "green",
-              RuntimeError: "orange",
-              CompileError: "yellow",
-              Failing: "red"
-            }[testResult.status];
-
-            const resultIcon = {
-              Passing: <Box color={green}><CheckmarkIcon /></Box>,
-              RuntimeError: <Box color={orange}><WarningIcon /></Box>,
-              CompileError: <Box color={yellow}><WarningIcon /></Box>,
-              Failing: <Box color={red}><CrossIcon /></Box>
-            }[testResult.status];
+            const currentBadgeColour = badgeColours[testResult.status];
+            const currentResultIcon = resultIcons[testResult.status];
 
             return (
               <AccordionItem
@@ -73,11 +82,11 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                   rounded="sm"
                 >
                   <Flex gap="2" align="center" flex="1" textAlign="left">
-                    {resultIcon}
+                    {currentResultIcon}
                     <Text fontWeight="bold" color={fgDarker}>
                       Test Result #{testResult.testNumber}
                     </Text>
-                    <Badge colorScheme={badgeColour}>{status}</Badge>
+                    <Badge colorScheme={currentBadgeColour}>{status}</Badge>
                   </Flex>
                   <AccordionIcon />
                 </AccordionButton>
