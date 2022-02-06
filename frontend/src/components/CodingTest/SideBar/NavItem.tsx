@@ -47,7 +47,7 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
         >
           <MenuButton w="full">
             <Flex gap="5" alignItems="center" whiteSpace="nowrap">
-              <Icon as={icon} />
+              <Icon as={icon} width="1.25rem" height="1.25rem" />
               <Fade in={!isCollapsed}>
                 <Text
                   fontWeight={isActive ? "bold" : "normal"}

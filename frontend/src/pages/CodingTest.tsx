@@ -42,7 +42,7 @@ export default function CodingTest() {
   const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
-  const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
+  const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
   useEffect(() => {
     document.title = "Coding Test | Spectator";

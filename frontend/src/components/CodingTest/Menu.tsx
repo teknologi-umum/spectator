@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
-import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
 import {
   setFontSize,
@@ -14,6 +13,7 @@ import theme from "@/styles/themes";
 import { mutate } from "@/utils/fakeSubmissionCallback";
 import { useTranslation } from "react-i18next";
 import { jwtDecode } from "@/utils/jwtDecode";
+import { ClockIcon } from "@/icons";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -101,7 +101,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
         gap="2"
         rounded="md"
       >
-        <TimeIcon />
+        <ClockIcon />
         <Text fontWeight="medium" fontSize="lg">
           {toReadableTime(time)}
         </Text>
