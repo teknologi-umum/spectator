@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { UIEventHandler } from "react";
 import {
-  Heading,
   Tabs,
   TabList,
   TabPanels,
@@ -23,7 +22,7 @@ interface ScratchPadProps {
 export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
     (state) => state.editor

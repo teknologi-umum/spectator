@@ -34,7 +34,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
 
   const [code, setCode] = useState("");
 

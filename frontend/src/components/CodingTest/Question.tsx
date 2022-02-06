@@ -33,7 +33,7 @@ export default function Question({
   onScroll
 }: QuestionProps) {
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
-  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
