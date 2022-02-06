@@ -10,51 +10,7 @@ const initialState: EditorState = {
   currentQuestionNumber: 1,
   currentLanguage: "javascript",
   fontSize: 14,
-  snapshotByQuestionNumber: {
-    1: {
-      questionNumber: 1,
-      language: "javascript" as Language,
-      scratchPad: "",
-      submissionAccepted: false,
-      submissionRefactored: false,
-      submissionSubmitted: true,
-      solutionByLanguage: {
-        javascript: "function foo() { return 1; }",
-        java: "",
-        c: "",
-        cpp: "",
-        python: "",
-        php: ""
-      },
-      testResults: [
-        { testNumber: 1, status: "Passing" },
-        {
-          testNumber: 2,
-          status: "RuntimeError",
-          stderr: "Trying to access a non-existent variable"
-        },
-        {
-          testNumber: 3,
-          status: "CompileError",
-          stderr:
-            "Failed to compile: error: 'yeet' was not declared in this scope"
-        },
-        {
-          testNumber: 4,
-          status: "Failing",
-          expectedStdout: "2",
-          actualStdout: "1"
-        },
-        {
-          testNumber: 5,
-          status: "Failing",
-          expectedStdout: "{ \"foo\": \"bar\" }",
-          actualStdout: "1"
-        },
-        { testNumber: 6, status: "Passing" }
-      ]
-    }
-  }
+  snapshotByQuestionNumber: {}
 };
 
 export const editorSlice = createSlice({
