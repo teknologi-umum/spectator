@@ -29,7 +29,6 @@ export default defineConfig({
           codemirror_php: ["@codemirror/lang-php"],
           codemirror: ["@codemirror/gutter", "@uiw/react-codemirror"],
           chakra: [
-            "@chakra-ui/icons",
             "@chakra-ui/react",
             "@emotion/react",
             "@emotion/styled",

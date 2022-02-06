@@ -22,7 +22,6 @@
     "sirv-cli": "^1.0.14"
   },
   "devDependencies": {
-    "@chakra-ui/icons": "^1.1.1",
     "@chakra-ui/react": "^1.7.3",
     "@codemirror/gutter": "^0.19.9",
     "@codemirror/lang-cpp": "^0.19.1",

@@ -34,7 +34,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
 
   const [code, setCode] = useState("");
 
@@ -46,25 +46,29 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   const boilerplate = useMemo(
     () =>
       t(
-        `question.questions.${currentQuestionNumber}.templates.${currentLanguage}`
+        `question.questions.${
+          currentQuestionNumber - 1
+        }.templates.${currentLanguage}`
       ),
     [currentQuestionNumber, currentLanguage]
   );
 
   const currentSolution =
     currentQuestionNumber !== null
-      ? snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[currentLanguage]
+      ? snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+        currentLanguage
+      ]
       : null;
-
-  useEffect(() => {
-    setCode(currentSolution ?? "");
-  }, [currentSolution]);
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    if (currentSolution !== null && currentSolution !== "") {
+    if (
+      currentSolution !== null &&
+      currentSolution !== undefined &&
+      currentSolution !== ""
+    ) {
       setCode(currentSolution);
     } else {
       setCode(boilerplate);
