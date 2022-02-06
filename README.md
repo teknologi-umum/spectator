@@ -10,7 +10,7 @@ Brief explanation of the project. TBC.
 | backend | ASP.NET Core core backend API |
 | piston | Fork of [Piston](https://github.com/engineer-man/piston) for code execution |
 | logger | Go API for any logging |
-| wranggler | Go worker for post-data processing |
+| worker | Go worker for post-data processing |
 
 ## Development setup
 
