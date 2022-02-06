@@ -81,30 +81,45 @@ func TestMain(m *testing.M) {
 	}
 
 	// Setup a context for preparing things
-	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*60)
+	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*120)
 
-	// Check for MinIO bucket existance
-	bucketFound, err := bucket.BucketExists(prepareCtx, "spectator")
-	if err != nil {
-		log.Fatalf("Error checking MinIO bucket: %s\n", err)
-	}
-
-	if !bucketFound {
-		err = bucket.MakeBucket(prepareCtx, "spectator", minio.MakeBucketOptions{})
+	g, gctx := errgroup.WithContext(prepareCtx)
+	
+	g.Go(func() error {
+		// Check for InfluxDB buckets existence
+		err = prepareBuckets(gctx, deps.DB, influxOrg)
 		if err != nil {
-			log.Fatalf("Error creating MinIObucket: %s\n", err)
+			return fmt.Errorf("failed to prepare influxdb buckets: %v", err)
 		}
-	}
+	
+		err = seedData(gctx)
+		if err != nil {
+			return fmt.Errorf("failed to seed data: %v", err)
+		}
 
-	// Check for InfluxDB buckets existence
-	err = prepareBuckets(prepareCtx, deps.DB, influxOrg)
-	if err != nil {
-		log.Fatalf("Failed to prepare influxdb buckets: %v", err)
-	}
+		return nil
+	})
 
-	err = seedData(prepareCtx)
+	g.Go(func() error {
+		// Check for MinIO bucket existence
+		bucketFound, err := bucket.BucketExists(gctx, "spectator")
+		if err != nil {
+			return fmt.Errorf("error checking MinIO bucket: %s\n", err)
+		}
+
+		if !bucketFound {
+			err = bucket.MakeBucket(gctx, "spectator", minio.MakeBucketOptions{})
+			if err != nil {
+				return fmt.Errorf("error creating MinIObucket: %s\n", err)
+			}
+		}
+
+		return nil
+	})
+
+	err = g.Wait()
 	if err != nil {
-		log.Fatalf("Failed to seed data: %v", err)
+		log.Fatalf("Failed to prepare test: %v", err)
 	}
 
 	prepareCancel()
@@ -140,26 +155,33 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 		common.BucketInputStatisticEvents,
 	}
 
+	g, gctx := errgroup.WithContext(ctx)
+
 	for _, bucket := range bucketNames {
-		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
-		if err != nil && err.Error() != "bucket '"+bucket+"' not found" {
-			return fmt.Errorf("finding bucket: %v", err)
-		}
-
-		if err != nil && err.Error() == "bucket '"+bucket+"' not found" {
-			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-			if err != nil {
-				return fmt.Errorf("finding organization: %v", err)
+		var b = bucket
+		g.Go(func() error {
+			_, err := bucketsAPI.FindBucketByName(gctx, b)
+			if err != nil && err.Error() != "bucket '"+b+"' not found" {
+				return fmt.Errorf("finding bucket: %v", err)
+			}
+	
+			if err != nil && err.Error() == "bucket '"+b+"' not found" {
+				orgDomain, err := organizationAPI.FindOrganizationByName(gctx, org)
+				if err != nil {
+					return fmt.Errorf("finding organization: %v", err)
+				}
+	
+				_, err = bucketsAPI.CreateBucketWithName(gctx, orgDomain, b)
+				if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
+					return fmt.Errorf("creating bucket: %v", err)
+				}
 			}
 
-			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, bucket)
-			if err != nil && err.Error() != "conflict: bucket with name "+bucket+" already exists" {
-				return fmt.Errorf("creating bucket: %v", err)
-			}
-		}
+			return nil
+		})
 	}
 
-	return nil
+	return g.Wait()
 }
 
 // cleanup deletes the buckets' data
