@@ -7,6 +7,22 @@ const theme = extendTheme({
     heading: "Mulish",
     body: "Mulish"
   },
+  styles: {
+    global: (props: { colorMode: "light" | "dark" }) => ({
+      "*::-webkit-scrollbar": {
+        width: "1rem"
+      },
+      "*::-webkit-scrollbar-corner": {
+        backgroundColor: "rgba(0, 0, 0, 0)"
+      },
+      "*::-webkit-scrollbar-thumb": {
+        border: "0.3rem solid rgba(0, 0, 0, 0)",
+        backgroundClip: "padding-box",
+        borderRadius: "9999px",
+        backgroundColor: props.colorMode === "light" ? "gray.300" : "gray.600"
+      }
+    })
+  },
   colors: {
     white: "#FFFFFF",
     gray: {
@@ -28,7 +44,7 @@ const theme = extendTheme({
       50: "#EBF8FF"
     },
     pink: {
-      600 : "#B83280"
+      600: "#B83280"
     },
     red: {
       500: "#E53E3E",

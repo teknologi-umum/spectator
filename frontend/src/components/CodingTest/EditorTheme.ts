@@ -73,7 +73,7 @@ export function getEditorTheme({
     dark: {
       gray: theme.colors.gray[400],
       bg: theme.colors.gray[800],
-      bgDarker: theme.colors.gray[900],
+      bgDarker: theme.colors.gray[700],
       caret: theme.colors.gray[200]
     }
   };
