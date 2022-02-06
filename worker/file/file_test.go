@@ -122,10 +122,10 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to prepare test: %v", err)
 	}
 
-	prepareCancel()
-
 	code := m.Run()
 
+	prepareCancel()
+	
 	fmt.Println("Cleaning up...")
 
 	// Setup a context for cleaning up things
