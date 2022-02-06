@@ -44,12 +44,12 @@ export default function Result({ fg, fgDarker }: ResultProps) {
               .replace(/([A-Z]+)/g, " $1")
               .replace(/([A-Z][a-z])/g, " $1");
 
-            const badgeColour =
-              testResult.status === "Passing"
-                ? "green"
-                : testResult.status === "CompileError"
-                  ? "orange"
-                  : "red";
+            const badgeColour = {
+              Passing: "green",
+              RuntimeError: "orange",
+              CompileError: "yellow",
+              Failing: "red"
+            }[testResult.status];
 
             const resultIcon = {
               Passing: <Box color={green}><CheckmarkIcon /></Box>,
