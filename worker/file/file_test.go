@@ -83,7 +83,7 @@ func TestMain(m *testing.M) {
 	// Setup a context for preparing things
 	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*60)
 
-
+	// Check for MinIO bucket existance
 	bucketFound, err := bucket.BucketExists(prepareCtx, "spectator")
 	if err != nil {
 		log.Fatalf("Error checking MinIO bucket: %s\n", err)
@@ -96,7 +96,7 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	// Check for bucket existence
+	// Check for InfluxDB buckets existence
 	err = prepareBuckets(prepareCtx, deps.DB, influxOrg)
 	if err != nil {
 		log.Fatalf("Failed to prepare influxdb buckets: %v", err)

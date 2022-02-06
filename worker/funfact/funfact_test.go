@@ -509,24 +509,5 @@ func cleanup(ctx context.Context) error {
 		return nil
 	})
 
-	g.Go(func() error {
-		// find file_results bucket
-		fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketFileEvents)
-		if err != nil {
-			return fmt.Errorf("finding bucket: %v", err)
-		}
-
-		fileEventMeasurement := []string{common.MeasurementExportedData}
-
-		for _, measurement := range fileEventMeasurement {
-			err = deleteAPI.Delete(gctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
-			if err != nil {
-				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
-			}
-		}
-
-		return nil
-	})
-
 	return g.Wait()
 }
