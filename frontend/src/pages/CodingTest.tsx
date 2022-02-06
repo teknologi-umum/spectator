@@ -22,6 +22,7 @@ import {
   useEventListener
 } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
+import ToastOverlay from "@/components/ToastOverlay";
 
 export default function CodingTest() {
   const { currentQuestionNumber } = useAppSelector(
@@ -49,57 +50,60 @@ export default function CodingTest() {
   }, []);
 
   return (
-    <Flex w="full" h="full">
-      <SideBar bg={bg} fg={fg} />
-      <Box bg={gray} gap="3" p="3" w="full">
-        <Menu bg={bg} fgDarker={fgDarker} />
-        <Box h="calc(100% - 3.5rem)">
-          <ReflexContainer orientation="vertical">
-            <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-              <Question
-                bg={bg}
-                fg={fg}
-                fgDarker={fgDarker}
-                onScroll={scrollHandler(connection, currentQuestionNumber)}
-              />
-            </ReflexElement>
-
-            <ReflexSplitter
-              style={{
-                backgroundColor: "transparent",
-                width: theme.space[3],
-                border: "none"
-              }}
-            />
-
-            <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-              <ReflexContainer orientation="horizontal">
-                <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                  <Editor
-                    bg={bg}
-                    onScroll={scrollHandler(connection, currentQuestionNumber)}
-                  />
-                </ReflexElement>
-
-                <ReflexSplitter
-                  style={{
-                    backgroundColor: "transparent",
-                    height: theme.space[3],
-                    border: "none"
-                  }}
+    <>
+      <ToastOverlay />
+      <Flex w="full" h="full">
+        <SideBar bg={bg} fg={fg} />
+        <Box bg={gray} gap="3" p="3" w="full">
+          <Menu bg={bg} fgDarker={fgDarker} />
+          <Box h="calc(100% - 3.5rem)">
+            <ReflexContainer orientation="vertical">
+              <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
+                <Question
+                  bg={bg}
+                  fg={fg}
+                  fgDarker={fgDarker}
+                  onScroll={scrollHandler(connection, currentQuestionNumber)}
                 />
+              </ReflexElement>
 
-                <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                  <ScratchPad
-                    bg={bg}
-                    onScroll={scrollHandler(connection, currentQuestionNumber)}
+              <ReflexSplitter
+                style={{
+                  backgroundColor: "transparent",
+                  width: theme.space[3],
+                  border: "none"
+                }}
+              />
+
+              <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
+                <ReflexContainer orientation="horizontal">
+                  <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
+                    <Editor
+                      bg={bg}
+                      onScroll={scrollHandler(connection, currentQuestionNumber)}
+                    />
+                  </ReflexElement>
+
+                  <ReflexSplitter
+                    style={{
+                      backgroundColor: "transparent",
+                      height: theme.space[3],
+                      border: "none"
+                    }}
                   />
-                </ReflexElement>
-              </ReflexContainer>
-            </ReflexElement>
-          </ReflexContainer>
+
+                  <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
+                    <ScratchPad
+                      bg={bg}
+                      onScroll={scrollHandler(connection, currentQuestionNumber)}
+                    />
+                  </ReflexElement>
+                </ReflexContainer>
+              </ReflexElement>
+            </ReflexContainer>
+          </Box>
         </Box>
-      </Box>
-    </Flex>
+      </Flex>
+    </>
   );
 }

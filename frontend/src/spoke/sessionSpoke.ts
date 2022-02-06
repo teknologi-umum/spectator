@@ -69,4 +69,4 @@ class SessionSpoke extends SpokeBase {
   }
 }
 
-export default new SessionSpoke("/hubs/session");
+export default new SessionSpoke("http://localhost:5000/hubs/session");

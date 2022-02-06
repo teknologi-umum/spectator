@@ -9,3 +9,4 @@ export * from "./ClockIcon";
 export * from "./CheckmarkIcon";
 export * from "./CrossIcon";
 export * from "./WarningIcon";
+export * from "./InfoIcon";
