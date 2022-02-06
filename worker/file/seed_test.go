@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -14,8 +15,9 @@ import (
 
 // seedData seeds the database with test data
 func seedData(ctx context.Context) error {
-	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketSessionEvents)
-	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, deps.BucketInputEvents)
+	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketSessionEvents)
+	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketInputEvents)
+	statisticWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketInputStatisticEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -36,8 +38,7 @@ func seedData(ctx context.Context) error {
 	// eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
-	// FIXME: correct this waitgroup number
-	wg.Add(11)
+	wg.Add(12)
 
 	// Seeding session events for each user
 	for _, sessionID := range []string{globalID.String(), globalID2.String()} {
@@ -45,7 +46,7 @@ func seedData(ctx context.Context) error {
 			// Personal info
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/PersonalInfoSubmittedEvent.cs
 			personalInfoPoint := influxdb2.NewPoint(
-				"personal_info_submitted",
+				common.MeasurementPersonalInfoSubmitted,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -59,93 +60,91 @@ func seedData(ctx context.Context) error {
 			)
 
 			beforeExamSAMPoint := influxdb2.NewPoint(
-				"before_exam_sam_submitted",
+				common.MeasurementBeforeExamSAMSubmitted,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"aroused_level": "2",
-					"pleased_level": "5",
+					"aroused_level": 2,
+					"pleased_level": 5,
 				},
 				eventStart.Add(time.Minute*2),
 			)
 
 			afterExamSAMPoint := influxdb2.NewPoint(
-				"after_exam_sam_submitted",
+				common.MeasurementAfterExamSAMSubmitted,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"aroused_level": "2",
-					"pleased_level": "5",
+					"aroused_level": 2,
+					"pleased_level": 5,
 				},
 				eventStart.Add(time.Minute*3),
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamStartedEvent.cs
 			examStartedPoint := influxdb2.NewPoint(
-				"exam_started",
+				common.MeasurementExamStarted,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
 					"question_numbers": "1,2,3,4,5",
-					"deadline":         eventStart.Add(time.Minute * 180),
+					"deadline":         eventStart.Add(time.Minute * 180).Unix(),
 				},
 				eventStart.Add(time.Minute*4),
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamEndedEvent.cs
 			examEndedPoint := influxdb2.NewPoint(
-				"exam_ended",
+				common.MeasurementExamEnded,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*5),
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamForfeited.cs
 			examForfeitedPoint := influxdb2.NewPoint(
-				"exam_forfeited",
+				common.MeasurementExamForfeited,
 				map[string]string{
 					"session_id": sessionID,
 				},
-				map[string]interface{}{
-					"_time": time.Now(),
-				},
+				map[string]interface{}{"arbitrary": "arbitrary"},
 				eventStart.Add(time.Minute*6),
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamIDEReloadedEvent.cs
 			examIDEReloadedPoint := influxdb2.NewPoint(
-				"exam_ide_reloaded",
+				common.MeasurementExamIDEReloaded,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*8),
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamPassedEvent.cs
 			examPassedPoint := influxdb2.NewPoint(
-				"exam_passed",
+				common.MeasurementExamPassed,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*7),
 			)
 
 			// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/LocaleSetEvent.cs
 			localeSetPoint := influxdb2.NewPoint(
-				"locale_set",
+				common.MeasurementLocaleSet,
 				map[string]string{
 					"session_id": sessionID,
 				},
@@ -181,12 +180,16 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 5; i++ {
 				point := influxdb2.NewPoint(
-					"solution_accepted",
+					common.MeasurementSolutionAccepted,
 					map[string]string{
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"_time": time.Now(),
+						"question_number":         i + 1,
+						"language":                "PHP",
+						"solution":                "echo 'Hello World!';",
+						"scratchpad":              "Lorem ipsum dolot sit amet",
+						"serialized_test_results": "Hello World!",
 					},
 					eventStart.Add(time.Minute*10+time.Second*time.Duration(i)),
 				)
@@ -209,12 +212,16 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 5; i++ {
 				point := influxdb2.NewPoint(
-					"solution_rejected",
+					common.MeasurementSolutionRejected,
 					map[string]string{
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"_time": time.Now(),
+						"question_number":         i + 1,
+						"language":                "PHP",
+						"solution":                "echo 'Hello World!';",
+						"scratchpad":              "Lorem ipsum dolot sit amet",
+						"serialized_test_results": "Hello World!",
 					},
 					eventStart.Add(time.Minute*11+time.Second*time.Duration(i)),
 				)
@@ -236,12 +243,12 @@ func seedData(ctx context.Context) error {
 		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			point := influxdb2.NewPoint(
-				"deadline_passed",
+				common.MeasurementDeadlinePassed,
 				map[string]string{
 					"session_id": sessionID,
 				},
 				map[string]interface{}{
-					"_time": time.Now(),
+					"arbitrary": "arbitrary",
 				},
 				eventStart.Add(time.Minute*12),
 			)
@@ -259,11 +266,11 @@ func seedData(ctx context.Context) error {
 	// Keystroke Event
 	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/InputDomain/KeystrokeEvent.cs
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"keystroke",
+					common.MeasurementKeystroke,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -281,129 +288,132 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Move Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_moved",
+					common.MeasurementMouseMoved,
 					map[string]string{
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"direction":     "right",
-						"x":             "20",
-						"y":             "30",
-						"window_width":  "100",
-						"window_height": "200",
+						"direction": "right",
+						"x":         20,
+						"y":         30,
 					},
 					eventStart.Add(time.Minute*14+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
 			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Down Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_down",
+					common.MeasurementMouseDown,
 					map[string]string{
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x":      "1",
-						"y":      "2",
-						"button": "0",
+						"x":      6,
+						"y":      5,
+						"button": int64(common.MouseButtonRight),
 					},
 					eventStart.Add(time.Minute*15+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
 			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Up Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_up",
+					common.MeasurementMouseUp,
 					map[string]string{
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x":      "1",
-						"y":      "2",
-						"button": "0",
+						"x":      1,
+						"y":      2,
+						"button": int64(common.MouseButtonMiddle),
 					},
 					eventStart.Add(time.Minute*16+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
 			}
+			
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Scrolled Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
-					"mouse_scrolled",
+					common.MeasurementMouseScrolled,
 					map[string]string{
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x": "1",
-						"y": "2",
+						"x": 1,
+						"y": 2,
 					},
 					eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
 			}
+			
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
@@ -413,7 +423,7 @@ func seedData(ctx context.Context) error {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			for i := 0; i < 4; i++ {
 				point := influxdb2.NewPoint(
-					"window_resize",
+					common.MeasurementWindowSized,
 					map[string]string{
 						"session_id": sessionID,
 					},
@@ -429,6 +439,34 @@ func seedData(ctx context.Context) error {
 		}
 
 		err := inputWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("Error writing point: %v", err)
+		}
+		wg.Done()
+	}()
+
+	// Funfact Event
+	go func() {
+		var points []*write.Point
+
+		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			point := influxdb2.NewPoint(
+				common.MeasurementFunfactProjection,
+				map[string]string{
+					"session_id": sessionID,
+				},
+				map[string]interface{}{
+					"words_per_minute":    60,
+					"deletion_rate":       0.7,
+					"submission_attempts": 30,
+				},
+				time.Now(),
+			)
+
+			points = append(points, point)
+		}
+
+		err := statisticWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
 			log.Fatalf("Error writing point: %v", err)
 		}

@@ -3,9 +3,11 @@ package file
 import (
 	"context"
 	"fmt"
+	"time"
+	"worker/common"
+
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
-	"time"
 )
 
 // File contains the struct regarding the file object
@@ -22,9 +24,9 @@ type File struct {
 func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File, error) {
 	testFileRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
-		`from(bucket: "`+d.BucketFileEvents+`")
+		`from(bucket: "`+common.BucketFileEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "exported_data")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementExportedData+`")
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)

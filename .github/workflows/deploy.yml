@@ -54,6 +54,54 @@ jobs:
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+  worker:
+    name: Worker
+    runs-on: ubuntu-latest
+    container: golang:1.17
+    timeout-minutes: 5
+    services:
+      bucket:
+        image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
+        ports:
+          - 9000:9000
+        env:
+          MINIO_ROOT_USER: teknum
+          MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+          MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+    defaults:
+      run:
+        working-directory: ./worker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build test
+        run: go build .
+      - name: Wait for 60s for the MinIO to be up fully
+        run: sleep 60s
+      - name: Run test
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        env:
+          INFLUX_HOST: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: iKPpruHfaXygrwSV
+          MINIO_HOST: bucket:9000
+          MINIO_ACCESS_ID: teknum
+          MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          LOGGER_SERVER_ADDRESS: http://logger:9000/
+          LOGGER_SERVER_TOKEN: testing
+          MINIO_TOKEN: ''
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest

@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
+	"worker/common"
 	"worker/file"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -73,37 +74,41 @@ func TestMain(m *testing.M) {
 	}
 
 	deps = &file.Dependency{
-		DB:                  db,
-		DBOrganization:      influxOrg,
-		Bucket:              bucket,
-		BucketInputEvents:   "input_events",
-		BucketSessionEvents: "session_events",
-		BucketFileEvents:    "file_results",
-		Environment:         "testing",
+		DB:             db,
+		DBOrganization: influxOrg,
+		Bucket:         bucket,
+		Environment:    "testing",
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
-	defer cancel()
+	// Setup a context for preparing things
+	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*120)
 
-	// Check for bucket existence
-	err = prepareBuckets(ctx, deps.DB, influxOrg)
+	// Check for InfluxDB buckets existence
+	err = prepareBuckets(prepareCtx, deps.DB, influxOrg)
 	if err != nil {
-		log.Fatalf("Failed to prepare influxdb buckets: %v", err)
+		log.Fatalf("failed to prepare influxdb buckets: %v", err)
 	}
 
-	err = seedData(ctx)
+	err = seedData(prepareCtx)
 	if err != nil {
-		log.Fatalf("Failed to seed data: %v", err)
+		log.Fatalf("failed to seed data: %v", err)
 	}
 
 	code := m.Run()
 
+	prepareCancel()
+	
 	fmt.Println("Cleaning up...")
 
-	err = cleanup(ctx)
+	// Setup a context for cleaning up things
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*60)
+
+	err = cleanup(cleanupCtx)
 	if err != nil {
 		log.Fatalf("Failed to cleanup: %v", err)
 	}
+
+	cleanupCancel()
 
 	deps.DB.Close()
 
@@ -115,28 +120,40 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	bucketsAPI := deps.DB.BucketsAPI()
 	organizationAPI := deps.DB.OrganizationsAPI()
 
-	bucketNames := []string{deps.BucketInputEvents, deps.BucketSessionEvents, deps.BucketFileEvents}
-
-	for _, bucket := range bucketNames {
-		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
-		if err != nil && err.Error() != "bucket '"+bucket+"' not found" {
-			return fmt.Errorf("finding bucket: %v", err)
-		}
-
-		if err != nil && err.Error() == "bucket '"+bucket+"' not found" {
-			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-			if err != nil {
-				return fmt.Errorf("finding organization: %v", err)
-			}
-
-			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, bucket)
-			if err != nil && err.Error() != "conflict: bucket with name "+bucket+" already exists" {
-				return fmt.Errorf("creating bucket: %v", err)
-			}
-		}
+	bucketNames := []string{
+		common.BucketInputEvents,
+		common.BucketSessionEvents,
+		common.BucketFileEvents,
+		common.BucketInputStatisticEvents,
 	}
 
-	return nil
+	g, gctx := errgroup.WithContext(ctx)
+
+	for _, bucket := range bucketNames {
+		var b = bucket
+		g.Go(func() error {
+			_, err := bucketsAPI.FindBucketByName(gctx, b)
+			if err != nil && err.Error() != "bucket '"+b+"' not found" {
+				return fmt.Errorf("finding bucket: %v", err)
+			}
+	
+			if err != nil && err.Error() == "bucket '"+b+"' not found" {
+				orgDomain, err := organizationAPI.FindOrganizationByName(gctx, org)
+				if err != nil {
+					return fmt.Errorf("finding organization: %v", err)
+				}
+	
+				_, err = bucketsAPI.CreateBucketWithName(gctx, orgDomain, b)
+				if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
+					return fmt.Errorf("creating bucket: %v", err)
+				}
+			}
+
+			return nil
+		})
+	}
+
+	return g.Wait()
 }
 
 // cleanup deletes the buckets' data
@@ -150,84 +167,120 @@ func cleanup(ctx context.Context) error {
 	// delete bucket data
 	deleteAPI := deps.DB.DeleteAPI()
 
-	// find input_events bucket
-	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+	g, gctx := errgroup.WithContext(ctx)
 
-	fileEventMeasurement := []string{
-		"keystroke",
-		"mouse_down",
-		"mouse_up",
-		"mouse_moved",
-		"mouse_scrolled",
-		"window_sized",
-	}
-	for _, measurement := range fileEventMeasurement {
-		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+	g.Go(func() error {
+		// find input_events bucket
+		inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// find input_events bucket
-	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+		inputEventMeasurement := []string{
+			common.MeasurementKeystroke,
+			common.MeasurementMouseDown,
+			common.MeasurementMouseUp,
+			common.MeasurementMouseMoved,
+			common.MeasurementMouseScrolled,
+			common.MeasurementWindowSized,
+		}
+		for _, measurement := range inputEventMeasurement {
+			err = deleteAPI.Delete(gctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
 
-	sessionEventMeasurements := []string{
-		"code_test_attempt",
-		"exam_forfeited",
-		"exam_ended",
-		"exam_started",
-		"solution_rejected",
-		"solution_accepted",
-		"session_started",
-		"personal_info_submitted",
-		"locale_set",
-		"exam_ide_reloaded",
-		"deadline_passed",
-		"before_exam_sam_submitted",
-		"after_exam_sam_submitted",
-	}
-	for _, measurement := range sessionEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		return nil
+	})
+
+	g.Go(func() error {
+		// find input_events bucket
+		sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketSessionEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// find file_results bucket
-	fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketFileEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+		sessionEventMeasurements := []string{
+			common.MeasurementCodeTestAttempt,
+			common.MeasurementExamForfeited,
+			common.MeasurementExamEnded,
+			common.MeasurementExamStarted,
+			common.MeasurementSolutionRejected,
+			common.MeasurementSolutionAccepted,
+			common.MeasurementSessionStarted,
+			common.MeasurementPersonalInfoSubmitted,
+			common.MeasurementLocaleSet,
+			common.MeasurementExamIDEReloaded,
+			common.MeasurementDeadlinePassed,
+			common.MeasurementBeforeExamSAMSubmitted,
+			common.MeasurementAfterExamSAMSubmitted,
+		}
 
-	for _, measurement := range fileEventMeasurement {
-		err = deleteAPI.Delete(ctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
+		// More speed hack, we create a child errgroup
+		c, cctx := errgroup.WithContext(gctx)
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[:len(sessionEventMeasurements)/2] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
+
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)/2:] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
+
+		return c.Wait()
+	})
+
+	g.Go(func() error {
+		// find statistics bucket
+		statisticBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputStatisticEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// delete json/csv files
-	pathJSON, err := filepath.Glob("./*_*.json")
-	if err != nil {
-		return fmt.Errorf("unexpected error: %v", err)
-	}
-	pathCSV, err := filepath.Glob("./*_*.csv")
-	if err != nil {
-		return fmt.Errorf("unexpected error: %v", err)
-	}
+		statisticEventMeasurements := []string{
+			common.MeasurementFunfactProjection,
+		}
 
-	for _, path := range append(pathJSON, pathCSV...) {
-		err = os.Remove(path)
+		for _, measurement := range statisticEventMeasurements {
+			err = deleteAPI.Delete(gctx, currentOrganization, statisticBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
+
+		return nil
+	})
+
+	g.Go(func() error {
+		// find file_results bucket
+		fileEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketFileEvents)
 		if err != nil {
-			return fmt.Errorf("unexpected error: %v", err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	return nil
+		fileEventMeasurement := []string{common.MeasurementExportedData}
+
+		for _, measurement := range fileEventMeasurement {
+			err = deleteAPI.Delete(gctx, currentOrganization, fileEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\"exported_data\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
+
+		return nil
+	})
+
+	return g.Wait()
 }
