@@ -83,43 +83,15 @@ func TestMain(m *testing.M) {
 	// Setup a context for preparing things
 	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*120)
 
-	g, gctx := errgroup.WithContext(prepareCtx)
-	
-	g.Go(func() error {
-		// Check for InfluxDB buckets existence
-		err = prepareBuckets(gctx, deps.DB, influxOrg)
-		if err != nil {
-			return fmt.Errorf("failed to prepare influxdb buckets: %v", err)
-		}
-	
-		err = seedData(gctx)
-		if err != nil {
-			return fmt.Errorf("failed to seed data: %v", err)
-		}
-
-		return nil
-	})
-
-	g.Go(func() error {
-		// Check for MinIO bucket existence
-		bucketFound, err := bucket.BucketExists(gctx, "spectator")
-		if err != nil {
-			return fmt.Errorf("error checking MinIO bucket: %s\n", err)
-		}
-
-		if !bucketFound {
-			err = bucket.MakeBucket(gctx, "spectator", minio.MakeBucketOptions{})
-			if err != nil {
-				return fmt.Errorf("error creating MinIObucket: %s\n", err)
-			}
-		}
-
-		return nil
-	})
-
-	err = g.Wait()
+	// Check for InfluxDB buckets existence
+	err = prepareBuckets(prepareCtx, deps.DB, influxOrg)
 	if err != nil {
-		log.Fatalf("Failed to prepare test: %v", err)
+		log.Fatalf("failed to prepare influxdb buckets: %v", err)
+	}
+
+	err = seedData(prepareCtx)
+	if err != nil {
+		log.Fatalf("failed to seed data: %v", err)
 	}
 
 	code := m.Run()
