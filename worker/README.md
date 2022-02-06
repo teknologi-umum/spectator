@@ -1,54 +1,66 @@
-## Worker
+# Worker
 
-This job is to aggregate data to response backend request and Storing file csv and JSON file from influxDB.
+This module is a worker, providing function and endpoints to aggregate and calculate data, as such:
+- Generating a fun fact about a user after they had finished the coding test.
+- Generating a few files for a certain user containing their information (keystrokes, mouse activities, personal
+  information, etc.).
 
-### What is this directory
+## Structure
 
-| directory | description |
-|--|--|
-| file | contain function to procced aggregation data inside database into file by session_id|
-| funfact | contain function to aggregate and return fun fact like word each minute, delete rate and submission |
-| logger | contain code to trace error and send it to logger server|
-| logger_porto | logger protocol definition to make request to logger server |
-| worker_proto | worker protocol definiiton for services |
+| Package | Description |
+| ------- | ----------- |
+| common  | Provides constants and enum for measurement names and common types. |
+| file    | Provides data aggregation and file generation functionalities. |
+| funfact | Provides quick calculation for generating WPM, deletion rate, and test attempts and store it as a projection. |
+| logger | Provides a helper function to communicate with the logger gRPC server. |
+| logger_porto | Contains protocol buffers stub for the logger service. |
+| worker_proto | Contains protocol buffers stub for the worker service. |
 
-## Tool used
+## Visual Studio Code development setup
 
-- [docker-compose, this for make all setup easier](https://docs.docker.com/compose/)
-- [GRPC, this protocol used to service interact with other services](https://grpc.io/docs/languages/go/quickstart/)
-- [influxdb, time series database](https://github.com/influxdata/influxdb-client-go)
+- Install [Visual Studio Code](https://code.visualstudio.com/Download)
+- Install [Go version 1.17.6](https://go.dev/dl/) or newer
+- Install [Go extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=golang.Go)
+- Open this worker directory on your Visual Studio Code, don't open the whole Spectator monolith project. 
+  Go server on Visual Studio Code doesn't do well with multiple modules being opened at the same time.
+- Set up secrets on `.env` file using `.env.example` as a template. Or use the default value provided
+  on the `main.go` file.
 
-## Development tools
+## Vim development setup
 
-This code develop with VSCode since my neovim broken, the Go version used is 1.17.2.
+- Install [Vim](https://www.vim.org/download.php) or [Neovim](https://github.com/neovim/neovim/wiki/Installing-Neovim)
+- Install [Go version 1.17.6](https://go.dev/dl/) or newer
+- Install Go language server
+  - For Vim, install [vim-go](https://github.com/fatih/vim-go)
+  - For Neovim, install [lspconfig](https://github.com/neovim/nvim-lspconfig)
+- Open the worker directory.
+- Set up secrets on `.env` file using `.env.example` as a template. Or use the default value provided
+  on the `main.go` file.
 
-## How to run
+## Running the application
 
-### The server
+For development purposes:
 
 ```
-INFLUX_TOKEN="" \
-INFLUX_HOST="http://localhost:8086" \
-INFLUX_ORG="teknum" MINIO_HOST="" \ 
-MINIO_ACCESS_ID="" \ 
-MINIO_SECRET_KEY="" \ 
-LOGGER_SERVER_ADDRESS="" \
-LOGGER_TOKEN="" \
-ENVIRONMENT="" \
 go run .
 ```
 
-### The test
+For testing purposes:
 
 ```
-INFLUX_TOKEN="" \
-INFLUX_HOST="http://localhost:8086" \
-INFLUX_ORG="teknum" MINIO_HOST="" \ 
-MINIO_ACCESS_ID="" \ 
-MINIO_SECRET_KEY="" \ 
-LOGGER_SERVER_ADDRESS="" \
-LOGGER_TOKEN="" \
-ENVIRONMENT="" \
-go test ./... -v
+go -v -cover -race ./...
+
+# or for specific packages
+go -v -cover worker/funfact
+go -v -cover worker/file
 ```
 
+For production purposes:
+
+```
+go build .
+./worker
+
+# or if you are on Windows
+worker.exe
+```

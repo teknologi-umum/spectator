@@ -30,9 +30,9 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	}
 
 	// Read about buffered channel vs non-buffered channels
-	wpm := make(chan uint32, 1)
-	deletionRate := make(chan float32, 1)
-	attempt := make(chan uint32, 1)
+	wpm := make(chan int64, 1)
+	deletionRate := make(chan float64, 1)
+	attempt := make(chan int64, 1)
 
 	// Run all the calculate function concurently
 	errs, gctx := errgroup.WithContext(ctx)
@@ -62,9 +62,9 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	}
 
 	var result = struct {
-		Wpm          uint32  `json:"wpm"`
-		DeletionRate float32 `json:"deletion_rate"`
-		Attempt      uint32  `json:"attempt"`
+		Wpm          int64  `json:"wpm"`
+		DeletionRate float64 `json:"deletion_rate"`
+		Attempt      int64  `json:"attempt"`
 	}{
 		<-wpm,
 		<-deletionRate,

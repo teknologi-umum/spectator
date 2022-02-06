@@ -10,7 +10,7 @@ func TestCalculateSubmissionAttempts(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	res := make(chan uint32, 1)
+	res := make(chan int64, 1)
 	defer close(res)
 	err := deps.CalculateSubmissionAttempts(ctx, globalID, res)
 	if err != nil {
