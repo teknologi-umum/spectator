@@ -21,7 +21,7 @@ type Solution struct {
 	SerializedTestResult string    `json:"serialized_test_result"`
 }
 
-func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID uuid.UUID, result chan uint32) error {
+func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID uuid.UUID, result chan int64) error {
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// NOTE(2022-01-30): code_test_attempt has been changed into 2 measurements:
@@ -29,7 +29,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	// the new Solution struct.
 
 	// output contains the number of accepted and rejected solutions
-	var output uint32
+	var output int64
 
 	solutionAcceptedRows, err := queryAPI.Query(
 		ctx,

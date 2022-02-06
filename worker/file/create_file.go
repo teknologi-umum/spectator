@@ -195,7 +195,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		SolutionRejected: outputSolutionRejected,
 	}
 
-	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketSessionEvents)
+	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketFileEvents)
 
 	studentNumber := outputPersonalInfo.StudentNumber
 

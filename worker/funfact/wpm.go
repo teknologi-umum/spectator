@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan uint32) error {
+func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan int64) error {
 	// The formula to calculate words per minute is as follows:
 	// SELECT all KeystrokeEvent, group by TIME, each TIME is windowed by 1 minute
 	// for every 1 minute, calculate the total keystroke event and divide by 5.
@@ -92,7 +92,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	keystrokesIgnore := []string{"backspace", "delete", "insert", "pageup", "pagedown"}
 	// wordsPerMinute contains the array of each minute's words per minute.
 	// This can be used to calculate the average of all the words per minute.
-	var wordsPerMinute []uint32
+	var wordsPerMinute []int64
 
 	// Find the delta between endTime and startTime in minute.
 	delta := (endTime - startTime) / 60
@@ -115,7 +115,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		}
 		defer rows.Close()
 
-		var currentWordCount uint32
+		var currentWordCount int64
 		for rows.Next() {
 			record := rows.Record()
 
@@ -138,13 +138,13 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		return fmt.Errorf("no keystroke events found")
 	}
 
-	var averageWpm uint32
-	var wordsSum uint32
+	var averageWpm int64
+	var wordsSum int64
 	for _, wpm := range wordsPerMinute {
 		wordsSum += wpm / 5
 	}
 
-	averageWpm = wordsSum / uint32(len(wordsPerMinute))
+	averageWpm = wordsSum / int64(len(wordsPerMinute))
 
 	// Return the result here
 	result <- averageWpm

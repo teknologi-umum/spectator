@@ -83,6 +83,19 @@ func TestMain(m *testing.M) {
 	// Setup a context for preparing things
 	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*60)
 
+
+	bucketFound, err := bucket.BucketExists(prepareCtx, "spectator")
+	if err != nil {
+		log.Fatalf("Error checking MinIO bucket: %s\n", err)
+	}
+
+	if !bucketFound {
+		err = bucket.MakeBucket(prepareCtx, "spectator", minio.MakeBucketOptions{})
+		if err != nil {
+			log.Fatalf("Error creating MinIObucket: %s\n", err)
+		}
+	}
+
 	// Check for bucket existence
 	err = prepareBuckets(prepareCtx, deps.DB, influxOrg)
 	if err != nil {
@@ -101,7 +114,7 @@ func TestMain(m *testing.M) {
 	fmt.Println("Cleaning up...")
 
 	// Setup a context for cleaning up things
-	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*30)
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*60)
 
 	err = cleanup(cleanupCtx)
 	if err != nil {
@@ -213,7 +226,7 @@ func cleanup(ctx context.Context) error {
 		// More speed hack, we create a child errgroup
 		c, cctx := errgroup.WithContext(gctx)
 		c.Go(func() error {
-			for _, measurement := range sessionEventMeasurements[:len(sessionEventMeasurements)/3] {
+			for _, measurement := range sessionEventMeasurements[:len(sessionEventMeasurements)/2] {
 				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 				if err != nil {
 					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
@@ -223,17 +236,7 @@ func cleanup(ctx context.Context) error {
 		})
 
 		c.Go(func() error {
-			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)/3:len(sessionEventMeasurements)*2/3] {
-				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
-				if err != nil {
-					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
-				}
-			}
-			return nil
-		})
-
-		c.Go(func() error {
-			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)*2/3:] {
+			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)/2:] {
 				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
 				if err != nil {
 					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)

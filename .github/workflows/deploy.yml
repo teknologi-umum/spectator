@@ -89,7 +89,7 @@ jobs:
       - name: Build test
         run: go build .
       - name: Run test
-        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
         env:
           INFLUX_HOST: http://db:8086/
           INFLUX_ORG: teknologi

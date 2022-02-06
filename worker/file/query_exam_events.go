@@ -18,12 +18,28 @@ type ExamEvent struct {
 
 func (d *Dependency) QueryExamEnded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*ExamEvent, error) {
 	events, err := d.queryExamEvents(ctx, queryAPI, sessionID, common.MeasurementExamEnded)
-	return &(*events)[0], err
+	if err != nil {
+		return &ExamEvent{}, err
+	}
+
+	if len(*events) == 0 {
+		return &ExamEvent{}, nil
+	}
+
+	return &(*events)[0], nil
 }
 
 func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*ExamEvent, error) {
 	events, err := d.queryExamEvents(ctx, queryAPI, sessionID, common.MeasurementExamForfeited)
-	return &(*events)[0], err
+	if err != nil {
+		return &ExamEvent{}, err
+	}
+
+	if len(*events) == 0 {
+		return &ExamEvent{}, nil
+	}
+
+	return &(*events)[0], nil
 }
 
 func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]ExamEvent, error) {

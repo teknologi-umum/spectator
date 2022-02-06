@@ -25,9 +25,9 @@ message Member {
 }
 
 message FunFactResponse {
-    uint32 words_per_minute = 1;
+    int64 words_per_minute = 1;
     double deletion_rate = 2;
-    uint32 submission_attempts = 3;
+    int64 submission_attempts = 3;
 }
 
 message FilesList {

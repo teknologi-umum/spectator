@@ -266,8 +266,8 @@ func seedData(ctx context.Context) error {
 	// Keystroke Event
 	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/InputDomain/KeystrokeEvent.cs
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementKeystroke,
@@ -288,19 +288,20 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Move Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseMoved,
@@ -317,19 +318,20 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Down Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseDown,
@@ -346,19 +348,20 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Up Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseUp,
@@ -375,19 +378,20 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
+			
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 
 	// Mouse Scrolled Event
 	go func() {
-		var points []*write.Point
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+			var points []*write.Point
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseScrolled,
@@ -403,12 +407,13 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
+			
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("Error writing point: %v", err)
+			}
 		}
 
-		err := inputWriteAPI.WritePoint(ctx, points...)
-		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
-		}
 		wg.Done()
 	}()
 

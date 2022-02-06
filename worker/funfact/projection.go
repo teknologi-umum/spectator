@@ -12,7 +12,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float64, requestID string) {
+func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts int64, deletionRate float64, requestID string) {
 	// Defer func to avoid panic
 	defer func() {
 		r := recover()
