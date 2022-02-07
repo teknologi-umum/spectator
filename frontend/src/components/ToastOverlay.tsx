@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Flex, useToast } from "@chakra-ui/react";
+import { Box, Flex, ToastId, useToast } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
 import { HubConnectionState } from "@microsoft/signalr";
 import { CheckmarkIcon, CrossIcon, InfoIcon } from "@/icons";
@@ -42,7 +42,7 @@ export default function ToastOverlay() {
   }, [state]);
 
   useEffect(() => {
-    toast({
+    const id = toast({
       position: "top-right",
       render: () => (
         <Box
@@ -56,6 +56,8 @@ export default function ToastOverlay() {
           fontWeight="bold"
           textAlign="left"
           shadow="sm"
+          onClick={() => toast.close(id as ToastId)}
+          cursor="pointer"
         >
           {toastContent}
         </Box>
