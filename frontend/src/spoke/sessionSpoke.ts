@@ -69,4 +69,4 @@ class SessionSpoke extends SpokeBase {
   }
 }
 
-export default new SessionSpoke(import.meta.env.VITE_SESSION_HUB_URL as string);
+export default new SessionSpoke(import.meta.env.VITE_SESSION_HUB_URL);

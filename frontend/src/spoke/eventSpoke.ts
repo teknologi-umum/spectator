@@ -6,4 +6,4 @@ class EventSpoke extends SpokeBase {
   }
 }
 
-export default new EventSpoke(import.meta.env.VITE_EVENT_HUB_URL as string);
+export default new EventSpoke(import.meta.env.VITE_EVENT_HUB_URL);
