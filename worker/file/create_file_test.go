@@ -2,6 +2,7 @@ package file_test
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -9,6 +10,10 @@ import (
 )
 
 func TestCreateFile(t *testing.T) {
+	if os.Getenv("ENVIRONMENT") == "github-actions" {
+		t.Skip("On local, this should be tested against a running MinIO instance. Doesn't work so well on GitHub Actions.")
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			t.Errorf("unexpected panic: %v", r)
