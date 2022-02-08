@@ -46,7 +46,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
     snapshotByQuestionNumber
   } = useAppSelector((state) => state.editor);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { accessToken } = useAppSelector((state) => state.session);
   const decoded = accessToken ? jwtDecode(accessToken) : null;
@@ -107,7 +107,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
         </Text>
       </Flex>
       <ThemeButton position="relative" />
-      <Flex alignItems="center" gap="3" w="14rem">
+      <Flex alignItems="center" gap="3" w="24rem">
         <Select
           color={fgDarker}
           bg={bg}
@@ -174,6 +174,35 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
                 </option>
               );
             })}
+        </Select>
+        <Select
+          color={fgDarker}
+          bg={bg}
+          textTransform="capitalize"
+          w="8rem"
+          border="none"
+          value={i18n.language}
+          onChange={(e) => {
+            const locale = e.currentTarget.value;
+            i18n.changeLanguage(locale);
+          }}
+        >
+          <option
+            value="en-US"
+            style={{
+              backgroundColor: optionBg
+            }}
+          >
+            English
+          </option>
+          <option
+            value="id-ID"
+            style={{
+              backgroundColor: optionBg
+            }}
+          >
+            Indonesia
+          </option>
         </Select>
       </Flex>
       <Flex alignItems="center" gap="3" ml="auto">
