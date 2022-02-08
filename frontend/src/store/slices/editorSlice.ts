@@ -2,7 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { Language } from "@/models/Language";
 import type { Question } from "@/models/Question";
 import type { EditorState } from "@/models/EditorState";
-import { EditorSnapshot } from "@/models/EditorSnapshot";
+import type { EditorSnapshot } from "@/models/EditorSnapshot";
+import { defaultEditorSnapshot } from "@/store/entity/EditorSnapshot";
 
 const initialState: EditorState = {
   deadlineUtc: null,
@@ -35,50 +36,38 @@ export const editorSlice = createSlice({
       action: PayloadAction<Question>
     ) => {
       if (!(action.payload.questionNumber in state.snapshotByQuestionNumber)) {
-        state.snapshotByQuestionNumber[action.payload.questionNumber] = {
-          questionNumber: action.payload.questionNumber,
-          language: state.currentLanguage,
-          solutionByLanguage: {
-            ...action.payload.templateByLanguage,
-            [state.currentLanguage]:
-              action.payload.templateByLanguage[state.currentLanguage]
-          },
-          scratchPad: "",
-          submissionSubmitted: false,
-          submissionAccepted: false,
-          submissionRefactored: false,
-          testResults: null
-        };
+        state.snapshotByQuestionNumber[action.payload.questionNumber] =
+          defaultEditorSnapshot(state);
       }
+
       state.currentQuestionNumber = action.payload.questionNumber;
       state.currentLanguage =
         state.snapshotByQuestionNumber[action.payload.questionNumber].language;
     },
     setLanguage: (state, action: PayloadAction<Language>) => {
-      if (
-        state.snapshotByQuestionNumber[state.currentQuestionNumber]
-          ?.language !== undefined
-      ) {
-        state.snapshotByQuestionNumber[state.currentQuestionNumber].language =
-          action.payload;
+      if (!(state.currentQuestionNumber in state.snapshotByQuestionNumber)) {
+        state.snapshotByQuestionNumber[state.currentQuestionNumber] =
+          defaultEditorSnapshot(state);
       }
+      state.snapshotByQuestionNumber[state.currentQuestionNumber].language =
+        action.payload;
       state.currentLanguage = action.payload;
     },
     setFontSize: (state, action: PayloadAction<number>) => {
       state.fontSize = action.payload;
     },
     setSolution: (state, action: PayloadAction<string>) => {
-      const solutionByLanguage =
-        state.snapshotByQuestionNumber[state.currentQuestionNumber!]
-          ?.solutionByLanguage;
-      if (solutionByLanguage !== undefined) {
-        state.snapshotByQuestionNumber[
-          state.currentQuestionNumber!
-        ].solutionByLanguage[state.currentLanguage] = action.payload;
+      if (!(state.currentQuestionNumber in state.snapshotByQuestionNumber)) {
+        state.snapshotByQuestionNumber[state.currentQuestionNumber] =
+          defaultEditorSnapshot(state);
       }
+
+      state.snapshotByQuestionNumber[
+        state.currentQuestionNumber
+      ].solutionByLanguage[state.currentLanguage] = action.payload;
     },
     setSnapshot: (state, action: PayloadAction<EditorSnapshot>) => {
-      state.snapshotByQuestionNumber[state.currentQuestionNumber!] = {
+      state.snapshotByQuestionNumber[state.currentQuestionNumber] = {
         language: action.payload.language,
         questionNumber: action.payload.questionNumber,
         scratchPad: action.payload.scratchPad,
@@ -90,14 +79,13 @@ export const editorSlice = createSlice({
       };
     },
     setScratchPad: (state, action: PayloadAction<string>) => {
-      const solutionByLanguage =
-        state.snapshotByQuestionNumber[state.currentQuestionNumber!]
-          ?.scratchPad;
-      if (solutionByLanguage !== undefined) {
-        state.snapshotByQuestionNumber[
-          state.currentQuestionNumber!
-        ].scratchPad = action.payload;
+      if (!(state.currentQuestionNumber in state.snapshotByQuestionNumber)) {
+        state.snapshotByQuestionNumber[state.currentQuestionNumber] =
+          defaultEditorSnapshot(state);
       }
+
+      state.snapshotByQuestionNumber[state.currentQuestionNumber].scratchPad =
+        action.payload;
     }
   }
 });

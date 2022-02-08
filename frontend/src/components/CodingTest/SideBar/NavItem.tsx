@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Flex,
   Text,
@@ -11,7 +11,11 @@ import {
 } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { setCurrentQuestionNumber } from "@/store/slices/editorSlice";
+import {
+  setCurrentQuestion,
+  setCurrentQuestionNumber
+} from "@/store/slices/editorSlice";
+import { useTranslation } from "react-i18next";
 
 interface NavItemProps {
   questionNumber: number;
@@ -25,8 +29,20 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const bg = useColorModeValue("teal.50", "teal.500");
   const fg = useColorModeValue("teal.700", "teal.200");
+  const { t } = useTranslation();
 
   const isActive = currentQuestionNumber === questionNumber;
+
+  useEffect(() => {
+    setCurrentQuestion({
+      questionNumber: currentQuestionNumber,
+      title: t(`question.questions.${currentQuestionNumber - 1}.title`),
+      instruction: t(`question.questions.${currentQuestionNumber - 1}.title`),
+      templateByLanguage: t(
+        `question.questions.${currentQuestionNumber - 1}.templates`
+      )
+    });
+  }, [currentQuestionNumber]);
 
   return (
     <Flex w="100%" flexDirection="column" alignItems="flex-start">
@@ -40,9 +56,7 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
           w="full"
           _hover={{ textDecoration: "none" }}
           onClick={() =>
-            dispatch(
-              setCurrentQuestionNumber(questionNumber)
-            )
+            dispatch(setCurrentQuestionNumber(currentQuestionNumber))
           }
         >
           <MenuButton w="full">
