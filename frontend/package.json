@@ -15,13 +15,13 @@
     "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto"
   },
   "dependencies": {
+    "@microsoft/signalr": "^6.0.1",
     "@protobuf-ts/runtime-rpc": "^2.1.0",
     "i18next": "^21.6.4",
     "i18next-browser-languagedetector": "^6.1.2",
     "sirv-cli": "^1.0.14"
   },
   "devDependencies": {
-    "@chakra-ui/icons": "^1.1.1",
     "@chakra-ui/react": "^1.7.3",
     "@codemirror/gutter": "^0.19.9",
     "@codemirror/lang-cpp": "^0.19.1",

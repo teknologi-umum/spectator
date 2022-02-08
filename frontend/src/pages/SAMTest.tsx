@@ -17,15 +17,17 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import "@/styles/samtest.css";
 import ThemeButton from "@/components/ThemeButton";
 import { useNavigate } from "react-router-dom";
-import { getJwt } from "@/utils/generateFakeJwt";
-import { useAppDispatch } from "@/store";
-import { setJwt } from "@/store/slices/jwtSlice";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  markFirstSAMSubmitted,
+  markSecondSAMSubmitted
+} from "@/store/slices/sessionSlice";
+import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
-import { withPublic } from "@/hoc";
 import { useTranslation } from "react-i18next";
+import SAMRadioGroup from "@/components/SAMRadioGroup";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -33,45 +35,24 @@ const ICONS = {
 };
 
 function getResponseOptions(
-  icons: Record<string, FC<SVGProps<SVGSVGElement>>>[],
-  state: number,
-  setState: React.Dispatch<React.SetStateAction<number>>
+  icons: Record<string, FC<SVGProps<SVGSVGElement>>>[]
 ) {
-  return (
-    <Flex wrap="wrap" gap="4" mt="4">
-      {icons.map((Icon, idx) => {
-        return (
-          <label key={idx + 1}>
-            <input
-              style={{
-                opacity: "initial",
-                pointerEvents: "all"
-              }}
-              type="radio"
-              value={idx + 1}
-              onChange={() => setState(idx + 1)}
-              checked={state === idx + 1}
-            />
-            <Icon.ReactComponent />
-          </label>
-        );
-      })}
-    </Flex>
-  );
+  return icons.map((Icon, idx) => ({ value: idx + 1, Icon }));
 }
 
-function SAMTest() {
+export default function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [arousal, setArousal] = useState(0);
-  const [pleasure, setPleasure] = useState(0);
+  const [arousal, setArousal] = useState(1);
+  const [pleasure, setPleasure] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { t } = useTranslation();
-  
+  const { firstSAMSubmitted } = useAppSelector((state) => state.session);
+
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
       setCurrentPage((prev) => (currentPage <= 0 ? prev : prev - 1));
@@ -85,6 +66,25 @@ function SAMTest() {
     e.preventDefault();
   }
 
+  function finishSAMTest() {
+    if (firstSAMSubmitted) {
+      dispatch(markSecondSAMSubmitted());
+    } else {
+      // TODO(elianiva): we should get the deadline and questions from the
+      //                 server
+      dispatch(
+        setDeadlineAndQuestions({
+          // 3 hours from now
+          deadlineUtc: new Date(
+            Date.now() + 3 * 60 * 60 * 1000
+          ).getUTCMilliseconds(),
+          questions: []
+        })
+      );
+      dispatch(markFirstSAMSubmitted());
+    }
+    navigate("/coding-test");
+  }
 
   useEffect(() => {
     document.title = "SAM Test | Spectator";
@@ -119,13 +119,12 @@ function SAMTest() {
                   <Text color={fgDarker} fontSize="lg" mb="4">
                     {t("translation.translations.sam_test.aroused_body")}
                   </Text>
-                  <Box color={fgDarker}>
-                    {getResponseOptions(
-                      Object.values(ICONS.arousal),
-                      arousal,
-                      setArousal
-                    )}
-                  </Box>
+                  <SAMRadioGroup
+                    value={arousal}
+                    onChange={(v) => setArousal(parseInt(v))}
+                    name="arousal"
+                    items={getResponseOptions(Object.values(ICONS.arousal))}
+                  />
                 </Box>
               </Fade>
             )}
@@ -139,13 +138,12 @@ function SAMTest() {
                   <Text color={fgDarker} fontSize="lg">
                     {t("translation.translations.sam_test.pleasure_body")}
                   </Text>
-                  <Box color={fgDarker}>
-                    {getResponseOptions(
-                      Object.values(ICONS.pleasure),
-                      pleasure,
-                      setPleasure
-                    )}
-                  </Box>
+                  <SAMRadioGroup
+                    value={pleasure}
+                    onChange={(v) => setPleasure(parseInt(v))}
+                    name="pleasure"
+                    items={getResponseOptions(Object.values(ICONS.pleasure))}
+                  />
                 </Box>
               </Fade>
             )}
@@ -180,7 +178,9 @@ function SAMTest() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
-          <ModalHeader fontSize="2xl">{t("translation.translations.confirmation.title")}</ModalHeader>
+          <ModalHeader fontSize="2xl">
+            {t("translation.translations.confirmation.title")}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
@@ -197,14 +197,7 @@ function SAMTest() {
             >
               {t("translation.translations.ui.cancel")}
             </Button>
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                const jwt = getJwt();
-                dispatch(setJwt(jwt));
-                navigate("/coding-test");
-              }}
-            >
+            <Button colorScheme="blue" onClick={finishSAMTest}>
               {t("translation.translations.ui.confirm")}
             </Button>
           </ModalFooter>
@@ -213,5 +206,3 @@ function SAMTest() {
     </>
   );
 }
-
-export default withPublic(SAMTest);

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { UIEventHandler } from "react";
 import {
-  Heading,
   Tabs,
   TabList,
   TabPanels,
@@ -23,10 +22,11 @@ interface ScratchPadProps {
 export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
-  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
+  const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
-  const { currentQuestion } = useAppSelector((state) => state.question);
-  const { scratchPads } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
 
   const [value, setValue] = useState("");
   const debouncedValue = useDebounce(value, 500);
@@ -34,29 +34,18 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const currentScratchPad = scratchPads.find(
-      (scratchPad) => scratchPad.questionNo === currentQuestion
-    );
+    const currentScratchPad =
+      snapshotByQuestionNumber[currentQuestionNumber!]?.scratchPad;
 
     if (currentScratchPad !== undefined) {
-      setValue(currentScratchPad.value);
+      setValue(currentScratchPad);
     } else {
-      dispatch(
-        setScratchPad({
-          questionNo: currentQuestion,
-          value: ""
-        })
-      );
+      dispatch(setScratchPad(""));
     }
   }, []);
 
   useEffect(() => {
-    dispatch(
-      setScratchPad({
-        questionNo: currentQuestion,
-        value: debouncedValue
-      })
-    );
+    dispatch(setScratchPad(debouncedValue));
   }, [debouncedValue]);
 
   function handleChange(value: string) {
@@ -68,7 +57,6 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
       <Tabs isLazy h="full">
         <TabList borderColor={borderBg} color={fgDarker}>
           <Tab>{t("translation.translations.ui.scratchpad")}</Tab>
-          <Tab>{t("translation.translations.ui.output")}</Tab>
         </TabList>
 
         <TabPanels h="full">
@@ -82,9 +70,6 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
               onScroll={onScroll}
               onChange={handleChange}
             />
-          </TabPanel>
-          <TabPanel p="2" tabIndex={-1}>
-            <Heading>Sandbox</Heading>
           </TabPanel>
         </TabPanels>
       </Tabs>

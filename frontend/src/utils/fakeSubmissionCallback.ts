@@ -1,16 +1,10 @@
+import { EditorSnapshot } from "@/models/EditorSnapshot";
+
 // only for testing purposes
 export type Languages = "java" | "javascript" | "php" | "python" | "cpp" | "c";
 
-interface Payload {
-  questionNo: number;
-  language: Languages;
-  code: string;
-}
-
 interface SuccessResponse {
-  data: Payload & {
-    submissionType: "submit" | "refactor";
-  };
+  data: EditorSnapshot;
   statusCode: 200;
 }
 
@@ -26,10 +20,10 @@ interface Options {
   onError: (err: ErrorResponse) => void;
 }
 
-const cachedData: Payload[] = [];
+const cachedData: EditorSnapshot[] = [];
 
 function getSubmissionType(questionNo: number) {
-  const idx = cachedData.findIndex((cache) => cache.questionNo === questionNo);
+  const idx = cachedData.findIndex((cache) => cache.questionNumber === questionNo);
 
   if (idx > -1) {
     return "refactor";
@@ -38,12 +32,12 @@ function getSubmissionType(questionNo: number) {
   return "submit";
 }
 
-function generateResponse(type: "success" | "error", payload: Payload) {
+function generateResponse(type: "success" | "error", payload: EditorSnapshot) {
   if (type === "success") {
     return {
       data: {
         ...payload,
-        submissionType: getSubmissionType(payload.questionNo)
+        submissionType: getSubmissionType(payload.questionNumber)
       },
       statusCode: 200
     };
@@ -58,13 +52,13 @@ function generateResponse(type: "success" | "error", payload: Payload) {
 }
 
 export async function mutate(
-  payload: Payload,
+  payload: EditorSnapshot,
   { onSuccess, onError }: Partial<Options>
 ) {
   const fakePromise = new Promise<SuccessResponse>((resolve, reject) => {
-    if (payload.questionNo !== undefined && !Number.isNaN(payload.questionNo)) {
+    if (payload.questionNumber !== undefined && !Number.isNaN(payload.questionNumber)) {
       switch (true) {
-        case payload.questionNo === 0 || payload.questionNo === 2:
+        case payload.questionNumber === 0 || payload.questionNumber === 2:
           resolve(generateResponse("success", payload) as SuccessResponse);
           break;
         default:

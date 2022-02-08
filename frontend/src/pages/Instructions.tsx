@@ -10,11 +10,10 @@ import {
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
 import ThemeButton from "@/components/ThemeButton";
-import { withPublic } from "@/hoc";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 
-function Instructions() {
+export default function Instructions() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
@@ -76,5 +75,3 @@ function Instructions() {
     </Layout>
   );
 }
-
-export default withPublic(Instructions);

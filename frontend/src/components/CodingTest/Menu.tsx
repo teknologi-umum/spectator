@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Button, Flex, Select, Text } from "@chakra-ui/react";
-import { TimeIcon } from "@chakra-ui/icons";
 import ThemeButton from "../ThemeButton";
 import {
-  changeFontSize,
-  changeCurrentLanguage
+  setFontSize,
+  setLanguage,
+  setSnapshot
 } from "@/store/slices/editorSlice";
+import type { Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import theme from "@/styles/themes";
-import {
-  prevQuestion,
-  nextQuestion,
-  setSubmission
-} from "@/store/slices/questionSlice";
 import { mutate } from "@/utils/fakeSubmissionCallback";
 import { useTranslation } from "react-i18next";
+import { jwtDecode } from "@/utils/jwtDecode";
+import { ClockIcon } from "@/icons";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -36,53 +34,55 @@ interface MenuProps {
 
 export default function Menu({ bg, fgDarker }: MenuProps) {
   const dispatch = useAppDispatch();
-  const optionBg = useColorModeValue(theme.colors.white, theme.colors.gray[700], theme.colors.gray[800]);
-  const { currentQuestion, submissions } = useAppSelector(
-    (state) => state.question
+  const optionBg = useColorModeValue(
+    theme.colors.white,
+    theme.colors.gray[700],
+    theme.colors.gray[800]
   );
-  const { fontSize, currentLanguage, solutions } = useAppSelector(
-    (state) => state.editor
-  );
+  const {
+    currentQuestionNumber,
+    fontSize,
+    currentLanguage,
+    snapshotByQuestionNumber
+  } = useAppSelector((state) => state.editor);
 
   const { t } = useTranslation();
 
-  const {
-    jwtPayload: { exp, iat }
-  } = useAppSelector((state) => state.jwt);
-  const [time, setTime] = useState(iat + exp - Date.now());
+  const { accessToken } = useAppSelector((state) => state.session);
+  const decoded = accessToken ? jwtDecode(accessToken) : null;
+  const [time, setTime] = useState(
+    decoded ? decoded.iat + decoded.exp - Date.now() : 0
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTime((prev) => prev - 1000);
+      setTime((prev: number) => prev - 1000);
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
-  const recordedSubmission = submissions.find(
-    (submission) => submission.questionNo === currentQuestion
-  );
+  const recordedSubmission = snapshotByQuestionNumber[currentQuestionNumber!];
   const isSubmitted =
-    recordedSubmission !== undefined ? recordedSubmission.isSubmitted : false;
+    recordedSubmission !== undefined
+      ? recordedSubmission.submissionAccepted
+      : false;
   const isRefactored =
-    recordedSubmission !== undefined ? recordedSubmission.isRefactored : false;
-
-  console.log(isSubmitted);
+    recordedSubmission !== undefined
+      ? recordedSubmission.submissionRefactored
+      : false;
 
   function handleSubmit() {
-    const currentSolution = solutions.filter(
-      (solution) =>
-        solution.questionNo === currentQuestion &&
-        solution.language === currentLanguage
-    )[0];
+    if (currentQuestionNumber === null) return;
 
-    mutate(currentSolution, {
+    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
+
+    mutate(currentSnapshot, {
       onSuccess: (res) => {
         dispatch(
-          setSubmission({
+          setSnapshot({
             ...res.data,
-            isSubmitted: true,
-            isRefactored: res.data.submissionType === "refactor"
+            submissionSubmitted: true
           })
         );
       }
@@ -101,7 +101,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
         gap="2"
         rounded="md"
       >
-        <TimeIcon />
+        <ClockIcon />
         <Text fontWeight="medium" fontSize="lg">
           {toReadableTime(time)}
         </Text>
@@ -117,7 +117,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           value={currentLanguage}
           onChange={(e) => {
             const language = e.currentTarget.value;
-            dispatch(changeCurrentLanguage(language));
+            dispatch(setLanguage(language as Language));
           }}
           data-testid="editor-language-select"
         >
@@ -153,7 +153,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           value={fontSize}
           onChange={(e) => {
             const fontSize = parseInt(e.currentTarget.value);
-            dispatch(changeFontSize(fontSize));
+            dispatch(setFontSize(fontSize));
           }}
           data-testid="editor-fontsize-select"
         >
@@ -165,7 +165,10 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
                 <option
                   key={idx}
                   value={fontSize}
-                  style={{ textTransform: "capitalize", backgroundColor: optionBg }}
+                  style={{
+                    textTransform: "capitalize",
+                    backgroundColor: optionBg
+                  }}
                 >
                   {fontSize}px
                 </option>
@@ -176,18 +179,17 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
           px="4"
-          background="red.500"
-          opacity="60%"
+          colorScheme="red"
+          opacity="75%"
           _hover={{
             opacity: "100%"
           }}
-          color="white"
           h="full"
           onClick={() => {
             // TODO(elianiva): implement proper surrender logic properly
             //                 it's now temporarily used for previous question
             //                 to make testing easier
-            dispatch(prevQuestion());
+            // dispatch(prevQuestion());
           }}
         >
           {t("translation.translations.ui.surrender")}
@@ -197,11 +199,6 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
-          _hover={{
-            bg: "blue.600",
-            borderColor: "white",
-            color: "white"
-          }}
           onClick={() => {
             // TODO(elianiva): send the code to backend for execution
           }}
@@ -211,13 +208,8 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
         {!isRefactored && (
           <Button
             px="4"
-            background="blue.500"
-            color= "white"
+            colorScheme="blue"
             h="full"
-            _hover={{
-              bg: "gray.800",
-              borderColor: "white"
-            }}
             onClick={() => {
               // TODO(elianiva): only allow to continue when they have the correct answer
               // dispatch(nextQuestion());

@@ -12,8 +12,10 @@ namespace Spectator.JwtAuthentication {
 			services.AddSingleton<JwtSecurityTokenHandler>();
 			services.AddSingleton<JwtAuthenticationSettings>();
 			services.AddSingleton<IPostConfigureOptions<JwtBearerOptions>, PostConfigureJwtBearerOptions>();
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddJwtBearer();
+			services.AddAuthentication(options => {
+				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			}).AddJwtBearer();
 			services.AddTransient<JwtAuthenticationServices>();
 			return services;
 		}

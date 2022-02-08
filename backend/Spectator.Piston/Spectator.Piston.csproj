@@ -13,4 +13,11 @@
     <ProjectReference Include="..\Spectator.DomainModels\Spectator.DomainModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Roslynator.Analyzers" Version="4.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>
