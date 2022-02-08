@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Flex,
@@ -45,10 +45,6 @@ export default function Question({
     () => !(currentSnapshot?.testResults !== null && currentSnapshot?.testResults?.length > 0),
     [currentSnapshot]
   );
-
-  useEffect(() => {
-    console.log(isResultTabDisabled);
-  }, [currentSnapshot, currentQuestionNumber]);
 
   const { t } = useTranslation();
 

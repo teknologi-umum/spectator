@@ -1,28 +1,20 @@
-// TODO(elianiva): this file is kinda big, should probably refactor it later
-
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Flex,
-  Select,
-  Text,
-  ToastId,
-  useToast
-} from "@chakra-ui/react";
-import ThemeButton from "../ThemeButton";
+import { Button, Flex, Select, Text, useToast } from "@chakra-ui/react";
+import ThemeButton from "@/components/ThemeButton";
 import {
   setFontSize,
   setLanguage,
   setSnapshot
 } from "@/store/slices/editorSlice";
 import type { Language } from "@/models/Language";
+import { LANGUAGES } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import theme from "@/styles/themes";
 import { useTranslation } from "react-i18next";
 import { jwtDecode } from "@/utils/jwtDecode";
-import { CheckmarkIcon, ClockIcon, CrossIcon } from "@/icons";
+import { ClockIcon } from "@/icons";
+import FeedbackToast from "@/components/FeedbackToast";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -33,8 +25,6 @@ function toReadableTime(ms: number): string {
     ":"
   );
 }
-
-const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
   bg: string;
@@ -138,32 +128,14 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
       const id = toast({
         position: "top-right",
         render: () => (
-          <Box
+          <FeedbackToast
             bg={toastBg}
-            color={toastFg}
-            borderLeft="4px"
-            borderColor={isCorrect ? green : red}
-            p={4}
-            borderRadius="md"
-            fontSize="md"
-            fontWeight="bold"
-            textAlign="left"
-            shadow="sm"
-            onClick={() => toast.close(id as ToastId)}
-            cursor="pointer"
-          >
-            <Flex align="center" gap="2" color={isCorrect ? green : red}>
-              {isCorrect ? (
-                <>
-                  <CheckmarkIcon width="1.25rem" height="1.25rem" /> Correct answer!
-                </>
-              ) : (
-                <>
-                  <CrossIcon width="1.25rem" height="1.25rem" /> Wrong answer!
-                </>
-              )}
-            </Flex>
-          </Box>
+            fg={toastFg}
+            green={green}
+            red={red}
+            isCorrect={isCorrect}
+            onClick={() => toast.close(id!)}
+          />
         )
       });
     } catch (e) {
@@ -269,10 +241,8 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           }}
           h="full"
           onClick={() => {
-            // TODO(elianiva): implement proper surrender logic properly
-            //                 it's now temporarily used for previous question
-            //                 to make testing easier
-            // dispatch(prevQuestion());
+            // TODO(elianiva): use the actual spoke method
+            // sessionSpoke.forfeitExam();
           }}
         >
           {t("translation.translations.ui.surrender")}
@@ -293,12 +263,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
             px="4"
             colorScheme="blue"
             h="full"
-            onClick={() => {
-              // TODO(elianiva): only allow to continue when they have the correct answer
-              // dispatch(nextQuestion());
-
-              handleSubmit();
-            }}
+            onClick={() => handleSubmit()}
           >
             {isSubmitted ? "Refactor" : "Submit"}
           </Button>
