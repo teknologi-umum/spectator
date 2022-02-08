@@ -16,7 +16,7 @@ import {
   FormErrorMessage
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import ThemeButton from "@/components/ThemeButton";
+import { ThemeButton } from "@/components/CodingTest";
 import { useColorModeValue, useSignalR } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
@@ -88,7 +88,9 @@ export default function PersonalInfoPage() {
 
   return (
     <Layout>
-      <ThemeButton position="fixed" />
+      <Box position="fixed" left={4} top={4}>
+        <ThemeButton bg={bg} fg={fg} />
+      </Box>
       <Box
         as="form"
         onSubmit={handleSubmit(onSubmit)}

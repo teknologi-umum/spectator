@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
-import ThemeButton from "@/components/ThemeButton";
+import { ThemeButton } from "@/components/CodingTest";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 
@@ -29,7 +29,9 @@ export default function Instructions() {
 
   return (
     <Layout>
-      <ThemeButton position="fixed" />
+      <Box position="fixed" left={4} top={4}>
+        <ThemeButton bg={bg} fg={fg} />
+      </Box>
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
           {t("translation.translations.instructions.title")}

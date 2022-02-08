@@ -13,7 +13,8 @@
       "your_solution": "Your Solution",
       "scratchpad": "Scratchpad",
       "output": "Output",
-      "begin_test": "Begin Test"
+      "begin_test": "Begin Test",
+      "language": "Language"
     },
     "personal_info": {
       "student_number": "Student Number",

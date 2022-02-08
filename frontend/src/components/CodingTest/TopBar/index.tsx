@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Select, Text } from "@chakra-ui/react";
-import ThemeButton from "../ThemeButton";
+import { Button, Flex, MenuItem, Text } from "@chakra-ui/react";
 import {
   setFontSize,
   setLanguage,
@@ -8,12 +7,15 @@ import {
 } from "@/store/slices/editorSlice";
 import type { Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { useColorModeValue } from "@/hooks";
-import theme from "@/styles/themes";
 import { mutate } from "@/utils/fakeSubmissionCallback";
 import { useTranslation } from "react-i18next";
 import { jwtDecode } from "@/utils/jwtDecode";
 import { ClockIcon } from "@/icons";
+import {
+  MenuDropdown,
+  ThemeButton,
+  LocaleButton
+} from "@/components/CodingTest";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -29,16 +31,11 @@ const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
   bg: string;
-  fgDarker: string;
+  fg: string;
 }
 
-export default function Menu({ bg, fgDarker }: MenuProps) {
+export default function TopBar({ bg, fg }: MenuProps) {
   const dispatch = useAppDispatch();
-  const optionBg = useColorModeValue(
-    theme.colors.white,
-    theme.colors.gray[700],
-    theme.colors.gray[800]
-  );
   const {
     currentQuestionNumber,
     fontSize,
@@ -46,7 +43,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
     snapshotByQuestionNumber
   } = useAppSelector((state) => state.editor);
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { accessToken } = useAppSelector((state) => state.session);
   const decoded = accessToken ? jwtDecode(accessToken) : null;
@@ -93,7 +90,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
       <Flex
         bg={bg}
-        color={fgDarker}
+        color={fg}
         justifyContent="center"
         alignItems="center"
         h="full"
@@ -106,104 +103,57 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           {toReadableTime(time)}
         </Text>
       </Flex>
-      <ThemeButton position="relative" />
-      <Flex alignItems="center" gap="3" w="24rem">
-        <Select
-          color={fgDarker}
+      <Flex alignItems="center" gap="3" w="32rem">
+        <ThemeButton bg={bg} fg={fg} />
+        <MenuDropdown
+          dropdownWidth="10rem"
           bg={bg}
-          textTransform="capitalize"
-          w="8rem"
-          border="none"
-          value={currentLanguage}
-          onChange={(e) => {
-            const language = e.currentTarget.value;
-            dispatch(setLanguage(language as Language));
-          }}
-          data-testid="editor-language-select"
+          fg={fg}
+          title={currentLanguage}
         >
           {!isSubmitted ? (
             <>
               {LANGUAGES.map((lang, idx) => (
-                <option
+                <MenuItem
+                  textTransform="capitalize"
                   key={idx}
-                  value={lang}
-                  style={{ textTransform: "capitalize" }}
+                  onClick={() => dispatch(setLanguage(lang as Language))}
                 >
-                  {lang === "cpp" ? "C++" : lang}
-                </option>
+                  <span>{lang === "cpp" ? "C++" : lang}</span>
+                </MenuItem>
               ))}
             </>
           ) : (
-            <option
-              style={{ textTransform: "capitalize", backgroundColor: optionBg }}
-              value={recordedSubmission?.language ?? ""}
-            >
-              {recordedSubmission?.language === "cpp"
-                ? "C++"
-                : recordedSubmission?.language}
-            </option>
+            <MenuItem onClick={() => dispatch(setFontSize(fontSize))}>
+              <span>
+                {recordedSubmission?.language === "cpp"
+                  ? "C++"
+                  : recordedSubmission?.language}
+              </span>
+            </MenuItem>
           )}
-        </Select>
-        <Select
-          color={fgDarker}
+        </MenuDropdown>
+        <MenuDropdown
+          dropdownWidth="10rem"
           bg={bg}
-          textTransform="capitalize"
-          w="6rem"
-          border="none"
-          value={fontSize}
-          onChange={(e) => {
-            const fontSize = parseInt(e.currentTarget.value);
-            dispatch(setFontSize(fontSize));
-          }}
-          data-testid="editor-fontsize-select"
+          fg={fg}
+          title={fontSize + "px"}
         >
           {Array(9)
             .fill(0)
             .map((_, idx: number) => {
               const fontSize = idx + 12;
               return (
-                <option
+                <MenuItem
                   key={idx}
-                  value={fontSize}
-                  style={{
-                    textTransform: "capitalize",
-                    backgroundColor: optionBg
-                  }}
+                  onClick={() => dispatch(setFontSize(fontSize))}
                 >
-                  {fontSize}px
-                </option>
+                  <span>{fontSize}px</span>
+                </MenuItem>
               );
             })}
-        </Select>
-        <Select
-          color={fgDarker}
-          bg={bg}
-          textTransform="capitalize"
-          w="8rem"
-          border="none"
-          value={i18n.language}
-          onChange={(e) => {
-            const locale = e.currentTarget.value;
-            i18n.changeLanguage(locale);
-          }}
-        >
-          <option
-            value="en-US"
-            style={{
-              backgroundColor: optionBg
-            }}
-          >
-            English
-          </option>
-          <option
-            value="id-ID"
-            style={{
-              backgroundColor: optionBg
-            }}
-          >
-            Indonesia
-          </option>
-        </Select>
+        </MenuDropdown>
+        <LocaleButton bg={bg} fg={fg} />
       </Flex>
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
