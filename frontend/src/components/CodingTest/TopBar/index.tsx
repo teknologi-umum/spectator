@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, MenuItem, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  MenuItem,
+  MenuItemOption,
+  MenuOptionGroup,
+  Text
+} from "@chakra-ui/react";
 import {
   setFontSize,
   setLanguage,
@@ -111,27 +118,24 @@ export default function TopBar({ bg, fg }: MenuProps) {
           fg={fg}
           title={currentLanguage}
         >
-          {!isSubmitted ? (
-            <>
-              {LANGUAGES.map((lang, idx) => (
-                <MenuItem
-                  textTransform="capitalize"
-                  key={idx}
-                  onClick={() => dispatch(setLanguage(lang as Language))}
-                >
-                  <span>{lang === "cpp" ? "C++" : lang}</span>
-                </MenuItem>
-              ))}
-            </>
-          ) : (
-            <MenuItem onClick={() => dispatch(setFontSize(fontSize))}>
-              <span>
-                {recordedSubmission?.language === "cpp"
-                  ? "C++"
-                  : recordedSubmission?.language}
-              </span>
-            </MenuItem>
-          )}
+          <MenuOptionGroup
+            type="radio"
+            value={isSubmitted ? recordedSubmission.language : currentLanguage}
+            onChange={(value) => dispatch(setLanguage(value as Language))}
+          >
+            {LANGUAGES.map((lang, idx) => (
+              <MenuItemOption
+                textTransform="capitalize"
+                key={idx}
+                value={lang}
+                isDisabled={
+                  isSubmitted ? lang !== recordedSubmission?.language : false
+                }
+              >
+                <span>{lang === "cpp" ? "C++" : lang}</span>
+              </MenuItemOption>
+            ))}
+          </MenuOptionGroup>
         </MenuDropdown>
         <MenuDropdown
           dropdownWidth="10rem"
@@ -139,19 +143,24 @@ export default function TopBar({ bg, fg }: MenuProps) {
           fg={fg}
           title={fontSize + "px"}
         >
-          {Array(9)
-            .fill(0)
-            .map((_, idx: number) => {
-              const fontSize = idx + 12;
-              return (
-                <MenuItem
-                  key={idx}
-                  onClick={() => dispatch(setFontSize(fontSize))}
-                >
-                  <span>{fontSize}px</span>
-                </MenuItem>
-              );
-            })}
+          <MenuOptionGroup
+            type="radio"
+            value={String(fontSize)}
+            onChange={(value) => {
+              dispatch(setFontSize(parseInt(value as string)));
+            }}
+          >
+            {Array(9)
+              .fill(0)
+              .map((_, idx: number) => {
+                const fontSize = idx + 12;
+                return (
+                  <MenuItemOption key={idx} value={String(fontSize)}>
+                    <span>{fontSize}px</span>
+                  </MenuItemOption>
+                );
+              })}
+          </MenuOptionGroup>
         </MenuDropdown>
         <LocaleButton bg={bg} fg={fg} />
       </Flex>
