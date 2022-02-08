@@ -15,25 +15,19 @@ import {
   scrollHandler
 } from "@/events";
 import { useColorModeValue, useSignalR } from "@/hooks";
-import {
-  Box,
-  Flex,
-  theme,
-  useEventListener
-} from "@chakra-ui/react";
+import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
-import ToastOverlay from "@/components/ToastOverlay";
+import ConnectionToastOverlay from "@/components/ToastOverlay";
 
 export default function CodingTest() {
-  const { currentQuestionNumber } = useAppSelector(
-    (state) => state.editor
-  );
+  const { isCollapsed } = useAppSelector((state) => state.sideBar);
+  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
 
   const connection = useSignalR();
 
-  useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
-  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
-  useEventListener("keydown", keystrokeHandler(connection, currentQuestionNumber));
+  // useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
+  // useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
+  // useEventListener("keydown", keystrokeHandler(connection, currentQuestionNumber));
 
   useEventListener("scroll", scrollHandler(connection, currentQuestionNumber));
 
@@ -51,10 +45,16 @@ export default function CodingTest() {
 
   return (
     <>
-      <ToastOverlay />
+      <ConnectionToastOverlay />
       <Flex w="full" h="full">
         <SideBar bg={bg} fg={fg} />
-        <Box bg={gray} gap="3" p="3" w="full">
+        <Box
+          bg={gray}
+          gap="3"
+          p="3"
+          w={`calc(100% - ${isCollapsed ? "65px" : "200px"})`}
+          transition="width 300ms ease"
+        >
           <Menu bg={bg} fgDarker={fgDarker} />
           <Box h="calc(100% - 3.5rem)">
             <ReflexContainer orientation="vertical">
@@ -80,7 +80,10 @@ export default function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <Editor
                       bg={bg}
-                      onScroll={scrollHandler(connection, currentQuestionNumber)}
+                      onScroll={scrollHandler(
+                        connection,
+                        currentQuestionNumber
+                      )}
                     />
                   </ReflexElement>
 
@@ -95,7 +98,10 @@ export default function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <ScratchPad
                       bg={bg}
-                      onScroll={scrollHandler(connection, currentQuestionNumber)}
+                      onScroll={scrollHandler(
+                        connection,
+                        currentQuestionNumber
+                      )}
                     />
                   </ReflexElement>
                 </ReflexContainer>

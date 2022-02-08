@@ -1,5 +1,15 @@
+// TODO(elianiva): this file is kinda big, should probably refactor it later
+
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Select, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Select,
+  Text,
+  ToastId,
+  useToast
+} from "@chakra-ui/react";
 import ThemeButton from "../ThemeButton";
 import {
   setFontSize,
@@ -10,10 +20,9 @@ import type { Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import theme from "@/styles/themes";
-import { mutate } from "@/utils/fakeSubmissionCallback";
 import { useTranslation } from "react-i18next";
 import { jwtDecode } from "@/utils/jwtDecode";
-import { ClockIcon } from "@/icons";
+import { CheckmarkIcon, ClockIcon, CrossIcon } from "@/icons";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -33,6 +42,11 @@ interface MenuProps {
 }
 
 export default function Menu({ bg, fgDarker }: MenuProps) {
+  const toast = useToast();
+  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
+  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
+  const green = useColorModeValue("green.500", "green.400", "green.300");
+  const red = useColorModeValue("red.500", "red.400", "red.300");
   const dispatch = useAppDispatch();
   const optionBg = useColorModeValue(
     theme.colors.white,
@@ -62,31 +76,100 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const recordedSubmission = snapshotByQuestionNumber[currentQuestionNumber!];
+  const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber!];
   const isSubmitted =
-    recordedSubmission !== undefined
-      ? recordedSubmission.submissionAccepted
-      : false;
+    currentSnapshot !== undefined ? currentSnapshot.submissionAccepted : false;
   const isRefactored =
-    recordedSubmission !== undefined
-      ? recordedSubmission.submissionRefactored
+    currentSnapshot !== undefined
+      ? currentSnapshot.submissionRefactored
       : false;
 
   function handleSubmit() {
     if (currentQuestionNumber === null) return;
 
-    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
+    // TODO(elianiva): submit the actual thing to backend using SignalR
+    const isCorrect = Math.random() < 0.5;
+    try {
+      // TODO(elianiva): submit the actual submission
+      // const submissionResult = await sessionSpoke.submitSolution({
+      //   // FIXME(elianiva): fix this dumb thing
+      //   language: LanguageEnum[currentLanguage.toUpperCase()],
+      //   solution: "",
+      //   scratchPad: "",
+      //   questionNumber: currentQuestionNumber
+      // });
 
-    mutate(currentSnapshot, {
-      onSuccess: (res) => {
-        dispatch(
-          setSnapshot({
-            ...res.data,
-            submissionSubmitted: true
-          })
-        );
-      }
-    });
+      dispatch(
+        setSnapshot({
+          language: currentLanguage,
+          questionNumber: currentQuestionNumber,
+          scratchPad: currentSnapshot?.scratchPad || "",
+          solutionByLanguage: {
+            ...currentSnapshot?.solutionByLanguage,
+            [currentLanguage]: ""
+          },
+          submissionAccepted: isCorrect,
+          submissionRefactored: currentSnapshot?.submissionSubmitted || false,
+          submissionSubmitted: true,
+          // TODO(elianiva): replace this with the actual submission result
+          testResults: [
+            { testNumber: 1, status: "Passing" },
+            {
+              testNumber: 2,
+              status: "Failing",
+              expectedStdout: "1",
+              actualStdout: "2"
+            },
+            { testNumber: 3, status: "CompileError", stderr: "Unexpected '('" },
+            {
+              testNumber: 4,
+              status: "RuntimeError",
+              stderr: "Couldn't found 'foo' in current scope"
+            },
+            {
+              testNumber: 5,
+              status: "CompileError",
+              stderr: "Invalid data type for 'foo'"
+            }
+          ]
+        })
+      );
+
+      const id = toast({
+        position: "top-right",
+        render: () => (
+          <Box
+            bg={toastBg}
+            color={toastFg}
+            borderLeft="4px"
+            borderColor={isCorrect ? green : red}
+            p={4}
+            borderRadius="md"
+            fontSize="md"
+            fontWeight="bold"
+            textAlign="left"
+            shadow="sm"
+            onClick={() => toast.close(id as ToastId)}
+            cursor="pointer"
+          >
+            <Flex align="center" gap="2" color={isCorrect ? green : red}>
+              {isCorrect ? (
+                <>
+                  <CheckmarkIcon width="1.25rem" height="1.25rem" /> Correct answer!
+                </>
+              ) : (
+                <>
+                  <CrossIcon width="1.25rem" height="1.25rem" /> Wrong answer!
+                </>
+              )}
+            </Flex>
+          </Box>
+        )
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
   }
 
   return (
@@ -136,11 +219,11 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           ) : (
             <option
               style={{ textTransform: "capitalize", backgroundColor: optionBg }}
-              value={recordedSubmission?.language ?? ""}
+              value={currentSnapshot?.language ?? ""}
             >
-              {recordedSubmission?.language === "cpp"
+              {currentSnapshot?.language === "cpp"
                 ? "C++"
-                : recordedSubmission?.language}
+                : currentSnapshot?.language}
             </option>
           )}
         </Select>

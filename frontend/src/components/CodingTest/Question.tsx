@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Box,
   Flex,
@@ -39,8 +39,16 @@ export default function Question({
   );
   const currentSnapshot = useMemo(
     () => snapshotByQuestionNumber[currentQuestionNumber],
-    [currentQuestionNumber]
+    [snapshotByQuestionNumber, currentQuestionNumber]
   );
+  const isResultTabDisabled = useMemo(
+    () => !(currentSnapshot?.testResults !== null && currentSnapshot?.testResults?.length > 0),
+    [currentSnapshot]
+  );
+
+  useEffect(() => {
+    console.log(isResultTabDisabled);
+  }, [currentSnapshot, currentQuestionNumber]);
 
   const { t } = useTranslation();
 
@@ -61,12 +69,7 @@ export default function Question({
           <Tab color={fgDarker}>{t("translation.translations.ui.prompt")}</Tab>
           <Tab
             color={fgDarker}
-            isDisabled={
-              !(
-                currentSnapshot?.testResults !== null &&
-                currentSnapshot?.testResults?.length > 0
-              )
-            }
+            isDisabled={isResultTabDisabled}
           >
             {t("translation.translations.ui.your_result")}
           </Tab>
