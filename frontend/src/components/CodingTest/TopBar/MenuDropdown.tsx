@@ -24,6 +24,7 @@ export default function MenuDropdown({
     <Menu>
       <MenuButton
         textTransform="capitalize"
+        textAlign="left"
         w={buttonWidth}
         as={Button}
         rightIcon={<ChevronDownIcon />}

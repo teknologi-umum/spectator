@@ -5,11 +5,12 @@ import { THEMES } from "@/models/Theme";
 import { useColorMode } from "@/hooks";
 
 interface LocaleButtonProps {
+  title?: string;
   bg: string;
   fg: string;
 }
 
-export default function ThemeButton({ bg, fg }: LocaleButtonProps) {
+export default function ThemeButton({ bg, fg, title }: LocaleButtonProps) {
   const { colorMode, setColorMode } = useColorMode();
 
   return (
@@ -17,7 +18,7 @@ export default function ThemeButton({ bg, fg }: LocaleButtonProps) {
       dropdownWidth="10rem"
       bg={bg}
       fg={fg}
-      title={colorMode}
+      title={title || colorMode}
     >
       {THEMES.map((theme, idx) => (
         <MenuItem textTransform="capitalize" key={idx} onClick={() => setColorMode(theme)}>

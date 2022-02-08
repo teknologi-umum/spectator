@@ -14,7 +14,8 @@
       "scratchpad": "Scratchpad",
       "output": "Output",
       "begin_test": "Begin Test",
-      "language": "Language"
+      "language": "Language",
+      "theme": "Theme"
     },
     "personal_info": {
       "student_number": "Student Number",

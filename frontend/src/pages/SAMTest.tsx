@@ -17,7 +17,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import { ThemeButton } from "@/components/CodingTest";
+import { LocaleButton, ThemeButton } from "@/components/CodingTest";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -93,9 +93,14 @@ export default function SAMTest() {
   return (
     <>
       <Layout>
-        <Box position="fixed" left={4} top={4}>
-          <ThemeButton bg={bg} fg={fg} />
-        </Box>
+        <Flex gap={2} position="fixed" left={4} top={4}>
+          <ThemeButton
+            bg={bg}
+            fg={fg}
+            title={t("translation.translations.ui.theme")}
+          />
+          <LocaleButton bg={bg} fg={fg} />
+        </Flex>
         <Box
           as="form"
           onSubmit={handleSubmit}
