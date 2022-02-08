@@ -56,7 +56,7 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
           w="full"
           _hover={{ textDecoration: "none" }}
           onClick={() =>
-            dispatch(setCurrentQuestionNumber(currentQuestionNumber))
+            dispatch(setCurrentQuestionNumber(questionNumber))
           }
         >
           <MenuButton w="full">
