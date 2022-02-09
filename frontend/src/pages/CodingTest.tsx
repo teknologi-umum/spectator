@@ -17,7 +17,7 @@ import {
 import { useColorModeValue, useSignalR } from "@/hooks";
 import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
-import ConnectionToastOverlay from "@/components/ToastOverlay";
+import ToastOverlay from "@/components/ToastOverlay";
 
 export default function CodingTest() {
   const { isCollapsed } = useAppSelector((state) => state.sideBar);
@@ -25,9 +25,9 @@ export default function CodingTest() {
 
   const connection = useSignalR();
 
-  // useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
-  // useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
-  // useEventListener("keydown", keystrokeHandler(connection, currentQuestionNumber));
+  useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
+  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
+  useEventListener("keydown", keystrokeHandler(connection, currentQuestionNumber));
 
   useEventListener("scroll", scrollHandler(connection, currentQuestionNumber));
 
@@ -45,7 +45,7 @@ export default function CodingTest() {
 
   return (
     <>
-      <ConnectionToastOverlay />
+      <ToastOverlay />
       <Flex w="full" h="full">
         <SideBar bg={bg} fg={fg} />
         <Box

@@ -5,7 +5,7 @@ import { HubConnectionState } from "@microsoft/signalr";
 import { CheckmarkIcon, CrossIcon, InfoIcon } from "@/icons";
 import { useColorModeValue } from "@/hooks";
 
-export default function ConnectionToastOverlay() {
+export default function ToastOverlay() {
   const toast = useToast();
   const { state } = useAppSelector((state) => state.signalR);
   const [borderColor, setBorderColor] = useState("");
