@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Layout from "@/components/Layout";
 import { Text, Box, Grid, Heading, Flex, Tooltip } from "@chakra-ui/react";
 import { useEffect } from "react";
@@ -18,109 +18,98 @@ import {
   SpeedIcon,
   StopwatchIcon
 } from "@/icons";
+import { useTranslation } from "react-i18next";
 
 const FAKE_FACTS = [
   {
-    label: "Session Duration",
+    label: "session_duration",
     value: "02:34:12",
     icon: <ClockIcon width="2rem" height="2rem" />,
-    color: "purple",
-    description:
-      "Session Duration is how long you have been conducting the entire test."
+    color: "purple"
   },
   {
-    label: "Coding Test Duration",
+    label: "coding_test_duration",
     value: "01:28:52",
     icon: <StopwatchIcon width="2rem" height="2rem" />,
-    color: "pink",
-    description:
-      "Coding Test Duration is how long you need to finish the coding test."
+    color: "pink"
   },
   {
-    label: "Words Per Minute",
+    label: "words_per_minute",
     value: "120",
     icon: <SpeedIcon width="2rem" height="2rem" />,
-    color: "blue",
-    description:
-      "Words Per Minute is how many words you can type in a minute. An average person usually has around 40-60 words per minute rate."
+    color: "blue"
   },
   {
-    label: "Deletion Rate",
+    label: "deletion_rate",
     value: "1130",
     icon: <BackspaceIcon width="2rem" height="2rem" />,
-    color: "red",
-    description:
-      "Deletion Rate is how many times you press the backspace and delete key for the entire session."
+    color: "red"
   },
   {
-    label: "Unrelated Keys",
+    label: "unrelated_keys",
     value: "4380",
     icon: <KeyboardIcon width="2rem" height="2rem" />,
-    color: "orange",
-    description:
-      "Unrelated Keys is how many times you press a key that is not related to the test such as typing outside of the code editor and pressing random F-keys."
+    color: "orange"
   },
   {
-    label: "Mouse Clicks",
+    label: "mouse_clicks",
     value: "40",
     icon: <ClickIcon width="2rem" height="2rem" />,
-    color: "cyan",
-    description:
-      "Mouse Clicks is how many times you click the mouse during the entire session."
+    color: "cyan"
   },
   {
-    label: "Mouse Scrolls",
+    label: "mouse_scrolls",
     value: "23",
     icon: <ScrollIcon width="2rem" height="2rem" />,
-    color: "purple",
-    description:
-      "Mouse Scrolls is how many times you scroll the mouse during the entire session."
+    color: "purple"
   },
   {
-    label: "Favourite Language",
+    label: "favourite_language",
     value: "Javascript",
     icon: <CodeIcon width="2rem" height="2rem" />,
-    color: "blue",
-    description:
-      "Favourite Language is the programming language you used the most during the coding test."
+    color: "blue"
   },
   {
-    label: "Correct Answers",
+    label: "correct_answers",
     value: "3",
     icon: <CheckmarkIcon width="2rem" height="2rem" />,
-    color: "green",
-    description:
-      "Correct Answers is how many times you answer the coding test correctly."
+    color: "green"
   },
   {
-    label: "Wrong Answers",
+    label: "wrong_answers",
     value: "1",
     icon: <CrossIcon width="2rem" height="2rem" />,
-    color: "red",
-    description:
-      "Wrong Answers is how many times you answer the coding test incorrectly."
+    color: "red"
   },
   {
-    label: "Unanswered Questions",
+    label: "unanswered_questions",
     value: "1",
     icon: <QuestionIcon width="2rem" height="2rem" />,
-    color: "yellow",
-    description:
-      "Words Per Minute is how many words you can type in a minute. An average person usually has around 40-60 words per minute rate."
+    color: "yellow"
   },
   {
-    label: "Submission Attempts",
+    label: "submission_attempts",
     value: "13",
     icon: <RetryIcon width="2rem" height="2rem" />,
-    color: "orange",
-    description:
-      "Submission Attemps is the total number of times you have attempted to submit the test whether it be correct answer or not."
+    color: "orange"
   }
 ];
 
 export default function FunFact() {
+  const { t } = useTranslation();
   const gray = useColorModeValue("gray.500", "gray.800", "gray.900");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
+  const fakeFacts = useMemo(() => {
+    return FAKE_FACTS.map((fact) => {
+      return {
+        ...fact,
+        label: t("translation.translations.funfact." + fact.label + ".title"),
+        description: t(
+          "translation.translations.funfact." + fact.label + ".description"
+        )
+      };
+    });
+  }, [t]);
 
   useEffect(() => {
     document.title = "Fun Fact | Spectator";
@@ -133,8 +122,7 @@ export default function FunFact() {
           FUN FACT
         </Heading>
         <Text textAlign="center" fontSize="2xl" color={fgDarker}>
-          These are some fun facts about you based on our observation during the
-          test.
+          {t("translation.translations.funfact.description")}
         </Text>
       </Box>
       <Grid
@@ -145,7 +133,7 @@ export default function FunFact() {
         maxW="container.xl"
         mx="auto"
       >
-        {FAKE_FACTS.map(({ label, value, description, icon, color }, idx) => (
+        {fakeFacts.map(({ label, value, description, icon, color }, idx) => (
           <Flex
             bg="white"
             key={idx}
