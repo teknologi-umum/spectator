@@ -28,6 +28,9 @@ import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 import SAMRadioGroup from "@/components/SAMRadioGroup";
+import WithTour from "@/hoc/WithTour";
+import { samTestTour } from "@/tours/samTestTour";
+import { useTour } from "@reactour/tour";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -40,7 +43,7 @@ function getResponseOptions(
   return icons.map((Icon, idx) => ({ value: idx + 1, Icon }));
 }
 
-export default function SAMTest() {
+function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,6 +55,7 @@ export default function SAMTest() {
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { t } = useTranslation();
   const { firstSAMSubmitted } = useAppSelector((state) => state.session);
+  const { setIsOpen } = useTour();
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -88,6 +92,7 @@ export default function SAMTest() {
 
   useEffect(() => {
     document.title = "SAM Test | Spectator";
+    setIsOpen(true);
   }, []);
 
   return (
@@ -119,7 +124,7 @@ export default function SAMTest() {
 
             {currentPage === 0 && (
               <Fade in={currentPage === 0}>
-                <Box>
+                <Box data-tour="sam-test-tour-1">
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     {t("translation.translations.sam_test.aroused_title")}
                   </Text>
@@ -213,3 +218,5 @@ export default function SAMTest() {
     </>
   );
 }
+
+export default WithTour(SAMTest, samTestTour);
