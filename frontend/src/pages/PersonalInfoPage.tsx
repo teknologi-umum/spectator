@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "../store/slices/sessionSlice";
-import { personalInfoTour } from "@/tours/personalInfoTour";
+import { personalInfoTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
 
@@ -94,7 +94,7 @@ function PersonalInfoPage() {
 
   return (
     <Layout>
-      <Flex gap={2} position="fixed" left={4} top={4} data-tour="personal-info-step-1">
+      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
         <ThemeButton bg={bg} fg={fg} title={t("translation.translations.ui.theme")} />
         <LocaleButton bg={bg} fg={fg} />
       </Flex>
@@ -190,7 +190,7 @@ function PersonalInfoPage() {
           mt="6"
           type="submit"
           display="block"
-          data-tour="personal-info-step-2"
+          data-tour="step-2"
         >
           {t("translation.translations.ui.continue")}
         </Button>

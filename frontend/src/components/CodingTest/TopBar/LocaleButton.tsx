@@ -9,7 +9,7 @@ interface LocaleButtonProps {
   fg: string;
 }
 
-export default function LocaleButton({ bg, fg }: LocaleButtonProps) {
+export default function LocaleButton({ bg, fg, ...rest }: LocaleButtonProps) {
   const { t, i18n } = useTranslation();
 
   return (
@@ -18,6 +18,7 @@ export default function LocaleButton({ bg, fg }: LocaleButtonProps) {
       bg={bg}
       fg={fg}
       title={t("translation.translations.ui.language")}
+      {...rest}
     >
       <MenuItem onClick={() => i18n.changeLanguage("en-US")}>
         <Flex gap={3} align="center">

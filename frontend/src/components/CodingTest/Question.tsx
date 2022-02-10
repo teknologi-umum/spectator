@@ -58,7 +58,7 @@ export default function Question({
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
         <TabList borderColor={borderBg}>
-          <Tab color={fgDarker}>{t("translation.translations.ui.prompt")}</Tab>
+          <Tab color={fgDarker} data-tour="question-step-1">{t("translation.translations.ui.prompt")}</Tab>
           <Tab
             color={fgDarker}
             isDisabled={
@@ -67,6 +67,7 @@ export default function Question({
                 currentSnapshot?.testResults?.length > 0
               )
             }
+            data-tour="question-step-2"
           >
             {t("translation.translations.ui.your_result")}
           </Tab>

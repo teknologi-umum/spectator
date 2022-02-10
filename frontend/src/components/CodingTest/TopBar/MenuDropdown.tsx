@@ -18,10 +18,11 @@ export default function MenuDropdown({
   fg,
   dropdownWidth,
   title,
-  children
+  children,
+  ...rest
 }: MenuItemProps) {
   return (
-    <Menu>
+    <Menu >
       <MenuButton
         textTransform="capitalize"
         textAlign="left"
@@ -32,6 +33,7 @@ export default function MenuDropdown({
         bg={bg}
         _hover={{ backgroundColor: bg }}
         _active={{ backgroundColor: bg }}
+        {...rest}
       >
         {title}
       </MenuButton>
