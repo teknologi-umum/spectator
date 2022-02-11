@@ -3,7 +3,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
   Editor,
-  Menu,
+  TopBar,
   Question,
   ScratchPad,
   SideBar
@@ -55,7 +55,7 @@ export default function CodingTest() {
       <Flex w="full" h="full">
         <SideBar bg={bg} fg={fg} />
         <Box bg={gray} gap="3" p="3" w="full">
-          <Menu bg={bg} fgDarker={fgDarker} />
+          <TopBar bg={bg} fg={fgDarker} />
           <Box h="calc(100% - 3.5rem)">
             <ReflexContainer orientation="vertical">
               <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
