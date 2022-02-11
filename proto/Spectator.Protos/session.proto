@@ -31,11 +31,13 @@ message PersonalInfo {
 	int32 years_of_experience = 2;
 	int32 hours_of_practice = 3;
 	string familiar_languages = 4;
+	string access_token = 5;
 }
 
 message SAM {
 	int32 aroused_level = 1;
 	int32 pleased_level = 2;
+	string access_token = 3;
 }
 
 message Question {
@@ -65,6 +67,7 @@ message SubmissionRequest {
 	enums.Language language = 2;
 	string solution = 3;
 	string scratch_pad = 4;
+	string access_token = 5;
 }
 
 message TestResult {
@@ -95,7 +98,9 @@ message SubmissionResult {
 }
 
 message EmptyRequest {
+	string access_token = 1;
 }
 
 message EmptyReply {
+	string access_token = 1;
 }
