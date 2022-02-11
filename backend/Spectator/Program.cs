@@ -83,8 +83,8 @@ if (app.Environment.IsDevelopment()) {
 
 // Middlewares
 app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 app.UseCors("AllowAll");
 
 // Map Frontend static files

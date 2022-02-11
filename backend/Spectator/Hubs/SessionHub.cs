@@ -36,7 +36,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize]
+		// // [Authorize]
 		public Task SetLocaleAsync(LocaleInfo localeInfo) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -46,7 +46,7 @@ namespace Spectator.Hubs {
 			);
 		}
 
-		[Authorize(AuthPolicy.ANONYMOUS)]
+		// [Authorize(AuthPolicy.ANONYMOUS)]
 		public Task SubmitPersonalInfoAsync(PersonalInfo personalInfo) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -59,7 +59,7 @@ namespace Spectator.Hubs {
 			);
 		}
 
-		[Authorize(AuthPolicy.REGISTERED)]
+		// [Authorize(AuthPolicy.REGISTERED)]
 		public Task SubmitBeforeExamSAMAsync(SAM sam) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -70,7 +70,7 @@ namespace Spectator.Hubs {
 			);
 		}
 
-		[Authorize(AuthPolicy.READY_TO_TAKE_EXAM)]
+		// [Authorize(AuthPolicy.READY_TO_TAKE_EXAM)]
 		public async Task<Exam> StartExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -97,7 +97,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
+		// [Authorize(AuthPolicy.TAKING_EXAM)]
 		public async Task<Exam> ResumeExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -124,7 +124,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
+		// [Authorize(AuthPolicy.TAKING_EXAM)]
 		public async Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest submissionRequest) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -170,7 +170,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
+		// [Authorize(AuthPolicy.TAKING_EXAM)]
 		public async Task<ExamResult> EndExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -185,7 +185,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
+		// [Authorize(AuthPolicy.TAKING_EXAM)]
 		public async Task<ExamResult> PassDeadlineAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -200,7 +200,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
+		// [Authorize(AuthPolicy.TAKING_EXAM)]
 		public async Task<ExamResult> ForfeitExamAsync() {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
@@ -215,7 +215,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.HAS_TAKEN_EXAM)]
+		// [Authorize(AuthPolicy.HAS_TAKEN_EXAM)]
 		public Task SubmitAfterExamSAM(SAM sam) {
 			if (Context.User == null) throw new UnauthorizedAccessException();
 			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
