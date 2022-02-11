@@ -12,12 +12,14 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import {
+  sessionReducer,
+  localeReducer,
   personalInfoReducer,
   editorReducer,
-  questionReducer,
-  jwtReducer,
+  examResultReducer,
   themeReducer,
-  sideBarReducer
+  sideBarReducer,
+  signalRReducer
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
@@ -26,17 +28,19 @@ const isDev = import.meta.env.MODE === "development";
 const persistConfig = {
   key: "root",
   version: 1,
-  whitelist: ["editor", "question", "jwt"],
+  whitelist: ["app", "editor", "locale", "session", "personalInfo"],
   storage
 };
 
 const rootReducer = combineReducers({
+  session: sessionReducer,
+  locale: localeReducer,
   personalInfo: personalInfoReducer,
   editor: editorReducer,
-  question: questionReducer,
-  jwt: jwtReducer,
+  examResult: examResultReducer,
   app: themeReducer,
-  sideBar: sideBarReducer
+  sideBar: sideBarReducer,
+  signalR: signalRReducer
 });
 
 const store = configureStore({

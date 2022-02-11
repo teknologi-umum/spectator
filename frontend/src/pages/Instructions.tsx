@@ -5,16 +5,16 @@ import {
   Text,
   Container,
   Button,
-  Box
+  Box,
+  Flex
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
-import ThemeButton from "@/components/ThemeButton";
-import { withPublic } from "@/hoc";
+import { LocaleButton, ThemeButton } from "@/components/CodingTest";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 
-function Instructions() {
+export default function Instructions() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
@@ -30,7 +30,10 @@ function Instructions() {
 
   return (
     <Layout>
-      <ThemeButton position="fixed" />
+      <Flex gap={2} position="fixed" left={4} top={4}>
+        <ThemeButton bg={bg} fg={fg} title={t("translation.translations.ui.theme")} />
+        <LocaleButton bg={bg} fg={fg} />
+      </Flex>
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
           {t("translation.translations.instructions.title")}
@@ -76,5 +79,3 @@ function Instructions() {
     </Layout>
   );
 }
-
-export default withPublic(Instructions);

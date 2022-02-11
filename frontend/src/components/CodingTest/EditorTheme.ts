@@ -67,7 +67,7 @@ export function getEditorTheme({
     dimmed: {
       gray: theme.colors.gray[400],
       bg: theme.colors.gray[700],
-      bgDarker: theme.colors.gray[700],
+      bgDarker: theme.colors.gray[600],
       caret: theme.colors.gray[200]
     },
     dark: {

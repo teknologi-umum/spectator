@@ -1,12 +1,18 @@
 import React from "react";
-import { HamburgerIcon, StarIcon } from "@chakra-ui/icons";
 import { Divider, Flex, IconButton } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleSideBar } from "@/store/slices/sideBarSlice";
 import NavItem from "./NavItem";
-import { FaTemperatureLow, FaEquals, FaPlus } from "react-icons/fa";
-import { BsDiamondFill, BsTriangleFill } from "react-icons/bs";
+import {
+  DiamondIcon,
+  EqualIcon,
+  HamburgerIcon,
+  PyramidIcon,
+  StarIcon,
+  SumIcon,
+  TemperatureIcon
+} from "@/icons";
 
 interface SideBarProps {
   bg: string;
@@ -15,11 +21,11 @@ interface SideBarProps {
 
 const icons = [
   StarIcon,
-  FaTemperatureLow,
-  FaEquals,
-  FaPlus,
-  BsDiamondFill,
-  BsTriangleFill
+  TemperatureIcon,
+  EqualIcon,
+  SumIcon,
+  DiamondIcon,
+  PyramidIcon
 ];
 
 export default function SideBar({ bg, fg }: SideBarProps) {
@@ -57,7 +63,7 @@ export default function SideBar({ bg, fg }: SideBarProps) {
         {icons.map((icon, idx) => (
           <NavItem
             key={idx}
-            questionNo={idx}
+            questionNumber={idx + 1}
             icon={icon as ComponentWithAs<"svg", IconProps>}
             title={`Challenge ${idx + 1}`}
           />

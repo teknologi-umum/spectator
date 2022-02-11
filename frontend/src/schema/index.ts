@@ -9,20 +9,20 @@ const transformRequired = (_?: string, origin?: string) => {
 
 // Labels might come from i18n translations
 export const PersonalInfoSchema = yup.object().shape({
-  studentId: yup.string().label("Student Number").ensure().required(),
-  programmingExp: yup
+  studentNumber: yup.string().label("Student Number").ensure().required(),
+  yearsOfExperience: yup
     .number()
-    .label("Programming Experience")
+    .label("Years of Experience")
     .transform(transformRequired)
     .required(),
-  programmingExercise: yup
+  hoursOfPractice: yup
     .number()
-    .label("Programming Exercise")
+    .label("Hours of Practice")
     .transform(transformRequired)
     .required(),
-  programmingLanguage: yup
+  familiarLanguages: yup
     .string()
-    .label("Programming Language")
+    .label("Familiar Languages")
     .ensure()
     .required()
 });
