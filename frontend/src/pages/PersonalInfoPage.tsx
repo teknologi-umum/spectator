@@ -13,10 +13,11 @@ import {
   Input,
   Heading,
   Button,
-  FormErrorMessage
+  FormErrorMessage,
+  Flex
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import ThemeButton from "@/components/ThemeButton";
+import { LocaleButton, ThemeButton } from "@/components/CodingTest";
 import { useColorModeValue, useSignalR } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
@@ -88,7 +89,10 @@ export default function PersonalInfoPage() {
 
   return (
     <Layout>
-      <ThemeButton position="fixed" />
+      <Flex gap={2} position="fixed" left={4} top={4}>
+        <ThemeButton bg={bg} fg={fg} title={t("translation.translations.ui.theme")} />
+        <LocaleButton bg={bg} fg={fg} />
+      </Flex>
       <Box
         as="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -105,8 +109,6 @@ export default function PersonalInfoPage() {
         </Heading>
 
         <Box>
-          {/* <Button onClick={() => changeLanguage("en")}>en</Button>
-          <Button onClick={() => changeLanguage("id")}>id</Button> */}
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
           <FormControl
             id="email"

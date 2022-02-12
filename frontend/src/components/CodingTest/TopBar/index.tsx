@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Flex, Select, Text } from "@chakra-ui/react";
-import ThemeButton from "../ThemeButton";
+import {
+  Button,
+  Flex,
+  MenuItem,
+  MenuItemOption,
+  MenuOptionGroup,
+  Text
+} from "@chakra-ui/react";
 import {
   setFontSize,
   setLanguage,
@@ -8,12 +14,15 @@ import {
 } from "@/store/slices/editorSlice";
 import type { Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { useColorModeValue } from "@/hooks";
-import theme from "@/styles/themes";
 import { mutate } from "@/utils/fakeSubmissionCallback";
 import { useTranslation } from "react-i18next";
 import { jwtDecode } from "@/utils/jwtDecode";
 import { ClockIcon } from "@/icons";
+import {
+  MenuDropdown,
+  ThemeButton,
+  LocaleButton
+} from "@/components/CodingTest";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -29,16 +38,11 @@ const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
 
 interface MenuProps {
   bg: string;
-  fgDarker: string;
+  fg: string;
 }
 
-export default function Menu({ bg, fgDarker }: MenuProps) {
+export default function TopBar({ bg, fg }: MenuProps) {
   const dispatch = useAppDispatch();
-  const optionBg = useColorModeValue(
-    theme.colors.white,
-    theme.colors.gray[700],
-    theme.colors.gray[800]
-  );
   const {
     currentQuestionNumber,
     fontSize,
@@ -93,7 +97,7 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
     <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
       <Flex
         bg={bg}
-        color={fgDarker}
+        color={fg}
         justifyContent="center"
         alignItems="center"
         h="full"
@@ -106,75 +110,59 @@ export default function Menu({ bg, fgDarker }: MenuProps) {
           {toReadableTime(time)}
         </Text>
       </Flex>
-      <ThemeButton position="relative" />
-      <Flex alignItems="center" gap="3" w="14rem">
-        <Select
-          color={fgDarker}
+      <Flex alignItems="center" gap="3" w="32rem">
+        <ThemeButton bg={bg} fg={fg} />
+        <MenuDropdown
+          dropdownWidth="10rem"
           bg={bg}
-          textTransform="capitalize"
-          w="8rem"
-          border="none"
-          value={currentLanguage}
-          onChange={(e) => {
-            const language = e.currentTarget.value;
-            dispatch(setLanguage(language as Language));
-          }}
-          data-testid="editor-language-select"
+          fg={fg}
+          title={currentLanguage}
         >
-          {!isSubmitted ? (
-            <>
-              {LANGUAGES.map((lang, idx) => (
-                <option
-                  key={idx}
-                  value={lang}
-                  style={{ textTransform: "capitalize" }}
-                >
-                  {lang === "cpp" ? "C++" : lang}
-                </option>
-              ))}
-            </>
-          ) : (
-            <option
-              style={{ textTransform: "capitalize", backgroundColor: optionBg }}
-              value={recordedSubmission?.language ?? ""}
-            >
-              {recordedSubmission?.language === "cpp"
-                ? "C++"
-                : recordedSubmission?.language}
-            </option>
-          )}
-        </Select>
-        <Select
-          color={fgDarker}
+          <MenuOptionGroup
+            type="radio"
+            value={isSubmitted ? recordedSubmission.language : currentLanguage}
+            onChange={(value) => dispatch(setLanguage(value as Language))}
+          >
+            {LANGUAGES.map((lang, idx) => (
+              <MenuItemOption
+                textTransform="capitalize"
+                key={idx}
+                value={lang}
+                isDisabled={
+                  isSubmitted ? lang !== recordedSubmission?.language : false
+                }
+              >
+                <span>{lang === "cpp" ? "C++" : lang}</span>
+              </MenuItemOption>
+            ))}
+          </MenuOptionGroup>
+        </MenuDropdown>
+        <MenuDropdown
+          dropdownWidth="10rem"
           bg={bg}
-          textTransform="capitalize"
-          w="6rem"
-          border="none"
-          value={fontSize}
-          onChange={(e) => {
-            const fontSize = parseInt(e.currentTarget.value);
-            dispatch(setFontSize(fontSize));
-          }}
-          data-testid="editor-fontsize-select"
+          fg={fg}
+          title={fontSize + "px"}
         >
-          {Array(9)
-            .fill(0)
-            .map((_, idx: number) => {
-              const fontSize = idx + 12;
-              return (
-                <option
-                  key={idx}
-                  value={fontSize}
-                  style={{
-                    textTransform: "capitalize",
-                    backgroundColor: optionBg
-                  }}
-                >
-                  {fontSize}px
-                </option>
-              );
-            })}
-        </Select>
+          <MenuOptionGroup
+            type="radio"
+            value={String(fontSize)}
+            onChange={(value) => {
+              dispatch(setFontSize(parseInt(value as string)));
+            }}
+          >
+            {Array(9)
+              .fill(0)
+              .map((_, idx: number) => {
+                const fontSize = idx + 12;
+                return (
+                  <MenuItemOption key={idx} value={String(fontSize)}>
+                    <span>{fontSize}px</span>
+                  </MenuItemOption>
+                );
+              })}
+          </MenuOptionGroup>
+        </MenuDropdown>
+        <LocaleButton bg={bg} fg={fg} />
       </Flex>
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
