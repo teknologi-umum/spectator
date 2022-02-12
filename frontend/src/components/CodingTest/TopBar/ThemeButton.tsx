@@ -11,7 +11,7 @@ interface LocaleButtonProps {
   fg: string;
 }
 
-export default function ThemeButton({ bg, fg, title }: LocaleButtonProps) {
+export default function ThemeButton({ bg, fg, title, ...rest }: LocaleButtonProps) {
   const { colorMode, setColorMode } = useColorMode();
 
   return (
@@ -20,6 +20,7 @@ export default function ThemeButton({ bg, fg, title }: LocaleButtonProps) {
       bg={bg}
       fg={fg}
       title={title || colorMode}
+      {...rest}
     >
       <MenuOptionGroup
         type="radio"

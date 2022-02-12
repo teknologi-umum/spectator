@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { UIEventHandler } from "react";
-import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Box
-} from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror from "@uiw/react-codemirror";
 import { lineNumbers } from "@codemirror/gutter";
 import { useCodemirrorTheme, useColorModeValue, useDebounce } from "@/hooks";
@@ -53,7 +46,14 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   }
 
   return (
-    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
+    <Box
+      bg={bg}
+      rounded="md"
+      shadow="md"
+      flex="1"
+      h="full"
+      data-tour="scratchpad-step-1"
+    >
       <Tabs isLazy h="full">
         <TabList borderColor={borderBg} color={fgDarker}>
           <Tab>{t("translation.translations.ui.scratchpad")}</Tab>

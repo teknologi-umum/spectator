@@ -104,6 +104,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         px="4"
         gap="2"
         rounded="md"
+        data-tour="topbar-step-1"
       >
         <ClockIcon />
         <Text fontWeight="medium" fontSize="lg">
@@ -111,12 +112,13 @@ export default function TopBar({ bg, fg }: MenuProps) {
         </Text>
       </Flex>
       <Flex alignItems="center" gap="3" w="32rem">
-        <ThemeButton bg={bg} fg={fg} />
+        <ThemeButton bg={bg} fg={fg} data-tour="topbar-step-2"/>
         <MenuDropdown
           dropdownWidth="10rem"
           bg={bg}
           fg={fg}
           title={currentLanguage}
+          data-tour="topbar-step-3"
         >
           <MenuOptionGroup
             type="radio"
@@ -142,6 +144,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           bg={bg}
           fg={fg}
           title={fontSize + "px"}
+          data-tour="topbar-step-4"
         >
           <MenuOptionGroup
             type="radio"
@@ -162,7 +165,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
               })}
           </MenuOptionGroup>
         </MenuDropdown>
-        <LocaleButton bg={bg} fg={fg} />
+        <LocaleButton bg={bg} fg={fg} data-tour="topbar-step-5" />
       </Flex>
       <Flex alignItems="center" gap="3" ml="auto">
         <Button
@@ -179,6 +182,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             //                 to make testing easier
             // dispatch(prevQuestion());
           }}
+          data-tour="topbar-step-6"
         >
           {t("translation.translations.ui.surrender")}
         </Button>
@@ -190,6 +194,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           onClick={() => {
             // TODO(elianiva): send the code to backend for execution
           }}
+          data-tour="topbar-step-7"
         >
           Test
         </Button>
@@ -204,6 +209,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
               handleSubmit();
             }}
+            data-tour="topbar-step-8"
           >
             {isSubmitted ? "Refactor" : "Submit"}
           </Button>

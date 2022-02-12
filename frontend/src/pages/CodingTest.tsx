@@ -23,8 +23,11 @@ import {
 } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
 import ToastOverlay from "@/components/ToastOverlay";
+import WithTour from "@/hoc/WithTour";
+import { codingTestTour } from "@/tours";
+import { useTour } from "@reactour/tour";
 
-export default function CodingTest() {
+function CodingTest() {
   const { currentQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
@@ -45,8 +48,11 @@ export default function CodingTest() {
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
+  const { setIsOpen} = useTour();
+
   useEffect(() => {
     document.title = "Coding Test | Spectator";
+    setIsOpen(true);
   }, []);
 
   return (
@@ -107,3 +113,5 @@ export default function CodingTest() {
     </>
   );
 }
+
+export default WithTour(CodingTest, codingTestTour);
