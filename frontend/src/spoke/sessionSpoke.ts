@@ -1,8 +1,10 @@
 import {
-  LocaleInfo,
+  StartSessionRequest,
   SessionReply,
-  PersonalInfo,
-  SAM,
+  SetLocaleRequest,
+  SubmitPersonalInfoRequest,
+  SubmitSAMRequest,
+  EmptyRequest,
   SubmissionRequest,
   Exam,
   SubmissionResult,
@@ -11,61 +13,59 @@ import {
 import SpokeBase from "@/spoke/spokeBase";
 
 class SessionSpoke extends SpokeBase {
-  public async startSession(localeInfo: LocaleInfo): Promise<SessionReply> {
+  public async startSession(request: StartSessionRequest): Promise<SessionReply> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("StartSessionAsync", localeInfo);
+    return this._hubConnection.invoke("StartSessionAsync", request);
   }
 
-  public async setLocale(localeInfo: LocaleInfo): Promise<void> {
+  public async setLocale(request: SetLocaleRequest): Promise<void> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("SetLocaleAsync", localeInfo);
+    return this._hubConnection.invoke("SetLocaleAsync", SetLocaleRequest);
   }
 
-  public async submitPersonalInfo(personalInfo: PersonalInfo): Promise<void> {
+  public async submitPersonalInfo(request: SubmitPersonalInfoRequest): Promise<void> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("SubmitPersonalInfoAsync", personalInfo);
+    return this._hubConnection.invoke("SubmitPersonalInfoAsync", request);
   }
 
-  public async submitBeforeExamSAM(sam: SAM): Promise<void> {
+  public async submitBeforeExamSAM(request: SubmitSAMRequest): Promise<void> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("SubmitBeforeExamSAMAsync", sam);
+    return this._hubConnection.invoke("SubmitBeforeExamSAMAsync", request);
   }
 
-  public async startExam(): Promise<Exam> {
+  public async startExam(request: EmptyRequest): Promise<Exam> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("StartExamAsync");
+    return this._hubConnection.invoke("StartExamAsync", request);
   }
 
-  public async resumeExam(): Promise<Exam> {
+  public async resumeExam(request: EmptyRequest): Promise<Exam> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("ResumeExamAsync");
+    return this._hubConnection.invoke("ResumeExamAsync", request);
   }
 
-  public async submitSolution(
-    submissionRequest: SubmissionRequest
-  ): Promise<SubmissionResult> {
+  public async submitSolution(request: SubmissionRequest): Promise<SubmissionResult> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("SubmitSolutionAsync", submissionRequest);
+    return this._hubConnection.invoke("SubmitSolutionAsync", request);
   }
 
-  public async endExam(): Promise<ExamResult> {
+  public async endExam(request: EmptyRequest): Promise<ExamResult> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("EndExamAsync");
+    return this._hubConnection.invoke("EndExamAsync", request);
   }
 
-  public async passDeadline(): Promise<ExamResult> {
+  public async passDeadline(request: EmptyRequest): Promise<ExamResult> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("PassDeadlineAsync");
+    return this._hubConnection.invoke("PassDeadlineAsync", request);
   }
 
-  public async forfeitExam(): Promise<ExamResult> {
+  public async forfeitExam(request: EmptyRequest): Promise<ExamResult> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("ForfeitExamAsync");
+    return this._hubConnection.invoke("ForfeitExamAsync", request);
   }
 
-  public async submitAfterExamSAM(sam: SAM): Promise<void> {
+  public async submitAfterExamSAM(request: SubmitSAMRequest): Promise<void> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("SubmitAfterExamSAMAsync", sam);
+    return this._hubConnection.invoke("SubmitAfterExamSAMAsync", request);
   }
 }
 

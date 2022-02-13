@@ -45,9 +45,20 @@ export default function PersonalInfoPage() {
   });
 
   const onSubmit: SubmitHandler<PersonalInfo> = async (data) => {
-    dispatch(setPersonalInfo(data));
-    await sessionSpoke.submitPersonalInfo(data);
-    navigate("/instructions");
+    if (accessToken === null) {
+      console.error("accessToken is null");
+      return;
+    }
+    try {
+      await sessionSpoke.submitPersonalInfo({
+        ...data,
+        accessToken
+      });
+      dispatch(setPersonalInfo(data));
+      navigate("/instructions");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
