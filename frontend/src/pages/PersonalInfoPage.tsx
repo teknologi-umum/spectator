@@ -13,17 +13,21 @@ import {
   Input,
   Heading,
   Button,
-  FormErrorMessage
+  FormErrorMessage,
+  Flex
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import ThemeButton from "@/components/ThemeButton";
+import { LocaleButton, ThemeButton } from "@/components/CodingTest";
 import { useColorModeValue, useSignalR } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "../store/slices/sessionSlice";
+import { personalInfoTour } from "@/tours";
+import { useTour } from "@reactour/tour";
+import WithTour from "@/hoc/WithTour";
 
-export default function PersonalInfoPage() {
+function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { locale } = useAppSelector((state) => state.locale);
@@ -33,6 +37,7 @@ export default function PersonalInfoPage() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const { sessionSpoke } = useSignalR();
+  const { setIsOpen} = useTour();
 
   const {
     register,
@@ -52,6 +57,7 @@ export default function PersonalInfoPage() {
 
   useEffect(() => {
     document.title = "Personal Info | Spectator";
+    setIsOpen(true);
   }, []);
 
   useEffect(() => {
@@ -88,7 +94,10 @@ export default function PersonalInfoPage() {
 
   return (
     <Layout>
-      <ThemeButton position="fixed" />
+      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
+        <ThemeButton bg={bg} fg={fg} title={t("translation.translations.ui.theme")} />
+        <LocaleButton bg={bg} fg={fg} />
+      </Flex>
       <Box
         as="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -105,8 +114,6 @@ export default function PersonalInfoPage() {
         </Heading>
 
         <Box>
-          {/* <Button onClick={() => changeLanguage("en")}>en</Button>
-          <Button onClick={() => changeLanguage("id")}>id</Button> */}
           {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
           <FormControl
             id="email"
@@ -183,6 +190,7 @@ export default function PersonalInfoPage() {
           mt="6"
           type="submit"
           display="block"
+          data-tour="step-2"
         >
           {t("translation.translations.ui.continue")}
         </Button>
@@ -190,3 +198,5 @@ export default function PersonalInfoPage() {
     </Layout>
   );
 }
+
+export default WithTour(PersonalInfoPage, personalInfoTour);

@@ -3,7 +3,7 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
   Editor,
-  Menu,
+  TopBar,
   Question,
   ScratchPad,
   SideBar
@@ -18,10 +18,15 @@ import { useColorModeValue, useSignalR } from "@/hooks";
 import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
 import ToastOverlay from "@/components/ToastOverlay";
+import WithTour from "@/hoc/WithTour";
+import { codingTestTour } from "@/tours";
+import { useTour } from "@reactour/tour";
 
-export default function CodingTest() {
+function CodingTest() {
   const { isCollapsed } = useAppSelector((state) => state.sideBar);
-  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
 
   const connection = useSignalR();
 
@@ -39,8 +44,11 @@ export default function CodingTest() {
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
+  const { setIsOpen} = useTour();
+
   useEffect(() => {
     document.title = "Coding Test | Spectator";
+    setIsOpen(true);
   }, []);
 
   return (
@@ -55,7 +63,7 @@ export default function CodingTest() {
           w={`calc(100% - ${isCollapsed ? "65px" : "200px"})`}
           transition="width 300ms ease"
         >
-          <Menu bg={bg} fgDarker={fgDarker} />
+          <TopBar bg={bg} fg={fgDarker} />
           <Box h="calc(100% - 3.5rem)">
             <ReflexContainer orientation="vertical">
               <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
@@ -113,3 +121,5 @@ export default function CodingTest() {
     </>
   );
 }
+
+export default WithTour(CodingTest, codingTestTour);

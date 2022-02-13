@@ -85,7 +85,7 @@ export default function Editor({ bg, onScroll }: EditorProps) {
   }
 
   return (
-    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full">
+    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full" data-tour="editor-step-1">
       <Tabs h="full">
         <TabList borderColor={borderBg}>
           <Tab>Your Solution</Tab>

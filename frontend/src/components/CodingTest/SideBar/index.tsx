@@ -1,5 +1,5 @@
-import React from "react";
-import { Divider, Flex, IconButton } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Box, Divider, Flex, IconButton } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleSideBar } from "@/store/slices/sideBarSlice";
@@ -13,6 +13,7 @@ import {
   SumIcon,
   TemperatureIcon
 } from "@/icons";
+import { useTour } from "@reactour/tour";
 
 interface SideBarProps {
   bg: string;
@@ -31,6 +32,10 @@ const icons = [
 export default function SideBar({ bg, fg }: SideBarProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.sideBar);
+  const { setIsOpen, setCurrentStep } = useTour();
+  // TODO(elianiva): make this false only if the user hasn't done the
+  //                 onboarding process
+  const [isBoarded, setBoarded] = useState(false);
 
   return (
     <Flex
@@ -55,19 +60,31 @@ export default function SideBar({ bg, fg }: SideBarProps) {
           aria-label="Toggle SideBar"
           background="none"
           icon={<HamburgerIcon />}
-          onClick={() => dispatch(toggleSideBar())}
+          onClick={() => {
+            dispatch(toggleSideBar());
+            if (!isBoarded) {
+              setTimeout(() => {
+                setCurrentStep(1);
+                setIsOpen(true);
+                setBoarded(true);
+              }, 300); // wait for the animation to finish so we'll get the correct width
+            }
+          }}
+          data-tour="sidebar-step-1"
         />
 
         <Divider />
 
-        {icons.map((icon, idx) => (
-          <NavItem
-            key={idx}
-            questionNumber={idx + 1}
-            icon={icon as ComponentWithAs<"svg", IconProps>}
-            title={`Challenge ${idx + 1}`}
-          />
-        ))}
+        <Box w="full" data-tour="sidebar-step-2">
+          {icons.map((icon, idx) => (
+            <NavItem
+              key={idx}
+              questionNumber={idx + 1}
+              icon={icon as ComponentWithAs<"svg", IconProps>}
+              title={`Challenge ${idx + 1}`}
+            />
+          ))}
+        </Box>
       </Flex>
     </Flex>
   );

@@ -17,7 +17,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import ThemeButton from "@/components/ThemeButton";
+import { LocaleButton, ThemeButton } from "@/components/CodingTest";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -28,6 +28,9 @@ import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 import SAMRadioGroup from "@/components/SAMRadioGroup";
+import WithTour from "@/hoc/WithTour";
+import { samTestTour } from "@/tours";
+import { useTour } from "@reactour/tour";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -40,7 +43,7 @@ function getResponseOptions(
   return icons.map((Icon, idx) => ({ value: idx + 1, Icon }));
 }
 
-export default function SAMTest() {
+function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,6 +55,7 @@ export default function SAMTest() {
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { t } = useTranslation();
   const { firstSAMSubmitted } = useAppSelector((state) => state.session);
+  const { setIsOpen, setCurrentStep } = useTour();
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -88,12 +92,20 @@ export default function SAMTest() {
 
   useEffect(() => {
     document.title = "SAM Test | Spectator";
+    setIsOpen(true);
   }, []);
 
   return (
     <>
       <Layout>
-        <ThemeButton position="fixed" />
+        <Flex gap={2} position="fixed" left={4} top={4}>
+          <ThemeButton
+            bg={bg}
+            fg={fg}
+            title={t("translation.translations.ui.theme")}
+          />
+          <LocaleButton bg={bg} fg={fg} />
+        </Flex>
         <Box
           as="form"
           onSubmit={handleSubmit}
@@ -112,7 +124,7 @@ export default function SAMTest() {
 
             {currentPage === 0 && (
               <Fade in={currentPage === 0}>
-                <Box>
+                <Box data-tour="step-1">
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     {t("translation.translations.sam_test.aroused_title")}
                   </Text>
@@ -155,10 +167,16 @@ export default function SAMTest() {
                     colorScheme="blue"
                     variant="outline"
                     onClick={() => goto("prev")}
+                    data-tour="step-3"
                   >
                     {t("translation.translations.ui.previous")}
                   </Button>
-                  <Button colorScheme="blue" variant="solid" onClick={onOpen}>
+                  <Button
+                    colorScheme="blue"
+                    variant="solid"
+                    onClick={onOpen}
+                    data-tour="step-4"
+                  >
                     {t("translation.translations.ui.finish")}
                   </Button>
                 </>
@@ -166,7 +184,12 @@ export default function SAMTest() {
                 <Button
                   colorScheme="blue"
                   variant="solid"
-                  onClick={() => goto("next")}
+                  onClick={() => {
+                    goto("next");
+                    setCurrentStep(2);
+                    setIsOpen(true);
+                  }}
+                  data-tour="step-2"
                 >
                   {t("translation.translations.ui.next")}
                 </Button>
@@ -197,7 +220,11 @@ export default function SAMTest() {
             >
               {t("translation.translations.ui.cancel")}
             </Button>
-            <Button colorScheme="blue" onClick={finishSAMTest}>
+            <Button
+              colorScheme="blue"
+              onClick={finishSAMTest}
+              data-tour="step-2"
+            >
               {t("translation.translations.ui.confirm")}
             </Button>
           </ModalFooter>
@@ -206,3 +233,5 @@ export default function SAMTest() {
     </>
   );
 }
+
+export default WithTour(SAMTest, samTestTour);
