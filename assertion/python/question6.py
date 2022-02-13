@@ -1,6 +1,8 @@
 import random as __random
 
-{0}
+_REPLACE_ME_WITH_DIRECTIVES_
+
+_REPLACE_ME_WITH_SOLUTION_
 
 def main():
     testCases = [

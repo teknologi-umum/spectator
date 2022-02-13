@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int isSameNumber(int a, int b);
 
-{0}
+_REPLACE_ME_WITH_SOLUTION_
 
 typedef struct TestCase {
     int expected;

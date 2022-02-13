@@ -23,15 +23,6 @@ jobs:
           DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
         ports:
           - 8086:8086
-      bucket:
-        image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
-        ports:
-          - 9000:9000
-        env:
-          MINIO_ROOT_USER: teknum
-          MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
-          MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
-          MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
     defaults:
       run:
         working-directory: ./worker
@@ -41,8 +32,9 @@ jobs:
       - name: Build test
         run: go build .
       - name: Run test
-        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
         env:
+          ENVIRONMENT: github-actions
           INFLUX_HOST: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: iKPpruHfaXygrwSV

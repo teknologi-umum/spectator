@@ -5,19 +5,22 @@ import (
 	"log"
 	"time"
 
+	"worker/common"
 	loggerpb "worker/logger_proto"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts uint32, deletionRate float32, requestID string) {
+func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts int64, deletionRate float64, requestID string) {
 	// Defer func to avoid panic
 	defer func() {
 		r := recover()
-		if r != nil {
-			log.Println(r.(error))
+		if r == nil {
+			return
 		}
+
+		log.Println(r.(error))
 
 		d.Logger.Log(
 			r.(error).Error(),
@@ -36,11 +39,11 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts 
 	defer cancel()
 
 	// We shall find the student number
-	personalInfoRows, err := d.DB.QueryAPI(d.BucketSessionEvents).Query(
+	personalInfoRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "personal_info" and r["session_id"] == "`+sessionID.String()+`")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementPersonalInfoSubmitted+`" and r["session_id"] == "`+sessionID.String()+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> sort(columns: ["_time"])`,
 	)
@@ -69,7 +72,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts 
 	}
 
 	point := influxdb2.NewPoint(
-		"funfact_projection",
+		common.MeasurementFunfactProjection,
 		map[string]string{
 			"session_id":     sessionID.String(),
 			"student_number": studentNumber,
@@ -83,7 +86,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm uint32, attempts 
 	)
 
 	err = d.DB.
-		WriteAPIBlocking(d.DBOrganization, d.BucketInputStatisticEvents).
+		WriteAPIBlocking(d.DBOrganization, common.BucketInputStatisticEvents).
 		WritePoint(ctx, point)
 	if err != nil {
 		d.Logger.Log(

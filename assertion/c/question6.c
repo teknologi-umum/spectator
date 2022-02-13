@@ -3,9 +3,11 @@
 #include <string.h>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int* calculateGrade(int size, int* input);
 
-{0}
+_REPLACE_ME_WITH_SOLUTION_
 
 int* __workingAnswer(int size, int* input) {
     for (int i = 0; i < size; i++) {

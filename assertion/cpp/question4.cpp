@@ -3,9 +3,11 @@
 #include <vector>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int findHeaterPower(long power);
 
-_REPLACE_ME_
+_REPLACE_ME_WITH_SOLUTION_
 
 int __workingAnswer(long power) {
     int result = 0;

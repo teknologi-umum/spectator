@@ -35,51 +35,46 @@ type Dependency struct {
 	pb.UnimplementedWorkerServer
 }
 
-const (
-	// BucketInputEvents is the bucket name for storing
-	// keystroke events, window events, and mouse events.
-	BucketInputEvents = "input_events"
-	// BucketSessionEvents is the bucket name for storing
-	// the session events, including their personal information.
-	BucketSessionEvents = "session_events"
-	// BucketFileEvents is the bucket name for storing
-	// the file events, most importantly the URL to the MinIO storage.
-	BucketFileEvents = "file_results"
-	// BucketInputStatistics is the bucket name for storing
-	// the input statistics, including their personal information.
-	BucketInputStatisticEvents = "input_statistics"
-)
-
 func main() {
 	// Lookup environment variables
+	err := loadEnvironment()
+	if err != nil {
+		log.Fatalf("Failed to load environment variables: %v", err)
+	}
+
 	influxToken, ok := os.LookupEnv("INFLUX_TOKEN")
 	if !ok {
-		log.Fatalln("INFLUX_TOKEN environment variable missing")
+		influxToken = "nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd"
 	}
 
 	influxHost, ok := os.LookupEnv("INFLUX_HOST")
 	if !ok {
-		log.Fatalln("INFLUX_HOST environment variable missing")
+		influxHost = "http://localhost:8086"
 	}
 
 	influxOrg, ok := os.LookupEnv("INFLUX_ORG")
 	if !ok {
-		log.Fatalln("INFLUX_ORG environment variable missing")
+		influxOrg = "teknum_spectator"
 	}
 
 	minioHost, ok := os.LookupEnv("MINIO_HOST")
 	if !ok {
-		log.Fatalln("MINIO_HOST environment variable missing")
+		minioHost = "localhost:9000"
 	}
 
 	minioID, ok := os.LookupEnv("MINIO_ACCESS_ID")
 	if !ok {
-		log.Fatalln("MINIO_ACCESS_ID environment variable missing")
+		minioID = "teknum"
 	}
 
 	minioSecret, ok := os.LookupEnv("MINIO_SECRET_KEY")
 	if !ok {
-		log.Fatalln("MINIO_SECRET_KEY environment variable missing")
+		minioSecret = "c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48"
+	}
+
+	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
+	if !ok {
+		minioToken = ""
 	}
 
 	loggerServerAddr, ok := os.LookupEnv("LOGGER_SERVER_ADDRESS")
@@ -97,9 +92,9 @@ func main() {
 		environment = "DEVELOPMENT"
 	}
 
-	minioToken, ok := os.LookupEnv("MINIO_TOKEN")
+	portNumber, ok := os.LookupEnv("PORT")
 	if !ok {
-		log.Fatalln("MINIO_TOKEN environment variable missing")
+		portNumber = "3000"
 	}
 
 	// Create InfluxDB instance
@@ -123,6 +118,7 @@ func main() {
 		log.Fatalln(err)
 	}
 	defer loggerConn.Close()
+
 	loggerClient := logger.New(
 		loggerpb.NewLoggerClient(loggerConn),
 		loggerToken,
@@ -138,25 +134,19 @@ func main() {
 		LoggerToken:    loggerToken,
 		Environment:    environment,
 		Funfact: &funfact.Dependency{
-			Environment:                environment,
-			DB:                         influxConn,
-			DBOrganization:             influxOrg,
-			Logger:                     loggerClient,
-			LoggerToken:                loggerToken,
-			BucketInputEvents:          BucketInputEvents,
-			BucketSessionEvents:        BucketSessionEvents,
-			BucketInputStatisticEvents: BucketInputStatisticEvents,
+			Environment:    environment,
+			DB:             influxConn,
+			DBOrganization: influxOrg,
+			Logger:         loggerClient,
+			LoggerToken:    loggerToken,
 		},
 		File: &file.Dependency{
-			Environment:         environment,
-			Bucket:              minioConn,
-			DB:                  influxConn,
-			DBOrganization:      influxOrg,
-			Logger:              loggerClient,
-			LoggerToken:         loggerToken,
-			BucketInputEvents:   BucketInputEvents,
-			BucketSessionEvents: BucketSessionEvents,
-			BucketFileEvents:    BucketFileEvents,
+			Environment:    environment,
+			Bucket:         minioConn,
+			DB:             influxConn,
+			DBOrganization: influxOrg,
+			Logger:         loggerClient,
+			LoggerToken:    loggerToken,
 		},
 	}
 
@@ -179,11 +169,6 @@ func main() {
 	err = dependencies.prepareBuckets(ctx)
 	if err != nil {
 		log.Fatalf("Error preparing InfluxDB buckets: %s\n", err)
-	}
-
-	portNumber, ok := os.LookupEnv("PORT")
-	if !ok {
-		portNumber = "4444"
 	}
 
 	// gRPC uses TCP connection.
