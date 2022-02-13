@@ -291,7 +291,6 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.HAS_TAKEN_EXAM)]
 		public Task SubmitAfterExamSAM(SubmitSAMRequest request) {
 			// Authenticate
 			var session = _poormansAuthentication.Authenticate(request.AccessToken);
