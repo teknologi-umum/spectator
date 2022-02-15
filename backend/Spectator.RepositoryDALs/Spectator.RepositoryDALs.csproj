@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="InfluxDB.Client" Version="3.2.0" />
-    <PackageReference Include="InfluxDB.Client.Linq" Version="3.2.0" />
+    <PackageReference Include="InfluxDB.Client" Version="3.3.0" />
+    <PackageReference Include="InfluxDB.Client.Linq" Version="3.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="RG.Ninja" Version="1.0.8" />
@@ -52,6 +52,13 @@
     <EmbeddedResource Include="..\..\assertion\python\question4.py" Link="Imported\AssertionData\python\question4.py" />
     <EmbeddedResource Include="..\..\assertion\python\question5.py" Link="Imported\AssertionData\python\question5.py" />
     <EmbeddedResource Include="..\..\assertion\python\question6.py" Link="Imported\AssertionData\python\question6.py" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Roslynator.Analyzers" Version="4.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

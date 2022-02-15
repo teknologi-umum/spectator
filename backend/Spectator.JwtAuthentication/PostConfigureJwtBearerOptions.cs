@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using RG.Ninja;
 
 namespace Spectator.JwtAuthentication {
 	public class PostConfigureJwtBearerOptions : IPostConfigureOptions<JwtBearerOptions> {
@@ -28,7 +29,16 @@ namespace Spectator.JwtAuthentication {
 			};
 			options.Events = new JwtBearerEvents {
 				OnMessageReceived = context => {
-					context.Token = context.Request.Cookies["ACCESS_TOKEN"];
+					if (context.Request.Cookies.TryGetValue("ACCESS_TOKEN", out var accessTokenCookie)) {
+						context.Token = accessTokenCookie;
+					} else if (context.Request.Headers.TryGetValue("ACCESS_TOKEN", out var accessTokenHeader)) {
+						context.Token = accessTokenHeader;
+					} else if (context.Request.Headers.Authorization is { Count: > 0 } authorizationHeader
+						&& authorizationHeader[0].StartsWith("Bearer ", out var bearerToken)) {
+						context.Token = bearerToken;
+					} else if (context.Request.Query.TryGetValue("access_token", out var accessTokenQuery)) {
+						context.Token = accessTokenCookie;
+					}
 					return Task.CompletedTask;
 				}
 			};

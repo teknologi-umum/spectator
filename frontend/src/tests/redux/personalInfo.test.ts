@@ -1,11 +1,12 @@
 import { expect, test } from "vitest";
-import reducer, { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
+import reducer, { setPersonalInfo } from "@/store/slices/personalInfoSlice";
+import { PersonalInfo } from "@/models/PersonalInfo";
 
-const initialState = {
-  studentId: "",
-  programmingExp: 0,
-  programmingExercise: 0,
-  programmingLanguage: ""
+const initialState: PersonalInfo = {
+  studentNumber: "",
+  yearsOfExperience: 0,
+  hoursOfPractice: 0,
+  familiarLanguages: ""
 };
 
 test("should return the initial state", () => {
@@ -13,12 +14,12 @@ test("should return the initial state", () => {
 });
 
 test("should be able to set personal info data", () => {
-  const data = {
-    studentId: "133017",
-    programmingExp: 3,
-    programmingExercise: 2,
-    programmingLanguage: "rust, haskell"
+  const data: PersonalInfo = {
+    studentNumber: "133017",
+    yearsOfExperience: 3,
+    hoursOfPractice: 2,
+    familiarLanguages: "rust, haskell"
   };
 
-  expect(reducer(initialState, recordPersonalInfo(data))).toEqual(data);
+  expect(reducer(initialState, setPersonalInfo(data))).toEqual(data);
 });

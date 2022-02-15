@@ -20,11 +20,13 @@ import Layout from "@/components/Layout";
 import "@/styles/samtest.css";
 import ThemeButton from "@/components/ThemeButton";
 import { useNavigate } from "react-router-dom";
-import { getJwt } from "@/utils/generateFakeJwt";
-import { useAppDispatch } from "@/store";
-import { setJwt } from "@/store/slices/jwtSlice";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  markFirstSAMSubmitted,
+  markSecondSAMSubmitted
+} from "@/store/slices/sessionSlice";
+import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
-import { withPublic } from "@/hoc";
 import { useTranslation } from "react-i18next";
 
 const ICONS = {
@@ -60,7 +62,7 @@ function getResponseOptions(
   );
 }
 
-function SAMTest() {
+export default function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,7 +73,8 @@ function SAMTest() {
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { t } = useTranslation();
-  
+  const { firstSAMSubmitted } = useAppSelector((state) => state.session);
+
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
       setCurrentPage((prev) => (currentPage <= 0 ? prev : prev - 1));
@@ -85,6 +88,25 @@ function SAMTest() {
     e.preventDefault();
   }
 
+  function finishSAMTest() {
+    if (firstSAMSubmitted) {
+      dispatch(markSecondSAMSubmitted());
+    } else {
+      // TODO(elianiva): we should get the deadline and questions from the
+      //                 server
+      dispatch(
+        setDeadlineAndQuestions({
+          // 3 hours from now
+          deadlineUtc: new Date(
+            Date.now() + 3 * 60 * 60 * 1000
+          ).getUTCMilliseconds(),
+          questions: []
+        })
+      );
+      dispatch(markFirstSAMSubmitted());
+    }
+    navigate("/coding-test");
+  }
 
   useEffect(() => {
     document.title = "SAM Test | Spectator";
@@ -180,7 +202,9 @@ function SAMTest() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
-          <ModalHeader fontSize="2xl">{t("translation.translations.confirmation.title")}</ModalHeader>
+          <ModalHeader fontSize="2xl">
+            {t("translation.translations.confirmation.title")}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
@@ -197,14 +221,7 @@ function SAMTest() {
             >
               {t("translation.translations.ui.cancel")}
             </Button>
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                const jwt = getJwt();
-                dispatch(setJwt(jwt));
-                navigate("/coding-test");
-              }}
-            >
+            <Button colorScheme="blue" onClick={finishSAMTest}>
               {t("translation.translations.ui.confirm")}
             </Button>
           </ModalFooter>
@@ -213,5 +230,3 @@ function SAMTest() {
     </>
   );
 }
-
-export default withPublic(SAMTest);

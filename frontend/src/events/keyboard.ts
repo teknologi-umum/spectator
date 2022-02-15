@@ -16,8 +16,10 @@ const F_KEYS: Record<string, boolean> = {
   F12: true
 };
 
-export function keystrokeHandler(connection: unknown, questionNumber: number) {
+export function keystrokeHandler(connection: unknown, questionNumber: number | null) {
   return async (e: KeyboardEvent) => {
+    if (questionNumber === null) return;
+
     const data: CodingEventKeystroke = {
       // TODO(elianiva): revisit session_id
       session_id: "TBD",

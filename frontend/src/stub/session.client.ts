@@ -9,12 +9,13 @@ import type { SubmissionRequest } from "./session";
 import type { ExamResult } from "./session";
 import type { Exam } from "./session";
 import type { EmptyRequest } from "./session";
-import type { SAM } from "./session";
-import type { PersonalInfo } from "./session";
+import type { SubmitSAMRequest } from "./session";
+import type { SubmitPersonalInfoRequest } from "./session";
 import type { EmptyReply } from "./session";
+import type { SetLocaleRequest } from "./session";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { SessionReply } from "./session";
-import type { LocaleInfo } from "./session";
+import type { StartSessionRequest } from "./session";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
@@ -22,21 +23,21 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface ISessionServiceClient {
     /**
-     * @generated from protobuf rpc: StartSession(session.LocaleInfo) returns (session.SessionReply);
+     * @generated from protobuf rpc: StartSession(session.StartSessionRequest) returns (session.SessionReply);
      */
-    startSession(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, SessionReply>;
+    startSession(input: StartSessionRequest, options?: RpcOptions): UnaryCall<StartSessionRequest, SessionReply>;
     /**
-     * @generated from protobuf rpc: SetLocale(session.LocaleInfo) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SetLocale(session.SetLocaleRequest) returns (session.EmptyReply);
      */
-    setLocale(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, EmptyReply>;
+    setLocale(input: SetLocaleRequest, options?: RpcOptions): UnaryCall<SetLocaleRequest, EmptyReply>;
     /**
-     * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitPersonalInfo(session.SubmitPersonalInfoRequest) returns (session.EmptyReply);
      */
-    submitPersonalInfo(input: PersonalInfo, options?: RpcOptions): UnaryCall<PersonalInfo, EmptyReply>;
+    submitPersonalInfo(input: SubmitPersonalInfoRequest, options?: RpcOptions): UnaryCall<SubmitPersonalInfoRequest, EmptyReply>;
     /**
-     * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SubmitSAMRequest) returns (session.EmptyReply);
      */
-    submitBeforeCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply>;
+    submitBeforeCodeSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply>;
     /**
      * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
      */
@@ -54,9 +55,9 @@ export interface ISessionServiceClient {
      */
     submitSolution(input: SubmissionRequest, options?: RpcOptions): UnaryCall<SubmissionRequest, SubmissionResult>;
     /**
-     * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SubmitSAMRequest) returns (session.EmptyReply);
      */
-    submitAfterCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply>;
+    submitAfterCodeSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply>;
 }
 /**
  * @generated from protobuf service session.SessionService
@@ -68,32 +69,32 @@ export class SessionServiceClient implements ISessionServiceClient, ServiceInfo 
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * @generated from protobuf rpc: StartSession(session.LocaleInfo) returns (session.SessionReply);
+     * @generated from protobuf rpc: StartSession(session.StartSessionRequest) returns (session.SessionReply);
      */
-    startSession(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, SessionReply> {
+    startSession(input: StartSessionRequest, options?: RpcOptions): UnaryCall<StartSessionRequest, SessionReply> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
-        return stackIntercept<LocaleInfo, SessionReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<StartSessionRequest, SessionReply>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SetLocale(session.LocaleInfo) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SetLocale(session.SetLocaleRequest) returns (session.EmptyReply);
      */
-    setLocale(input: LocaleInfo, options?: RpcOptions): UnaryCall<LocaleInfo, EmptyReply> {
+    setLocale(input: SetLocaleRequest, options?: RpcOptions): UnaryCall<SetLocaleRequest, EmptyReply> {
         const method = this.methods[1], opt = this._transport.mergeOptions(options);
-        return stackIntercept<LocaleInfo, EmptyReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<SetLocaleRequest, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SubmitPersonalInfo(session.PersonalInfo) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitPersonalInfo(session.SubmitPersonalInfoRequest) returns (session.EmptyReply);
      */
-    submitPersonalInfo(input: PersonalInfo, options?: RpcOptions): UnaryCall<PersonalInfo, EmptyReply> {
+    submitPersonalInfo(input: SubmitPersonalInfoRequest, options?: RpcOptions): UnaryCall<SubmitPersonalInfoRequest, EmptyReply> {
         const method = this.methods[2], opt = this._transport.mergeOptions(options);
-        return stackIntercept<PersonalInfo, EmptyReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<SubmitPersonalInfoRequest, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SAM) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitBeforeCodeSAM(session.SubmitSAMRequest) returns (session.EmptyReply);
      */
-    submitBeforeCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply> {
+    submitBeforeCodeSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply> {
         const method = this.methods[3], opt = this._transport.mergeOptions(options);
-        return stackIntercept<SAM, EmptyReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<SubmitSAMRequest, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: StartExam(session.EmptyRequest) returns (session.Exam);
@@ -124,10 +125,10 @@ export class SessionServiceClient implements ISessionServiceClient, ServiceInfo 
         return stackIntercept<SubmissionRequest, SubmissionResult>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SAM) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitAfterCodeSAM(session.SubmitSAMRequest) returns (session.EmptyReply);
      */
-    submitAfterCodeSAM(input: SAM, options?: RpcOptions): UnaryCall<SAM, EmptyReply> {
+    submitAfterCodeSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply> {
         const method = this.methods[8], opt = this._transport.mergeOptions(options);
-        return stackIntercept<SAM, EmptyReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<SubmitSAMRequest, EmptyReply>("unary", this._transport, method, opt, input);
     }
 }

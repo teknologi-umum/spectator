@@ -6,9 +6,11 @@ import type { UIEvent } from "react";
 // after backend is ready
 export function scrollHandler<T extends Element>(
   connection: unknown,
-  questionNumber: number
+  questionNumber: number | null
 ) {
   return async (e: Event | UIEvent<T, globalThis.UIEvent>) => {
+    if (questionNumber === null) return;
+
     try {
       await emit(connection, e);
     } catch (err) {

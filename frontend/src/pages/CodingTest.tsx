@@ -1,3 +1,6 @@
+import React, { useEffect } from "react";
+import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
+import "react-reflex/styles.css";
 import {
   Editor,
   Menu,
@@ -12,31 +15,26 @@ import {
   scrollHandler
 } from "@/events";
 import { useColorModeValue, useSignalR } from "@/hooks";
-import { withProtected } from "@/hoc";
 import {
   Box,
   Flex,
   theme,
   useEventListener
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
-import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
-import "react-reflex/styles.css";
 import { useAppSelector } from "@/store";
-import type { InitialState as QuestionState } from "@/store/slices/questionSlice/types";
 
-function CodingTest() {
-  const { currentQuestion } = useAppSelector<QuestionState>(
-    (state) => state.question
+export default function CodingTest() {
+  const { currentQuestionNumber } = useAppSelector(
+    (state) => state.editor
   );
 
-  const connection = useSignalR("fake_hub_url");
+  const connection = useSignalR();
 
-  useEventListener("mousedown", mouseClickHandler(connection, currentQuestion));
-  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestion));
-  useEventListener("keydown", keystrokeHandler(connection, currentQuestion));
+  useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
+  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
+  useEventListener("keydown", keystrokeHandler(connection, currentQuestionNumber));
 
-  useEventListener("scroll", scrollHandler(connection, currentQuestion));
+  useEventListener("scroll", scrollHandler(connection, currentQuestionNumber));
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
@@ -62,7 +60,7 @@ function CodingTest() {
                 bg={bg}
                 fg={fg}
                 fgDarker={fgDarker}
-                onScroll={scrollHandler(connection, currentQuestion)}
+                onScroll={scrollHandler(connection, currentQuestionNumber)}
               />
             </ReflexElement>
 
@@ -79,7 +77,7 @@ function CodingTest() {
                 <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                   <Editor
                     bg={bg}
-                    onScroll={scrollHandler(connection, currentQuestion)}
+                    onScroll={scrollHandler(connection, currentQuestionNumber)}
                   />
                 </ReflexElement>
 
@@ -94,7 +92,7 @@ function CodingTest() {
                 <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                   <ScratchPad
                     bg={bg}
-                    onScroll={scrollHandler(connection, currentQuestion)}
+                    onScroll={scrollHandler(connection, currentQuestionNumber)}
                   />
                 </ReflexElement>
               </ReflexContainer>
@@ -105,5 +103,3 @@ function CodingTest() {
     </Flex>
   );
 }
-
-export default withProtected(CodingTest);

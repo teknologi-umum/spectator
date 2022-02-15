@@ -4,7 +4,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { recordPersonalInfo } from "@/store/slices/personalInfoSlice";
+import { setPersonalInfo } from "@/store/slices/personalInfoSlice";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -17,29 +17,23 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import ThemeButton from "@/components/ThemeButton";
-import type { InitialState as PersonalInfoState } from "@/store/slices/personalInfoSlice/types";
-import { useColorModeValue } from "@/hooks";
-import { withPublic } from "@/hoc";
+import { useColorModeValue, useSignalR } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import type { PersonalInfo } from "@/models/PersonalInfo";
+import { Locale as DtoLocale } from "@/stub/enums";
+import { setAccessToken } from "../store/slices/sessionSlice";
 
-interface FormValues {
-  studentId: string;
-  programmingExp: number;
-  programmingExercise: number;
-  programmingLanguage: string;
-}
-
-function PersonalInfo() {
+export default function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const personalInfo = useAppSelector<PersonalInfoState>(
-    (state) => state.personalInfo
-  );
+  const { locale } = useAppSelector((state) => state.locale);
+  const { accessToken } = useAppSelector((state) => state.session);
+  const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
-  const border = useColorModeValue("gray.400", "gray.500", "gray.600");
-  
+  const { sessionSpoke } = useSignalR();
+
   const {
     register,
     handleSubmit,
@@ -50,9 +44,21 @@ function PersonalInfo() {
     reValidateMode: "onBlur"
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    dispatch(recordPersonalInfo(data));
-    navigate("/instructions");
+  const onSubmit: SubmitHandler<PersonalInfo> = async (data) => {
+    if (accessToken === null) {
+      console.error("accessToken is null");
+      return;
+    }
+    try {
+      await sessionSpoke.submitPersonalInfo({
+        ...data,
+        accessToken
+      });
+      dispatch(setPersonalInfo(data));
+      navigate("/instructions");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -64,6 +70,32 @@ function PersonalInfo() {
     console.log("errors", errors);
   }, [errors]);
 
+  useEffect(() => {
+    if (accessToken === null) {
+      let dtoLocale: DtoLocale;
+      switch (locale) {
+      case "EN":
+        dtoLocale = DtoLocale.EN;
+        break;
+      case "ID":
+        dtoLocale = DtoLocale.ID;
+        break;
+      default:
+        console.error(`Unknown locale: ${locale}`);
+        return;
+      }
+
+      sessionSpoke
+        .startSession({ locale: dtoLocale })
+        .then((sessionReply) => {
+          sessionSpoke.setAccessToken(sessionReply.accessToken);
+          setAccessToken(sessionReply.accessToken);
+        })
+        .catch((err) => {
+          console.error(`Unable to start session. ${err}`);
+        });
+    }
+  }, []);
 
   return (
     <Layout>
@@ -90,66 +122,68 @@ function PersonalInfo() {
           <FormControl
             id="email"
             mt="6"
-            isInvalid={errors.studentId !== undefined}
+            isInvalid={errors.studentNumber !== undefined}
           >
-            <FormLabel>{t("translation.translations.personal_info.student_number")}</FormLabel>
-            <Input type="text" {...register("studentId")} autoComplete="off" borderColor={border} />
-            <FormErrorMessage>{errors?.studentId?.message}!</FormErrorMessage>
+            <FormLabel>
+              {t("translation.translations.personal_info.student_number")}
+            </FormLabel>
+            <Input
+              type="text"
+              {...register("studentNumber")}
+              autoComplete="off"
+            />
+            <FormErrorMessage>
+              {errors?.studentNumber?.message}!
+            </FormErrorMessage>
           </FormControl>
 
           <FormControl
             mt="6"
-            isInvalid={errors.programmingExp !== undefined}
+            isInvalid={errors.yearsOfExperience !== undefined}
           >
             <FormLabel>
               {t("translation.translations.personal_info.programming_years")}
             </FormLabel>
             <Input
-              borderColor={border}
               type="number"
-              {...register("programmingExp")}
+              {...register("yearsOfExperience")}
               autoComplete="off"
             />
             <FormErrorMessage>
-              {errors?.programmingExp?.message}!
+              {errors?.yearsOfExperience?.message}!
             </FormErrorMessage>
           </FormControl>
 
-          <FormControl
-          
-            mt="6"
-            isInvalid={errors.programmingExercise !== undefined}
-          >
+          <FormControl mt="6" isInvalid={errors.hoursOfPractice !== undefined}>
             <FormLabel>
               {t("translation.translations.personal_info.programming_practice")}
             </FormLabel>
             <Input
-              borderColor={border}
               type="number"
-              {...register("programmingExercise")}
+              {...register("hoursOfPractice")}
               autoComplete="off"
             />
             <FormErrorMessage>
-              {errors?.programmingExercise?.message}!
+              {errors?.hoursOfPractice?.message}!
             </FormErrorMessage>
           </FormControl>
 
           <FormControl
-          
             mt="6"
-            isInvalid={errors.programmingLanguage !== undefined}
+            isInvalid={errors.familiarLanguages !== undefined}
           >
             <FormLabel>
-              {t("translation.translations.personal_info.programming_experience")}
+              {t(
+                "translation.translations.personal_info.programming_experience"
+              )}
             </FormLabel>
             <Input
-              borderColor={border}
               type="text"
-              {...register("programmingLanguage")}
+              {...register("familiarLanguages")}
               autoComplete="off"
             />
             <FormErrorMessage>
-              {errors?.programmingLanguage?.message}!
+              {errors?.familiarLanguages?.message}!
             </FormErrorMessage>
           </FormControl>
         </Box>
@@ -167,5 +201,3 @@ function PersonalInfo() {
     </Layout>
   );
 }
-
-export default withPublic(PersonalInfo);
