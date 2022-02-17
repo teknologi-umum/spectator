@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
+using Spectator.DomainModels.SessionDomain;
 using Spectator.DomainModels.SubmissionDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
+using Spectator.PoormansAuth;
 using Spectator.Primitives;
 using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
@@ -16,19 +18,25 @@ using Spectator.Protos.Session;
 namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
+		private readonly PoormansAuthentication _poormansAuthentication;
 		private readonly SessionServices _sessionServices;
 		private readonly IServiceProvider _serviceProvider;
 
 		public SessionHub(
+			PoormansAuthentication poormansAuthentication,
 			SessionServices sessionServices,
 			IServiceProvider serviceProvider
 		) {
+			_poormansAuthentication = poormansAuthentication;
 			_sessionServices = sessionServices;
 			_serviceProvider = serviceProvider;
 		}
 
-		public async Task<SessionReply> StartSessionAsync(LocaleInfo localeInfo) {
-			var session = await _sessionServices.StartSessionAsync((Locale)localeInfo.Locale);
+		public async Task<SessionReply> StartSessionAsync(StartSessionRequest request) {
+			// Create session
+			var session = await _sessionServices.StartSessionAsync((Locale)request.Locale);
+
+			// Encode as JWT and map results
 			var jwtAuthenticationServices = _serviceProvider.GetRequiredService<JwtAuthenticationServices>();
 			var tokenPayload = jwtAuthenticationServices.CreatePayload(session.Id);
 			return new SessionReply {
@@ -36,56 +44,74 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize]
-		public Task SetLocaleAsync(LocaleInfo localeInfo) {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+		public Task SetLocaleAsync(SetLocaleRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Set locale and map results
 			return _sessionServices.SetLocaleAsync(
-				sessionId: tokenPayload.SessionId,
-				locale: (Locale)localeInfo.Locale
+				sessionId: session.Id,
+				locale: (Locale)request.Locale
 			);
 		}
 
-		[Authorize(AuthPolicy.ANONYMOUS)]
-		public Task SubmitPersonalInfoAsync(PersonalInfo personalInfo) {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+		public Task SubmitPersonalInfoAsync(SubmitPersonalInfoRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: session must be anonymous, personal info has not been submitted
+			if (session is not AnonymousSession) throw new UnauthorizedAccessException("Personal Info already submitted");
+
+			// Submit personal info and map results
 			return _sessionServices.SubmitPersonalInfoAsync(
-				sessionId: tokenPayload.SessionId,
-				studentNumber: personalInfo.StudentNumber,
-				yearsOfExperience: personalInfo.YearsOfExperience,
-				hoursOfPractice: personalInfo.HoursOfPractice,
-				familiarLanguages: personalInfo.FamiliarLanguages
+				sessionId: session.Id,
+				studentNumber: request.StudentNumber,
+				yearsOfExperience: request.YearsOfExperience,
+				hoursOfPractice: request.HoursOfPractice,
+				familiarLanguages: request.FamiliarLanguages
 			);
 		}
 
-		[Authorize(AuthPolicy.REGISTERED)]
-		public Task SubmitBeforeExamSAMAsync(SAM sam) {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+		public Task SubmitBeforeExamSAMAsync(SubmitSAMRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: personal info must be already submitted, but SAM not submitted
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.BeforeExamSAM is not null) throw new UnauthorizedAccessException("Before Exam SAM already submitted");
+
+			// Submit SAM and map results
 			return _sessionServices.SubmitBeforeExamSAMAsync(
-				sessionId: tokenPayload.SessionId,
-				arousedLevel: sam.ArousedLevel,
-				pleasedLevel: sam.PleasedLevel
+				sessionId: session.Id,
+				arousedLevel: request.ArousedLevel,
+				pleasedLevel: request.PleasedLevel
 			);
 		}
 
-		[Authorize(AuthPolicy.READY_TO_TAKE_EXAM)]
-		public async Task<Exam> StartExamAsync() {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			(var session, var questionByQuestionNumber) = await _sessionServices.StartExamAsync(tokenPayload.SessionId);
+		public async Task<Exam> StartExamAsync(EmptyRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Before exam SAM must be already submitted, but exam has not been started
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.BeforeExamSAM is null) throw new UnauthorizedAccessException("Before Exam SAM not yet submitted");
+			if (registeredSession.ExamStartedAt is not null) throw new UnauthorizedAccessException("Exam already started");
+
+			// Start exam
+			(registeredSession, var questionByQuestionNumber) = await _sessionServices.StartExamAsync(session.Id);
+
+			// Map results
 			return new Exam {
-				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
+				Deadline = registeredSession.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
-					from questionNumber in session.QuestionNumbers!.Value
+					from questionNumber in registeredSession.QuestionNumbers!.Value
 					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = question.TitleByLocale[session.Locale],
-						Instruction = question.InstructionByLocale[session.Locale],
+						Title = question.TitleByLocale[registeredSession.Locale],
+						Instruction = question.InstructionByLocale[registeredSession.Locale],
 						LanguageAndTemplates = {
-							from kvp in question.TemplateByLanguageByLocale[session.Locale]
+							from kvp in question.TemplateByLanguageByLocale[registeredSession.Locale]
 							select new Question.Types.LanguageAndTemplate {
 								Language = (Protos.Enums.Language)kvp.Key,
 								Template = kvp.Value
@@ -97,22 +123,32 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
-		public async Task<Exam> ResumeExamAsync() {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			(var session, var questionByQuestionNumber) = await _sessionServices.ResumeExamAsync(tokenPayload.SessionId, Context.ConnectionAborted);
+		public async Task<Exam> ResumeExamAsync(EmptyRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamStartedAt is null) throw new UnauthorizedAccessException("Exam not yet started");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam already ended");
+			if (registeredSession.ExamDeadline is null) throw new InvalidProgramException("Exam deadline not set");
+			if (registeredSession.ExamDeadline.Value < DateTimeOffset.UtcNow) throw new UnauthorizedAccessException("Exam deadline exceeded");
+
+			// Resume exam
+			(registeredSession, var questionByQuestionNumber) = await _sessionServices.ResumeExamAsync(session.Id, Context.ConnectionAborted);
+
+			// Map results
 			return new Exam {
-				Deadline = session.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
+				Deadline = registeredSession.ExamDeadline!.Value.ToUnixTimeMilliseconds(),
 				Questions = {
-					from questionNumber in session.QuestionNumbers!.Value
+					from questionNumber in registeredSession.QuestionNumbers!.Value
 					let question = questionByQuestionNumber[questionNumber]
 					select new Question {
 						QuestionNumber = questionNumber,
-						Title = question.TitleByLocale[session.Locale],
-						Instruction = question.InstructionByLocale[session.Locale],
+						Title = question.TitleByLocale[registeredSession.Locale],
+						Instruction = question.InstructionByLocale[registeredSession.Locale],
 						LanguageAndTemplates = {
-							from kvp in question.TemplateByLanguageByLocale[session.Locale]
+							from kvp in question.TemplateByLanguageByLocale[registeredSession.Locale]
 							select new Question.Types.LanguageAndTemplate {
 								Language = (Protos.Enums.Language)kvp.Key,
 								Template = kvp.Value
@@ -124,18 +160,28 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
-		public async Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest submissionRequest) {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+		public async Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamStartedAt is null) throw new UnauthorizedAccessException("Exam not yet started");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam already ended");
+			if (registeredSession.ExamDeadline is null) throw new InvalidProgramException("Exam deadline not set");
+			if (registeredSession.ExamDeadline.Value < DateTimeOffset.UtcNow) throw new UnauthorizedAccessException("Exam deadline exceeded");
+
+			// Submit solution
 			var submission = await _sessionServices.SubmitSolutionAsync(
-				sessionId: tokenPayload.SessionId,
-				questionNumber: submissionRequest.QuestionNumber,
-				language: (Language)submissionRequest.Language,
-				solution: submissionRequest.Solution,
-				scratchPad: submissionRequest.ScratchPad,
+				sessionId: session.Id,
+				questionNumber: request.QuestionNumber,
+				language: (Language)request.Language,
+				solution: request.Solution,
+				scratchPad: request.ScratchPad,
 				cancellationToken: Context.ConnectionAborted
 			);
+
+			// Map results
 			return new SubmissionResult {
 				Accepted = submission.Accepted,
 				TestResults = {
@@ -170,59 +216,95 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
-		public async Task<ExamResult> EndExamAsync() {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.EndExamAsync(tokenPayload.SessionId);
+		public async Task<ExamResult> EndExamAsync(EmptyRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamStartedAt is null) throw new UnauthorizedAccessException("Exam not yet started");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam already ended");
+			if (registeredSession.ExamDeadline is null) throw new InvalidProgramException("Exam deadline not set");
+			if (registeredSession.ExamDeadline.Value < DateTimeOffset.UtcNow) throw new UnauthorizedAccessException("Exam deadline exceeded");
+
+			// End exam
+			registeredSession = await _sessionServices.EndExamAsync(session.Id);
+
+			// Map results
 			return new ExamResult {
-				Duration = session.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - session.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
+				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
 				AnsweredQuestionNumbers = {
-					from kvp in session.SubmissionByQuestionNumber
+					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
 				}
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
-		public async Task<ExamResult> PassDeadlineAsync() {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.PassDeadlineAsync(tokenPayload.SessionId);
+		public async Task<ExamResult> PassDeadlineAsync(EmptyRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress but deadline is exceeded
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamStartedAt is null) throw new UnauthorizedAccessException("Exam not yet started");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam already ended");
+			if (registeredSession.ExamDeadline is null) throw new InvalidProgramException("Exam deadline not set");
+			if (registeredSession.ExamDeadline.Value >= DateTimeOffset.UtcNow) throw new UnauthorizedAccessException("Exam deadline not yet exceeded");
+
+			// Mark deadline passed
+			registeredSession = await _sessionServices.PassDeadlineAsync(session.Id);
+
+			// Map results
 			return new ExamResult {
-				Duration = session.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - session.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
+				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
 				AnsweredQuestionNumbers = {
-					from kvp in session.SubmissionByQuestionNumber
+					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
 				}
 			};
 		}
 
-		[Authorize(AuthPolicy.TAKING_EXAM)]
-		public async Task<ExamResult> ForfeitExamAsync() {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
-			var session = await _sessionServices.ForfeitExamAsync(tokenPayload.SessionId);
+		public async Task<ExamResult> ForfeitExamAsync(EmptyRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamStartedAt is null) throw new UnauthorizedAccessException("Exam not yet started");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam already ended");
+			if (registeredSession.ExamDeadline is null) throw new InvalidProgramException("Exam deadline not set");
+			if (registeredSession.ExamDeadline.Value < DateTimeOffset.UtcNow) throw new UnauthorizedAccessException("Exam deadline exceeded");
+
+			// Forfeit exam
+			registeredSession = await _sessionServices.ForfeitExamAsync(session.Id);
+
+			// Map results
 			return new ExamResult {
-				Duration = session.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - session.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
+				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
 				AnsweredQuestionNumbers = {
-					from kvp in session.SubmissionByQuestionNumber
+					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
 				}
 			};
 		}
 
-		[Authorize(AuthPolicy.HAS_TAKEN_EXAM)]
-		public Task SubmitAfterExamSAM(SAM sam) {
-			if (Context.User == null) throw new UnauthorizedAccessException();
-			var tokenPayload = TokenPayload.FromClaimsPrincipal(Context.User);
+		public Task SubmitAfterExamSAM(SubmitSAMRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must already been ended and second SAM not submitted
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamEndedAt is null) throw new UnauthorizedAccessException("Exam not yet ended");
+			if (registeredSession.AfterExamSAM is not null) throw new InvalidProgramException("After exam SAM already submitted");
+
+			// Submit SAM and map results
 			return _sessionServices.SubmitAfterExamSAMAsync(
-				sessionId: tokenPayload.SessionId,
-				arousedLevel: sam.ArousedLevel,
-				pleasedLevel: sam.PleasedLevel
+				sessionId: session.Id,
+				arousedLevel: request.ArousedLevel,
+				pleasedLevel: request.PleasedLevel
 			);
 		}
 	}

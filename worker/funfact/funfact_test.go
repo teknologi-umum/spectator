@@ -10,10 +10,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"worker/common"
 	"worker/funfact"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -42,48 +45,48 @@ func TestMain(m *testing.M) {
 	db := influxdb2.NewClient(influxHost, influxToken)
 
 	deps = &funfact.Dependency{
-		DB:                  db,
-		DBOrganization:      influxOrg,
-		BucketInputEvents:   "input_events",
-		BucketSessionEvents: "session_events",
-		Environment:         "testing",
+		DB:             db,
+		DBOrganization: influxOrg,
+		Environment:    "testing",
 	}
 
 	rand.Seed(time.Now().Unix())
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*45)
+	// Setup a context for preparing things
+	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*60)
 
-	err := prepareBuckets(ctx)
+	err := prepareBuckets(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error preparing influxdb buckets: %v", err)
 	}
 
 	// First cleanup to ensure that there are no data in the database
-	err = cleanup(ctx)
+	err = cleanup(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error cleaning up buckets: %v", err)
 	}
 
-	err = seedData(ctx)
+	err = seedData(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error seeding data: %v", err)
 	}
 
 	db.Close()
 
-	cancel()
+	prepareCancel()
 
 	code := m.Run()
 
-	// Refresh context
-	ctx, cancel = context.WithTimeout(context.Background(), time.Second*10)
+	// Setup a context for cleaning up things
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*60)
 
 	// Second cleanup to ensure that there are no data in the database
-	err = cleanup(ctx)
+	err = cleanup(cleanupCtx)
 	if err != nil {
 		log.Fatalf("Error cleaning up buckets: %v", err)
 	}
-	cancel()
+
+	cleanupCancel()
 
 	db.Close()
 
@@ -95,7 +98,7 @@ func prepareBuckets(ctx context.Context) error {
 	bucketsAPI := deps.DB.BucketsAPI()
 	organizationAPI := deps.DB.OrganizationsAPI()
 
-	bucketNames := []string{deps.BucketInputEvents, deps.BucketSessionEvents, deps.BucketInputStatisticEvents}
+	bucketNames := []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketInputStatisticEvents}
 
 	for _, bucket := range bucketNames {
 		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
@@ -123,8 +126,8 @@ func prepareBuckets(ctx context.Context) error {
 // from this function. Why create separate one instead of seeding it on every
 // test cases? Because we want to reduce HTTP write calls into the InfluxDB
 func seedData(ctx context.Context) error {
-	sessionWriteAPI := deps.DB.WriteAPI(deps.DBOrganization, deps.BucketSessionEvents)
-	inputWriteAPI := deps.DB.WriteAPI(deps.DBOrganization, deps.BucketInputEvents)
+	sessionWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketSessionEvents)
+	inputWriteAPI := deps.DB.WriteAPIBlocking(deps.DBOrganization, common.BucketInputEvents)
 
 	// We generate two pieces of UUID, each of them have their own
 	// specific use case.
@@ -143,7 +146,7 @@ func seedData(ctx context.Context) error {
 	globalID2 = id
 
 	var wg sync.WaitGroup
-	wg.Add(11)
+	wg.Add(8)
 
 	// Random date between range
 	min := time.Date(2019, 5, 2, 1, 0, 0, 0, time.UTC).Unix()
@@ -152,9 +155,10 @@ func seedData(ctx context.Context) error {
 
 	// Seed coding test attempts
 	go func() {
+		var points []*write.Point
 		for i := 0; i < 20; i++ {
 			point := influxdb2.NewPoint(
-				string(funfact.MeasurementSolutionAccepted),
+				common.MeasurementSolutionAccepted,
 				map[string]string{
 					"session_id":  globalID.String(),
 					"question_id": strconv.Itoa(rand.Intn(5)),
@@ -167,12 +171,13 @@ func seedData(ctx context.Context) error {
 				},
 				time.Unix(rand.Int63n(delta)+min, 0),
 			)
-			sessionWriteAPI.WritePoint(point)
+
+			points = append(points, point)
 		}
 
 		for i := 0; i < 5; i++ {
 			point := influxdb2.NewPoint(
-				string(funfact.MeasurementSolutionRejected),
+				common.MeasurementSolutionRejected,
 				map[string]string{
 					"session_id":  globalID.String(),
 					"question_id": strconv.Itoa(rand.Intn(5)),
@@ -185,15 +190,21 @@ func seedData(ctx context.Context) error {
 				},
 				time.Unix(rand.Int63n(delta)+min, 0),
 			)
-			sessionWriteAPI.WritePoint(point)
+
+			points = append(points, point)
+		}
+
+		err := sessionWriteAPI.WritePoint(ctx, points...)
+		if err != nil {
+			log.Fatalf("failed to write point: %v", err)
 		}
 
 		wg.Done()
 	}()
 
 	go func() {
-		point := influxdb2.NewPoint(
-			"exam_started",
+		point1 := influxdb2.NewPoint(
+			common.MeasurementExamStarted,
 			map[string]string{
 				"session_id": globalID.String(),
 			},
@@ -203,13 +214,8 @@ func seedData(ctx context.Context) error {
 			time.Unix(min, 0),
 		)
 
-		sessionWriteAPI.WritePoint(point)
-		wg.Done()
-	}()
-
-	go func() {
-		point := influxdb2.NewPoint(
-			"exam_started",
+		point2 := influxdb2.NewPoint(
+			common.MeasurementExamStarted,
 			map[string]string{
 				"session_id": globalID2.String(),
 			},
@@ -219,14 +225,8 @@ func seedData(ctx context.Context) error {
 			time.Unix(min, 0),
 		)
 
-		sessionWriteAPI.WritePoint(point)
-
-		wg.Done()
-	}()
-
-	go func() {
-		point := influxdb2.NewPoint(
-			"exam_ended",
+		point3 := influxdb2.NewPoint(
+			common.MeasurementExamEnded,
 			map[string]string{
 				"session_id": globalID.String(),
 			},
@@ -236,14 +236,8 @@ func seedData(ctx context.Context) error {
 			time.Unix(max, 0),
 		)
 
-		sessionWriteAPI.WritePoint(point)
-
-		wg.Done()
-	}()
-
-	go func() {
-		point := influxdb2.NewPoint(
-			"exam_forfeited",
+		point4 := influxdb2.NewPoint(
+			common.MeasurementExamForfeited,
 			map[string]string{
 				"session_id": globalID2.String(),
 			},
@@ -253,8 +247,24 @@ func seedData(ctx context.Context) error {
 			time.Unix(max, 0),
 		)
 
-		sessionWriteAPI.WritePoint(point)
+		point5 := influxdb2.NewPoint(
+			common.MeasurementPersonalInfoSubmitted,
+			map[string]string{
+				"session_id": globalID.String(),
+			},
+			map[string]interface{}{
+				"student_number":      "1202213133",
+				"hours_of_practice":   4,
+				"years_of_experience": 3,
+				"familiar_languages":  "java,kotlin,swift",
+			},
+			time.Unix(min, 0),
+		)
 
+		err := sessionWriteAPI.WritePoint(ctx, point1, point2, point3, point4, point5)
+		if err != nil {
+			log.Fatalf("failed to write point: %v", err)
+		}
 		wg.Done()
 	}()
 
@@ -269,17 +279,16 @@ func seedData(ctx context.Context) error {
 	// 5 keystroke-count of keystrokesMisc and another 5 keystroke-count of keystrokesDelete
 	temporaryDate := time.Unix(min, 0)
 	for i := 0; i < 5; i++ {
-		var anotherWg sync.WaitGroup
-		anotherWg.Add(1)
 		go func() {
 			var childWg sync.WaitGroup
 			childWg.Add(3)
 
 			// Write 200 occurrence of normal keystrokes
 			go func() {
+				var points []*write.Point
 				for j := 0; j < 200; j++ {
 					point := influxdb2.NewPoint(
-						"keystroke",
+						common.MeasurementKeystroke,
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -289,17 +298,23 @@ func seedData(ctx context.Context) error {
 						},
 						time.Now(),
 					)
-					inputWriteAPI.WritePoint(point)
+
+					points = append(points, point)
 				}
 
+				err := inputWriteAPI.WritePoint(ctx, points...)
+				if err != nil {
+					log.Fatalf("failed to write point: %v", err)
+				}
 				childWg.Done()
 			}()
 
 			// Write 100 occurrence of misc keystrokes
 			go func() {
+				var points []*write.Point
 				for j := 0; j < 100; j++ {
 					point := influxdb2.NewPoint(
-						"keystroke",
+						common.MeasurementKeystroke,
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -310,17 +325,22 @@ func seedData(ctx context.Context) error {
 						time.Now(),
 					)
 
-					inputWriteAPI.WritePoint(point)
+					points = append(points, point)
 				}
 
+				err := inputWriteAPI.WritePoint(ctx, points...)
+				if err != nil {
+					log.Fatalf("failed to write point: %v", err)
+				}
 				childWg.Done()
 			}()
 
 			// Write 50 occurrence of deletion keystrokes
 			go func() {
+				var points []*write.Point
 				for j := 0; j < 50; j++ {
 					point := influxdb2.NewPoint(
-						"keystroke",
+						common.MeasurementKeystroke,
 						map[string]string{
 							"session_id": globalID.String(),
 						},
@@ -331,26 +351,30 @@ func seedData(ctx context.Context) error {
 						time.Now(),
 					)
 
-					inputWriteAPI.WritePoint(point)
+					points = append(points, point)
+				}
+				err := inputWriteAPI.WritePoint(ctx, points...)
+				if err != nil {
+					log.Fatalf("failed to write point: %v", err)
 				}
 
 				childWg.Done()
 			}()
 
 			childWg.Wait()
-			anotherWg.Done()
+			wg.Done()
 		}()
-		anotherWg.Wait()
+		
 		temporaryDate = temporaryDate.Add(1 * time.Minute)
-		wg.Done()
 	}
 
 	go func() {
 		// temporaryDate := time.Unix(min, 0)
 		for k := 0; k < 3; k++ {
+			var points []*write.Point
 			for i := 0; i < 100; i++ {
 				point := influxdb2.NewPoint(
-					"keystroke",
+					common.MeasurementKeystroke,
 					map[string]string{
 						"session_id": globalID2.String(),
 					},
@@ -360,7 +384,12 @@ func seedData(ctx context.Context) error {
 					time.Now(),
 				)
 
-				inputWriteAPI.WritePoint(point)
+				points = append(points, point)
+			}
+
+			err := inputWriteAPI.WritePoint(ctx, points...)
+			if err != nil {
+				log.Fatalf("failed to write point: %v", err)
 			}
 		}
 
@@ -381,56 +410,104 @@ func cleanup(ctx context.Context) error {
 		return fmt.Errorf("finding organization: %v", err)
 	}
 
-	// find input_events bucket
-	inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketInputEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
-
 	// delete bucket data
 	deleteAPI := deps.DB.DeleteAPI()
 
-	inputEventMeasurements := []string{
-		"keystroke",
-		"mouse_down",
-		"mouse_up",
-		"mouse_moved",
-		"mouse_scrolled",
-		"window_sized",
-	}
-	for _, measurement := range inputEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+	g, gctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		// find input_events bucket
+		inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	// find input_events bucket
-	sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, deps.BucketSessionEvents)
-	if err != nil {
-		return fmt.Errorf("finding bucket: %v", err)
-	}
+		inputEventMeasurement := []string{
+			common.MeasurementKeystroke,
+			common.MeasurementMouseDown,
+			common.MeasurementMouseUp,
+			common.MeasurementMouseMoved,
+			common.MeasurementMouseScrolled,
+			common.MeasurementWindowSized,
+		}
+		for _, measurement := range inputEventMeasurement {
+			err = deleteAPI.Delete(gctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
 
-	sessionEventMeasurements := []string{
-		"exam_forfeited",
-		"exam_ended",
-		"exam_started",
-		"solution_rejected",
-		"solution_accepted",
-		"session_started",
-		"personal_info_submitted",
-		"locale_set",
-		"exam_ide_reloaded",
-		"deadline_passed",
-		"before_exam_sam_submitted",
-		"after_exam_sam_submitted",
-	}
-	for _, measurement := range sessionEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+		return nil
+	})
+
+	g.Go(func() error {
+		// find input_events bucket
+		sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketSessionEvents)
 		if err != nil {
-			return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			return fmt.Errorf("finding bucket: %v", err)
 		}
-	}
 
-	return nil
+		sessionEventMeasurements := []string{
+			common.MeasurementCodeTestAttempt,
+			common.MeasurementExamForfeited,
+			common.MeasurementExamEnded,
+			common.MeasurementExamStarted,
+			common.MeasurementSolutionRejected,
+			common.MeasurementSolutionAccepted,
+			common.MeasurementSessionStarted,
+			common.MeasurementPersonalInfoSubmitted,
+			common.MeasurementLocaleSet,
+			common.MeasurementExamIDEReloaded,
+			common.MeasurementDeadlinePassed,
+			common.MeasurementBeforeExamSAMSubmitted,
+			common.MeasurementAfterExamSAMSubmitted,
+		}
+
+		// More speed hack, we create a child errgroup
+		c, cctx := errgroup.WithContext(gctx)
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[:len(sessionEventMeasurements)/2] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
+
+		c.Go(func() error {
+			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)/2:] {
+				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+				if err != nil {
+					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+				}
+			}
+			return nil
+		})
+
+		return c.Wait()
+	})
+
+	g.Go(func() error {
+		// find statistics bucket
+		statisticBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputStatisticEvents)
+		if err != nil {
+			return fmt.Errorf("finding bucket: %v", err)
+		}
+
+		statisticEventMeasurements := []string{
+			common.MeasurementFunfactProjection,
+		}
+
+		for _, measurement := range statisticEventMeasurements {
+			err = deleteAPI.Delete(gctx, currentOrganization, statisticBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+			if err != nil {
+				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
+			}
+		}
+
+		return nil
+	})
+
+	return g.Wait()
 }

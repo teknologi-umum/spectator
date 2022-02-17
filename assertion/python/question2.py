@@ -1,7 +1,9 @@
 import random as __random
 from decimal import Decimal
 
-{0}
+_REPLACE_ME_WITH_DIRECTIVES_
+
+_REPLACE_ME_WITH_SOLUTION_
 
 def main():
     testCases = [

@@ -4,9 +4,11 @@
 #include <string.h>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 char* mumble(char* input);
 
-{0}
+_REPLACE_ME_WITH_SOLUTION_
 
 char* __workingAnswer(const char* input) {
     int inputLen = strlen(input);

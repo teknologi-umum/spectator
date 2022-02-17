@@ -3,12 +3,19 @@ module worker
 go 1.17
 
 require (
-	github.com/google/uuid v1.1.2
-	github.com/influxdata/influxdb-client-go/v2 v2.6.0
-	github.com/minio/minio-go/v7 v7.0.18
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	google.golang.org/grpc v1.43.0
+	github.com/google/uuid v1.3.0
+	github.com/influxdata/influxdb-client-go/v2 v2.7.0
+	github.com/minio/minio-go/v7 v7.0.21
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
+)
+
+require (
+	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/gopherjs/gopherjs v0.0.0-20220104163920-15ed2e8cf2bd // indirect
+	github.com/jtolds/gls v4.20.0+incompatible // indirect
+	github.com/smartystreets/assertions v1.2.1 // indirect
 )
 
 require (
@@ -28,8 +35,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/xid v1.2.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
 	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
