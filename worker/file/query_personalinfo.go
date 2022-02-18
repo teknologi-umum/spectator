@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"worker/common"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
 type PersonalInfo struct {
-	Type              string    `json:"type" csv:"-"`
+	Measurement       string    `json:"_measurement" csv:"_measurement"`
 	SessionID         string    `json:"session_id" csv:"session_id"`
 	StudentNumber     string    `json:"student_number" csv:"student_number"`
 	HoursOfPractice   int64     `json:"hours_of_practice" csv:"hours_of_experience"`
@@ -19,20 +20,20 @@ type PersonalInfo struct {
 	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (PersonalInfo, error) {
+func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*PersonalInfo, error) {
 	var personalInfo PersonalInfo
 
 	rows, err := queryAPI.Query(
 		ctx,
-		`from(bucket: "`+d.BucketSessionEvents+`")
+		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "personal_info_submitted")
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementPersonalInfoSubmitted+`")
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
 		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
+		return &PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
 	}
 	defer rows.Close()
 
@@ -46,30 +47,26 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 		studentNumber, ok := record.ValueByKey("student_number").(string)
 		if !ok {
-			// FIXME: add default value
 			studentNumber = ""
 		}
 
 		hoursOfPractice, ok := record.ValueByKey("hours_of_practice").(int64)
 		if !ok {
-			// FIXME: add default value
 			hoursOfPractice = 0
 		}
 
 		yearsOfExperience, ok := record.ValueByKey("years_of_experience").(int64)
 		if !ok {
-			// FIXME: add default value
 			yearsOfExperience = 0
 		}
 
 		familiarLanguages, ok := record.ValueByKey("familiar_languages").(string)
 		if !ok {
-			// FIXME: add default value
 			familiarLanguages = ""
 		}
 
 		personalInfo = PersonalInfo{
-			Type:              "personal_info",
+			Measurement:       common.MeasurementPersonalInfoSubmitted,
 			SessionID:         sessionId,
 			StudentNumber:     studentNumber,
 			HoursOfPractice:   hoursOfPractice,
@@ -79,5 +76,5 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		}
 	}
 
-	return personalInfo, nil
+	return &personalInfo, nil
 }

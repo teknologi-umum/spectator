@@ -14,10 +14,10 @@ function App() {
         <Route path="/" element={<CoercedRoute />}>
           <Route index element={<PersonalInfo />} />
           <Route path="instructions" element={<Instructions />} />
+          <Route path="sam-test" element={<SAMTest />} />
           <Route path="coding-test" element={<CodingTest />} />
           <Route path="fun-fact" element={<FunFact />} />
         </Route>
-        <Route path="sam-test" element={<SAMTest />} />
       </Routes>
     </BrowserRouter>
   );

@@ -3,9 +3,11 @@
 #include <vector>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int isSameNumber(int a, int b);
 
-_REPLACE_ME_
+_REPLACE_ME_WITH_SOLUTION_
 
 typedef struct TestCase {
     int expected;

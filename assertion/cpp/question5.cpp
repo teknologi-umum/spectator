@@ -5,9 +5,11 @@
 #include <numeric>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 std::string mumble(std::string input);
 
-_REPLACE_ME_
+_REPLACE_ME_WITH_SOLUTION_
 
 std::string __workingAnswer(std::string input) {
     std::vector<std::string> words;

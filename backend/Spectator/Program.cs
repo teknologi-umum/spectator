@@ -12,6 +12,7 @@ using Spectator.Hubs;
 using Spectator.JwtAuthentication;
 using Spectator.Observables;
 using Spectator.Piston;
+using Spectator.PoormansAuth;
 using Spectator.RepositoryDALs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,6 +60,7 @@ builder.Services.Setup(services => {
 	// Add authentication & authorization
 	services.AddJwtBearerAuthentication();
 	services.AddJwtBearerAuthorization();
+	services.AddPoormansAuth();
 
 	// Add Cors Policy
 	services.AddCors(options => options.AddPolicy("AllowAll", builder => {

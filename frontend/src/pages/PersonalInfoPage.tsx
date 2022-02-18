@@ -37,7 +37,7 @@ function PersonalInfoPage() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const { sessionSpoke } = useSignalR();
-  const { setIsOpen} = useTour();
+  const { setIsOpen } = useTour();
 
   const {
     register,
@@ -50,9 +50,20 @@ function PersonalInfoPage() {
   });
 
   const onSubmit: SubmitHandler<PersonalInfo> = async (data) => {
-    dispatch(setPersonalInfo(data));
-    await sessionSpoke.submitPersonalInfo(data);
-    navigate("/instructions");
+    if (accessToken === null) {
+      console.error("accessToken is null");
+      return;
+    }
+    try {
+      await sessionSpoke.submitPersonalInfo({
+        ...data,
+        accessToken
+      });
+      dispatch(setPersonalInfo(data));
+      navigate("/instructions");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -84,7 +95,7 @@ function PersonalInfoPage() {
         .startSession({ locale: dtoLocale })
         .then((sessionReply) => {
           sessionSpoke.setAccessToken(sessionReply.accessToken);
-          setAccessToken(sessionReply.accessToken);
+          dispatch(setAccessToken(sessionReply.accessToken));
         })
         .catch((err) => {
           console.error(`Unable to start session. ${err}`);
@@ -95,7 +106,11 @@ function PersonalInfoPage() {
   return (
     <Layout>
       <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
-        <ThemeButton bg={bg} fg={fg} title={t("translation.translations.ui.theme")} />
+        <ThemeButton
+          bg={bg}
+          fg={fg}
+          title={t("translation.translations.ui.theme")}
+        />
         <LocaleButton bg={bg} fg={fg} />
       </Flex>
       <Box

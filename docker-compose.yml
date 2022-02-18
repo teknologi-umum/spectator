@@ -28,20 +28,11 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-#  backend:
-#    build: ./backend/
-#    restart: always
-#    hostname: be
-#    environment:
-#      INFLUX_URL: http://influx:8086
-#      INFLUX_TOKEN: H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
-#      S3_URL: http://minio:9000
-#    depends_on:
-#      - minio
-#      - influx
-#      - piston
-#      - zipkin
+    depends_on:
+      - worker
+      - logger
+      - influx
+      - minio
 
   frontend:
     build: ./frontend/
@@ -50,41 +41,73 @@ services:
       - 3000:3000
     depends_on:
       - backend
-      # - minio
+      - minio
 
-#  minio:
-#    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
-#    command: server /data --console-address ":9001"
-#    restart: always
-#    hostname: minio_node
-#    environment:
-#      MINIO_ROOT_USER: teknum
-#      MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
-#      MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
-#      MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
-#    volumes:
-#      - ./data/minio:/data
-#
-#  influx:
-#    image: influxdb:2.1.1-alpine
-#    hostname: influx_node
-#    restart: always
-#    environment:
-#      DOCKER_INFLUXDB_INIT_USERNAME: teknum
-#      DOCKER_INFLUXDB_INIT_PASSWORD: ESHVeXGynXR73942AmAkCNseenwcQVqKu
-#      DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
-#      DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
-#      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
-#    volumes:
-#      - ./data/influx:/var/lib/influxdb
-#
-#  piston:
-#    image: ./piston/
-#    restart: on-failure:5
-#    hostname: piston_node
-#    volumes:
-#      - ./data/piston:/piston
-#
+  minio:
+    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+    command: server /data --console-address ":9001"
+    restart: always
+    hostname: minio_node
+    environment:
+      MINIO_ROOT_USER: teknum
+      MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+      MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+    volumes:
+      - ./data/minio:/data
+
+  influx:
+    image: influxdb:2.1.1-alpine
+    hostname: influx_node
+    restart: always
+    environment:
+      DOCKER_INFLUXDB_INIT_USERNAME: teknum
+      DOCKER_INFLUXDB_INIT_PASSWORD: ESHVeXGynXR73942AmAkCNseenwcQVqKu
+      DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
+      DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+    volumes:
+      - ./data/influx:/var/lib/influxdb
+
+  piston:
+    image: ./piston/
+    restart: on-failure:5
+    hostname: piston_node
+    volumes:
+      - ./data/piston:/piston
+  
+  worker:
+    build: ./worker/
+    restart: always
+    environment:
+      ENVIRONMENT: production
+      PORT: 3000
+      INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+      INFLUX_HOST: http://influx:8086
+      INFLUX_ORG: teknum_spectator
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_ID: teknum
+      MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_TOKEN: ''
+      LOGGER_SERVER_ADDRESS: logger:3000
+      LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    depends_on:
+      - logger
+      - influx
+      - minio
+
+  logger:
+    build: ./logger/
+    restart: always
+    environment:
+      ENVIRONMENT: development
+      PORT: 3000
+      INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+      INFLUX_URL: http://influx:8086
+      INFLUX_ORG: teknum_spectator
+      ACCESS_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    depends_on:
+      - influx
 
 networks:
   host_pub:

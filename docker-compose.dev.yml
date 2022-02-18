@@ -11,17 +11,28 @@ services:
       - host_pub
 
   backend:
-    build: ./backend/
-    restart: always
+    image: ${DOCKER_REGISTRY-}backend
+    build: ./backend/Spectator/
     environment:
-      INFLUX_URL: http://influx:8086
-      INFLUX_TOKEN: ESHVeXGynXR73942AmAkCNseenwcQVqKu
-      S3_URL: http://minio:9000
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_InfluxDbOptions__Url=http://influx:8086
+      - ASPNETCORE_InfluxDbOptions__Token=H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
+      - ASPNETCORE_InfluxDbOptions__SessionEventsBucket=session_events
+      - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
+      - ASPNETCORE_InfluxDbOptions__Org=teknum_spectator
+      - ASPNETCORE_PistonOptions__BaseUrl=http://piston/
+    ports:
+      - 5000:80
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
-      - minio
+      - worker
+      - logger
       - influx
-      - piston
-      - zipkin
+      - minio
+
 
   frontend:
     build: ./frontend/
@@ -55,11 +66,44 @@ services:
       - ./data/influx:/var/lib/influxdb
 
   piston:
-    image: ./piston/
+    build: ./piston/
     restart: on-failure:5
     hostname: piston_node
     volumes:
       - ./data/piston:/piston
+
+  worker:
+    build: ./worker/
+    restart: always
+    environment:
+      ENVIRONMENT: production
+      PORT: 3000
+      INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+      INFLUX_HOST: http://influx:8086
+      INFLUX_ORG: teknum_spectator
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_ID: teknum
+      MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_TOKEN: ''
+      LOGGER_SERVER_ADDRESS: logger:3000
+      LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    depends_on:
+      - logger
+      - influx
+      - minio
+
+  logger:
+    build: ./logger/
+    restart: always
+    environment:
+      ENVIRONMENT: development
+      PORT: 3000
+      INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+      INFLUX_URL: http://influx:8086
+      INFLUX_ORG: teknum_spectator
+      ACCESS_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    depends_on:
+      - influx
 
 
 networks:

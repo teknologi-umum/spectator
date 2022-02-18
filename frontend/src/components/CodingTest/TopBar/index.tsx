@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Flex,
-  MenuItem,
   MenuItemOption,
   MenuOptionGroup,
   Text,
@@ -59,10 +58,9 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
   const { t } = useTranslation();
 
-  const { accessToken } = useAppSelector((state) => state.session);
-  const decoded = accessToken ? jwtDecode(accessToken) : null;
+  const { deadlineUtc } = useAppSelector((state) => state.editor);
   const [time, setTime] = useState(
-    decoded ? decoded.iat + decoded.exp - Date.now() : 0
+    deadlineUtc ? deadlineUtc - Date.now() : 0
   );
 
   useEffect(() => {

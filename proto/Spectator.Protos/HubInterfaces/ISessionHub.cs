@@ -3,16 +3,16 @@ using Spectator.Protos.Session;
 
 namespace Spectator.Protos.HubInterfaces {
 	public interface ISessionHub {
-		Task<SessionReply> StartSessionAsync(LocaleInfo localeInfo);
-		Task SetLocaleAsync(LocaleInfo localeInfo);
-		Task SubmitPersonalInfoAsync(PersonalInfo personalInfo);
-		Task SubmitBeforeExamSAMAsync(SAM sam);
-		Task<Exam> StartExamAsync();
-		Task<Exam> ResumeExamAsync();
-		Task<ExamResult> EndExamAsync();
-		Task<ExamResult> PassDeadlineAsync();
-		Task<ExamResult> ForfeitExamAsync();
-		Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest submissionRequest);
-		Task SubmitAfterExamSAM(SAM sam);
+		Task<SessionReply> StartSessionAsync(StartSessionRequest request);
+		Task SetLocaleAsync(SetLocaleRequest request);
+		Task SubmitPersonalInfoAsync(SubmitPersonalInfoRequest request);
+		Task SubmitBeforeExamSAMAsync(SubmitSAMRequest request);
+		Task<Exam> StartExamAsync(EmptyRequest request);
+		Task<Exam> ResumeExamAsync(EmptyRequest request);
+		Task<ExamResult> EndExamAsync(EmptyRequest request);
+		Task<ExamResult> PassDeadlineAsync(EmptyRequest request);
+		Task<ExamResult> ForfeitExamAsync(EmptyRequest request);
+		Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest request);
+		Task SubmitAfterExamSAM(SubmitSAMRequest request);
 	}
 }

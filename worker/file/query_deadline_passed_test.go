@@ -14,14 +14,10 @@ func TestQueryDeadlinePassed(t *testing.T) {
 
 	for _, sessionID := range []uuid.UUID{globalID, globalID2} {
 		readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
-		result, err := deps.QueryDeadlinePassed(ctx, readInputAPI, sessionID)
+		_, err := deps.QueryDeadlinePassed(ctx, readInputAPI, sessionID)
 		if err != nil {
 			t.Errorf("unexpected error: %v", err)
 			return
-		}
-
-		if len(result) != 1 {
-			t.Errorf("Expected 50 results, got %d", len(result))
 		}
 	}
 }
