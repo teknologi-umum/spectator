@@ -31,6 +31,7 @@ import SAMRadioGroup from "@/components/SAMRadioGroup";
 import WithTour from "@/hoc/WithTour";
 import { samTestTour } from "@/tours";
 import { useTour } from "@reactour/tour";
+import { sessionSpoke } from "@/spoke";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -54,7 +55,9 @@ function SAMTest() {
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { t } = useTranslation();
-  const { firstSAMSubmitted } = useAppSelector((state) => state.session);
+  const { accessToken, firstSAMSubmitted } = useAppSelector(
+    (state) => state.session
+  );
   const { setIsOpen, setCurrentStep } = useTour();
 
   function goto(kind: "next" | "prev") {
@@ -70,18 +73,29 @@ function SAMTest() {
     e.preventDefault();
   }
 
-  function finishSAMTest() {
+  async function finishSAMTest() {
+    if (accessToken === null) return;
+
     if (firstSAMSubmitted) {
       dispatch(markSecondSAMSubmitted());
+      sessionSpoke.submitAfterExamSAM({
+        accessToken,
+        arousedLevel: arousal,
+        pleasedLevel: pleasure
+      });
     } else {
-      // TODO(elianiva): we should get the deadline and questions from the
-      //                 server
+      await sessionSpoke.submitBeforeExamSAM({
+        accessToken,
+        arousedLevel: arousal,
+        pleasedLevel: pleasure
+      });
+      const exam = await sessionSpoke.startExam({ accessToken });
       dispatch(
+        // TODO(elianiva): we should get the deadline and questions from the
+        //                 server
         setDeadlineAndQuestions({
           // 3 hours from now
-          deadlineUtc: new Date(
-            Date.now() + 3 * 60 * 60 * 1000
-          ).getUTCMilliseconds(),
+          deadlineUtc: Number(exam.deadline),
           questions: []
         })
       );
