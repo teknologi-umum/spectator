@@ -77,12 +77,12 @@ function SAMTest() {
     if (accessToken === null) return;
 
     if (firstSAMSubmitted) {
-      dispatch(markSecondSAMSubmitted());
-      sessionSpoke.submitAfterExamSAM({
+      await sessionSpoke.submitAfterExamSAM({
         accessToken,
         arousedLevel: arousal,
         pleasedLevel: pleasure
       });
+      dispatch(markSecondSAMSubmitted());
     } else {
       await sessionSpoke.submitBeforeExamSAM({
         accessToken,
@@ -94,7 +94,6 @@ function SAMTest() {
         // TODO(elianiva): we should get the deadline and questions from the
         //                 server
         setDeadlineAndQuestions({
-          // 3 hours from now
           deadlineUtc: Number(exam.deadline),
           questions: []
         })

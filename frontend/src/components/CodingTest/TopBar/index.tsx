@@ -79,6 +79,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
   async function handleSubmit() {
     if (currentQuestionNumber === null || accessToken === null) return;
+
     try {
       const submissionResult = await sessionSpoke.submitSolution({
         // FIXME(elianiva): fix this dumb thing
@@ -207,9 +208,9 @@ export default function TopBar({ bg, fg }: MenuProps) {
             opacity: "100%"
           }}
           h="full"
-          onClick={() => {
-            // TODO(elianiva): use the actual spoke method
-            // sessionSpoke.forfeitExam();
+          onClick={async () => {
+            if (accessToken === null) return;
+            await sessionSpoke.forfeitExam({ accessToken });
           }}
           data-tour="topbar-step-6"
         >
@@ -221,7 +222,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           variant="outline"
           h="full"
           onClick={() => {
-            // TODO(elianiva): send the code to backend for execution
+            // TODO(elianiva): do we need this?
           }}
           data-tour="topbar-step-7"
         >
