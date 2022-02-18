@@ -15,12 +15,7 @@ import {
   scrollHandler
 } from "@/events";
 import { useColorModeValue, useSignalR } from "@/hooks";
-import {
-  Box,
-  Flex,
-  theme,
-  useEventListener
-} from "@chakra-ui/react";
+import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
 import ToastOverlay from "@/components/ToastOverlay";
 import WithTour from "@/hoc/WithTour";
@@ -28,6 +23,7 @@ import { codingTestTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 
 function CodingTest() {
+  const { isCollapsed } = useAppSelector((state) => state.sideBar);
   const { currentQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
@@ -60,7 +56,13 @@ function CodingTest() {
       <ToastOverlay />
       <Flex w="full" h="full">
         <SideBar bg={bg} fg={fg} />
-        <Box bg={gray} gap="3" p="3" w="full">
+        <Box
+          bg={gray}
+          gap="3"
+          p="3"
+          w={`calc(100% - ${isCollapsed ? "65px" : "200px"})`}
+          transition="width 300ms ease"
+        >
           <TopBar bg={bg} fg={fgDarker} />
           <Box h="calc(100% - 3.5rem)">
             <ReflexContainer orientation="vertical">
@@ -86,7 +88,10 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <Editor
                       bg={bg}
-                      onScroll={scrollHandler(connection, currentQuestionNumber)}
+                      onScroll={scrollHandler(
+                        connection,
+                        currentQuestionNumber
+                      )}
                     />
                   </ReflexElement>
 
@@ -101,7 +106,10 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <ScratchPad
                       bg={bg}
-                      onScroll={scrollHandler(connection, currentQuestionNumber)}
+                      onScroll={scrollHandler(
+                        connection,
+                        currentQuestionNumber
+                      )}
                     />
                   </ReflexElement>
                 </ReflexContainer>

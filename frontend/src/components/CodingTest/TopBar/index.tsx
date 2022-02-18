@@ -4,7 +4,8 @@ import {
   Flex,
   MenuItemOption,
   MenuOptionGroup,
-  Text
+  Text,
+  useToast
 } from "@chakra-ui/react";
 import {
   setFontSize,
@@ -12,10 +13,14 @@ import {
   setSnapshot
 } from "@/store/slices/editorSlice";
 import type { Language } from "@/models/Language";
+import { LANGUAGES } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { mutate } from "@/utils/fakeSubmissionCallback";
+import theme from "@/styles/themes";
 import { useTranslation } from "react-i18next";
+import { useColorModeValue } from "@/hooks";
+import { jwtDecode } from "@/utils/jwtDecode";
 import { ClockIcon } from "@/icons";
+import FeedbackToast from "@/components/FeedbackToast";
 import {
   MenuDropdown,
   ThemeButton,
@@ -32,14 +37,17 @@ function toReadableTime(ms: number): string {
   );
 }
 
-const LANGUAGES = ["javascript", "java", "php", "python", "c", "cpp"];
-
 interface MenuProps {
   bg: string;
   fg: string;
 }
 
 export default function TopBar({ bg, fg }: MenuProps) {
+  const toast = useToast();
+  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
+  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
+  const green = useColorModeValue("green.500", "green.400", "green.300");
+  const red = useColorModeValue("red.500", "red.400", "red.300");
   const dispatch = useAppDispatch();
   const {
     currentQuestionNumber,
@@ -63,31 +71,82 @@ export default function TopBar({ bg, fg }: MenuProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const recordedSubmission = snapshotByQuestionNumber[currentQuestionNumber!];
+  const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber!];
   const isSubmitted =
-    recordedSubmission !== undefined
-      ? recordedSubmission.submissionAccepted
-      : false;
+    currentSnapshot !== undefined ? currentSnapshot.submissionAccepted : false;
   const isRefactored =
-    recordedSubmission !== undefined
-      ? recordedSubmission.submissionRefactored
+    currentSnapshot !== undefined
+      ? currentSnapshot.submissionRefactored
       : false;
 
   function handleSubmit() {
     if (currentQuestionNumber === null) return;
 
-    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
+    // TODO(elianiva): submit the actual thing to backend using SignalR
+    const isCorrect = Math.random() < 0.5;
+    try {
+      // TODO(elianiva): submit the actual submission
+      // const submissionResult = await sessionSpoke.submitSolution({
+      //   // FIXME(elianiva): fix this dumb thing
+      //   language: LanguageEnum[currentLanguage.toUpperCase()],
+      //   solution: "",
+      //   scratchPad: "",
+      //   questionNumber: currentQuestionNumber
+      // });
 
-    mutate(currentSnapshot, {
-      onSuccess: (res) => {
-        dispatch(
-          setSnapshot({
-            ...res.data,
-            submissionSubmitted: true
-          })
-        );
-      }
-    });
+      dispatch(
+        setSnapshot({
+          language: currentLanguage,
+          questionNumber: currentQuestionNumber,
+          scratchPad: currentSnapshot?.scratchPad || "",
+          solutionByLanguage: {
+            ...currentSnapshot?.solutionByLanguage,
+            [currentLanguage]: ""
+          },
+          submissionAccepted: isCorrect,
+          submissionRefactored: currentSnapshot?.submissionSubmitted || false,
+          submissionSubmitted: true,
+          // TODO(elianiva): replace this with the actual submission result
+          testResults: [
+            { testNumber: 1, status: "Passing" },
+            {
+              testNumber: 2,
+              status: "Failing",
+              expectedStdout: "1",
+              actualStdout: "2"
+            },
+            { testNumber: 3, status: "CompileError", stderr: "Unexpected '('" },
+            {
+              testNumber: 4,
+              status: "RuntimeError",
+              stderr: "Couldn't found 'foo' in current scope"
+            },
+            {
+              testNumber: 5,
+              status: "CompileError",
+              stderr: "Invalid data type for 'foo'"
+            }
+          ]
+        })
+      );
+
+      const id = toast({
+        position: "top-right",
+        render: () => (
+          <FeedbackToast
+            bg={toastBg}
+            fg={toastFg}
+            green={green}
+            red={red}
+            isCorrect={isCorrect}
+            onClick={() => toast.close(id!)}
+          />
+        )
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
   }
 
   return (
@@ -119,7 +178,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         >
           <MenuOptionGroup
             type="radio"
-            value={isSubmitted ? recordedSubmission.language : currentLanguage}
+            value={isSubmitted ? currentSnapshot.language : currentLanguage}
             onChange={(value) => dispatch(setLanguage(value as Language))}
           >
             {LANGUAGES.map((lang, idx) => (
@@ -128,7 +187,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
                 key={idx}
                 value={lang}
                 isDisabled={
-                  isSubmitted ? lang !== recordedSubmission?.language : false
+                  isSubmitted ? lang !== currentSnapshot?.language : false
                 }
               >
                 <span>{lang === "cpp" ? "C++" : lang}</span>
@@ -174,10 +233,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
           }}
           h="full"
           onClick={() => {
-            // TODO(elianiva): implement proper surrender logic properly
-            //                 it's now temporarily used for previous question
-            //                 to make testing easier
-            // dispatch(prevQuestion());
+            // TODO(elianiva): use the actual spoke method
+            // sessionSpoke.forfeitExam();
           }}
           data-tour="topbar-step-6"
         >
@@ -200,12 +257,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             px="4"
             colorScheme="blue"
             h="full"
-            onClick={() => {
-              // TODO(elianiva): only allow to continue when they have the correct answer
-              // dispatch(nextQuestion());
-
-              handleSubmit();
-            }}
+            onClick={() => handleSubmit()}
             data-tour="topbar-step-8"
           >
             {isSubmitted ? "Refactor" : "Submit"}

@@ -39,7 +39,11 @@ export default function Question({
   );
   const currentSnapshot = useMemo(
     () => snapshotByQuestionNumber[currentQuestionNumber],
-    [currentQuestionNumber]
+    [snapshotByQuestionNumber, currentQuestionNumber]
+  );
+  const isResultTabDisabled = useMemo(
+    () => !(currentSnapshot?.testResults !== null && currentSnapshot?.testResults?.length > 0),
+    [currentSnapshot]
   );
 
   const { t } = useTranslation();
@@ -61,12 +65,7 @@ export default function Question({
           <Tab color={fgDarker} data-tour="question-step-1">{t("translation.translations.ui.prompt")}</Tab>
           <Tab
             color={fgDarker}
-            isDisabled={
-              !(
-                currentSnapshot?.testResults !== null &&
-                currentSnapshot?.testResults?.length > 0
-              )
-            }
+            isDisabled={isResultTabDisabled}
             data-tour="question-step-2"
           >
             {t("translation.translations.ui.your_result")}
