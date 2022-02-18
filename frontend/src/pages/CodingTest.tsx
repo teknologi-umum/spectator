@@ -27,7 +27,7 @@ function CodingTest() {
   const { currentQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
-
+  const { tourCompleted } = useAppSelector((state) => state.session);
   const connection = useSignalR();
 
   useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
@@ -48,6 +48,8 @@ function CodingTest() {
 
   useEffect(() => {
     document.title = "Coding Test | Spectator";
+    console.log(tourCompleted);
+    if (tourCompleted.codingTest) return;
     setIsOpen(true);
   }, []);
 

@@ -31,7 +31,7 @@ function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { locale } = useAppSelector((state) => state.locale);
-  const { accessToken } = useAppSelector((state) => state.session);
+  const { accessToken, tourCompleted } = useAppSelector((state) => state.session);
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
@@ -68,6 +68,7 @@ function PersonalInfoPage() {
 
   useEffect(() => {
     document.title = "Personal Info | Spectator";
+    if (tourCompleted.personalInfo) return;
     setIsOpen(true);
   }, []);
 

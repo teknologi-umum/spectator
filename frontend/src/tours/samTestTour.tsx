@@ -1,5 +1,7 @@
 import React from "react";
 import type { StepType } from "@reactour/tour";
+import { store } from "@/store";
+import { markTourCompleted } from "@/store/slices/sessionSlice";
 
 export const samTestTour: StepType[] = [
   {
@@ -31,6 +33,9 @@ export const samTestTour: StepType[] = [
         You can press this button to finish the SAM test session and go to the
         Coding Test page.
       </p>
-    )
+    ),
+    action: () => {
+      store.dispatch(markTourCompleted("personalInfo"));
+    }
   }
 ];
