@@ -15,10 +15,8 @@ import {
 import type { Language } from "@/models/Language";
 import { LANGUAGES } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
-import theme from "@/styles/themes";
 import { useTranslation } from "react-i18next";
 import { useColorModeValue } from "@/hooks";
-import { jwtDecode } from "@/utils/jwtDecode";
 import { ClockIcon } from "@/icons";
 import FeedbackToast from "@/components/FeedbackToast";
 import {
@@ -26,6 +24,7 @@ import {
   ThemeButton,
   LocaleButton
 } from "@/components/CodingTest";
+import { sessionSpoke } from "@/spoke";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -55,13 +54,12 @@ export default function TopBar({ bg, fg }: MenuProps) {
     currentLanguage,
     snapshotByQuestionNumber
   } = useAppSelector((state) => state.editor);
+  const { accessToken } = useAppSelector((state) => state.session);
 
   const { t } = useTranslation();
 
   const { deadlineUtc } = useAppSelector((state) => state.editor);
-  const [time, setTime] = useState(
-    deadlineUtc ? deadlineUtc - Date.now() : 0
-  );
+  const [time, setTime] = useState(deadlineUtc ? deadlineUtc - Date.now() : 0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -79,20 +77,17 @@ export default function TopBar({ bg, fg }: MenuProps) {
       ? currentSnapshot.submissionRefactored
       : false;
 
-  function handleSubmit() {
-    if (currentQuestionNumber === null) return;
-
-    // TODO(elianiva): submit the actual thing to backend using SignalR
-    const isCorrect = Math.random() < 0.5;
+  async function handleSubmit() {
+    if (currentQuestionNumber === null || accessToken === null) return;
     try {
-      // TODO(elianiva): submit the actual submission
-      // const submissionResult = await sessionSpoke.submitSolution({
-      //   // FIXME(elianiva): fix this dumb thing
-      //   language: LanguageEnum[currentLanguage.toUpperCase()],
-      //   solution: "",
-      //   scratchPad: "",
-      //   questionNumber: currentQuestionNumber
-      // });
+      const submissionResult = await sessionSpoke.submitSolution({
+        // FIXME(elianiva): fix this dumb thing
+        accessToken,
+        language: 1,
+        solution: "",
+        scratchPad: "",
+        questionNumber: currentQuestionNumber
+      });
 
       dispatch(
         setSnapshot({
@@ -103,30 +98,10 @@ export default function TopBar({ bg, fg }: MenuProps) {
             ...currentSnapshot?.solutionByLanguage,
             [currentLanguage]: ""
           },
-          submissionAccepted: isCorrect,
+          submissionAccepted: submissionResult.accepted,
           submissionRefactored: currentSnapshot?.submissionSubmitted || false,
           submissionSubmitted: true,
-          // TODO(elianiva): replace this with the actual submission result
-          testResults: [
-            { testNumber: 1, status: "Passing" },
-            {
-              testNumber: 2,
-              status: "Failing",
-              expectedStdout: "1",
-              actualStdout: "2"
-            },
-            { testNumber: 3, status: "CompileError", stderr: "Unexpected '('" },
-            {
-              testNumber: 4,
-              status: "RuntimeError",
-              stderr: "Couldn't found 'foo' in current scope"
-            },
-            {
-              testNumber: 5,
-              status: "CompileError",
-              stderr: "Invalid data type for 'foo'"
-            }
-          ]
+          testResults: submissionResult.testResults
         })
       );
 
@@ -138,7 +113,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             fg={toastFg}
             green={green}
             red={red}
-            isCorrect={isCorrect}
+            isCorrect={submissionResult.accepted}
             onClick={() => toast.close(id!)}
           />
         )
@@ -168,7 +143,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         </Text>
       </Flex>
       <Flex alignItems="center" gap="3" w="32rem">
-        <ThemeButton bg={bg} fg={fg} data-tour="topbar-step-2"/>
+        <ThemeButton bg={bg} fg={fg} data-tour="topbar-step-2" />
         <MenuDropdown
           dropdownWidth="10rem"
           bg={bg}

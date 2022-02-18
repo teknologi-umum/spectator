@@ -36,20 +36,36 @@ export default function Result({ fg, fgDarker }: ResultProps) {
 
   const badgeColours = useMemo(
     () => ({
-      Passing: "green",
-      RuntimeError: "orange",
-      CompileError: "yellow",
-      Failing: "red"
+      passingTest: "green",
+      runtimeError: "orange",
+      compileError: "yellow",
+      failingTest: "red"
     }),
     []
   );
 
   const resultIcons = useMemo(
     () => ({
-      Passing: <Box color={green}><CheckmarkIcon /></Box>,
-      RuntimeError: <Box color={orange}><WarningIcon /></Box>,
-      CompileError: <Box color={yellow}><WarningIcon /></Box>,
-      Failing: <Box color={red}><CrossIcon /></Box>
+      passingTest: (
+        <Box color={green}>
+          <CheckmarkIcon />
+        </Box>
+      ),
+      runtimeError: (
+        <Box color={orange}>
+          <WarningIcon />
+        </Box>
+      ),
+      compileError: (
+        <Box color={yellow}>
+          <WarningIcon />
+        </Box>
+      ),
+      failingTest: (
+        <Box color={red}>
+          <CrossIcon />
+        </Box>
+      )
     }),
     []
   );
@@ -60,12 +76,13 @@ export default function Result({ fg, fgDarker }: ResultProps) {
         {currentSnapshot?.testResults &&
           currentSnapshot.testResults.map((testResult, index) => {
             // replace `PascalCase` with `Sentence Case`
-            const status = testResult.status
-              .replace(/([A-Z]+)/g, " $1")
+            const status = testResult.result
+              .oneofKind!.replace(/([A-Z]+)/g, " $1")
               .replace(/([A-Z][a-z])/g, " $1");
 
-            const currentBadgeColour = badgeColours[testResult.status];
-            const currentResultIcon = resultIcons[testResult.status];
+            const currentBadgeColour =
+              badgeColours[testResult.result.oneofKind!];
+            const currentResultIcon = resultIcons[testResult.result.oneofKind!];
 
             return (
               <AccordionItem
@@ -91,20 +108,31 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel pb={4} color={fgDarker}>
-                  {testResult.status === "Passing" && <Text>Passed!</Text>}
-
-                  {(testResult.status === "CompileError" ||
-                    testResult.status === "RuntimeError") && (
-                    <Text>{testResult.stderr}</Text>
+                  {testResult.result.oneofKind === "passingTest" && (
+                    <Text>Passed!</Text>
                   )}
 
-                  {testResult.status === "Failing" && (
+                  {testResult.result.oneofKind === "runtimeError" && (
+                    <Text>{testResult.result.runtimeError.stderr}</Text>
+                  )}
+
+                  {testResult.result.oneofKind === "compileError" && (
+                    <Text>{testResult.result.compileError.stderr}</Text>
+                  )}
+
+                  {testResult.result.oneofKind === "failingTest" && (
                     <Box>
                       <Text>
-                        Expected: <Code>{testResult.expectedStdout}</Code>
+                        Expected:{" "}
+                        <Code>
+                          {testResult.result.failingTest.expectedStdout}
+                        </Code>
                       </Text>
                       <Text>
-                        Actual: <Code>{testResult.actualStdout}</Code>
+                        Actual:{" "}
+                        <Code>
+                          {testResult.result.failingTest.actualStdout}
+                        </Code>
                       </Text>
                     </Box>
                   )}
