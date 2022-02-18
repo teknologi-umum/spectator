@@ -20,3 +20,6 @@ export * from "./RetryIcon";
 export * from "./QuestionOutlineIcon";
 export * from "./QuestionIcon";
 export * from "./CodeIcon";
+export * from "./IndonesiaFlagIcon";
+export * from "./UnitedKingdomFlagIcon";
+export * from "./ChevronDownIcon";

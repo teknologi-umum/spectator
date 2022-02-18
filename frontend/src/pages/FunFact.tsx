@@ -1,181 +1,117 @@
-import React, { useMemo } from "react";
-import Layout from "@/components/Layout";
-import { Text, Box, Grid, Heading, Flex, Tooltip } from "@chakra-ui/react";
+import React, { useState } from "react";
+import { Text, Box, Heading, Flex, Spinner, Tooltip } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useColorModeValue } from "@/hooks";
 import {
   BackspaceIcon,
-  CheckmarkIcon,
-  ClickIcon,
-  ClockIcon,
-  CodeIcon,
-  CrossIcon,
-  KeyboardIcon,
-  QuestionIcon,
-  QuestionOutlineIcon,
   RetryIcon,
-  ScrollIcon,
   SpeedIcon,
-  StopwatchIcon
+  QuestionOutlineIcon
 } from "@/icons";
 import { useTranslation } from "react-i18next";
 
-const FAKE_FACTS = [
+const FAKE_DATA = [
   {
-    label: "session_duration",
-    value: "02:34:12",
-    icon: <ClockIcon width="2rem" height="2rem" />,
-    color: "purple"
+    title: "words_per_minute",
+    color: "blue",
+    icon: <SpeedIcon width="48px" height="48px" />,
+    value: 90
   },
   {
-    label: "coding_test_duration",
-    value: "01:28:52",
-    icon: <StopwatchIcon width="2rem" height="2rem" />,
-    color: "pink"
+    title: "deletion_rate",
+    color: "red",
+    icon: <BackspaceIcon width="48px" height="48px" />,
+    value: "4%"
   },
   {
-    label: "words_per_minute",
-    value: "120",
-    icon: <SpeedIcon width="2rem" height="2rem" />,
-    color: "blue"
-  },
-  {
-    label: "deletion_rate",
-    value: "1130",
-    icon: <BackspaceIcon width="2rem" height="2rem" />,
-    color: "red"
-  },
-  {
-    label: "unrelated_keys",
-    value: "4380",
-    icon: <KeyboardIcon width="2rem" height="2rem" />,
-    color: "orange"
-  },
-  {
-    label: "mouse_clicks",
-    value: "40",
-    icon: <ClickIcon width="2rem" height="2rem" />,
-    color: "cyan"
-  },
-  {
-    label: "mouse_scrolls",
-    value: "23",
-    icon: <ScrollIcon width="2rem" height="2rem" />,
-    color: "purple"
-  },
-  {
-    label: "favourite_language",
-    value: "Javascript",
-    icon: <CodeIcon width="2rem" height="2rem" />,
-    color: "blue"
-  },
-  {
-    label: "correct_answers",
-    value: "3",
-    icon: <CheckmarkIcon width="2rem" height="2rem" />,
-    color: "green"
-  },
-  {
-    label: "wrong_answers",
-    value: "1",
-    icon: <CrossIcon width="2rem" height="2rem" />,
-    color: "red"
-  },
-  {
-    label: "unanswered_questions",
-    value: "1",
-    icon: <QuestionIcon width="2rem" height="2rem" />,
-    color: "yellow"
-  },
-  {
-    label: "submission_attempts",
-    value: "13",
-    icon: <RetryIcon width="2rem" height="2rem" />,
-    color: "orange"
+    title: "submission_attempts",
+    color: "green",
+    icon: <RetryIcon width="48px" height="48px" />,
+    value: 69
   }
 ];
 
 export default function FunFact() {
+  const [isLoading, setLoading] = useState(true);
   const { t } = useTranslation();
   const gray = useColorModeValue("gray.500", "gray.800", "gray.900");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
-  const fakeFacts = useMemo(() => {
-    return FAKE_FACTS.map((fact) => {
-      return {
-        ...fact,
-        label: t("translation.translations.funfact." + fact.label + ".title"),
-        description: t(
-          "translation.translations.funfact." + fact.label + ".description"
-        )
-      };
-    });
-  }, [t]);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+    return () => clearTimeout(id);
+  }, []);
 
   useEffect(() => {
     document.title = "Fun Fact | Spectator";
   }, []);
 
   return (
-    <Layout>
-      <Box mb="10">
-        <Heading fontSize="5xl" textAlign="center" fontWeight="800" mb="2">
-          FUN FACT
-        </Heading>
-        <Text textAlign="center" fontSize="2xl" color={fgDarker}>
-          {t("translation.translations.funfact.description")}
-        </Text>
-      </Box>
-      <Grid
-        w="full"
-        align="center"
-        gap="4"
-        templateColumns="repeat(auto-fit, minmax(18rem, 1fr))"
-        maxW="container.xl"
-        mx="auto"
-      >
-        {fakeFacts.map(({ label, value, description, icon, color }, idx) => (
-          <Flex
-            bg="white"
-            key={idx}
-            rounded="md"
-            shadow="sm"
-            gap="2"
-            py="12"
-            px="3"
-            direction="column"
-            justify="center"
-            align="center"
-            position="relative"
+    <Flex maxW="container.lg" mx="auto" h="full">
+      {isLoading ? (
+        <Flex
+          direction="column"
+          align="center"
+          justify="center"
+          gap="10"
+          w="full"
+        >
+          <Spinner thickness="8px" size="xl" speed="1s" color={gray} />
+          <Text fontSize="3xl" color={fgDarker}>
+            Calculating your personal result...
+          </Text>
+        </Flex>
+      ) : (
+        <Flex gap="8rem" w="full" align="center" justify="center">
+          <Heading
+            fontSize="5xl"
+            textAlign="center"
+            fontWeight="800"
+            mb="2"
+            flex="1"
           >
-            <Box position="absolute" left="4" top="4" color="gray.400">
-              <Tooltip
-                label={description}
-                placement="auto-start"
-                padding="3"
-                fontSize="md"
-              >
-                <span>
-                  <QuestionOutlineIcon width="1.5rem" height="1.5rem" />
-                </span>
-              </Tooltip>
-            </Box>
-            <Box
-              p="4"
-              rounded="full"
-              bg={`${color}.100`}
-              color={`${color}.600`}
-            >
-              {icon}
-            </Box>
-            <Text fontSize="5xl" fontWeight="800">
-              {value}
-            </Text>
-            <Text color={gray} fontSize="xl" fontWeight="600">
-              {label}
-            </Text>
+            Yay, you did it!
+          </Heading>
+          <Flex gap="4rem" direction="column" flex="1">
+            {FAKE_DATA.map(({ title, color, icon, value }, idx) => (
+              <Flex gap="6" align="center" key={idx}>
+                <Box
+                  p="2"
+                  bg={`${color}.200`}
+                  color={`${color}.600`}
+                  rounded="full"
+                >
+                  {icon}
+                </Box>
+                <Box>
+                  <Flex align="center" gap="2">
+                    <Heading fontSize="2xl" color={gray}>
+                      {t(`translation.translations.funfact.${title}.title`)}
+                    </Heading>
+                    <Tooltip
+                      label={t(
+                        `translation.translations.funfact.${title}.description`
+                      )}
+                      placement="auto-start"
+                      padding="3"
+                      fontSize="md"
+                    >
+                      <Text as="span" color={gray}>
+                        <QuestionOutlineIcon />
+                      </Text>
+                    </Tooltip>
+                  </Flex>
+                  <Text fontSize="4xl" fontWeight="800">
+                    {value}
+                  </Text>
+                </Box>
+              </Flex>
+            ))}
           </Flex>
-        ))}
-      </Grid>
-    </Layout>
+        </Flex>
+      )}
+    </Flex>
   );
 }
