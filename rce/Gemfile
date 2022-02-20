@@ -1,0 +1,20 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+# Specify your gem's dependencies in rce.gemspec
+gemspec
+
+gem 'rake', '~> 13.0'
+
+gem 'rubocop', '~> 1.21'
+
+gem 'grpc', '~> 1.43'
+
+gem 'sorbet', group: :development
+
+gem 'sorbet-runtime'
+
+gem 'google-protobuf', '~> 3.19'
+
+gem "dotenv", "~> 2.7"
