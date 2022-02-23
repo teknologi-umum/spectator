@@ -114,101 +114,108 @@ function PersonalInfoPage() {
         <LocaleButton bg={bg} fg={fg} />
       </Flex>
       <Box
-        as="form"
-        onSubmit={handleSubmit(onSubmit)}
-        boxShadow="xl"
-        p="8"
-        rounded="md"
-        maxW="container.sm"
-        mx="auto"
-        bg={bg}
-        color={fg}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height="90vh"
       >
-        <Heading size="lg" textAlign="center" fontWeight="700">
-          Personal Basic Info
-        </Heading>
-
-        <Box>
-          {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
-          <FormControl
-            id="email"
-            mt="6"
-            isInvalid={errors.studentNumber !== undefined}
-          >
-            <FormLabel>
-              {t("translation.translations.personal_info.student_number")}
-            </FormLabel>
-            <Input
-              type="text"
-              {...register("studentNumber")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.studentNumber?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            mt="6"
-            isInvalid={errors.yearsOfExperience !== undefined}
-          >
-            <FormLabel>
-              {t("translation.translations.personal_info.programming_years")}
-            </FormLabel>
-            <Input
-              type="number"
-              {...register("yearsOfExperience")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.yearsOfExperience?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl mt="6" isInvalid={errors.hoursOfPractice !== undefined}>
-            <FormLabel>
-              {t("translation.translations.personal_info.programming_practice")}
-            </FormLabel>
-            <Input
-              type="number"
-              {...register("hoursOfPractice")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.hoursOfPractice?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            mt="6"
-            isInvalid={errors.familiarLanguages !== undefined}
-          >
-            <FormLabel>
-              {t(
-                "translation.translations.personal_info.programming_experience"
-              )}
-            </FormLabel>
-            <Input
-              type="text"
-              {...register("familiarLanguages")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.familiarLanguages?.message}!
-            </FormErrorMessage>
-          </FormControl>
-        </Box>
-
-        <Button
-          colorScheme="blue"
+        <Box
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+          boxShadow="xl"
+          p="8"
+          rounded="md"
+          maxW="container.sm"
           mx="auto"
-          mt="6"
-          type="submit"
-          display="block"
-          data-tour="step-2"
+          bg={bg}
+          color={fg}
         >
-          {t("translation.translations.ui.continue")}
-        </Button>
+          <Heading size="lg" textAlign="center" fontWeight="700">
+            Personal Basic Info
+          </Heading>
+
+          <Box>
+            {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
+            <FormControl
+              id="email"
+              mt="6"
+              isInvalid={errors.studentNumber !== undefined}
+            >
+              <FormLabel>
+                {t("translation.translations.personal_info.student_number")}
+              </FormLabel>
+              <Input
+                type="text"
+                {...register("studentNumber")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.studentNumber?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              mt="6"
+              isInvalid={errors.yearsOfExperience !== undefined}
+            >
+              <FormLabel>
+                {t("translation.translations.personal_info.programming_years")}
+              </FormLabel>
+              <Input
+                type="number"
+                {...register("yearsOfExperience")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.yearsOfExperience?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl mt="6" isInvalid={errors.hoursOfPractice !== undefined}>
+              <FormLabel>
+                {t("translation.translations.personal_info.programming_practice")}
+              </FormLabel>
+              <Input
+                type="number"
+                {...register("hoursOfPractice")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.hoursOfPractice?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              mt="6"
+              isInvalid={errors.familiarLanguages !== undefined}
+            >
+              <FormLabel>
+                {t(
+                  "translation.translations.personal_info.programming_experience"
+                )}
+              </FormLabel>
+              <Input
+                type="text"
+                {...register("familiarLanguages")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.familiarLanguages?.message}!
+              </FormErrorMessage>
+            </FormControl>
+          </Box>
+
+          <Button
+            colorScheme="blue"
+            mx="auto"
+            mt="6"
+            type="submit"
+            display="block"
+            data-tour="step-2"
+          >
+            {t("translation.translations.ui.continue")}
+          </Button>
+        </Box>
       </Box>
     </Layout>
   );

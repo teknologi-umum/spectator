@@ -5,6 +5,8 @@ import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
 import CodingTest from "@/pages/CodingTest";
 import FunFact from "@/pages/FunFact";
+import Login from "@/pages/secret/Login";
+import Download from "@/pages/secret/Download";
 import { CoercedRoute } from "@/hoc/CoercedRoute";
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
           <Route path="coding-test" element={<CodingTest />} />
           <Route path="fun-fact" element={<FunFact />} />
         </Route>
+          <Route path="login" element={<Login />} />
+          <Route path="download" element={<Download />} />
       </Routes>
     </BrowserRouter>
   );
