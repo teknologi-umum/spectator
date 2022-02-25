@@ -1,19 +1,7 @@
 services:
-  # minio:
-  #   image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
-  #   command: server /data --console-address ":9001"
-  #   restart: always
-  #   hostname: minio_node
-  #   environment:
-  #     MINIO_ROOT_USER: teknum
-  #     MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
-  #   volumes:
-  #     - ./data/minio:/data
-
   influx:
     image: influxdb:2.1.1-alpine
-    hostname: influx_node
-    restart: on-failure:3
+    restart: unless-stopped
     ports:
       - 8086:8086
     environment:

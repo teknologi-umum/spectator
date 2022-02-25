@@ -3,5 +3,7 @@
 /piston/ @aldy505
 /logger/ @aldy505
 /backend/ @ronnygunawan
-/wranggler/ @artileda
+/proto/ @ronnygunawan
+/worker/ @artileda
 /data/ @artileda
+/dummy/ @herlangga72

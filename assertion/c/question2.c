@@ -3,9 +3,11 @@
 #include <string.h>
 #include <time.h>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int calculateTemperature(int temp, const char* from, const char* to);
 
-{0}
+_REPLACE_ME_WITH_SOLUTION_
 
 const char* __CELCIUS = "Celcius";
 const char* __FAHRENHEIT = "Fahrenheit";

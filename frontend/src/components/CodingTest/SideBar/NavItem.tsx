@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { setQuestion } from "@/store/slices/questionSlice";
+import { setCurrentQuestion } from "@/store/slices/editorSlice";
 
 interface NavItemProps {
   questionNo: number;
@@ -22,11 +22,11 @@ interface NavItemProps {
 export default function NavItem({ questionNo, title, icon }: NavItemProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.sideBar);
-  const { currentQuestion } = useAppSelector((state) => state.question);
+  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const bg = useColorModeValue("teal.50", "teal.500");
   const fg = useColorModeValue("teal.700", "teal.200");
 
-  const isActive = currentQuestion === questionNo;
+  const isActive = currentQuestionNumber === questionNo;
 
   return (
     <Flex w="100%" flexDirection="column" alignItems="flex-start">
@@ -39,7 +39,23 @@ export default function NavItem({ questionNo, title, icon }: NavItemProps) {
           borderRadius="md"
           w="full"
           _hover={{ textDecoration: "none" }}
-          onClick={() => dispatch(setQuestion(questionNo))}
+          onClick={() =>
+            dispatch(
+              setCurrentQuestion({
+                questionNumber: questionNo,
+                title: "",
+                instruction: "",
+                templateByLanguage: {
+                  java: "",
+                  javascript: "",
+                  python: "",
+                  cpp: "",
+                  php: "",
+                  c: ""
+                }
+              })
+            )
+          }
         >
           <MenuButton w="full">
             <Flex gap="5" alignItems="center" whiteSpace="nowrap">

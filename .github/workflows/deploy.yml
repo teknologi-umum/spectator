@@ -54,6 +54,44 @@ jobs:
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+  worker:
+    name: Worker
+    runs-on: ubuntu-latest
+    container: golang:1.17
+    timeout-minutes: 5
+    services:
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+    defaults:
+      run:
+        working-directory: ./worker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build test
+        run: go build .
+      - name: Run test
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        env:
+          ENVIRONMENT: github-actions
+          INFLUX_HOST: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: iKPpruHfaXygrwSV
+          MINIO_HOST: bucket:9000
+          MINIO_ACCESS_ID: teknum
+          MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          LOGGER_SERVER_ADDRESS: http://logger:9000/
+          LOGGER_SERVER_TOKEN: testing
+          MINIO_TOKEN: ''
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
@@ -80,13 +118,11 @@ jobs:
   # configs:
   #   name: Verify config
   #   runs-on: ubuntu-latest
+  #   container: python:3.10
   #   timeout-minutes: 5
   #   steps:
   #     - name: Checkout repository
   #       uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.10'
   #     - name: Install docker-compose
   #       run: >
   #         curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -106,13 +142,11 @@ jobs:
   #       run: ansible-lint -v -f rich ansible.yml
   # deploy:
   #   name: Deploy
-  #   needs: [configs, frontend, logger]
+  #   needs: [configs, frontend, logger, backend, worker]
+  #   container: python:3.10
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 15
   #   steps:
-  #     - uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.10'
   #     - name: Install SSH key
   #       uses: shimataro/ssh-key-action@v2
   #       with:

@@ -25,8 +25,9 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
-  const { currentQuestion } = useAppSelector((state) => state.question);
-  const { scratchPads } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
 
   const [value, setValue] = useState("");
   const debouncedValue = useDebounce(value, 500);
@@ -34,29 +35,18 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const currentScratchPad = scratchPads.find(
-      (scratchPad) => scratchPad.questionNo === currentQuestion
-    );
+    const currentScratchPad =
+      snapshotByQuestionNumber[currentQuestionNumber!]?.scratchPad;
 
     if (currentScratchPad !== undefined) {
-      setValue(currentScratchPad.value);
+      setValue(currentScratchPad);
     } else {
-      dispatch(
-        setScratchPad({
-          questionNo: currentQuestion,
-          value: ""
-        })
-      );
+      dispatch(setScratchPad(""));
     }
   }, []);
 
   useEffect(() => {
-    dispatch(
-      setScratchPad({
-        questionNo: currentQuestion,
-        value: debouncedValue
-      })
-    );
+    dispatch(setScratchPad(debouncedValue));
   }, [debouncedValue]);
 
   function handleChange(value: string) {

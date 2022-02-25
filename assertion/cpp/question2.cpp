@@ -5,9 +5,11 @@
 #include <time.h>
 #include <vector>
 
+_REPLACE_ME_WITH_DIRECTIVES_
+
 int calculateTemperature(int temp, std::string from, std::string to);
 
-_REPLACE_ME_
+_REPLACE_ME_WITH_SOLUTION_
 
 const std::string __CELCIUS = "Celcius";
 const std::string __FAHRENHEIT = "Fahrenheit";

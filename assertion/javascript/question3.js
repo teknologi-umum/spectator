@@ -1,4 +1,6 @@
-{0}
+_REPLACE_ME_WITH_DIRECTIVES_
+
+_REPLACE_ME_WITH_SOLUTION_
 
 function main() {
     const testCases = [

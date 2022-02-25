@@ -15,11 +15,24 @@ import { MessageType } from "@protobuf-ts/runtime";
 import { Language } from "./enums";
 import { Locale } from "./enums";
 /**
- * @generated from protobuf message session.LocaleInfo
+ * @generated from protobuf message session.StartSessionRequest
  */
-export interface LocaleInfo {
+export interface StartSessionRequest {
     /**
      * @generated from protobuf field: enums.Locale locale = 1;
+     */
+    locale: Locale;
+}
+/**
+ * @generated from protobuf message session.SetLocaleRequest
+ */
+export interface SetLocaleRequest {
+    /**
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
+    /**
+     * @generated from protobuf field: enums.Locale locale = 2;
      */
     locale: Locale;
 }
@@ -33,36 +46,44 @@ export interface SessionReply {
     accessToken: string;
 }
 /**
- * @generated from protobuf message session.PersonalInfo
+ * @generated from protobuf message session.SubmitPersonalInfoRequest
  */
-export interface PersonalInfo {
+export interface SubmitPersonalInfoRequest {
     /**
-     * @generated from protobuf field: string student_number = 1;
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
+    /**
+     * @generated from protobuf field: string student_number = 2;
      */
     studentNumber: string;
     /**
-     * @generated from protobuf field: int32 years_of_experience = 2;
+     * @generated from protobuf field: int32 years_of_experience = 3;
      */
     yearsOfExperience: number;
     /**
-     * @generated from protobuf field: int32 hours_of_practice = 3;
+     * @generated from protobuf field: int32 hours_of_practice = 4;
      */
     hoursOfPractice: number;
     /**
-     * @generated from protobuf field: string familiar_languages = 4;
+     * @generated from protobuf field: string familiar_languages = 5;
      */
     familiarLanguages: string;
 }
 /**
- * @generated from protobuf message session.SAM
+ * @generated from protobuf message session.SubmitSAMRequest
  */
-export interface SAM {
+export interface SubmitSAMRequest {
     /**
-     * @generated from protobuf field: int32 aroused_level = 1;
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
+    /**
+     * @generated from protobuf field: int32 aroused_level = 2;
      */
     arousedLevel: number;
     /**
-     * @generated from protobuf field: int32 pleased_level = 2;
+     * @generated from protobuf field: int32 pleased_level = 3;
      */
     pleasedLevel: number;
 }
@@ -135,19 +156,23 @@ export interface ExamResult {
  */
 export interface SubmissionRequest {
     /**
-     * @generated from protobuf field: int32 question_number = 1;
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
+    /**
+     * @generated from protobuf field: int32 question_number = 2;
      */
     questionNumber: number;
     /**
-     * @generated from protobuf field: enums.Language language = 2;
+     * @generated from protobuf field: enums.Language language = 3;
      */
     language: Language;
     /**
-     * @generated from protobuf field: string solution = 3;
+     * @generated from protobuf field: string solution = 4;
      */
     solution: string;
     /**
-     * @generated from protobuf field: string scratch_pad = 4;
+     * @generated from protobuf field: string scratch_pad = 5;
      */
     scratchPad: string;
 }
@@ -243,6 +268,10 @@ export interface SubmissionResult {
  * @generated from protobuf message session.EmptyRequest
  */
 export interface EmptyRequest {
+    /**
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
 }
 /**
  * @generated from protobuf message session.EmptyReply
@@ -250,20 +279,20 @@ export interface EmptyRequest {
 export interface EmptyReply {
 }
 // @generated message type with reflection information, may provide speed optimized methods
-class LocaleInfo$Type extends MessageType<LocaleInfo> {
+class StartSessionRequest$Type extends MessageType<StartSessionRequest> {
     constructor() {
-        super("session.LocaleInfo", [
+        super("session.StartSessionRequest", [
             { no: 1, name: "locale", kind: "enum", T: () => ["enums.Locale", Locale] }
         ]);
     }
-    create(value?: PartialMessage<LocaleInfo>): LocaleInfo {
+    create(value?: PartialMessage<StartSessionRequest>): StartSessionRequest {
         const message = { locale: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<LocaleInfo>(this, message, value);
+            reflectionMergePartial<StartSessionRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LocaleInfo): LocaleInfo {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: StartSessionRequest): StartSessionRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -282,7 +311,7 @@ class LocaleInfo$Type extends MessageType<LocaleInfo> {
         }
         return message;
     }
-    internalBinaryWrite(message: LocaleInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: StartSessionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* enums.Locale locale = 1; */
         if (message.locale !== 0)
             writer.tag(1, WireType.Varint).int32(message.locale);
@@ -293,9 +322,63 @@ class LocaleInfo$Type extends MessageType<LocaleInfo> {
     }
 }
 /**
- * @generated MessageType for protobuf message session.LocaleInfo
+ * @generated MessageType for protobuf message session.StartSessionRequest
  */
-export const LocaleInfo = new LocaleInfo$Type();
+export const StartSessionRequest = new StartSessionRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SetLocaleRequest$Type extends MessageType<SetLocaleRequest> {
+    constructor() {
+        super("session.SetLocaleRequest", [
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "locale", kind: "enum", T: () => ["enums.Locale", Locale] }
+        ]);
+    }
+    create(value?: PartialMessage<SetLocaleRequest>): SetLocaleRequest {
+        const message = { accessToken: "", locale: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<SetLocaleRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SetLocaleRequest): SetLocaleRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                case /* enums.Locale locale */ 2:
+                    message.locale = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SetLocaleRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
+        /* enums.Locale locale = 2; */
+        if (message.locale !== 0)
+            writer.tag(2, WireType.Varint).int32(message.locale);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.SetLocaleRequest
+ */
+export const SetLocaleRequest = new SetLocaleRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SessionReply$Type extends MessageType<SessionReply> {
     constructor() {
@@ -344,37 +427,41 @@ class SessionReply$Type extends MessageType<SessionReply> {
  */
 export const SessionReply = new SessionReply$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class PersonalInfo$Type extends MessageType<PersonalInfo> {
+class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoRequest> {
     constructor() {
-        super("session.PersonalInfo", [
-            { no: 1, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 3, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 4, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("session.SubmitPersonalInfoRequest", [
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 5, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<PersonalInfo>): PersonalInfo {
-        const message = { studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "" };
+    create(value?: PartialMessage<SubmitPersonalInfoRequest>): SubmitPersonalInfoRequest {
+        const message = { accessToken: "", studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<PersonalInfo>(this, message, value);
+            reflectionMergePartial<SubmitPersonalInfoRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PersonalInfo): PersonalInfo {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmitPersonalInfoRequest): SubmitPersonalInfoRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string student_number */ 1:
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                case /* string student_number */ 2:
                     message.studentNumber = reader.string();
                     break;
-                case /* int32 years_of_experience */ 2:
+                case /* int32 years_of_experience */ 3:
                     message.yearsOfExperience = reader.int32();
                     break;
-                case /* int32 hours_of_practice */ 3:
+                case /* int32 hours_of_practice */ 4:
                     message.hoursOfPractice = reader.int32();
                     break;
-                case /* string familiar_languages */ 4:
+                case /* string familiar_languages */ 5:
                     message.familiarLanguages = reader.string();
                     break;
                 default:
@@ -388,19 +475,22 @@ class PersonalInfo$Type extends MessageType<PersonalInfo> {
         }
         return message;
     }
-    internalBinaryWrite(message: PersonalInfo, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string student_number = 1; */
+    internalBinaryWrite(message: SubmitPersonalInfoRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
+        /* string student_number = 2; */
         if (message.studentNumber !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.studentNumber);
-        /* int32 years_of_experience = 2; */
+            writer.tag(2, WireType.LengthDelimited).string(message.studentNumber);
+        /* int32 years_of_experience = 3; */
         if (message.yearsOfExperience !== 0)
-            writer.tag(2, WireType.Varint).int32(message.yearsOfExperience);
-        /* int32 hours_of_practice = 3; */
+            writer.tag(3, WireType.Varint).int32(message.yearsOfExperience);
+        /* int32 hours_of_practice = 4; */
         if (message.hoursOfPractice !== 0)
-            writer.tag(3, WireType.Varint).int32(message.hoursOfPractice);
-        /* string familiar_languages = 4; */
+            writer.tag(4, WireType.Varint).int32(message.hoursOfPractice);
+        /* string familiar_languages = 5; */
         if (message.familiarLanguages !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.familiarLanguages);
+            writer.tag(5, WireType.LengthDelimited).string(message.familiarLanguages);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -408,33 +498,37 @@ class PersonalInfo$Type extends MessageType<PersonalInfo> {
     }
 }
 /**
- * @generated MessageType for protobuf message session.PersonalInfo
+ * @generated MessageType for protobuf message session.SubmitPersonalInfoRequest
  */
-export const PersonalInfo = new PersonalInfo$Type();
+export const SubmitPersonalInfoRequest = new SubmitPersonalInfoRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class SAM$Type extends MessageType<SAM> {
+class SubmitSAMRequest$Type extends MessageType<SubmitSAMRequest> {
     constructor() {
-        super("session.SAM", [
-            { no: 1, name: "aroused_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 2, name: "pleased_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        super("session.SubmitSAMRequest", [
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "aroused_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "pleased_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
         ]);
     }
-    create(value?: PartialMessage<SAM>): SAM {
-        const message = { arousedLevel: 0, pleasedLevel: 0 };
+    create(value?: PartialMessage<SubmitSAMRequest>): SubmitSAMRequest {
+        const message = { accessToken: "", arousedLevel: 0, pleasedLevel: 0 };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
-            reflectionMergePartial<SAM>(this, message, value);
+            reflectionMergePartial<SubmitSAMRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SAM): SAM {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmitSAMRequest): SubmitSAMRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* int32 aroused_level */ 1:
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                case /* int32 aroused_level */ 2:
                     message.arousedLevel = reader.int32();
                     break;
-                case /* int32 pleased_level */ 2:
+                case /* int32 pleased_level */ 3:
                     message.pleasedLevel = reader.int32();
                     break;
                 default:
@@ -448,13 +542,16 @@ class SAM$Type extends MessageType<SAM> {
         }
         return message;
     }
-    internalBinaryWrite(message: SAM, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* int32 aroused_level = 1; */
+    internalBinaryWrite(message: SubmitSAMRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
+        /* int32 aroused_level = 2; */
         if (message.arousedLevel !== 0)
-            writer.tag(1, WireType.Varint).int32(message.arousedLevel);
-        /* int32 pleased_level = 2; */
+            writer.tag(2, WireType.Varint).int32(message.arousedLevel);
+        /* int32 pleased_level = 3; */
         if (message.pleasedLevel !== 0)
-            writer.tag(2, WireType.Varint).int32(message.pleasedLevel);
+            writer.tag(3, WireType.Varint).int32(message.pleasedLevel);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -462,9 +559,9 @@ class SAM$Type extends MessageType<SAM> {
     }
 }
 /**
- * @generated MessageType for protobuf message session.SAM
+ * @generated MessageType for protobuf message session.SubmitSAMRequest
  */
-export const SAM = new SAM$Type();
+export const SubmitSAMRequest = new SubmitSAMRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Question$Type extends MessageType<Question> {
     constructor() {
@@ -722,14 +819,15 @@ export const ExamResult = new ExamResult$Type();
 class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
     constructor() {
         super("session.SubmissionRequest", [
-            { no: 1, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 2, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
-            { no: 3, name: "solution", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "scratch_pad", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
+            { no: 4, name: "solution", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "scratch_pad", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubmissionRequest>): SubmissionRequest {
-        const message = { questionNumber: 0, language: 0, solution: "", scratchPad: "" };
+        const message = { accessToken: "", questionNumber: 0, language: 0, solution: "", scratchPad: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubmissionRequest>(this, message, value);
@@ -740,16 +838,19 @@ class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* int32 question_number */ 1:
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                case /* int32 question_number */ 2:
                     message.questionNumber = reader.int32();
                     break;
-                case /* enums.Language language */ 2:
+                case /* enums.Language language */ 3:
                     message.language = reader.int32();
                     break;
-                case /* string solution */ 3:
+                case /* string solution */ 4:
                     message.solution = reader.string();
                     break;
-                case /* string scratch_pad */ 4:
+                case /* string scratch_pad */ 5:
                     message.scratchPad = reader.string();
                     break;
                 default:
@@ -764,18 +865,21 @@ class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
         return message;
     }
     internalBinaryWrite(message: SubmissionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* int32 question_number = 1; */
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
+        /* int32 question_number = 2; */
         if (message.questionNumber !== 0)
-            writer.tag(1, WireType.Varint).int32(message.questionNumber);
-        /* enums.Language language = 2; */
+            writer.tag(2, WireType.Varint).int32(message.questionNumber);
+        /* enums.Language language = 3; */
         if (message.language !== 0)
-            writer.tag(2, WireType.Varint).int32(message.language);
-        /* string solution = 3; */
+            writer.tag(3, WireType.Varint).int32(message.language);
+        /* string solution = 4; */
         if (message.solution !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.solution);
-        /* string scratch_pad = 4; */
+            writer.tag(4, WireType.LengthDelimited).string(message.solution);
+        /* string scratch_pad = 5; */
         if (message.scratchPad !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.scratchPad);
+            writer.tag(5, WireType.LengthDelimited).string(message.scratchPad);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1104,19 +1208,40 @@ export const SubmissionResult = new SubmissionResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class EmptyRequest$Type extends MessageType<EmptyRequest> {
     constructor() {
-        super("session.EmptyRequest", []);
+        super("session.EmptyRequest", [
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
     }
     create(value?: PartialMessage<EmptyRequest>): EmptyRequest {
-        const message = {};
+        const message = { accessToken: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<EmptyRequest>(this, message, value);
         return message;
     }
     internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EmptyRequest): EmptyRequest {
-        return target ?? this.create();
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
     }
     internalBinaryWrite(message: EmptyRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1157,13 +1282,13 @@ export const EmptyReply = new EmptyReply$Type();
  * @generated ServiceType for protobuf service session.SessionService
  */
 export const SessionService = new ServiceType("session.SessionService", [
-    { name: "StartSession", options: {}, I: LocaleInfo, O: SessionReply },
-    { name: "SetLocale", options: {}, I: LocaleInfo, O: EmptyReply },
-    { name: "SubmitPersonalInfo", options: {}, I: PersonalInfo, O: EmptyReply },
-    { name: "SubmitBeforeCodeSAM", options: {}, I: SAM, O: EmptyReply },
+    { name: "StartSession", options: {}, I: StartSessionRequest, O: SessionReply },
+    { name: "SetLocale", options: {}, I: SetLocaleRequest, O: EmptyReply },
+    { name: "SubmitPersonalInfo", options: {}, I: SubmitPersonalInfoRequest, O: EmptyReply },
+    { name: "SubmitBeforeCodeSAM", options: {}, I: SubmitSAMRequest, O: EmptyReply },
     { name: "StartExam", options: {}, I: EmptyRequest, O: Exam },
     { name: "ResumeExam", options: {}, I: EmptyRequest, O: Exam },
     { name: "EndExam", options: {}, I: EmptyRequest, O: ExamResult },
     { name: "SubmitSolution", options: {}, I: SubmissionRequest, O: SubmissionResult },
-    { name: "SubmitAfterCodeSAM", options: {}, I: SAM, O: EmptyReply }
+    { name: "SubmitAfterCodeSAM", options: {}, I: SubmitSAMRequest, O: EmptyReply }
 ]);
