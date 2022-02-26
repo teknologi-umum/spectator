@@ -9,20 +9,18 @@ using Microsoft.Extensions.Options;
 using Spectator.DomainEvents.ExamReportDomain;
 using Spectator.DomainModels.ExamReportDoman;
 using Spectator.DomainServices.MemoryCache;
-using Spectator.JwtAuthentication;
 
 namespace Spectator.DomainServices.ExamReportDomain {
 	public class ExamReportServices {
-		private readonly ResultCache<Guid, AdministratorSession> _cache;
+		private readonly ResultCache<Guid, AdministratorSession> _adminSessionById;
 		private readonly ExamReportOptions _examReportOptions;
 		private static readonly TimeSpan ADMIN_SESSION_TTL = TimeSpan.FromMinutes(60);
 
 		public ExamReportServices(
-			JwtAuthenticationServices jwtAuthenticationServices,
 			IMemoryCache memoryCache,
 			IOptions<ExamReportOptions> optionsAccessor
 		) {
-			ResultCache.Initialize(out _cache, memoryCache);
+			ResultCache.Initialize(out _adminSessionById, memoryCache);
 			_examReportOptions = optionsAccessor.Value;
 		}
 
@@ -56,9 +54,6 @@ namespace Spectator.DomainServices.ExamReportDomain {
 		}
 
 		public void Logout(Guid sessionId) {
-			if (decodedToken.Expires < DateTime.UtcNow) {
-			}
-
 			// Create event (let's skip this ceremony karena belum dipake)
 			// var adminSessionDeletedEvent = ....
 
@@ -67,7 +62,7 @@ namespace Spectator.DomainServices.ExamReportDomain {
 		}
 
 		public async Task<ImmutableList<ReportFile>> GetFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
-			if (!_adminSessionById.TryGetValue(adminSessionId, out var adminSession)
+			if (!_adminSessionById.TryGetValue(sessionId, out var adminSession)
 				|| adminSession.ExpiresAt <= DateTimeOffset.UtcNow) {
 				throw new UnauthorizedAccessException();
 			}
