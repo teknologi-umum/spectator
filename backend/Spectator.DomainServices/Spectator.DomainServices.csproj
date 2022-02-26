@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Spectator.JwtAuthentication\Spectator.JwtAuthentication.csproj" />
     <ProjectReference Include="..\Spectator.Observables\Spectator.Observables.csproj" />
     <ProjectReference Include="..\Spectator.Piston\Spectator.Piston.csproj" />
     <ProjectReference Include="..\Spectator.Repositories\Spectator.Repositories.csproj" />

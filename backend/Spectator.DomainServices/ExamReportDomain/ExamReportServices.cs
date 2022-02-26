@@ -1,58 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using Spectator.DomainEvents.ExamReportDomain;
 using Spectator.DomainModels.ExamReportDoman;
 using Spectator.DomainServices.MemoryCache;
 using Spectator.JwtAuthentication;
 
 namespace Spectator.DomainServices.ExamReportDomain {
 	public class ExamReportServices {
-		private readonly JwtAuthenticationServices _jwtAuthenticationService;
-		private readonly ResultCache<IReadOnlyDictionary<string, AdministratorUser>> _cache;
+		private readonly ResultCache<Guid, AdministratorSession> _cache;
 		private readonly ExamReportOptions _examReportOptions;
+		private static readonly TimeSpan ADMIN_SESSION_TTL = TimeSpan.FromMinutes(60);
+
 		public ExamReportServices(
 			JwtAuthenticationServices jwtAuthenticationServices,
 			IMemoryCache memoryCache,
-			ExamReportOptions options
+			IOptions<ExamReportOptions> optionsAccessor
 		) {
-			_jwtAuthenticationService = jwtAuthenticationServices;
 			ResultCache.Initialize(out _cache, memoryCache);
-			_examReportOptions = options;
+			_examReportOptions = optionsAccessor.Value;
 		}
 
-		public string Login(string username, string password) {
-			if (username == null || password == null) {
+		public AdministratorSession Login(string username, string password) {
+			if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) {
 				throw new ArgumentNullException("username and/or password should not be empty");
 			}
 
-			if (username != _examReportOptions.Username && password != _examReportOptions.Password) {
-				throw new Exception("username and/or password do not match");
+			if (username != _examReportOptions.Username || password != _examReportOptions.Password) {
+				throw new AuthenticationException("username and/or password do not match");
 			}
-
-			// TODO: validate whether the current user is logged in or not
 
 			var sessionId = Guid.NewGuid();
-			var tokenPayload = _jwtAuthenticationService.CreatePayload(sessionId);
-			var jwt = _jwtAuthenticationService.EncodeToken(tokenPayload);
 
-			// TODO: create a dictionary of sessionId as key and AdministratorUser as value
-			// then insert it into the MemoryCache.
-			return jwt;
+			// Create event
+			var timestamp = DateTimeOffset.UtcNow;
+			var @event = new AdministratorSessionCreatedEvent(
+				SessionId: sessionId,
+				ExpiresAt: timestamp.Add(ADMIN_SESSION_TTL),
+				CreatedAt: timestamp
+			);
+
+			// Dispatch event
+			var adminSession = AdministratorSession.From(@event);
+
+			// Store session
+			_adminSessionById.Set(sessionId, adminSession, absoluteExpirationRelativeToNow: ADMIN_SESSION_TTL);
+
+			// Return session
+			return adminSession;
 		}
 
-		public string Logout(string jwt) {
-			var decodedToken = _jwtAuthenticationService.DecodeToken(jwt);
+		public void Logout(Guid sessionId) {
 			if (decodedToken.Expires < DateTime.UtcNow) {
-				throw new Exception("Token already expired");
 			}
 
-			// TODO: remove the data from the MemoryCache.
-			return "";
+			// Create event (let's skip this ceremony karena belum dipake)
+			// var adminSessionDeletedEvent = ....
+
+			// Remove session
+			_adminSessionById.Remove(sessionId);
 		}
 
-		public async Task<List<File>> GetFilesAsync(CancellationToken cancellationToken) {
+		public async Task<ImmutableList<ReportFile>> GetFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
+			if (!_adminSessionById.TryGetValue(adminSessionId, out var adminSession)
+				|| adminSession.ExpiresAt <= DateTimeOffset.UtcNow) {
+				throw new UnauthorizedAccessException();
+			}
 			// TODO: acquire the list of session id from InfluxDB directly
 			// TODO: make a gRPC client call to the worker service to acquire the files list
 		}
