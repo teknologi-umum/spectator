@@ -11,12 +11,10 @@ gem 'rubocop', '~> 1.21'
 
 gem 'grpc', github: 'grpc/grpc', submodules: true
 
-gem 'sorbet', group: :development
-
-gem 'sorbet-runtime'
-
 gem 'google-protobuf', '~> 3.19'
 
 gem "dotenv", "~> 2.7"
 
 gem "grpc-tools", "~> 1.43"
+
+gem "toml", "~> 0.3.0"

@@ -4,7 +4,7 @@ require_relative "lib/rce/version"
 
 Gem::Specification.new do |spec|
   spec.name = "rce"
-  spec.version = Rce::VERSION
+  spec.version = "0.0.1"
   spec.authors = ["Teknologi Umum"]
   spec.email = ["opensource@teknologiumum.com"]
 

@@ -10,7 +10,7 @@ GIT
 PATH
   remote: .
   specs:
-    rce (0.1.0)
+    rce (0.0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -24,6 +24,7 @@ GEM
     parallel (1.21.0)
     parser (3.1.0.0)
       ast (~> 2.4.1)
+    parslet (2.0.0)
     rainbow (3.1.1)
     rake (13.0.6)
     regexp_parser (2.2.1)
@@ -40,10 +41,8 @@ GEM
     rubocop-ast (1.15.2)
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
-    sorbet (0.5.9668)
-      sorbet-static (= 0.5.9668)
-    sorbet-runtime (0.5.9668)
-    sorbet-static (0.5.9668-x86_64-linux)
+    toml (0.3.0)
+      parslet (>= 1.8.0, < 3.0.0)
     unicode-display_width (2.1.0)
 
 PLATFORMS
@@ -57,8 +56,7 @@ DEPENDENCIES
   rake (~> 13.0)
   rce!
   rubocop (~> 1.21)
-  sorbet
-  sorbet-runtime
+  toml (~> 0.3.0)
 
 BUNDLED WITH
    2.3.7

@@ -5,7 +5,7 @@ VERSION="3.10.2"
 cd /tmp
 # Acquire the Python tar.gz file from the source repository
 curl -O https://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tgz
-tar -xvzf Python-${VERSION}.tgz
+tar -zxf Python-${VERSION}.tgz
 cd Python-${VERSION}
 ./configure \
   --prefix=/opt/python/${VERSION} \
@@ -16,6 +16,6 @@ make
 make install
 
 cd /tmp
-sudo rm Python-${VERSION}.tgz
-sudo rm -rf Python-${VERSION}
-sudo rm get-pip.py
+rm Python-${VERSION}.tgz
+rm -rf Python-${VERSION}
+
