@@ -32,7 +32,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
       optional :stdout, :string, 3
       optional :stderr, :string, 4
       optional :output, :string, 5
-      optional :code, :int32, 6
+      optional :exitCode, :int32, 6
     end
   end
 end

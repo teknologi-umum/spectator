@@ -4,7 +4,7 @@
 
 require "grpc"
 require "dotenv/load"
-require_relative "proto/rce_services_pb"
+require_relative "proto/rce/rce_services_pb"
 
 # RceServer is an implementation for the gRPC stub
 class RceServer < Rce::CodeExecutionEngineService::Service

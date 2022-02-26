@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/grpc/grpc.git
+  revision: cc3de1c3eba4c342c406729649f3c39f829dcdbc
+  submodules: true
+  specs:
+    grpc (1.45.0.dev)
+      google-protobuf (~> 3.19)
+      googleapis-common-protos-types (~> 1.0)
+
 PATH
   remote: .
   specs:
@@ -11,9 +20,7 @@ GEM
     google-protobuf (3.19.4)
     googleapis-common-protos-types (1.3.0)
       google-protobuf (~> 3.14)
-    grpc (1.43.1)
-      google-protobuf (~> 3.18)
-      googleapis-common-protos-types (~> 1.0)
+    grpc-tools (1.43.1)
     parallel (1.21.0)
     parser (3.1.0.0)
       ast (~> 2.4.1)
@@ -45,7 +52,8 @@ PLATFORMS
 DEPENDENCIES
   dotenv (~> 2.7)
   google-protobuf (~> 3.19)
-  grpc (~> 1.43)
+  grpc!
+  grpc-tools (~> 1.43)
   rake (~> 13.0)
   rce!
   rubocop (~> 1.21)

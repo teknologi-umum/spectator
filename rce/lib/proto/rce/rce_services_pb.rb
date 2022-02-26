@@ -2,7 +2,7 @@
 # Source: rce.proto for package 'rce'
 
 require 'grpc'
-require_relative 'rce_pb'
+require 'rce_pb'
 
 module Rce
   module CodeExecutionEngineService
