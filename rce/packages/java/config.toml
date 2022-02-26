@@ -3,16 +3,8 @@ version = "11"
 compiled = true
 extension = "java"
 build_command = [
-    "g++",
-    "-Wall",
-    "-Wextra",
-    "-Werror",
-    "-O2",
-    "-std=c++17",
-    "-pedantic",
-    "-o",
-    "code",
-    "file.code"
+    "javac",
+    "ClassName.java" # TODO: `ClassName` should be dynamic
 ]
-run_command = [ "./code" ]
+run_command = [ "java", "ClassName" ] # TODO: same as above
 test_file = "HelloWorld.java"
