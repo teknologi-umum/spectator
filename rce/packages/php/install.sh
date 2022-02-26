@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-apt install -y lsb-release ca-certificates apt-transport-https software-properties-common gnupg2 wget
+apt-get -y install apt-transport-https lsb-release ca-certificates curl
 
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+curl -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 
-wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
 
-apt update
+apt-get update
 
-apt install php8.1
+apt-get install php8.1
