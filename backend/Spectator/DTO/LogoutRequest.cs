@@ -2,6 +2,6 @@
 
 namespace Spectator.DTO {
 	public class LogoutRequest {
-		public Guid SessionID { get; set; }
+		public string? JWT { get; set; }
 	}
 }
