@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.5.7",
-    "@protobuf-ts/runtime-rpc": "^2.2.2"
+    "@protobuf-ts/runtime-rpc": "^2.2.2",
+    "toml": "^3.0.0"
   },
   "type": "module"
 }
