@@ -2,7 +2,7 @@
 # Source: logger.proto for package 'logger'
 
 require 'grpc'
-require 'logger_pb'
+require_relative 'logger_pb'
 
 module Logger
   module Logger

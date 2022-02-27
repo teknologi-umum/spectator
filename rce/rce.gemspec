@@ -1,9 +1,6 @@
 # frozen_string_literal: true
-
-require_relative "lib/rce/version"
-
 Gem::Specification.new do |spec|
-  spec.name = "rce"
+  spec.name = "user"
   spec.version = "0.0.1"
   spec.authors = ["Teknologi Umum"]
   spec.email = ["opensource@teknologiumum.com"]
@@ -13,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/teknologi-umum/spectator"
   spec.required_ruby_version = ">= 2.6.0"
 
-  spec.metadata["allowed_push_host"] = "https://rce.teknologiumum.com"
+  spec.metadata["allowed_push_host"] = "https://user.teknologiumum.com"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/teknologi-umum/spectator"

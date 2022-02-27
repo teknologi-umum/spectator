@@ -55,9 +55,8 @@ module Job
     def compile(path) end
 
     def safe_call(path)
-      cmd_builder = StringIO.new
-      cmd_builder << 'nosocket'
-      cmd_builder.read
+      cmd = %w[nice prlimit --nproc= --cpu= --stack= nosocket]
+      cmd.append()
 
       # return [stdout, stderr, output, exit_code]
     end
