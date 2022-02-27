@@ -1,6 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import { Environment, Level } from "@/stub/logger_pb";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import { LoggerClient } from "@/stub/logger_pb.grpc-client";
 
 export class Logger {
@@ -49,7 +49,7 @@ export class Logger {
     }
 
     if (requestID === "") {
-      requestID = uuidv4();
+      requestID = randomUUID();
     }
 
     this._loggerClient.createLog(
