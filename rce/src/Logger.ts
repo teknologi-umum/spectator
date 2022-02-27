@@ -8,11 +8,11 @@ export class Logger {
   private readonly _language = "Javascript";
 
   constructor(
-    _loggerServerAddress: string,
+    _loggerServerAddress = "",
     // eslint-disable-next-line no-unused-vars
-    private readonly _loggerToken: string,
+    private readonly _loggerToken = "",
     // eslint-disable-next-line no-unused-vars
-    private readonly _environment: string
+    private readonly _environment = ""
   ) {
     this._loggerClient = new LoggerClient(
       _loggerServerAddress,
