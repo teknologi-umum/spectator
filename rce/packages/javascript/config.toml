@@ -1,0 +1,7 @@
+language = "Javascript"
+version = "16.3.0"
+compiled = false
+extension = "js"
+build_command = []
+run_command = [ "node", "file.code" ]
+test_file = "test.js"
