@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-apt-get install default-jdk default-jre
+apt-get install -y default-jdk default-jre

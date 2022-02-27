@@ -25,7 +25,7 @@ export class RceServiceImpl implements ICodeExecutionEngineService {
     );
 
     const packages = await fs.readdir(PACKAGES_DIR, {
-      withFileTypes: true,
+      withFileTypes: true
     });
     const runtimesPromise = packages.map(async (p): Promise<Runtime> => {
       const packagePath = path.join(PACKAGES_DIR, p.name);
@@ -37,7 +37,7 @@ export class RceServiceImpl implements ICodeExecutionEngineService {
         language: config.language,
         version: config.version,
         compiled: config.compiled,
-        aliases: config.aliases,
+        aliases: config.aliases
       };
     });
     const runtimes = await Promise.all(runtimesPromise);
