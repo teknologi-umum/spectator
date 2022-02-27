@@ -8,3 +8,4 @@ build_command = [
 ]
 run_command = [ "java", "{file}" ]
 test_file = "HelloWorld.java"
+aliases = ["java"]
