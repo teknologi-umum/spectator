@@ -8,8 +8,8 @@ export interface JobPrerequisites {
     user: User
     runtime: Runtime
     code: string
-    timeout: number
-    memoryLimit: number
+    timeout?: number
+    memoryLimit?: number
 }
 
 export interface CommandOutput {
@@ -21,18 +21,24 @@ export interface CommandOutput {
 }
 
 export class Job implements JobPrerequisites {
-    user: User;
-    runtime: Runtime;
-    code: string;
-    timeout: number;
-    memoryLimit: number;
+    constructor(
+        public user: User,
+        public runtime: Runtime,
+        public code: string,
+        public timeout?: number,
+        public memoryLimit?: number
+    ) {
+        if (!user || !runtime || !code) {
+            throw new TypeError("Invalid job parameters");
+        }
 
-    constructor(user: User, runtime: Runtime, code: string, timeout: number, memoryLimit: number) {
-        this.user = user;
-        this.runtime = runtime;
-        this.code = code;
-        this.timeout = timeout;
-        this.memoryLimit = memoryLimit;
+        if (!timeout || timeout < 1) {
+            this.timeout = 5_000;
+        }
+
+        if (!memoryLimit || memoryLimit < 1) {
+            this.memoryLimit = 128 * 1024 * 1024;
+        }
     }
 
     async createFile(): Promise<string> {
@@ -98,7 +104,7 @@ export class Job implements JobPrerequisites {
             exitSignal = signal ?? "";
         });
 
-        if (stdout) {
+        if (stdout !== "") {
             output += stdout;
         } else {
             output += stderr;

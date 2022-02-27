@@ -1,12 +1,12 @@
 export class Runtime {
-    language: string;
-    version: string;
-    extension: string;
-    compiled: boolean;
-    buildCommand: string[];
-    runCommand: string[];
-
-    constructor(language: string, version: string, extension: string, compiled: boolean, buildCommand: string[], runCommand: string[]) {
+    constructor(
+        public language: string,
+        public version: string,
+        public extension: string,
+        public compiled: boolean,
+        public buildCommand: string[],
+        public runCommand: string[]
+    ) {
         if (!language || !version || !extension || !runCommand) {
             throw new TypeError("Invalid runtime parameters");
         }
@@ -14,12 +14,5 @@ export class Runtime {
         if (compiled && buildCommand.length === 0) {
             throw new TypeError("Invalid runtime parameters: buildCommand is empty yet compiled is true");
         }
-
-        this.language = language;
-        this.version = version;
-        this.extension = extension;
-        this.compiled = compiled;
-        this.buildCommand = buildCommand;
-        this.runCommand = runCommand;
     }
 }

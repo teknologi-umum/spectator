@@ -7,39 +7,30 @@ export interface User {
 export class SystemUsers {
     users: User[];
     constructor(start: number, stop: number, defaultGroup: number) {
-        const users: User[] = [];
-
+        this.users = [];
         for (let i = start; i <= stop; i++) {
-            users.push({
+            this.users.push({
                 uid: i,
                 gid: defaultGroup,
                 free: false
             });
         }
-        this.users = users;
     }
 
     public acquire(): User | null {
-        const user = this.users.find(u => u.free);
-        if (user) {
-            user.free = false;
-            this.users = [
-                ...this.users.filter(u => u.uid !== user.uid),
-                user
-            ];
+        const userIndex = this.users.findIndex(u => u.free);
+        if (userIndex !== -1) {
+            const user = this.users[userIndex];
+            this.users[userIndex].free = false;
             return user;
         }
         return null;
     }
 
     public release(uid: number): void {
-        const user = this.users.find(u => u.uid === uid);
-        if (user) {
-            user.free = true;
-            this.users = [
-                ...this.users.filter(u => u.uid !== user.uid),
-                user
-            ];
+        const userIndex = this.users.findIndex(u => u.uid === uid);
+        if (userIndex !== -1) {
+            this.users[userIndex].free = true;
         }
     }
 }
