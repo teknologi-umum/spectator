@@ -1,7 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import { codeExecutionEngineServiceDefinition } from "@/stub/rce_pb.grpc-server";
 import { RceServiceImpl } from "@/RceService";
-import "dotenv/config";
 import { Logger } from "@/Logger";
 
 const HOST = "0.0.0.0:50051";

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Remote Code Execution Engine",
   "scripts": {
-    "start": "node ./dist/index.js",
+    "start": "node -r dotenv/config ./dist/index.js",
     "build": "node build.js",
     "protoc:rce": "npx protoc --ts_out src/stub --ts_opt server_grpc1,client_none,generate_dependencies,optimize_code_size,add_pb_suffix --proto_path ../proto rce.proto",
     "protoc:logger": "npx protoc --ts_out src/stub --ts_opt server_none,client_grpc1,generate_dependencies,optimize_code_size,add_pb_suffix --proto_path ../proto logger.proto",
