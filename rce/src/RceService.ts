@@ -1,6 +1,12 @@
 import { ICodeExecutionEngineService } from "@/stub/rce_pb.grpc-server";
-import { sendUnaryData, UntypedHandleCall } from "@grpc/grpc-js";
-import { PingResponse, Runtimes, Runtime } from "@/stub/rce_pb";
+import { sendUnaryData, ServerUnaryCall, UntypedHandleCall } from "@grpc/grpc-js";
+import {
+  PingResponse,
+  Runtimes,
+  Runtime,
+  CodeRequest,
+  CodeResponse
+} from "@/stub/rce_pb";
 import fs from "fs/promises";
 import path from "path";
 import toml from "toml";
@@ -19,15 +25,13 @@ export class RceServiceImpl implements ICodeExecutionEngineService {
     );
 
     const packages = await fs.readdir(PACKAGES_DIR, {
-      withFileTypes: true
+      withFileTypes: true,
     });
     const runtimesPromise = packages.map(async (p): Promise<Runtime> => {
-      console.log("balls");
       const packagePath = path.join(PACKAGES_DIR, p.name);
       const configPath = path.join(packagePath, "config.toml");
       const configFile = await fs.readFile(configPath, "utf8");
       const config = toml.parse(configFile);
-      console.log(config);
 
       return {
         language: config.language,
@@ -45,7 +49,20 @@ export class RceServiceImpl implements ICodeExecutionEngineService {
     callback(null, { message: "OK" });
   }
 
-  public execute() {
-    // TODO: implementation
+  public execute(call: ServerUnaryCall<CodeRequest, CodeResponse>, callback: sendUnaryData<CodeResponse>) {
+    const req = call.request;
+
+    // TODO(elianiva): call execute() with the correct parameter from request
+    // eslint-disable-next-line no-console
+    console.log(req);
+
+    callback(null, {
+      exitCode: 0,
+      language: "Javascript",
+      output: "Hello World",
+      stderr: "",
+      stdout: "",
+      version: "1.0.0"
+    });
   }
 }
