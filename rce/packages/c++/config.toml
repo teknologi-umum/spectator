@@ -16,3 +16,4 @@ build_command = [
 ]
 run_command = [ "./code" ]
 test_file = "test.cpp"
+aliases = ["c++", "cpp"]
