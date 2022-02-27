@@ -1,6 +1,6 @@
 import { ICodeExecutionEngineService } from "@/stub/rce.grpc-server";
 import { sendUnaryData } from "@grpc/grpc-js";
-import { PingResponse } from "./stub/rce";
+import { PingResponse } from "@/stub/rce";
 
 export class RceServiceImpl implements ICodeExecutionEngineService {
   public listRuntimes() {
