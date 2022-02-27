@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { LocaleButton, ThemeButton } from "@/components/CodingTest";
-import { useColorModeValue, useSignalR } from "@/hooks";
+import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
 import { Locale as DtoLocale } from "@/stub/enums";
@@ -26,6 +26,7 @@ import { setAccessToken } from "../store/slices/sessionSlice";
 import { personalInfoTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
+import { eventSpoke, sessionSpoke } from "@/spoke";
 
 function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -36,7 +37,6 @@ function PersonalInfoPage() {
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
-  const { sessionSpoke } = useSignalR();
   const { setIsOpen } = useTour();
 
   const {
@@ -96,6 +96,7 @@ function PersonalInfoPage() {
         .startSession({ locale: dtoLocale })
         .then((sessionReply) => {
           sessionSpoke.setAccessToken(sessionReply.accessToken);
+          eventSpoke.setAccessToken(sessionReply.accessToken);
           dispatch(setAccessToken(sessionReply.accessToken));
         })
         .catch((err) => {

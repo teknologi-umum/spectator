@@ -14,7 +14,7 @@ import {
   mouseMoveHandler,
   scrollHandler
 } from "@/events";
-import { useColorModeValue, useSignalR } from "@/hooks";
+import { useColorModeValue } from "@/hooks";
 import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
 import ToastOverlay from "@/components/ToastOverlay";
@@ -28,13 +28,12 @@ function CodingTest() {
     (state) => state.editor
   );
   const { tourCompleted } = useAppSelector((state) => state.session);
-  const connection = useSignalR();
 
-  useEventListener("mousedown", mouseClickHandler(connection, currentQuestionNumber));
-  useEventListener("mousemove", mouseMoveHandler(connection, currentQuestionNumber));
-  useEventListener("keydown", keystrokeHandler(connection, currentQuestionNumber));
+  useEventListener("mousedown", mouseClickHandler(currentQuestionNumber));
+  useEventListener("mousemove", mouseMoveHandler(currentQuestionNumber));
+  useEventListener("keydown", keystrokeHandler( currentQuestionNumber));
 
-  useEventListener("scroll", scrollHandler(connection, currentQuestionNumber));
+  useEventListener("scroll", scrollHandler(currentQuestionNumber));
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());

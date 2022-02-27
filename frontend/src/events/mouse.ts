@@ -1,8 +1,8 @@
 import { calculateDirection } from "@/utils/getMouseDirection";
-import { emit } from "@/events/emitter";
 import type { CodingEventMouseClick, CodingEventMouseMove } from "./types";
+import { eventSpoke } from "@/spoke";
 
-export function mouseClickHandler(connection: unknown, questionNumber: number | null) {
+export function mouseClickHandler(questionNumber: number | null) {
   return async (e: MouseEvent) => {
     if (questionNumber === null) return;
 
@@ -18,7 +18,7 @@ export function mouseClickHandler(connection: unknown, questionNumber: number | 
     };
 
     try {
-      await emit(connection, data);
+      await eventSpoke.mouseClicked(data);
     } catch (err) {
       // TODO(elianiva): replace with proper logging
       console.error(err);
@@ -27,7 +27,7 @@ export function mouseClickHandler(connection: unknown, questionNumber: number | 
 }
 
 // TODO(elianiva): emit position and direction as a single event??
-export function mouseMoveHandler(connection: unknown, questionNumber: number | null) {
+export function mouseMoveHandler(questionNumber: number | null) {
   return async (e: MouseEvent) => {
     if (questionNumber === null) return;
 
@@ -49,7 +49,7 @@ export function mouseMoveHandler(connection: unknown, questionNumber: number | n
     };
 
     try {
-      await emit(connection, data);
+      await eventSpoke.mouseMoved(data);
     } catch (err) {
       // TODO(elianiva): replace with proper logging
       console.error(err);

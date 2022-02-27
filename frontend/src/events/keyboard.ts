@@ -1,4 +1,4 @@
-import { emit } from "@/events/emitter";
+import { eventSpoke } from "@/spoke";
 import type { CodingEventKeystroke } from "./types";
 
 const F_KEYS: Record<string, boolean> = {
@@ -16,7 +16,7 @@ const F_KEYS: Record<string, boolean> = {
   F12: true
 };
 
-export function keystrokeHandler(connection: unknown, questionNumber: number | null) {
+export function keystrokeHandler(questionNumber: number | null) {
   return async (e: KeyboardEvent) => {
     if (questionNumber === null) return;
 
@@ -45,18 +45,20 @@ export function keystrokeHandler(connection: unknown, questionNumber: number | n
       if (F_KEYS[e.key]) e.preventDefault();
 
       try {
-        await emit(connection, data);
+        await eventSpoke.keyboardPressed(data);
       } catch (err) {
         // TODO(elianiva): replace with proper logging
         console.error(err);
       }
+
       return;
     }
 
     // everything OUTSIDE the editor is always unrelated
     data.unrelated_key = true;
+
     try {
-      await emit(connection, data);
+      await eventSpoke.keyboardPressed(data);
     } catch (err) {
       // TODO(elianiva): replace with proper logging
       console.error(err);
