@@ -3,5 +3,5 @@ version = "3.10.2"
 compiled = false
 extension = "py"
 build_command = []
-run_command = [ "/opt/python/3.10.2/bin/python3", "file.code" ]
+run_command = [ "/opt/python/3.10.2/bin/python3", "{file}" ]
 test_file = "test.py"

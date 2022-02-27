@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./dist/index.js",
     "build": "tsc --build .",
-    "protoc": "npx protoc --ts_out src/stub --ts_opt server_grpc1,client_none,generate_dependencies,optimize_code_size --proto_path ../proto rce.proto"
+    "protoc": "npx protoc --ts_out src/stub --ts_opt server_grpc1,client_none,generate_dependencies,optimize_code_size --proto_path ../proto rce.proto",
+    "lint": "eslint --fix --ext .ts,.js --ignore-path .gitignore ."
   },
   "author": "",
   "license": "MIT",

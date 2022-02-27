@@ -4,7 +4,7 @@ compiled = true
 extension = "java"
 build_command = [
     "javac",
-    "ClassName.java" # TODO: `ClassName` should be dynamic
+    "{file}"
 ]
-run_command = [ "java", "ClassName" ] # TODO: same as above
+run_command = [ "java", "{file}" ]
 test_file = "HelloWorld.java"

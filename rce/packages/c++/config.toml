@@ -12,7 +12,7 @@ build_command = [
     "-pedantic",
     "-o",
     "code",
-    "file.code"
+    "{file}"
 ]
 run_command = [ "./code" ]
 test_file = "test.cpp"
