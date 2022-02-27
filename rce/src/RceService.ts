@@ -22,7 +22,7 @@ export class RceServiceImpl implements ICodeExecutionEngineService {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line no-undef
-  [method: string]: UntypedHandleCall;
+  [_: string]: UntypedHandleCall;
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment, no-useless-constructor, no-unused-vars, no-empty-function
   // @ts-ignore
