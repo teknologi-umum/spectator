@@ -39,8 +39,8 @@ namespace Spectator.DomainServices.ExamReportDomain {
 			var timestamp = DateTimeOffset.UtcNow;
 			var @event = new AdministratorSessionCreatedEvent(
 				SessionId: sessionId,
-				ExpiresAt: timestamp.Add(ADMIN_SESSION_TTL),
-				CreatedAt: timestamp
+				CreatedAt: timestamp,
+				ExpiresAt: timestamp.Add(ADMIN_SESSION_TTL)
 			);
 
 			// Dispatch event

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -17,13 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Net.Client" Version="2.43.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\..\proto\worker.proto" GrpcServices="Client">
-      <Link>worker.proto</Link>
-    </Protobuf>
+    <Protobuf Include="..\..\proto\logger.proto" Link="logger.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>
