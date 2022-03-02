@@ -42,7 +42,7 @@ export class Job implements JobPrerequisites {
     }
 
     async createFile(): Promise<string> {
-        const filePath = path.resolve("/code", `/${this.user.uid.toString()}`, `/code.${this.runtime.extension}`);
+        const filePath = path.resolve("/code", `/${this.user.username}`, `/code.${this.runtime.extension}`);
         await fs.writeFile(filePath, this.code);
         await fs.chmod(filePath, 0o555);
         await fs.chown(filePath, this.user.uid, this.user.gid);
@@ -55,9 +55,20 @@ export class Job implements JobPrerequisites {
         }
 
         const fileName = path.basename(filePath);
-        // TODO: append nice and prlimit to the runCommand below
-        // TODO: run as user. see https://www.cyberciti.biz/open-source/command-line-hacks/linux-run-command-as-different-user/
-        const buildCommand = this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName));
+        const buildCommand: string[] = [
+            "nice",
+            "prlimit",
+            "--nproc=128",
+            "--nofile=2048",
+            "--fsize=10000000", // 10MB
+            "--as="+this.memoryLimit?.toString(),
+            "nosocket",
+            "runuser",
+            "-u",
+            this.user.username,
+            "--",
+            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
+        ];
         const buildCommandOutput = this.executeCommand(buildCommand);
         if (buildCommandOutput.exitCode !== 0 || buildCommandOutput.stderr) {
             throw new Error(buildCommandOutput.stderr);
@@ -66,14 +77,24 @@ export class Job implements JobPrerequisites {
 
     run(filePath: string): CommandOutput {
         const fileName = path.basename(filePath);
-        // TODO: append nice and prlimit to the runCommand below
-        // TODO: run as user. see https://www.cyberciti.biz/open-source/command-line-hacks/linux-run-command-as-different-user/
-        const runCommand = this.runtime.runCommand.map(
-            arg => arg.replace(
-                "{file}",
-                fileName.replace(`.${this.runtime.extension}`, "")
-            )
-        );
+        const runCommand: string[] = [
+            "nice",
+            "prlimit",
+            "--nproc=64",
+            "--nofile=2048",
+            "--fsize=10000000", // 10MB
+            "--as="+this.memoryLimit?.toString(),
+            "nosocket",
+            "runuser",
+            "-u",
+            this.user.username,
+            "--",
+            ...this.runtime.runCommand.map(
+                arg => arg.replace(
+                    "{file}",
+                    fileName.replace(`.${this.runtime.extension}`, "")
+                ))
+        ];
         return this.executeCommand(runCommand);
     }
 

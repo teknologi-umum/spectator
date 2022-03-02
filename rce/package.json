@@ -6,7 +6,7 @@
     "start": "node ./dist/index.js",
     "build": "node build.js",
     "protoc": "npx protoc --ts_out src/stub --ts_opt server_grpc1,client_none,generate_dependencies,optimize_code_size,add_pb_suffix,output_legacy_commonjs --proto_path ../proto rce.proto",
-    "lint": "eslint --fix --ext .ts,.js --ignore-path .gitignore ."
+    "lint": "eslint --fix --ext .ts,.js ."
   },
   "author": "",
   "license": "MIT",

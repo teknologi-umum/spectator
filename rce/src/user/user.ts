@@ -2,6 +2,7 @@ export interface User {
     uid: number;
     gid: number;
     free: boolean;
+    username: string;
 }
 
 export class SystemUsers {
@@ -12,7 +13,8 @@ export class SystemUsers {
             this.users.push({
                 uid: i,
                 gid: defaultGroup,
-                free: false
+                free: false,
+                username: `code_executor_${i}`
             });
         }
     }
