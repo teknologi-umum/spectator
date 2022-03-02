@@ -1,3 +1,7 @@
+import fs from "fs/promises";
+import path from "path";
+import toml from "toml";
+import { fileURLToPath } from "url";
 import { ICodeExecutionEngineService } from "@/stub/rce_pb.grpc-server";
 import { sendUnaryData, ServerUnaryCall, UntypedHandleCall } from "@grpc/grpc-js";
 import {
@@ -7,16 +11,24 @@ import {
   CodeRequest,
   CodeResponse
 } from "@/stub/rce_pb";
-import fs from "fs/promises";
-import path from "path";
-import toml from "toml";
-import { fileURLToPath } from "url";
+import { Runtime as RceRuntime } from "@/runtime/runtime";
+import { SystemUsers } from "./user/user";
+import { Job } from "./job/job";
 
 export class RceServiceImpl implements ICodeExecutionEngineService {
   // eslint-disable-next-line no-undef
   [name: string]: UntypedHandleCall;
+  // TODO(aldy505): To elianiva, help please.
+  registeredRuntimes: RceRuntime[];
+  users: SystemUsers;
+
+  constructor(registeredRuntimes: RceRuntime[], users: SystemUsers) {
+    this.registeredRuntimes = registeredRuntimes;
+    this.users = users;
+  }
 
   public async listRuntimes(_call, callback: sendUnaryData<Runtimes>) {
+    // TODO(aldy505): To elianiva, please acquire the data from this.registeredRuntimes
     const PACKAGES_DIR = path.join(
       fileURLToPath(import.meta.url),
       "..",
@@ -49,20 +61,44 @@ export class RceServiceImpl implements ICodeExecutionEngineService {
     callback(null, { message: "OK" });
   }
 
-  public execute(call: ServerUnaryCall<CodeRequest, CodeResponse>, callback: sendUnaryData<CodeResponse>) {
+  public async execute(call: ServerUnaryCall<CodeRequest, CodeResponse>, callback: sendUnaryData<CodeResponse>) {
+    // TODO(aldy505): should add try catch?
     const req = call.request;
 
-    // TODO(elianiva): call execute() with the correct parameter from request
-    // eslint-disable-next-line no-console
-    console.log(req);
+    // TODO: validate if the runtime is supported, then we acquire the runtime.
+    const runtimeIndex = this.registeredRuntimes.findIndex(r => r.language === req.language && r.version === req.version);
+    if (runtimeIndex < 0) {
+      callback(new Error("Runtime not found"), null);
+      return;
+    }
+
+    const runtime = this.registeredRuntimes[runtimeIndex];
+
+    // Acquire the available user.
+    const user = this.users.acquire();
+    if (user === null) {
+      callback(new Error("No user available"), null);
+      return;
+    }
+
+    // Create a job.
+    const job = new Job(user, runtime, req.code, req.compileTimeout);
+    const filePath = await job.createFile();
+    if (runtime.compiled) {
+      job.compile(filePath);
+    }
+
+    const commandOutput = job.run(filePath);
+    // Release the user.
+    this.users.release(user.uid);
 
     callback(null, {
-      exitCode: 0,
-      language: "Javascript",
-      output: "Hello World",
-      stderr: "",
-      stdout: "",
-      version: "1.0.0"
+      exitCode: commandOutput.exitCode,
+      language: runtime.language,
+      output: commandOutput.output,
+      stderr: commandOutput.stderr,
+      stdout: commandOutput.stdout,
+      version: runtime.version
     });
   }
 }

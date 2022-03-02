@@ -61,6 +61,7 @@ export class Job implements JobPrerequisites {
             "--nproc=128",
             "--nofile=2048",
             "--fsize=10000000", // 10MB
+            "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
             "runuser",
@@ -83,6 +84,7 @@ export class Job implements JobPrerequisites {
             "--nproc=64",
             "--nofile=2048",
             "--fsize=10000000", // 10MB
+            "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
             "runuser",
