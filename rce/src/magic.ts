@@ -3,9 +3,11 @@
 // see: https://github.com/agreatfool/grpc_tools_node_protoc_ts/blob/master/doc/server_impl_signature.md
 
 type KnownKeys<T> = {
-  [K in keyof T]: string extends K ? never : number extends K ? never : K
-  // eslint-disable-next-line no-unused-vars
-} extends { [_ in keyof T]: infer U } ? U : never;
+    [K in keyof T]: string extends K ? never : number extends K ? never : K;
+    // eslint-disable-next-line no-unused-vars
+} extends { [_ in keyof T]: infer U }
+    ? U
+    : never;
 
 /**
  * This type basically used to remove the index type so we don't need to implement it.
