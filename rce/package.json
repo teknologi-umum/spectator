@@ -5,9 +5,9 @@
   "scripts": {
     "start": "node -r dotenv/config ./dist/index.js",
     "build": "node build.js",
+    "lint": "eslint --fix --ext .ts,.js .",
     "protoc:rce": "npx protoc --ts_out src/stub --ts_opt server_grpc1,client_none,generate_dependencies,optimize_code_size,add_pb_suffix --proto_path ../proto rce.proto",
-    "protoc:logger": "npx protoc --ts_out src/stub --ts_opt server_none,client_grpc1,generate_dependencies,optimize_code_size,add_pb_suffix --proto_path ../proto logger.proto",
-    "lint": "eslint --fix --ext .ts,.js --ignore-path .gitignore --ignore-pattern 'stub' ."
+    "protoc:logger": "npx protoc --ts_out src/stub --ts_opt server_none,client_grpc1,generate_dependencies,optimize_code_size,add_pb_suffix --proto_path ../proto logger.proto"
   },
   "author": "",
   "license": "MIT",
