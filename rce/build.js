@@ -8,7 +8,7 @@ esbuild
     platform: "node",
     external: ["@grpc/grpc-js", "@protobuf-ts/runtime-rpc", "toml"],
     outdir: "./dist",
-    target: ["es2021", "node16.14"],
+    target: ["esnext", "node16.14"],
     tsconfig: "tsconfig.json",
     sourcemap: true
   })

@@ -1,132 +1,108 @@
-import fs from "fs/promises";
-import path from "path";
-import toml from "toml";
-import { fileURLToPath } from "url";
 import { ICodeExecutionEngineService } from "@/stub/rce_pb.grpc-server";
+import { sendUnaryData, ServerUnaryCall } from "@grpc/grpc-js";
 import {
-  sendUnaryData,
-  ServerUnaryCall,
-  UntypedHandleCall
-} from "@grpc/grpc-js";
-import {
-  PingResponse,
-  Runtimes,
-  Runtime,
-  CodeRequest,
-  CodeResponse
+    PingResponse,
+    Runtimes,
+    CodeRequest,
+    CodeResponse
 } from "@/stub/rce_pb";
 import { Runtime as RceRuntime } from "@/runtime/runtime";
 import { SystemUsers } from "./user/user";
 import { Job } from "./job/job";
 import { Logger } from "@/Logger";
-import { Level } from "@/stub/logger_pb";
+import { KnownOnly } from "./magic";
+import { Level } from "./stub/logger_pb";
+import { randomUUID } from "crypto";
 
-export class RceServiceImpl implements ICodeExecutionEngineService {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
-  [name: string]: UntypedHandleCall;
-  // TODO(aldy505): To elianiva, help please.
-  registeredRuntimes: RceRuntime[];
-  users: SystemUsers;
+export type IRceService = KnownOnly<ICodeExecutionEngineService>;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment, no-useless-constructor, no-unused-vars, no-empty-function
-  // @ts-ignore
-  constructor(private readonly _logger: Logger, registeredRuntimes: RceRuntime[], users: SystemUsers) {
-    if (!_logger) {
-      throw new Error("Logger is not defined");
+export class RceServiceImpl implements IRceService {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment, no-unused-vars, no-empty-function
+    // @ts-ignore
+    constructor(
+        private readonly _logger: Logger,
+        private _registeredRuntimes: RceRuntime[],
+        private _users: SystemUsers
+    ) {
+        if (typeof _logger === "object" && !(_logger instanceof Logger)) {
+            throw new TypeError("Invalid logger instance!");
+        }
+
+        if (_registeredRuntimes.length < 1) {
+            throw new TypeError("No registered runtimes!");
+        }
+
+        if (typeof _users === "object" && !(_users instanceof SystemUsers)) {
+            throw new TypeError("Not a valid user instance!");
+        }
     }
 
-    this.registeredRuntimes = registeredRuntimes;
-    this.users = users;
-  }
+    public listRuntimes(_call, callback: sendUnaryData<Runtimes>) {
+        callback(null, { runtime: this._registeredRuntimes });
+    }
 
-  public async listRuntimes(_call, callback: sendUnaryData<Runtimes>) {
-    // TODO(aldy505): To elianiva, please acquire the data from this.registeredRuntimes
-    const PACKAGES_DIR = path.join(
-      fileURLToPath(import.meta.url),
-      "..",
-      "..",
-      "packages"
-    );
-    try {
-      const packages = await fs.readdir(PACKAGES_DIR, {
-        withFileTypes: true
-      });
-      const runtimesPromise = packages.map(async (p): Promise<Runtime> => {
-        const packagePath = path.join(PACKAGES_DIR, p.name);
-        const configPath = path.join(packagePath, "config.toml");
-        const configFile = await fs.readFile(configPath, "utf8");
-        const config = toml.parse(configFile);
+    public ping(_call, callback: sendUnaryData<PingResponse>) {
+        callback(null, { message: "OK" });
+    }
 
-        return {
-          language: config.language,
-          version: config.version,
-          compiled: config.compiled,
-          aliases: config.aliases
-        };
-      });
-      const runtimes = await Promise.all(runtimesPromise);
+    public async execute(
+        call: ServerUnaryCall<CodeRequest, CodeResponse>,
+        callback: sendUnaryData<CodeResponse>
+    ) {
+        // TODO(aldy505): should add try catch?
+        const req = call.request;
+        const requestID = randomUUID();
 
-      callback(null, { runtime: runtimes });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      if (err.code === "ENOENT") {
-        this._logger.log(
-          "Failed to read packages directory",
-          Level.ERROR,
-          "",
-          {}
+        // TODO: validate if the runtime is supported, then we acquire the runtime.
+        const runtimeIndex = this._registeredRuntimes.findIndex(
+            (r) => r.language === req.language && r.version === req.version
         );
-      }
+        if (runtimeIndex < 0) {
+            callback(new Error("Runtime not found"), null);
+            this._logger.log("Runtime not found", Level.ERROR, requestID, {
+                language: req.language,
+                version: req.version,
+                code: req.code,
+                runTimeout: String(req.runTimeout),
+                compileTimeout: String(req.compileTimeout)
+            });
+            return;
+        }
+
+        const runtime = this._registeredRuntimes[runtimeIndex];
+
+        // Acquire the available user.
+        const user = this._users.acquire();
+        if (user === null) {
+            callback(new Error("No user available"), null);
+            this._logger.log("No user available", Level.ERROR, requestID, {
+                language: req.language,
+                version: req.version,
+                code: req.code,
+                runTimeout: String(req.runTimeout),
+                compileTimeout: String(req.compileTimeout)
+            });
+            return;
+        }
+
+        // Create a job.
+        const job = new Job(user, runtime, req.code, req.compileTimeout);
+        const filePath = await job.createFile();
+        if (runtime.compiled) {
+            job.compile(filePath);
+        }
+
+        const commandOutput = job.run(filePath);
+        // Release the user.
+        this._users.release(user.uid);
+
+        callback(null, {
+            exitCode: commandOutput.exitCode,
+            language: runtime.language,
+            output: commandOutput.output,
+            stderr: commandOutput.stderr,
+            stdout: commandOutput.stdout,
+            version: runtime.version
+        });
     }
-  }
-
-  public ping(_call, callback: sendUnaryData<PingResponse>) {
-    callback(null, { message: "OK" });
-  }
-
-  public async execute(
-    call: ServerUnaryCall<CodeRequest, CodeResponse>,
-    callback: sendUnaryData<CodeResponse>
-  ) {
-    // TODO(aldy505): should add try catch?
-    const req = call.request;
-
-    // TODO: validate if the runtime is supported, then we acquire the runtime.
-    const runtimeIndex = this.registeredRuntimes.findIndex(r => r.language === req.language && r.version === req.version);
-    if (runtimeIndex < 0) {
-      callback(new Error("Runtime not found"), null);
-      return;
-    }
-
-    const runtime = this.registeredRuntimes[runtimeIndex];
-
-    // Acquire the available user.
-    const user = this.users.acquire();
-    if (user === null) {
-      callback(new Error("No user available"), null);
-      return;
-    }
-
-    // Create a job.
-    const job = new Job(user, runtime, req.code, req.compileTimeout);
-    const filePath = await job.createFile();
-    if (runtime.compiled) {
-      job.compile(filePath);
-    }
-
-    const commandOutput = job.run(filePath);
-    // Release the user.
-    this.users.release(user.uid);
-
-    callback(null, {
-      exitCode: commandOutput.exitCode,
-      language: runtime.language,
-      output: commandOutput.output,
-      stderr: commandOutput.stderr,
-      stdout: commandOutput.stdout,
-      version: runtime.version
-    });
-  }
 }
