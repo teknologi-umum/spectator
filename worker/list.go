@@ -53,3 +53,52 @@ func (d *Dependency) ListFiles(ctx context.Context, in *pb.Member) (*pb.FilesLis
 
 	return &pb.FilesList{Files: files}, nil
 }
+
+func (d *Dependency) ListMultipleFiles(ctx context.Context, in *pb.Members) (*pb.FilesLists, error) {
+	var filesLists []*pb.FilesList
+	for _, member := range in.GetSessionId() {
+		sessionId, err := uuid.Parse(member)
+		if err != nil {
+			defer d.Logger.Log(
+				err.Error(),
+				logger.Level_ERROR.Enum(),
+				in.RequestId,
+				map[string]string{
+					"session_id": member,
+					"function":   "list multiple files",
+					"info":       "parsing uuid",
+				},
+			)
+			return &pb.FilesLists{}, fmt.Errorf("parsing uuid: %v", err)
+		}
+
+		result, err := d.File.ListFiles(ctx, sessionId)
+		if err != nil {
+			defer d.Logger.Log(
+				err.Error(),
+				logger.Level_ERROR.Enum(),
+				in.RequestId,
+				map[string]string{
+					"session_id": member,
+					"function":   "list multiple files",
+					"info":       "listing file",
+				},
+			)
+			return &pb.FilesLists{}, fmt.Errorf("listing file: %v", err)
+		}
+
+		var files []*pb.File
+		for _, file := range result {
+			files = append(files, &pb.File{
+				SessionId:     file.SessionId,
+				StudentNumber: file.StudentNumber,
+				FileUrlJson:   file.JSONFile,
+				FileUrlCsv:    file.CSVFile,
+			})
+		}
+
+		filesLists = append(filesLists, &pb.FilesList{Files: files, SessionId: member})
+	}
+
+	return &pb.FilesLists{FilesList: filesLists}, nil
+}
