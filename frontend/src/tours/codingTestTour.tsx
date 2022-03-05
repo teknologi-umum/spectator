@@ -1,5 +1,7 @@
 import React from "react";
 import type { StepType } from "@reactour/tour";
+import { store } from "@/store";
+import { markTourCompleted } from "@/store/slices/sessionSlice";
 
 export const codingTestTour: StepType[] = [
   {
@@ -139,6 +141,9 @@ export const codingTestTour: StepType[] = [
           local storage as well so don&apos;t worry about losing it.
         </p>
       </>
-    )
+    ),
+    action: () => {
+      store.dispatch(markTourCompleted("personalInfo"));
+    }
   }
 ];

@@ -25,6 +25,7 @@ import {
   LocaleButton
 } from "@/components/CodingTest";
 import { sessionSpoke } from "@/spoke";
+import { useNavigate } from "react-router-dom";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -55,6 +56,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
     snapshotByQuestionNumber
   } = useAppSelector((state) => state.editor);
   const { accessToken } = useAppSelector((state) => state.session);
+  const navigate = useNavigate();
 
   const { t } = useTranslation();
 
@@ -68,6 +70,17 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const endTimer = setInterval(async () => {
+      if (accessToken === null) return;
+
+      await sessionSpoke.endExam({ accessToken });
+      navigate("/sam-test");
+    }, time);
+
+    return () => clearInterval(endTimer);
+  });
 
   const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber!];
   const isSubmitted =

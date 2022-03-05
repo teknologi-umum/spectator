@@ -55,7 +55,7 @@ function SAMTest() {
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
   const { t } = useTranslation();
-  const { accessToken, firstSAMSubmitted } = useAppSelector(
+  const { accessToken, firstSAMSubmitted, tourCompleted } = useAppSelector(
     (state) => state.session
   );
   const { setIsOpen, setCurrentStep } = useTour();
@@ -105,6 +105,7 @@ function SAMTest() {
 
   useEffect(() => {
     document.title = "SAM Test | Spectator";
+    if (tourCompleted.samTest) return;
     setIsOpen(true);
   }, []);
 
