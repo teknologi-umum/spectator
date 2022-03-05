@@ -3,7 +3,7 @@
 namespace Spectator.WorkerClient {
 	public static class ServiceCollectionExtensions {
 		public static IServiceCollection AddWorkerClient(this IServiceCollection services) {
-			services.AddSingleton<WorkerClient>();
+			services.AddSingleton<WorkerServices>();
 			return services;
 		}
 	}

@@ -10,6 +10,7 @@ using Spectator.DomainEvents.ExamReportDomain;
 using Spectator.DomainModels.ExamReportDoman;
 using Spectator.DomainServices.MemoryCache;
 using Spectator.Repositories;
+using Spectator.WorkerClient;
 
 namespace Spectator.DomainServices.ExamReportDomain {
 	public class ExamReportServices {
@@ -17,15 +18,18 @@ namespace Spectator.DomainServices.ExamReportDomain {
 		private readonly ExamReportOptions _examReportOptions;
 		private static readonly TimeSpan ADMIN_SESSION_TTL = TimeSpan.FromMinutes(60);
 		private readonly ISessionEventRepository _sessionEventRepository;
+		private readonly WorkerServices _workerServices;
 
 		public ExamReportServices(
 			IMemoryCache memoryCache,
 			IOptions<ExamReportOptions> optionsAccessor,
-			ISessionEventRepository sessionEventRepository
+			ISessionEventRepository sessionEventRepository,
+			WorkerServices workerServices
 		) {
 			ResultCache.Initialize(out _adminSessionById, memoryCache);
 			_examReportOptions = optionsAccessor.Value;
 			_sessionEventRepository = sessionEventRepository;
+			_workerServices = workerServices;
 		}
 
 		public AdministratorSession Login(string username, string password) {
@@ -79,6 +83,7 @@ namespace Spectator.DomainServices.ExamReportDomain {
 			}
 
 			// TODO: make a gRPC client call to the worker service to acquire the files list
+			
 		}
 	}
 }

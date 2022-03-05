@@ -5,11 +5,11 @@ using Microsoft.Extensions.Options;
 using Spectator.Protos.Worker;
 
 namespace Spectator.WorkerClient {
-	public class WorkerClient {
+	public class WorkerServices {
 		private readonly GrpcChannel _grpcChannel;
 		private readonly Worker.WorkerClient _workerClient;
 
-		public WorkerClient(
+		public WorkerServices(
 			IOptions<WorkerOptions> optionsAccessor
 		) {
 			_grpcChannel = GrpcChannel.ForAddress(optionsAccessor.Value.Address);
