@@ -9,19 +9,23 @@ using Microsoft.Extensions.Options;
 using Spectator.DomainEvents.ExamReportDomain;
 using Spectator.DomainModels.ExamReportDoman;
 using Spectator.DomainServices.MemoryCache;
+using Spectator.Repositories;
 
 namespace Spectator.DomainServices.ExamReportDomain {
 	public class ExamReportServices {
 		private readonly ResultCache<Guid, AdministratorSession> _adminSessionById;
 		private readonly ExamReportOptions _examReportOptions;
 		private static readonly TimeSpan ADMIN_SESSION_TTL = TimeSpan.FromMinutes(60);
+		private readonly ISessionEventRepository _sessionEventRepository;
 
 		public ExamReportServices(
 			IMemoryCache memoryCache,
-			IOptions<ExamReportOptions> optionsAccessor
+			IOptions<ExamReportOptions> optionsAccessor,
+			ISessionEventRepository sessionEventRepository
 		) {
 			ResultCache.Initialize(out _adminSessionById, memoryCache);
 			_examReportOptions = optionsAccessor.Value;
+			_sessionEventRepository = sessionEventRepository;
 		}
 
 		public AdministratorSession Login(string username, string password) {
@@ -61,12 +65,19 @@ namespace Spectator.DomainServices.ExamReportDomain {
 			_adminSessionById.Remove(sessionId);
 		}
 
-		public async Task<ImmutableList<ReportFile>> GetFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
-			if (!_adminSessionById.TryGetValue(sessionId, out var adminSession)
+		public async Task<ImmutableList<ReportFile>> GetFilesAsync(Guid adminSessionId, CancellationToken cancellationToken) {
+			// Authorize admin session
+			if (!_adminSessionById.TryGetValue(adminSessionId, out var adminSession)
 				|| adminSession.ExpiresAt <= DateTimeOffset.UtcNow) {
 				throw new UnauthorizedAccessException();
 			}
-			// TODO: acquire the list of session id from InfluxDB directly
+
+			// Acquire the list of session id from InfluxDB directly
+			var sessionIds = new HashSet<Guid>();
+			await foreach (var sessionId in _sessionEventRepository.GetAllSessionIdsAsync(adminSession, cancellationToken)) {
+				sessionIds.Add(sessionId);
+			}
+
 			// TODO: make a gRPC client call to the worker service to acquire the files list
 		}
 	}
