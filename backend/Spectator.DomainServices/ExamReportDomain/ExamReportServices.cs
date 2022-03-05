@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
@@ -82,8 +83,16 @@ namespace Spectator.DomainServices.ExamReportDomain {
 				sessionIds.Add(sessionId);
 			}
 
-			// TODO: make a gRPC client call to the worker service to acquire the files list
-			
+			// Make a gRPC client call to the worker service to acquire the files list
+			var filesLists = await _workerServices.GetFilesListsBySessionIdsAsync(sessionIds, cancellationToken);
+			return filesLists
+				.SelectMany(filesList => filesList.Files.Select(file => new ReportFile(
+					sessionId: Guid.Parse(filesList.SessionId),
+					studentNumber: file.StudentNumber,
+					jsonFileUrl: file.FileUrlJson,
+					csvFileUrl: file.FileUrlCsv
+				)))
+				.ToImmutableList();
 		}
 	}
 }

@@ -1,4 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Options;
@@ -18,6 +22,20 @@ namespace Spectator.WorkerClient {
 
 		public async Task PingAsync(CancellationToken cancellationToken) {
 			await _workerClient.PingAsync(new EmptyRequest(), cancellationToken: cancellationToken);
+		}
+
+		public async Task<ImmutableList<FilesList>> GetFilesListsBySessionIdsAsync(IReadOnlySet<Guid> sessionIds, CancellationToken cancellationToken) {
+			var reply = await _workerClient.ListMultipleFilesAsync(
+				request: new() {
+					RequestId = Guid.NewGuid().ToString(),
+					SessionId = {
+						from sessionId in sessionIds
+						select sessionId.ToString()
+					}
+				},
+				cancellationToken: cancellationToken
+			);
+			return reply.FilesList.ToImmutableList();
 		}
 	}
 }
