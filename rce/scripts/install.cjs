@@ -52,7 +52,7 @@ function execute(command, workingDirectory = process.cwd()) {
             console.log(compiled);
 
             // Run the test file.
-            const testResult = await execute(config["run_command"].join(" "), packagePath);
+            const testResult = await execute(config["run_command"].join(" ").replace("{file}", config["test_file"]), packagePath);
             console.log(testResult);
 
             if (testResult.trim() !== "Hello world!") {

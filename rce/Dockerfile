@@ -12,8 +12,9 @@ RUN apt-get update && \
 RUN make -C ./nosocket/ all && make -C ./nosocket/ install
 
 RUN npm install \
-    && npm run build \
-    && node ./scripts/install.cjs \
+    && npm run build
+
+RUN node ./scripts/install.cjs \
     && node ./scripts/register-users.cjs
 
 RUN rm -rf node_modules \

@@ -1,6 +1,6 @@
 language = "Java"
 version = "11"
-compiled = true
+compiled = false
 extension = "java"
 build_command = [
     "javac",
