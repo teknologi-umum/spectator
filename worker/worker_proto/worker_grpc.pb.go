@@ -22,6 +22,7 @@ type WorkerClient interface {
 	FunFact(ctx context.Context, in *Member, opts ...grpc.CallOption) (*FunFactResponse, error)
 	GenerateFiles(ctx context.Context, in *Member, opts ...grpc.CallOption) (*EmptyResponse, error)
 	ListFiles(ctx context.Context, in *Member, opts ...grpc.CallOption) (*FilesList, error)
+	ListMultipleFiles(ctx context.Context, in *Members, opts ...grpc.CallOption) (*FilesLists, error)
 }
 
 type workerClient struct {
@@ -68,6 +69,15 @@ func (c *workerClient) ListFiles(ctx context.Context, in *Member, opts ...grpc.C
 	return out, nil
 }
 
+func (c *workerClient) ListMultipleFiles(ctx context.Context, in *Members, opts ...grpc.CallOption) (*FilesLists, error) {
+	out := new(FilesLists)
+	err := c.cc.Invoke(ctx, "/worker_proto.Worker/ListMultipleFiles", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkerServer is the server API for Worker service.
 // All implementations must embed UnimplementedWorkerServer
 // for forward compatibility
@@ -76,6 +86,7 @@ type WorkerServer interface {
 	FunFact(context.Context, *Member) (*FunFactResponse, error)
 	GenerateFiles(context.Context, *Member) (*EmptyResponse, error)
 	ListFiles(context.Context, *Member) (*FilesList, error)
+	ListMultipleFiles(context.Context, *Members) (*FilesLists, error)
 	mustEmbedUnimplementedWorkerServer()
 }
 
@@ -94,6 +105,9 @@ func (UnimplementedWorkerServer) GenerateFiles(context.Context, *Member) (*Empty
 }
 func (UnimplementedWorkerServer) ListFiles(context.Context, *Member) (*FilesList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFiles not implemented")
+}
+func (UnimplementedWorkerServer) ListMultipleFiles(context.Context, *Members) (*FilesLists, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMultipleFiles not implemented")
 }
 func (UnimplementedWorkerServer) mustEmbedUnimplementedWorkerServer() {}
 
@@ -180,6 +194,24 @@ func _Worker_ListFiles_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Worker_ListMultipleFiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Members)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkerServer).ListMultipleFiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/worker_proto.Worker/ListMultipleFiles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkerServer).ListMultipleFiles(ctx, req.(*Members))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Worker_ServiceDesc is the grpc.ServiceDesc for Worker service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +234,10 @@ var Worker_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListFiles",
 			Handler:    _Worker_ListFiles_Handler,
+		},
+		{
+			MethodName: "ListMultipleFiles",
+			Handler:    _Worker_ListMultipleFiles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
