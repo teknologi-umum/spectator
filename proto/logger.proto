@@ -5,6 +5,8 @@ option csharp_namespace = "Spectator.Protos.Logger";
 
 package logger;
 
+option go_package = "logger_proto";
+
 service Logger {
     rpc CreateLog(LogRequest) returns (EmptyResponse);
     rpc ReadLog(ReadLogRequest) returns (ReadLogResponse);
