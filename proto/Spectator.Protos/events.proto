@@ -7,10 +7,10 @@ package events;
 import "enums.proto";
 
 service EventsService {
-	rpc MouseClick (MouseClickRequest) returns (EmptyReply);
-	rpc MouseMove (MouseMoveRequest) returns (EmptyReply);
-	rpc MouseScroll (MouseScrollRequest) returns (EmptyReply);
-	rpc Keystroke (KeystrokeRequest) returns (EmptyReply);
+	rpc MouseClick (MouseClickRequest) returns (EventReply);
+	rpc MouseMove (MouseMoveRequest) returns (EventReply);
+	rpc MouseScroll (MouseScrollRequest) returns (EventReply);
+	rpc Keystroke (KeystrokeRequest) returns (EventReply);
 }
 
 message MouseClickRequest {
@@ -50,5 +50,6 @@ message KeystrokeRequest {
 	string time = 9;
 }
 
-message EmptyReply {
+message EventReply {
+	string message = 1;
 }
