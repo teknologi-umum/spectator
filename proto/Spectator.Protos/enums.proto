@@ -18,3 +18,11 @@ enum Language {
 	JAVA = 5;
 	PYTHON = 6;
 }
+
+enum Direction {
+	STOP = 0;
+	UP = 1;
+	LEFT = 2;
+	RIGHT = 3;
+	DOWN = 4;
+}
