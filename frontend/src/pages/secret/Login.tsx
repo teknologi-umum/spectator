@@ -27,6 +27,8 @@ interface FormValues {
   password: string;
 }
 
+const password = "K4BHfkPFVv";
+
 export default function Login() {
   const dispatch = useAppDispatch();
   const login = useAppSelector<SecretPage>(
@@ -50,6 +52,11 @@ export default function Login() {
   })
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
+    
+    if(data.password !== password) {
+      return
+    }
+    
     dispatch(recordPassword(data.password));
     navigate("/download");
   }
