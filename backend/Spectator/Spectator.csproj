@@ -10,11 +10,12 @@
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
     <UserSecretsId>be3dd7a0-e161-43ae-8fc9-f55e6a5c8b78</UserSecretsId>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="InfluxDB.Client" Version="3.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="6.0.2" />
     <PackageReference Include="RG.Ninja" Version="1.0.8" />
     <PackageReference Include="RG.ProtobufConverters.Json" Version="1.0.6" />
     <PackageReference Include="SignalRSwaggerGen" Version="2.5.0" />

@@ -10,9 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Spectator.LoggerClient\Spectator.LoggerClient.csproj" />
     <ProjectReference Include="..\Spectator.Observables\Spectator.Observables.csproj" />
     <ProjectReference Include="..\Spectator.Piston\Spectator.Piston.csproj" />
     <ProjectReference Include="..\Spectator.Repositories\Spectator.Repositories.csproj" />
+    <ProjectReference Include="..\Spectator.WorkerClient\Spectator.WorkerClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

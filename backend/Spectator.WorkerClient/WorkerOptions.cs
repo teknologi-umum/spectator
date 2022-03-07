@@ -1,5 +1,5 @@
-namespace Spectator.WorkerClient {
+﻿namespace Spectator.WorkerClient {
 	public class WorkerOptions {
-		public string WorkerAddressUrl { get; set; } = "http://localhost:5000";
+		public string Address { get; set; } = "http://localhost:5000";
 	}
 }

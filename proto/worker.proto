@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "spectator/proto/worker";
+option go_package = "worker_proto";
 option csharp_namespace = "Spectator.Protos.Worker";
 
 package worker_proto;
@@ -10,6 +10,7 @@ service Worker {
     rpc FunFact (Member) returns (FunFactResponse);
     rpc GenerateFiles (Member) returns (EmptyResponse);
     rpc ListFiles (Member) returns (FilesList);
+    rpc ListMultipleFiles (Members) returns (FilesLists);
 }
 
 message EmptyRequest {}
@@ -25,6 +26,11 @@ message Member {
     string session_id = 2;
 }
 
+message Members {
+    string request_id = 1;
+    repeated string session_id = 2;
+}
+
 message FunFactResponse {
     int64 words_per_minute = 1;
     double deletion_rate = 2;
@@ -32,7 +38,12 @@ message FunFactResponse {
 }
 
 message FilesList {
-    repeated File files = 1;
+    string session_id = 1;
+    repeated File files = 2;
+}
+
+message FilesLists {
+    repeated FilesList files_list = 1;
 }
 
 message File {

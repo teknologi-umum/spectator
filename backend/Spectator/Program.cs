@@ -10,10 +10,12 @@ using RG.ProtobufConverters.Json;
 using Spectator.DomainServices;
 using Spectator.Hubs;
 using Spectator.JwtAuthentication;
+using Spectator.LoggerClient;
 using Spectator.Observables;
 using Spectator.Piston;
 using Spectator.PoormansAuth;
 using Spectator.RepositoryDALs;
+using Spectator.WorkerClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,12 +32,16 @@ builder.Services.Setup(services => {
 	// Configure options
 	services.Configure<InfluxDbOptions>(builder.Configuration.GetSection("InfluxDbOptions"));
 	services.Configure<PistonOptions>(builder.Configuration.GetSection("PistonOptions"));
+	services.Configure<LoggerOptions>(builder.Configuration.GetSection("LoggerOptions"));
+	services.Configure<WorkerOptions>(builder.Configuration.GetSection("WorkerOptions"));
 
 	// Add application layers
 	services.AddHttpClient();
 	services.AddMemoryCache();
 	services.AddRepositoryDALs();
 	services.AddPistonClient();
+	services.AddLoggerClient();
+	services.AddWorkerClient();
 	services.AddDomainServices();
 	services.AddObservables();
 
