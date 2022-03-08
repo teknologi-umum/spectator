@@ -13,7 +13,7 @@ export class SystemUsers {
             this.users.push({
                 uid: i,
                 gid: defaultGroup,
-                free: false,
+                free: true,
                 username: `code_executor_${i}`
             });
         }

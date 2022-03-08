@@ -11,23 +11,37 @@ const toml = require("toml");
 
 function execute(command, workingDirectory = process.cwd()) {
     return new Promise((resolve, reject) => {
-        cp.exec(
+        const cmd = cp.exec(
             command,
             { cwd: workingDirectory },
-            (error, stdout, stderr) => {
+            (error) => {
                 if (error) {
                     reject(error);
-                    return;
                 }
-
-                if (stderr) {
-                    reject(stderr);
-                    return;
-                }
-
-                resolve(stdout);
             }
         );
+
+        let stdout = "";
+        let stderr = "";
+
+        cmd.stdout.on("data", (data) => {
+            console.log(data.toString());
+            stdout += data.toString();
+        });
+
+        cmd.stderr.on("data", (data) => {
+            console.error(data.toString());
+            stderr += data.toString();
+        });
+
+        cmd.on("close", (code) => {
+            if (code !== 0) {
+                reject(new Error(stderr));
+                return;
+            }
+
+            resolve(stdout);
+        });
     });
 }
 
@@ -37,6 +51,8 @@ function execute(command, workingDirectory = process.cwd()) {
         if (!pkg.isDirectory()) {
             continue;
         }
+
+        console.log(`Installing ${pkg.name}.`);
 
         const packagePath = path.join(__dirname, "..", "packages", pkg.name);
         const installResult = await execute(`./packages/${pkg.name}/install.sh`);

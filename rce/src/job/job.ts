@@ -107,31 +107,50 @@ export class Job implements JobPrerequisites {
         let exitCode = 0;
         let exitSignal = "";
 
-        const cmd = childProcess.spawn(command[0], command.slice(1), {
+        const cmd = childProcess.exec(command.join(" "), {
             cwd: "/code/" + this.user.uid.toString(),
             gid: this.user.gid,
             uid: this.user.uid,
-            shell: false
+            timeout: this.timeout ?? 5_000,
+            encoding: "utf8"
+            // shell: false
+        }, (error) => {
+            if (error !== undefined && error !== null) {
+                stderr = error.message;
+                exitCode = 1;
+            }
         });
 
-        cmd.stdout.on("data", (data) => {
-            stdout += data.toString();
-        });
+        if (cmd.stdout !== null) {
+            cmd.stdout.on("data", (data) => {
+                stdout += data.toString();
+            });
+        }
 
-        cmd.stderr.on("data", (data) => {
-            stderr += data.toString();
-        });
+        if (cmd.stderr !== null) {
+            cmd.stderr.on("data", (data) => {
+                stderr += data.toString();
+            });
+        }
 
         cmd.on("close", (code, signal) => {
             exitCode = code ?? 0;
             exitSignal = signal ?? "";
-        });
 
-        if (stdout !== "") {
-            output += stdout;
-        } else {
-            output += stderr;
-        }
+            if (stdout !== "") {
+                output += stdout;
+            } else {
+                output += stderr;
+            }
+
+            return {
+                stdout,
+                stderr,
+                output,
+                exitCode,
+                signal: exitSignal
+            };
+        });
 
         return {
             stdout,
