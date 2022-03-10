@@ -19,7 +19,7 @@ message MouseClickRequest {
 	bool right_click = 3;
 	bool left_click = 4;
 	bool middle_click = 5;
-	string time = 6;
+	int64 time = 6;
 } 
 
 message MouseMoveRequest {
@@ -30,12 +30,12 @@ message MouseMoveRequest {
 	int32 y_position = 5;
 	int32 window_width = 6;
 	int32 window_height = 7;
-	string time = 8;
+	int64 time = 8;
 }
 
 message MouseScrollRequest {
 	string access_token = 1;
-	string time = 2;
+	int64 time = 2;
 }
 
 message KeystrokeRequest {
@@ -47,7 +47,7 @@ message KeystrokeRequest {
 	bool control = 6;
 	bool meta = 7;
 	bool unrelated_key = 8;
-	string time = 9;
+	int64 time = 9;
 }
 
 message EventReply {
