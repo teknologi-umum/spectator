@@ -16,10 +16,8 @@ service EventsService {
 message MouseClickRequest {
 	string access_token = 1;
 	int32 question_number = 2;
-	bool right_click = 3;
-	bool left_click = 4;
-	bool middle_click = 5;
-	int64 time = 6;
+	enums.MouseButton button = 3;
+	int64 time = 4;
 } 
 
 message MouseMoveRequest {

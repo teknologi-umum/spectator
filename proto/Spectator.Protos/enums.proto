@@ -26,3 +26,9 @@ enum Direction {
 	RIGHT = 3;
 	DOWN = 4;
 }
+
+enum MouseButton {
+	LEFT_BUTTON = 0;
+	RIGHT_BUTTON = 1;
+	MIDDLE_BUTTON = 2;
+}
