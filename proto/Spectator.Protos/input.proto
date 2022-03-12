@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-option csharp_namespace = "Spectator.Protos.Events";
+option csharp_namespace = "Spectator.Protos.Input";
 
-package events;
+package input;
 
 import "enums.proto";
 
-service EventsService {
+service InputService {
 	rpc MouseClick (MouseClickRequest) returns (EventReply);
 	rpc MouseMove (MouseMoveRequest) returns (EventReply);
 	rpc MouseScroll (MouseScrollRequest) returns (EventReply);

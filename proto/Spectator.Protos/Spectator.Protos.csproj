@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <None Remove="enums.proto" />
+    <None Remove="input.proto" />
     <None Remove="session.proto" />
   </ItemGroup>
 
@@ -20,6 +21,7 @@
 
   <ItemGroup>
     <Protobuf Include="enums.proto" />
+    <Protobuf Include="input.proto" />
     <Protobuf Include="session.proto" />
   </ItemGroup>
 
