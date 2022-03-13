@@ -1,11 +1,13 @@
+import { randomUUID } from "crypto";
+import console from "console";
 import grpc from "@grpc/grpc-js";
 import { Environment, Level } from "@/stub/logger_pb";
-import { randomUUID } from "crypto";
 import { LoggerClient } from "@/stub/logger_pb.grpc-client";
 
 export class Logger {
   private _loggerClient: LoggerClient;
   private readonly _language = "Javascript";
+  private environment: string;
 
   constructor(
     _loggerServerAddress = "",
@@ -18,6 +20,8 @@ export class Logger {
       _loggerServerAddress,
       grpc.credentials.createInsecure()
     );
+
+    this.environment = process.env?.ENVIRONMENT ?? "development";
   }
 
   private _getLogEnvironment() {
@@ -41,6 +45,11 @@ export class Logger {
     requestID: string,
     body: Record<string, string>
   ): void {
+    if (this.environment !== "production") {
+      console.log(`[${this._language}] ${message}`);
+      return;
+    }
+
     const env = this._getLogEnvironment();
 
     if (env !== Environment.PRODUCTION) {

@@ -10,6 +10,7 @@ export async function acquireRuntime() {
         path.resolve(fileURLToPath(import.meta.url), "../../packages"),
         { withFileTypes: true }
     );
+
     for await (const packageDir of packagesDir) {
         if (packageDir.isDirectory()) {
             const packageDirPath = path.resolve(

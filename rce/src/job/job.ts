@@ -49,7 +49,7 @@ export class Job implements JobPrerequisites {
         return filePath;
     }
 
-    compile(filePath: string): void {
+    async compile(filePath: string): Promise<void> {
         if (!this.runtime.compiled) {
             return;
         }
@@ -70,13 +70,13 @@ export class Job implements JobPrerequisites {
             "--",
             ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
         ];
-        const buildCommandOutput = this.executeCommand(buildCommand);
+        const buildCommandOutput = await this.executeCommand(buildCommand);
         if (buildCommandOutput.exitCode !== 0 || buildCommandOutput.stderr) {
             throw new Error(buildCommandOutput.stderr);
         }
     }
 
-    run(filePath: string): CommandOutput {
+    async run(filePath: string): Promise<CommandOutput> {
         const fileName = path.basename(filePath);
         const runCommand: string[] = [
             "nice",
@@ -97,67 +97,66 @@ export class Job implements JobPrerequisites {
                     fileName.replace(`.${this.runtime.extension}`, "")
                 ))
         ];
-        return this.executeCommand(runCommand);
+        const result = await this.executeCommand(runCommand);
+        return result;
     }
 
-    private executeCommand(command: string[]): CommandOutput {
-        let stdout = "";
-        let stderr = "";
-        let output = "";
-        let exitCode = 0;
-        let exitSignal = "";
+    private executeCommand(command: string[]): Promise<CommandOutput> {
+        const { gid, uid } = this.user;
+        const timeout = this.timeout;
 
-        const cmd = childProcess.exec(command.join(" "), {
-            cwd: "/code/" + this.user.uid.toString(),
-            gid: this.user.gid,
-            uid: this.user.uid,
-            timeout: this.timeout ?? 5_000,
-            encoding: "utf8"
-            // shell: false
-        }, (error) => {
-            if (error !== undefined && error !== null) {
-                stderr = error.message;
-                exitCode = 1;
-            }
-        });
+        return new Promise((resolve, reject) => {
+            let stdout = "";
+            let stderr = "";
+            let output = "";
+            let exitCode = 0;
+            let exitSignal = "";
 
-        if (cmd.stdout !== null) {
-            cmd.stdout.on("data", (data) => {
-                stdout += data.toString();
+            const cmd = childProcess.exec(command.join(" "), {
+                cwd: "/code/" + uid.toString(),
+                gid: gid,
+                uid: uid,
+                timeout: timeout ?? 5_000,
+                encoding: "utf8",
+                shell: "/bin/bash"
+            }, (error) => {
+                if (error !== undefined && error !== null) {
+                    stderr = error.message;
+                    exitCode = 1;
+                    reject(error.message);
+                }
             });
-        }
 
-        if (cmd.stderr !== null) {
-            cmd.stderr.on("data", (data) => {
-                stderr += data.toString();
-            });
-        }
-
-        cmd.on("close", (code, signal) => {
-            exitCode = code ?? 0;
-            exitSignal = signal ?? "";
-
-            if (stdout !== "") {
-                output += stdout;
-            } else {
-                output += stderr;
+            if (cmd.stdout !== null) {
+                cmd.stdout.on("data", (data) => {
+                    stdout += data.toString();
+                });
             }
 
-            return {
-                stdout,
-                stderr,
-                output,
-                exitCode,
-                signal: exitSignal
-            };
-        });
+            if (cmd.stderr !== null) {
+                cmd.stderr.on("data", (data) => {
+                    stderr += data.toString();
+                });
+            }
 
-        return {
-            stdout,
-            stderr,
-            output,
-            exitCode,
-            signal: exitSignal
-        };
+            cmd.on("close", (code, signal) => {
+                exitCode = code ?? 0;
+                exitSignal = signal ?? "";
+
+                if (stdout !== "") {
+                    output += stdout;
+                } else {
+                    output += stderr;
+                }
+
+                resolve({
+                    stdout,
+                    stderr,
+                    output,
+                    exitCode,
+                    signal: exitSignal
+                });
+            });
+        });
     }
 }

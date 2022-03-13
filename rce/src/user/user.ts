@@ -8,6 +8,10 @@ export interface User {
 export class SystemUsers {
     users: User[];
     constructor(start: number, stop: number, defaultGroup: number) {
+        if (start > stop) {
+            throw new TypeError("Invalid user range");
+        }
+
         this.users = [];
         for (let i = start; i <= stop; i++) {
             this.users.push({

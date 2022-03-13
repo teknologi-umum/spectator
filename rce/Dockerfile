@@ -20,4 +20,8 @@ RUN node ./scripts/install.cjs \
 RUN rm -rf node_modules \
     && npm install --production
 
+ENV PORT=50051
+
+EXPOSE ${PORT}
+
 CMD ["node", "./dist/index.js"]

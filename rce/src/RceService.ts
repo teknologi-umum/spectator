@@ -50,10 +50,9 @@ export class RceServiceImpl implements IRceService {
         callback: sendUnaryData<CodeResponse>
     ) {
         const req = call.request;
+        const requestID = randomUUID();
 
         try {
-            const requestID = randomUUID();
-
             // TODO: validate if the runtime is supported, then we acquire the runtime.
             const runtimeIndex = this._registeredRuntimes.findIndex(
                 (r) => r.language === req.language && r.version === req.version
@@ -90,10 +89,10 @@ export class RceServiceImpl implements IRceService {
             const job = new Job(user, runtime, req.code, req.compileTimeout);
             const filePath = await job.createFile();
             if (runtime.compiled) {
-                job.compile(filePath);
+                await job.compile(filePath);
             }
 
-            const commandOutput = job.run(filePath);
+            const commandOutput = await job.run(filePath);
             // Release the user.
             this._users.release(user.uid);
 
@@ -107,7 +106,29 @@ export class RceServiceImpl implements IRceService {
             });
         } catch (err: unknown) {
             console.log(err);
-            callback(err as Error, null);
+
+            if (err instanceof Error) {
+                callback({ details: err.message }, null);
+                this._logger.log(err.message, Level.ERROR, requestID, {
+                    language: req.language,
+                    version: req.version,
+                    code: req.code,
+                    runTimeout: String(req.runTimeout),
+                    compileTimeout: String(req.compileTimeout)
+                });
+                return;
+            }
+
+            callback({ details: "Unknown error" }, null);
+            if (typeof err === "string") {
+                this._logger.log(err, Level.ERROR, requestID, {
+                    language: req.language,
+                    version: req.version,
+                    code: req.code,
+                    runTimeout: String(req.runTimeout),
+                    compileTimeout: String(req.compileTimeout)
+                });
+            }
         }
     }
 }
