@@ -3,6 +3,6 @@ version = "16.14.0"
 compiled = false
 extension = "js"
 build_command = []
-run_command = [ "node", "{file}" ]
+run_command = [ "/usr/bin/node", "{file}" ]
 test_file = "test.js"
 aliases = ["javascript", "js"]

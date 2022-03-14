@@ -44,7 +44,7 @@ export class Job implements JobPrerequisites {
     async createFile(): Promise<string> {
         const filePath = path.resolve("/code", `/${this.user.username}`, `/code.${this.runtime.extension}`);
         await fs.writeFile(filePath, this.code);
-        await fs.chmod(filePath, 0o555);
+        await fs.chmod(filePath, 0o700);
         await fs.chown(filePath, this.user.uid, this.user.gid);
         return filePath;
     }
@@ -64,19 +64,23 @@ export class Job implements JobPrerequisites {
             "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
-            "bash",
-            this.user.username,
-            "--",
-            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
+            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName)).join(" ")
         ];
         const buildCommandOutput = await this.executeCommand(buildCommand);
         if (buildCommandOutput.exitCode !== 0 || buildCommandOutput.stderr) {
             throw new Error(buildCommandOutput.stderr);
         }
+
+        await this.cleanup(filePath);
     }
 
     async run(filePath: string): Promise<CommandOutput> {
         const fileName = path.basename(filePath);
+        let finalFileName: string = fileName;
+        if (this.runtime.compiled) {
+            finalFileName = fileName.replace(`.${this.runtime.extension}`, "");
+        }
+
         const runCommand: string[] = [
             "/usr/bin/nice",
             "prlimit",
@@ -86,15 +90,19 @@ export class Job implements JobPrerequisites {
             "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
-            "bash",
             ...this.runtime.runCommand.map(
                 arg => arg.replace(
                     "{file}",
-                    fileName.replace(`.${this.runtime.extension}`, "")
+                    finalFileName
                 ))
         ];
         const result = await this.executeCommand(runCommand);
+        await this.cleanup(filePath);
         return result;
+    }
+
+    private async cleanup(filePath: string): Promise<void> {
+        await fs.rm(filePath);
     }
 
     private executeCommand(command: string[]): Promise<CommandOutput> {
