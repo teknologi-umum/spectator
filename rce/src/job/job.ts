@@ -56,7 +56,7 @@ export class Job implements JobPrerequisites {
 
         const fileName = path.basename(filePath);
         const buildCommand: string[] = [
-            "nice",
+            "/usr/bin/nice",
             "prlimit",
             "--nproc=128",
             "--nofile=2048",
@@ -64,8 +64,7 @@ export class Job implements JobPrerequisites {
             "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
-            "runuser",
-            "-u",
+            "bash",
             this.user.username,
             "--",
             ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
@@ -79,7 +78,7 @@ export class Job implements JobPrerequisites {
     async run(filePath: string): Promise<CommandOutput> {
         const fileName = path.basename(filePath);
         const runCommand: string[] = [
-            "nice",
+            "/usr/bin/nice",
             "prlimit",
             "--nproc=64",
             "--nofile=2048",
@@ -87,10 +86,7 @@ export class Job implements JobPrerequisites {
             "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
-            "runuser",
-            "-u",
-            this.user.username,
-            "--",
+            "bash",
             ...this.runtime.runCommand.map(
                 arg => arg.replace(
                     "{file}",
@@ -102,7 +98,7 @@ export class Job implements JobPrerequisites {
     }
 
     private executeCommand(command: string[]): Promise<CommandOutput> {
-        const { gid, uid } = this.user;
+        const { gid, uid, username } = this.user;
         const timeout = this.timeout;
 
         return new Promise((resolve, reject) => {
@@ -112,42 +108,44 @@ export class Job implements JobPrerequisites {
             let exitCode = 0;
             let exitSignal = "";
 
-            const cmd = childProcess.exec(command.join(" "), {
-                cwd: "/code/" + uid.toString(),
+            const cmd = childProcess.spawn(command[0], command.slice(1), {
+                env: {
+                    PATH: process.env?.PATH ?? "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                    LOGGER_TOKEN: "",
+                    LOGGER_SERVER_ADDRESS: "",
+                    ENVIRONMENT: ""
+                },
+                cwd: "/code/" + username,
                 gid: gid,
                 uid: uid,
                 timeout: timeout ?? 5_000,
-                encoding: "utf8",
-                shell: "/bin/bash"
-            }, (error) => {
-                if (error !== undefined && error !== null) {
-                    stderr = error.message;
-                    exitCode = 1;
-                    reject(error.message);
-                }
+                stdio: "pipe",
+                detached: true
             });
 
-            if (cmd.stdout !== null) {
-                cmd.stdout.on("data", (data) => {
-                    stdout += data.toString();
-                });
-            }
+            cmd.stdout.on("data", (data) => {
+                stdout += data;
+                output += data;
+            });
 
-            if (cmd.stderr !== null) {
-                cmd.stderr.on("data", (data) => {
-                    stderr += data.toString();
-                });
-            }
+            cmd.stderr.on("data", (data) => {
+                stderr += data;
+                output += data;
+            });
+
+            cmd.on("error", (error) => {
+                cmd.stdout.destroy();
+                cmd.stderr.destroy();
+
+                reject(error.message);
+            });
 
             cmd.on("close", (code, signal) => {
+                cmd.stdout.destroy();
+                cmd.stderr.destroy();
+
                 exitCode = code ?? 0;
                 exitSignal = signal ?? "";
-
-                if (stdout !== "") {
-                    output += stdout;
-                } else {
-                    output += stderr;
-                }
 
                 resolve({
                     stdout,

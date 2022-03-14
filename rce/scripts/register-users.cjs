@@ -33,6 +33,10 @@ function execute(command, workingDirectory = process.cwd()) {
             stderr += data.toString();
         });
 
+        cmd.on("error", (error) => {
+            reject(error);
+        });
+
         cmd.on("close", (code) => {
             if (code !== 0) {
                 reject(new Error(stderr));
@@ -61,5 +65,6 @@ const globalGroupID = 64101;
         const stdout = await execute(`useradd -M --base-dir ${homeDir} --uid ${uid} --gid ${globalGroupID.toString()} --shell /bin/bash --home ${homeDir} --comment "Code executor ${uid}" code_executor_${uid}`);
         console.log(stdout);
         await fs.mkdir(homeDir, { recursive: true });
+        console.log(`Successfully register user code_executor_${uid}`);
     }
 })();

@@ -10,9 +10,8 @@ cd Python-${VERSION}
 ./configure \
   --prefix=/opt/python/${VERSION} \
   --enable-shared \
-  --enable-ipv6 \
   LDFLAGS=-Wl,-rpath=/opt/python/${VERSION}/lib,--disable-new-dtags
-make
+make -j $(nproc)
 make install
 
 cd /tmp

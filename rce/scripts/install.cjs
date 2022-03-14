@@ -34,6 +34,10 @@ function execute(command, workingDirectory = process.cwd()) {
             stderr += data.toString();
         });
 
+        cmd.on("error", (error) => {
+            reject(error);
+        });
+
         cmd.on("close", (code) => {
             if (code !== 0) {
                 reject(new Error(stderr));
