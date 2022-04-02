@@ -21,17 +21,14 @@ import { LocaleButton, ThemeButton } from "@/components/CodingTest";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
-import { Locale as DtoLocale } from "@/stub/enums";
-import { setAccessToken } from "../store/slices/sessionSlice";
 import { personalInfoTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
-import { eventSpoke, sessionSpoke } from "@/spoke";
+import { sessionSpoke } from "@/spoke";
 
 function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { locale } = useAppSelector((state) => state.locale);
   const { accessToken, tourCompleted } = useAppSelector((state) => state.session);
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
@@ -76,34 +73,6 @@ function PersonalInfoPage() {
     // eslint-disable-next-line
     console.log("errors", errors);
   }, [errors]);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      let dtoLocale: DtoLocale;
-      switch (locale) {
-      case "EN":
-        dtoLocale = DtoLocale.EN;
-        break;
-      case "ID":
-        dtoLocale = DtoLocale.ID;
-        break;
-      default:
-        console.error(`Unknown locale: ${locale}`);
-        return;
-      }
-
-      sessionSpoke
-        .startSession({ locale: dtoLocale })
-        .then((sessionReply) => {
-          sessionSpoke.setAccessToken(sessionReply.accessToken);
-          eventSpoke.setAccessToken(sessionReply.accessToken);
-          dispatch(setAccessToken(sessionReply.accessToken));
-        })
-        .catch((err) => {
-          console.error(`Unable to start session. ${err}`);
-        });
-    }
-  }, []);
 
   return (
     <Layout>

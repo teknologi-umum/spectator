@@ -7,7 +7,12 @@ const FAKE_JWT =
 const initialState = {
   accessToken: null,
   firstSAMSubmitted: false,
-  secondSAMSubmitted: false
+  secondSAMSubmitted: false,
+  tourCompleted: {
+    personalInfo: false,
+    samTest: false,
+    codingTest: false
+  }
 };
 
 test("should return the initial state", () => {
@@ -16,6 +21,7 @@ test("should return the initial state", () => {
 
 test("should be able to set access token", () => {
   expect(reducer(initialState, setAccessToken(FAKE_JWT))).toEqual({
+    ...initialState,
     accessToken: FAKE_JWT,
     firstSAMSubmitted: false,
     secondSAMSubmitted: false

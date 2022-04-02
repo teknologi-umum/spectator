@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
@@ -21,35 +21,51 @@ import ToastOverlay from "@/components/ToastOverlay";
 import WithTour from "@/hoc/WithTour";
 import { codingTestTour } from "@/tours";
 import { useTour } from "@reactour/tour";
+import { sessionSpoke } from "@/spoke";
 
 function CodingTest() {
   const { isCollapsed } = useAppSelector((state) => state.sideBar);
-  const { currentQuestionNumber } = useAppSelector(
-    (state) => state.editor
-  );
+  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const { tourCompleted } = useAppSelector((state) => state.session);
-
-  useEventListener("mousedown", mouseClickHandler(currentQuestionNumber));
-  useEventListener("mousemove", mouseMoveHandler(currentQuestionNumber));
-  useEventListener("keydown", keystrokeHandler( currentQuestionNumber));
-
-  useEventListener("scroll", scrollHandler(currentQuestionNumber));
-
-  // disable right click
-  // useEventListener("contextmenu", (e) => e.preventDefault());
+  const { accessToken } = useAppSelector((state) => state.session);
+  const isTokenEmpty = useMemo(() => {
+    return accessToken === null || accessToken === undefined;
+  }, [accessToken]);
 
   const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
-  const { setIsOpen} = useTour();
+  const { setIsOpen } = useTour();
+
+  useEventListener("mousedown", mouseClickHandler(currentQuestionNumber));
+  useEventListener("mousemove", mouseMoveHandler(currentQuestionNumber));
+  useEventListener("keydown", keystrokeHandler(currentQuestionNumber));
+  useEventListener("scroll", scrollHandler(currentQuestionNumber));
+
+  // disable right click
+  // useEventListener("contextmenu", (e) => e.preventDefault());
 
   useEffect(() => {
     document.title = "Coding Test | Spectator";
-    console.log(tourCompleted);
     if (tourCompleted.codingTest) return;
     setIsOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isTokenEmpty) {
+      sessionSpoke
+        .resumeExam({
+          // this is actually safe since accessToken is never going to be null/undefined
+          // thanks to `!isTokenEmpty` check above.
+          // it's just that tsserver can't pick it up, so yeah, `as string` it is.
+          accessToken: accessToken as string
+        })
+        .catch((err) => {
+          console.error(`Unable to resume the exam session. ${err}`);
+        });
+    }
   }, []);
 
   return (
@@ -72,7 +88,7 @@ function CodingTest() {
                   bg={bg}
                   fg={fg}
                   fgDarker={fgDarker}
-                  onScroll={scrollHandler(connection, currentQuestionNumber)}
+                  onScroll={scrollHandler(currentQuestionNumber)}
                 />
               </ReflexElement>
 
@@ -89,10 +105,7 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <Editor
                       bg={bg}
-                      onScroll={scrollHandler(
-                        connection,
-                        currentQuestionNumber
-                      )}
+                      onScroll={scrollHandler(currentQuestionNumber)}
                     />
                   </ReflexElement>
 
@@ -107,10 +120,7 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <ScratchPad
                       bg={bg}
-                      onScroll={scrollHandler(
-                        connection,
-                        currentQuestionNumber
-                      )}
+                      onScroll={scrollHandler(currentQuestionNumber)}
                     />
                   </ReflexElement>
                 </ReflexContainer>

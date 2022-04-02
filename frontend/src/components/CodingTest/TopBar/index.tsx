@@ -164,6 +164,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           fg={fg}
           title={currentLanguage}
           data-tour="topbar-step-3"
+          data-testid="editor-language-select"
         >
           <MenuOptionGroup
             type="radio"
@@ -190,6 +191,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           fg={fg}
           title={fontSize + "px"}
           data-tour="topbar-step-4"
+          data-testid="editor-fontsize-select"
         >
           <MenuOptionGroup
             type="radio"

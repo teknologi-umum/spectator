@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option csharp_namespace = "Spectator.Protos.Events";
+
+package events;
+
+import "enums.proto";
+
+service EventsService {
+	rpc MouseClick (MouseClickRequest) returns (EventReply);
+	rpc MouseMove (MouseMoveRequest) returns (EventReply);
+	rpc MouseScroll (MouseScrollRequest) returns (EventReply);
+	rpc Keystroke (KeystrokeRequest) returns (EventReply);
+}
+
+message MouseClickRequest {
+	string access_token = 1;
+	int32 question_number = 2;
+	enums.MouseButton button = 3;
+	int64 time = 4;
+} 
+
+message MouseMoveRequest {
+	string access_token = 1;
+	int32 question_number = 2;
+	enums.Direction direction = 3;
+	int32 x_position = 4;
+	int32 y_position = 5;
+	int32 window_width = 6;
+	int32 window_height = 7;
+	int64 time = 8;
+}
+
+message MouseScrollRequest {
+	string access_token = 1;
+	int64 time = 2;
+}
+
+message KeystrokeRequest {
+	string access_token = 1;
+	int32 question_number = 2;
+	string key_char = 3;
+	bool shift = 4;
+	bool alt = 5;
+	bool control = 6;
+	bool meta = 7;
+	bool unrelated_key = 8;
+	int64 time = 9;
+}
+
+message EventReply {
+	string message = 1;
+}
