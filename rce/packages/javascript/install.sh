@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 
-curl -O https://nodejs.org/dist/latest-v16.x/node-v16.14.0-linux-x64.tar.gz
-tar -zxf node-v16.14.0-linux-x64.tar.gz
-cd node-v16.14.0-linux-x64
-mv -v bin/* /usr/bin/
-mv -v include/* /usr/include/
-mv -v lib/* /usr/lib/
-mv -v share/doc/* /usr/share/doc/
-mv -v share/man/* /usr/share/man/
-mv -v share/* /usr/share/
+VERSION=16.14.2
+
+curl -O https://nodejs.org/dist/latest-v16.x/node-v${VERSION}-linux-x64.tar.gz
+tar -zxf node-v${VERSION}-linux-x64.tar.gz
+
+cd node-v${VERSION}-linux-x64
+
+mkdir --parents --verbose /opt/node/${VERSION}/bin \
+    /opt/node/${VERSION}/include /opt/node/${VERSION}/lib  \
+    /opt/node/${VERSION}/share/doc /opt/node/${VERSION}/share/man
+
+mv -v bin/* /opt/node/${VERSION}/bin/
+mv -v include/* /opt/node/${VERSION}/include/
+mv -v lib/* /opt/node/${VERSION}/lib/
+mv -v share/doc/* /opt/node/${VERSION}/share/doc/
+mv -v share/man/* /opt/node/${VERSION}/share/man/
+mv -v share/* /opt/node/${VERSION}/share/
+
 cd ..
-rm -rf node-v16.14.0-linux-x64 node-v16.14.0-linux-x64.tar.gz
+
+rm -rf node-v${VERSION}-linux-x64 node-v${VERSION}-linux-x64.tar.gz

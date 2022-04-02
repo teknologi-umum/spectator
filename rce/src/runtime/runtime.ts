@@ -8,7 +8,7 @@ export class Runtime {
         public runCommand: string[],
         public aliases: string[]
     ) {
-        if (!language || !version || !extension || !runCommand || !aliases) {
+        if (language === "" || version === "" || extension === "" || runCommand.length === 0 || aliases.length === 0) {
             throw new TypeError("Invalid runtime parameters");
         }
 

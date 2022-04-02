@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
+import console from "node:console";
 import childProcess from "child_process";
 import { Runtime } from "@/runtime/runtime";
 import { User } from "@/user/user";
@@ -21,6 +22,9 @@ export interface CommandOutput {
 }
 
 export class Job implements JobPrerequisites {
+    private sourceFilePath: string;
+    private builtFilePath: string;
+
     constructor(
         public user: User,
         public runtime: Runtime,
@@ -28,33 +32,47 @@ export class Job implements JobPrerequisites {
         public timeout?: number,
         public memoryLimit?: number
     ) {
-        if (!user || !runtime || !code) {
+        if (user === undefined
+            || Object.keys(user).length === 0
+            || runtime === undefined
+            || Object.keys(runtime).length === 0
+            || code === null
+            || code === undefined
+            || code === "") {
             throw new TypeError("Invalid job parameters");
         }
 
-        if (!timeout || timeout < 1) {
+        if (timeout === undefined || timeout < 1) {
             this.timeout = 5_000;
         }
 
-        if (!memoryLimit || memoryLimit < 1) {
+        if (memoryLimit === undefined || memoryLimit < 1) {
             this.memoryLimit = 128 * 1024 * 1024;
         }
+
+        this.sourceFilePath = "";
+        this.builtFilePath = "";
     }
 
-    async createFile(): Promise<string> {
-        const filePath = path.resolve("/code", `/${this.user.username}`, `/code.${this.runtime.extension}`);
-        await fs.writeFile(filePath, this.code);
+    async createFile(): Promise<void> {
+        const filePath = path.join("/code", `/${this.user.username}`, `/code.${this.runtime.extension}`);
+        await fs.writeFile(filePath, this.code, { encoding: "utf-8" });
         await fs.chmod(filePath, 0o700);
         await fs.chown(filePath, this.user.uid, this.user.gid);
-        return filePath;
+
+        // Make sure the file is written properly.
+        const stat = await fs.stat(filePath);
+        console.log(`File path: ${filePath}`);
+        console.log(`File stat: ${stat.uid} ${stat.gid} ${stat.mode} ${stat.size}`);
+        this.sourceFilePath = filePath;
     }
 
-    async compile(filePath: string): Promise<void> {
+    async compile(): Promise<void> {
         if (!this.runtime.compiled) {
             return;
         }
 
-        const fileName = path.basename(filePath);
+        const fileName = path.basename(this.sourceFilePath);
         const buildCommand: string[] = [
             "/usr/bin/nice",
             "prlimit",
@@ -64,45 +82,61 @@ export class Job implements JobPrerequisites {
             "--rttime="+this.timeout?.toString(),
             "--as="+this.memoryLimit?.toString(),
             "nosocket",
-            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName)).join(" ")
+            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
         ];
+
         const buildCommandOutput = await this.executeCommand(buildCommand);
-        if (buildCommandOutput.exitCode !== 0 || buildCommandOutput.stderr) {
-            throw new Error(buildCommandOutput.stderr);
+        if (buildCommandOutput.exitCode !== 0) {
+            throw new Error(buildCommandOutput.output);
         }
 
-        await this.cleanup(filePath);
+        this.builtFilePath = this.sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
     }
 
-    async run(filePath: string): Promise<CommandOutput> {
-        const fileName = path.basename(filePath);
-        let finalFileName: string = fileName;
+    async run(): Promise<CommandOutput> {
+        try {
+            let finalFileName: string = path.basename(this.sourceFilePath);
+            if (this.runtime.compiled) {
+                finalFileName = this.builtFilePath.replace(`.${this.runtime.extension}`, "");
+            }
+
+            const runCommand: string[] = [
+                "/usr/bin/nice",
+                "prlimit",
+                "--nproc=64",
+                "--nofile=2048",
+                "--fsize=10000000", // 10MB
+                "--rttime="+this.timeout?.toString(),
+                "--as="+this.memoryLimit?.toString(),
+                "nosocket",
+                ...this.runtime.runCommand.map(
+                    arg => arg.replace(
+                        "{file}",
+                        finalFileName
+                    ))
+            ];
+
+            const result = await this.executeCommand(runCommand);
+            await this.cleanup();
+            return result;
+        } catch (error) {
+            await this.cleanup();
+            throw error;
+        }
+    }
+
+    private async cleanup(): Promise<void> {
+        await fs.rm(this.sourceFilePath);
+        if (process.env.ENVIRONMENT === "development") {
+            console.log(`Cleaned up: ${this.sourceFilePath}`);
+        }
+
         if (this.runtime.compiled) {
-            finalFileName = fileName.replace(`.${this.runtime.extension}`, "");
+            await fs.rm(this.builtFilePath);
+            if (process.env.ENVIRONMENT === "development") {
+                console.log(`Cleaned up: ${this.builtFilePath}`);
+            }
         }
-
-        const runCommand: string[] = [
-            "/usr/bin/nice",
-            "prlimit",
-            "--nproc=64",
-            "--nofile=2048",
-            "--fsize=10000000", // 10MB
-            "--rttime="+this.timeout?.toString(),
-            "--as="+this.memoryLimit?.toString(),
-            "nosocket",
-            ...this.runtime.runCommand.map(
-                arg => arg.replace(
-                    "{file}",
-                    finalFileName
-                ))
-        ];
-        const result = await this.executeCommand(runCommand);
-        await this.cleanup(filePath);
-        return result;
-    }
-
-    private async cleanup(filePath: string): Promise<void> {
-        await fs.rm(filePath);
     }
 
     private executeCommand(command: string[]): Promise<CommandOutput> {
@@ -132,13 +166,21 @@ export class Job implements JobPrerequisites {
             });
 
             cmd.stdout.on("data", (data) => {
-                stdout += data;
-                output += data;
+                stdout += data.toString();
+                output += data.toString();
+
+                if (process.env.ENVIRONMENT === "development") {
+                    console.log(data.toString());
+                }
             });
 
             cmd.stderr.on("data", (data) => {
-                stderr += data;
-                output += data;
+                stderr += data.toString();
+                output += data.toString();
+
+                if (process.env.ENVIRONMENT === "development") {
+                    console.log(data.toString());
+                }
             });
 
             cmd.on("error", (error) => {

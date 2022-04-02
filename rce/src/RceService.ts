@@ -86,13 +86,13 @@ export class RceServiceImpl implements IRceService {
             }
 
             // Create a job.
-            const job = new Job(user, runtime, req.code, req.compileTimeout);
-            const filePath = await job.createFile();
+            const job = new Job(user, runtime, req.code, req.compileTimeout, req.memoryLimit);
+            await job.createFile();
             if (runtime.compiled) {
-                await job.compile(filePath);
+                await job.compile();
             }
 
-            const commandOutput = await job.run(filePath);
+            const commandOutput = await job.run();
             // Release the user.
             this._users.release(user.uid);
 

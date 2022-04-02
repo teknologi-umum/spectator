@@ -65,6 +65,7 @@ const globalGroupID = 64101;
         const stdout = await execute(`useradd -M --base-dir ${homeDir} --uid ${uid} --gid ${globalGroupID.toString()} --shell /bin/bash --home ${homeDir} --comment "Code executor ${uid}" code_executor_${uid}`);
         console.log(stdout);
         await fs.mkdir(homeDir, { recursive: true });
+        await fs.chown(homeDir, Number(uid), globalGroupID);
         console.log(`Successfully register user code_executor_${uid}`);
     }
 })();
