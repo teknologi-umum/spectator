@@ -48,24 +48,24 @@ function execute(command, workingDirectory = process.cwd()) {
     });
 }
 
-const globalGroupID = 64101;
+const GLOBAL_GROUP_ID = 64101;
 
 (async () => {
     await fs.mkdir("/code", { recursive: true });
 
     // Create a new group
-    const groupAddStdout = await execute(`groupadd -g ${globalGroupID.toString()} code_executors`);
+    const groupAddStdout = await execute(`groupadd -g ${GLOBAL_GROUP_ID.toString()} code_executors`);
     console.log(groupAddStdout.toString());
 
     const ints = Array.from(Array(50).keys());
 
     for await (const i of ints) {
-        const uid = (globalGroupID + i).toString();
+        const uid = (GLOBAL_GROUP_ID + i).toString();
         const homeDir = `/code/code_executor_${uid}`;
-        const stdout = await execute(`useradd -M --base-dir ${homeDir} --uid ${uid} --gid ${globalGroupID.toString()} --shell /bin/bash --home ${homeDir} --comment "Code executor ${uid}" code_executor_${uid}`);
+        const stdout = await execute(`useradd -M --base-dir ${homeDir} --uid ${uid} --gid ${GLOBAL_GROUP_ID.toString()} --shell /bin/bash --home ${homeDir} --comment "Code executor ${uid}" code_executor_${uid}`);
         console.log(stdout);
         await fs.mkdir(homeDir, { recursive: true });
-        await fs.chown(homeDir, Number(uid), globalGroupID);
+        await fs.chown(homeDir, Number(uid), GLOBAL_GROUP_ID );
         console.log(`Successfully register user code_executor_${uid}`);
     }
 })();

@@ -9,8 +9,8 @@ export interface JobPrerequisites {
     user: User
     runtime: Runtime
     code: string
-    timeout?: number
-    memoryLimit?: number
+    timeout: number
+    memoryLimit: number
 }
 
 export interface CommandOutput {
@@ -24,13 +24,15 @@ export interface CommandOutput {
 export class Job implements JobPrerequisites {
     private _sourceFilePath: string;
     private _builtFilePath: string;
+    public timeout: number;
+    public memoryLimit: number;
 
     constructor(
         public user: User,
         public runtime: Runtime,
         public code: string,
-        public timeout?: number,
-        public memoryLimit?: number
+        timeout?: number,
+        memoryLimit?: number
     ) {
         if (user === undefined
             || Object.keys(user).length === 0
@@ -42,16 +44,20 @@ export class Job implements JobPrerequisites {
             throw new TypeError("Invalid job parameters");
         }
 
-        if (timeout === undefined || timeout < 1) {
+        if (timeout !== undefined && timeout !== null && timeout >= 1) {
+            this.timeout = timeout;
+        } else {
             this.timeout = 5_000;
         }
 
-        if (memoryLimit === undefined || memoryLimit < 1) {
+        if (memoryLimit !== undefined && memoryLimit !== null && memoryLimit >= 1) {
+            this.memoryLimit = memoryLimit;
+        } else {
             this.memoryLimit = 128 * 1024 * 1024;
         }
 
-        this.sourceFilePath = "";
-        this.builtFilePath = "";
+        this._sourceFilePath = "";
+        this._builtFilePath = "";
     }
 
     async createFile(): Promise<void> {
@@ -64,7 +70,7 @@ export class Job implements JobPrerequisites {
         const stat = await fs.stat(filePath);
         console.log(`File path: ${filePath}`);
         console.log(`File stat: ${stat.uid} ${stat.gid} ${stat.mode} ${stat.size}`);
-        this.sourceFilePath = filePath;
+        this._sourceFilePath = filePath;
     }
 
     async compile(): Promise<void> {
@@ -72,15 +78,15 @@ export class Job implements JobPrerequisites {
             return;
         }
 
-        const fileName = path.basename(this.sourceFilePath);
+        const fileName = path.basename(this._sourceFilePath);
         const buildCommand: string[] = [
             "/usr/bin/nice",
             "prlimit",
             "--nproc=128",
             "--nofile=2048",
             "--fsize=10000000", // 10MB
-            "--rttime="+this.timeout?.toString(),
-            "--as="+this.memoryLimit?.toString(),
+            "--rttime="+this.timeout.toString(),
+            "--as="+this.memoryLimit.toString(),
             "nosocket",
             ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
         ];
@@ -90,14 +96,14 @@ export class Job implements JobPrerequisites {
             throw new Error(buildCommandOutput.output);
         }
 
-        this.builtFilePath = this.sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
+        this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
     }
 
     async run(): Promise<CommandOutput> {
         try {
-            let finalFileName: string = path.basename(this.sourceFilePath);
+            let finalFileName: string = path.basename(this._sourceFilePath);
             if (this.runtime.compiled) {
-                finalFileName = this.builtFilePath.replace(`.${this.runtime.extension}`, "");
+                finalFileName = this._builtFilePath.replace(`.${this.runtime.extension}`, "");
             }
 
             const runCommand: string[] = [
@@ -106,8 +112,8 @@ export class Job implements JobPrerequisites {
                 "--nproc=64",
                 "--nofile=2048",
                 "--fsize=10000000", // 10MB
-                "--rttime="+this.timeout?.toString(),
-                "--as="+this.memoryLimit?.toString(),
+                "--rttime="+this.timeout.toString(),
+                "--as="+this.memoryLimit.toString(),
                 "nosocket",
                 ...this.runtime.runCommand.map(
                     arg => arg.replace(
@@ -126,15 +132,15 @@ export class Job implements JobPrerequisites {
     }
 
     private async cleanup(): Promise<void> {
-        await fs.rm(this.sourceFilePath);
+        await fs.rm(this._sourceFilePath);
         if (process.env.ENVIRONMENT === "development") {
-            console.log(`Cleaned up: ${this.sourceFilePath}`);
+            console.log(`Cleaned up: ${this._sourceFilePath}`);
         }
 
         if (this.runtime.compiled) {
-            await fs.rm(this.builtFilePath);
+            await fs.rm(this._builtFilePath);
             if (process.env.ENVIRONMENT === "development") {
-                console.log(`Cleaned up: ${this.builtFilePath}`);
+                console.log(`Cleaned up: ${this._builtFilePath}`);
             }
         }
     }
