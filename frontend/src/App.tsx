@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import PersonalInfo from "@/pages/PersonalInfoPage";
 import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
@@ -20,8 +20,10 @@ function App() {
           <Route path="coding-test" element={<CodingTest />} />
           <Route path="fun-fact" element={<FunFact />} />
         </Route>
+        <Route path="/secret" element={<Outlet />}>
           <Route path="login" element={<Login />} />
           <Route path="download" element={<Download />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
