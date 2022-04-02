@@ -22,8 +22,8 @@ export interface CommandOutput {
 }
 
 export class Job implements JobPrerequisites {
-    private sourceFilePath: string;
-    private builtFilePath: string;
+    private _sourceFilePath: string;
+    private _builtFilePath: string;
 
     constructor(
         public user: User,
