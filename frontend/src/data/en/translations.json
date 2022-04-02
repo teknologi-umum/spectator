@@ -13,7 +13,9 @@
       "your_solution": "Your Solution",
       "scratchpad": "Scratchpad",
       "output": "Output",
-      "begin_test": "Begin Test"
+      "begin_test": "Begin Test",
+      "language": "Language",
+      "theme": "Theme"
     },
     "personal_info": {
       "student_number": "Student Number",
@@ -38,6 +40,57 @@
     "confirmation": {
       "title": "Confirmation",
       "body": "In this programming test, ALL of your mouse and keyboard activities will be recorded for data collecting purpose. We will also ask for the camera permission to record your movement. By pressing the confirm button, you fully agree with these conditions and give us your permissions."
+    },
+    "funfact": {
+      "description": "These are some fun facts about you based on our observation during the test.",
+      "session_duration": {
+        "title": "Session Duration",
+        "description": "Session Duration is how long you have been conducting the entire test."
+      },
+      "coding_test_duration": {
+        "title": "Coding Test Duration",
+        "description": "Coding Test Duration is how long you need to finish the coding test."
+      },
+      "words_per_minute": {
+        "title": "Words Per Minute",
+        "description": "Words Per Minute is how many words you can type in a minute. An average person usually has around 40-60 words per minute rate."
+      },
+      "deletion_rate": {
+        "title": "Deletion Rate",
+        "description": "Deletion Rate is how many times you press the backspace and delete key for the entire session."
+      },
+      "unrelated_keys": {
+        "title": "Unrelated Keys",
+        "description": "Unrelated Keys is how many times you press a key that is not related to the test such as typing outside of the code editor and pressing random F-keys."
+      },
+      "mouse_clicks": {
+        "title": "Mouse Clicks",
+        "description": "Mouse Clicks is how many times you click the mouse during the entire session."
+      },
+      "mouse_scrolls": {
+        "title": "Mouse Scrolls",
+        "description": "Mouse Scrolls is how many times you scroll the mouse during the entire session."
+      },
+      "favourite_language": {
+        "title": "Favourite Language",
+        "description": "Favourite Language is the programming language you used the most during the coding test."
+      },
+      "correct_answers": {
+        "title": "Correct Answers",
+        "description": "Correct Answers is how many times you answer the coding test correctly."
+      },
+      "wrong_answers": {
+        "title": "Wrong Answers",
+        "description": "Wrong Answers is how many times you answer the coding test incorrectly."
+      },
+      "unanswered_questions": {
+        "title": "Unanswered Questions",
+        "description": "Unanswered Questions is how many times you did not answer the question in the coding test."
+      },
+      "submission_attempts": {
+        "title": "Submission Attempts",
+        "description": "Submission Attemps is the total number of times you have attempted to submit the test whether it be correct answer or not."
+      }
     }
   }
 }

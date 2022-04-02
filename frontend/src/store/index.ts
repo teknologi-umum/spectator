@@ -18,7 +18,8 @@ import {
   editorReducer,
   examResultReducer,
   themeReducer,
-  sideBarReducer
+  sideBarReducer,
+  signalRReducer
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
@@ -38,7 +39,8 @@ const rootReducer = combineReducers({
   editor: editorReducer,
   examResult: examResultReducer,
   app: themeReducer,
-  sideBar: sideBarReducer
+  sideBar: sideBarReducer,
+  signalR: signalRReducer
 });
 
 const store = configureStore({

@@ -7,7 +7,7 @@ import type { EditorState } from "@/models/EditorState";
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
-  currentQuestionNumber: 0,
+  currentQuestionNumber: 1,
   currentLanguage: "javascript",
   fontSize: 14,
   snapshotByQuestionNumber: {}
