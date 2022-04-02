@@ -28,20 +28,20 @@ function CodingTest() {
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const { tourCompleted } = useAppSelector((state) => state.session);
   const { accessToken } = useAppSelector((state) => state.session);
-  const isTokenEmpty = useMemo(() => { 
-    return (accessToken === null || accessToken === undefined);
+  const isTokenEmpty = useMemo(() => {
+    return accessToken === null || accessToken === undefined;
   }, [accessToken]);
-  
+
   const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
-  
-  const { setIsOpen} = useTour();
-  
+
+  const { setIsOpen } = useTour();
+
   useEventListener("mousedown", mouseClickHandler(currentQuestionNumber));
   useEventListener("mousemove", mouseMoveHandler(currentQuestionNumber));
-  useEventListener("keydown", keystrokeHandler( currentQuestionNumber));
+  useEventListener("keydown", keystrokeHandler(currentQuestionNumber));
   useEventListener("scroll", scrollHandler(currentQuestionNumber));
 
   // disable right click
@@ -55,14 +55,16 @@ function CodingTest() {
 
   useEffect(() => {
     if (!isTokenEmpty) {
-      sessionSpoke.resumeExam({
-        // this is actually safe since accessToken is never going to be null/undefined
-        // thanks to `!isTokenEmpty` check above.
-        // it's just that tsserver can't pick it up, so yeah, `as string` it is.
-        accessToken: accessToken as string
-      }).catch((err) => {
-        console.error(`Unable to resume the exam session. ${err}`);
-      });
+      sessionSpoke
+        .resumeExam({
+          // this is actually safe since accessToken is never going to be null/undefined
+          // thanks to `!isTokenEmpty` check above.
+          // it's just that tsserver can't pick it up, so yeah, `as string` it is.
+          accessToken: accessToken as string
+        })
+        .catch((err) => {
+          console.error(`Unable to resume the exam session. ${err}`);
+        });
     }
   }, []);
 
