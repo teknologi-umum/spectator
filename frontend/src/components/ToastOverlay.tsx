@@ -7,7 +7,7 @@ import { useColorModeValue } from "@/hooks";
 
 export default function ToastOverlay() {
   const toast = useToast();
-  const { state } = useAppSelector((state) => state.signalR);
+  const { connectionState: state } = useAppSelector((state) => state.signalR);
   const [borderColor, setBorderColor] = useState("");
   const toastBg = useColorModeValue("white", "gray.600", "gray.700");
   const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");

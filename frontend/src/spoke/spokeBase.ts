@@ -1,5 +1,5 @@
 import { store } from "@/store";
-import { setState } from "@/store/slices/signalRSlice";
+import { setConnectionState } from "@/store/slices/signalRSlice";
 import * as SignalR from "@microsoft/signalr";
 
 export default class SpokeBase {
@@ -25,16 +25,16 @@ export default class SpokeBase {
       .build();
 
     this._hubConnection.onclose(async () => {
-      store.dispatch(setState(SignalR.HubConnectionState.Disconnected));
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Disconnected));
       await this.start();
     });
 
     this._hubConnection.onreconnecting(() => {
-      store.dispatch(setState(SignalR.HubConnectionState.Reconnecting));
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Reconnecting));
     });
 
     this._hubConnection.onreconnected(() => {
-      store.dispatch(setState(SignalR.HubConnectionState.Connected));
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Connected));
     });
   }
 
@@ -62,7 +62,7 @@ export default class SpokeBase {
 
     try {
       await this._hubConnection.start();
-      store.dispatch(setState(SignalR.HubConnectionState.Connected));
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Connected));
       console.log("SignalR connected.");
     } catch (err) {
       console.log(err);
