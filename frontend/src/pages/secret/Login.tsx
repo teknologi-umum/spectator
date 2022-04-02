@@ -10,7 +10,8 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
-  Input
+  Input,
+  InputGroup
 } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useEffect } from "react";
@@ -25,8 +26,6 @@ interface FormValues {
   password: string;
 }
 
-const password = "K4BHfkPFVv";
-
 export default function Login() {
   const dispatch = useAppDispatch();
   const login = useAppSelector((state) => state.login);
@@ -36,7 +35,6 @@ export default function Login() {
   const boxBg = useColorModeValue("white", "gray.700", "gray.800");
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
-  const border = useColorModeValue("gray.400", "gray.500", "gray.600");
 
   const {
     register,
@@ -48,13 +46,14 @@ export default function Login() {
     reValidateMode: "onBlur"
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    if (data.password !== password) {
+  const onSubmit: SubmitHandler<FormValues> = ({ password }) => {
+    // TODO(elianiva): properly authenticate user from backend
+    if (password !== "something") {
       return;
     }
 
-    dispatch(recordPassword(data.password));
-    navigate("/download");
+    dispatch(recordPassword(password));
+    navigate("/secret/download");
   };
 
   useEffect(() => {
@@ -95,7 +94,6 @@ export default function Login() {
           boxShadow="xl"
           p="8"
           rounded="md"
-          maxW="container.sm"
           mx="auto"
           bg={boxBg}
           color={fg}
@@ -103,35 +101,22 @@ export default function Login() {
           <Heading size="lg" textAlign="center" fontWeight="700">
             Login
           </Heading>
-
           <Box>
-            {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
-            <FormControl
-              mt="6"
-              // isInvalid={errors.programmingExp !== undefined}
-              isInvalid={errors.password !== undefined}
-            >
-              <FormLabel>Password</FormLabel>
-              <Input
-                borderColor={border}
-                type="text"
-                autoComplete="off"
-                {...register("password")}
-              />
-              <FormErrorMessage>Password harus diisi</FormErrorMessage>
+            <FormControl mt="6" isInvalid={errors.password !== undefined}>
+              <Flex mt="6" gap="4">
+                <Input
+                  type="text"
+                  autoComplete="off"
+                  placeholder="Type your password..."
+                  {...register("password")}
+                />
+                <Button colorScheme="blue" type="submit">
+                  Login
+                </Button>
+              </Flex>
+              <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
             </FormControl>
           </Box>
-
-          <Button
-            colorScheme="blue"
-            mx="auto"
-            mt="6"
-            type="submit"
-            display="block"
-          >
-            {/* {t("translation.translations.ui.continue")} */}
-            Submit
-          </Button>
         </Box>
       </Box>
     </Flex>
