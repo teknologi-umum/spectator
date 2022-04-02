@@ -6,7 +6,7 @@ import ToastOverlay from "@/components/ToastOverlay";
 import { eventSpoke, sessionSpoke } from "@/spoke";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { Locale as DtoLocale } from "@/stub/enums";
-import { setAccessToken } from "../store/slices/sessionSlice";
+import { setAccessToken } from "@/store/slices/sessionSlice";
 import { HubConnectionState } from "@microsoft/signalr";
 
 const Layout: FC = ({ children }) => {
