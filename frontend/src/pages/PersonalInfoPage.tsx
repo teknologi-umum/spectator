@@ -75,7 +75,7 @@ function PersonalInfoPage() {
   }, [errors]);
 
   return (
-    <Layout>
+    <Layout display="flex">
       <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
         <ThemeButton
           bg={bg}
@@ -88,7 +88,7 @@ function PersonalInfoPage() {
         display="flex"
         alignItems="center"
         justifyContent="center"
-        height="90vh"
+        height="full"
       >
         <Box
           as="form"

@@ -111,7 +111,7 @@ function SAMTest() {
 
   return (
     <>
-      <Layout>
+      <Layout display="flex">
         <Flex gap={2} position="fixed" left={4} top={4}>
           <ThemeButton
             bg={bg}
@@ -123,11 +123,11 @@ function SAMTest() {
         <Box
           as="form"
           onSubmit={handleSubmit}
-          mt="20"
           p="6"
           rounded="md"
           shadow="lg"
           maxW="1300"
+          height="full"
           mx="auto"
           bg={bg}
         >

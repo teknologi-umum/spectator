@@ -9,14 +9,17 @@ import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "@/store/slices/sessionSlice";
 import { HubConnectionState } from "@microsoft/signalr";
 
-const Layout: FC = ({ children }) => {
+interface LayoutProps {
+  display?: "flex" | "block";
+}
+const Layout: FC<LayoutProps> = ({ display = "block", children }) => {
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
   const dispatch = useAppDispatch();
   const { locale } = useAppSelector((state) => state.locale);
   const { accessToken } = useAppSelector((state) => state.session);
   const { connectionState } = useAppSelector((state) => state.signalR);
-  const isTokenEmpty = useMemo(() => { 
-    return (accessToken === null || accessToken === undefined);
+  const isTokenEmpty = useMemo(() => {
+    return accessToken === null || accessToken === undefined;
   }, [accessToken]);
   const isHubDisconnected = useMemo(() => {
     return connectionState === HubConnectionState.Disconnected;
@@ -55,7 +58,16 @@ const Layout: FC = ({ children }) => {
   return (
     <>
       <ToastOverlay />
-      <Box bg={bg} alignItems="center" w="full" minH="full" py="10" px="4">
+      <Box
+        bg={bg}
+        alignItems="center"
+        justifyContent="center"
+        w="full"
+        minH="full"
+        py="10"
+        px="4"
+        display={display}
+      >
         {children}
       </Box>
     </>
