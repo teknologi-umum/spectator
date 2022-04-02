@@ -25,4 +25,7 @@ jobs:
       - name: Build
         run: npm run build:prod
       - name: Test
+        env:
+          VITE_SESSION_HUB_URL: /fake/session
+          VITE_EVENT_HUB_URL: /fake/event
         run: npm run test:coverage
