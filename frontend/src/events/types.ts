@@ -1,3 +1,5 @@
+// TODO(elianiva): use typings from proto
+
 import type { Direction } from "@/utils/getMouseDirection";
 
 // Bucket name: public

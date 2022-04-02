@@ -1,3 +1,5 @@
+import { store } from "@/store";
+import { setConnectionState } from "@/store/slices/signalRSlice";
 import * as SignalR from "@microsoft/signalr";
 
 export default class SpokeBase {
@@ -5,12 +7,12 @@ export default class SpokeBase {
   protected _accessToken: string;
 
   constructor(hubUrl: string) {
-    this._accessToken = document.cookie
-      .split('; ')
-      .find(c => c.startsWith('ACCESS_TOKEN='))
-      ?.split('=')
-      ?.at(1)
-      ?? "";
+    this._accessToken =
+      document.cookie
+        .split("; ")
+        .find((c) => c.startsWith("ACCESS_TOKEN="))
+        ?.split("=")
+        ?.at(1) ?? "";
     this._hubConnection = new SignalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => this._accessToken,
@@ -23,8 +25,21 @@ export default class SpokeBase {
       .build();
 
     this._hubConnection.onclose(async () => {
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Disconnected));
       await this.start();
     });
+
+    this._hubConnection.onreconnecting(() => {
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Reconnecting));
+    });
+
+    this._hubConnection.onreconnected(() => {
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Connected));
+    });
+  }
+
+  public onClose(cb: (err?: Error | undefined) => void) {
+    return this._hubConnection.onclose(cb);
   }
 
   public setAccessToken(accessToken: string) {
@@ -47,6 +62,7 @@ export default class SpokeBase {
 
     try {
       await this._hubConnection.start();
+      store.dispatch(setConnectionState(SignalR.HubConnectionState.Connected));
       console.log("SignalR connected.");
     } catch (err) {
       console.log(err);

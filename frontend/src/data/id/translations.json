@@ -13,7 +13,9 @@
       "your_solution": "Solusi Kamu",
       "scratchpad": "Corat Coret",
       "output": "Output",
-      "begin_test": "Mulai Test"
+      "begin_test": "Mulai Test",
+      "language": "Bahasa",
+      "theme": "Tema"
     },
     "personal_info": {
       "student_number": "Nomor Mahasiswa",
@@ -38,6 +40,57 @@
     "confirmation": {
       "title": "Konfirmasi",
       "body": "Dalam Programming Test ini, SEMUA aktivitas mouse dan keyboard kamu akan direkam dengan tujuan pengumpulan data. Kami juga akan membutuhkan perizinan kamera untuk merekam pergerakanmu. Dengan menekan tombol konfirmasi, kamu sepenuhnya setuju dengan kondisi yang diberikan dan memberikan perizinanmu."
+    },
+    "funfact": {
+      "description": "Berikut ini adalah beberapa fakta menarik tentang kamu berdasarkan pengamatan yang kami lakukan selama tes berlangsung.",
+      "session_duration": {
+        "title": "Durasi Sesi",
+        "description": "Durasi Sesi adalah berapa lama kamu telah menjalankan tes."
+      },
+      "coding_test_duration": {
+        "title": "Durasi Tes Pemrograman",
+        "description": "Duari Test Pemrograman adalah berapa lama waktu yang kamu butuhkan untuk menyelesaikan tes pemrograman"
+      },
+      "words_per_minute": {
+        "title": "Kata per Menit",
+        "description": "Kata per Menit adalah berapa banyak kata yang mampu kamu tulis dalam satu menit. Orang biasa biasanya memiliki kecepatan sekitar 40-60 kata per menit"
+      },
+      "deletion_rate": {
+        "title": "Jumlah Penghapusan",
+        "description": "Jumlah Penghapusan adalah seberapa banyak kamu menekan tombol backspace dan delete selama sesi berlangsung"
+      },
+      "unrelated_keys": {
+        "title": "Tombol yang Tidak Terkait",
+        "description": "Tombol yang Tidak Terkait adalah seberapa banyak kamu menekan tombol yang tidak terkait dengan tes seperti menekan tombol di luar code editor dan menekan F-keys secara acak."
+      },
+      "mouse_clicks": {
+        "title": "Klik Mouse",
+        "description": "Klik Mouse adalah seberapa banyak kamu menekan tombol mouse selama sesi berlangsung."
+      },
+      "mouse_scrolls": {
+        "title": "Scroll Mouse",
+        "description": "Scroll Mouse adalah seberapa banyak kamu melakukan scroll pada mouse selama sesi berlangsung."
+      },
+      "favourite_language": {
+        "title": "Bahasa Favorit",
+        "description": "Bahasa Favorit adalah bahasa pemrograman yang paling sering kamu gunakan selama tes berlangsung."
+      },
+      "correct_answers": {
+        "title": "Jawaban Benar",
+        "description": "Jawaban Benar adalah seberapa banyak kamu menjawab tes pemrograman dengan benar."
+      },
+      "wrong_answers": {
+        "title": "Jawaban Salah",
+        "description": "Jawaban Salah adalah seberapa banyak kamu menjawab tes pemrograman dengan salah."
+      },
+      "unanswered_questions": {
+        "title": "Pertanyaan Tidak Terjawab",
+        "description": "Pertanyaan Tidak Terjawab adalah seberapa banyak kamu tidak menjawab pertanyaan."
+      },
+      "submission_attempts": {
+        "title": "Percobaan Pengiriman",
+        "description": "Percobaan Pengiriman adalah jumlah dari seberapa banyak kamu telah mencoba untuk menjawab terlepas dari jawaban tersebut benar atau salah."
+      }
     }
   }
 }

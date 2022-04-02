@@ -22,7 +22,6 @@
     "sirv-cli": "^1.0.14"
   },
   "devDependencies": {
-    "@chakra-ui/icons": "^1.1.1",
     "@chakra-ui/react": "^1.7.3",
     "@codemirror/gutter": "^0.19.9",
     "@codemirror/lang-cpp": "^0.19.1",
@@ -35,6 +34,7 @@
     "@fontsource/mulish": "^4.5.2",
     "@hookform/resolvers": "^2.8.5",
     "@protobuf-ts/plugin": "^2.1.0",
+    "@reactour/tour": "^2.9.0",
     "@reduxjs/toolkit": "^1.7.1",
     "@svgr/rollup": "^6.1.2",
     "@teknologi-umum/eslint-config-typescript": "^0.0.5",
@@ -58,7 +58,6 @@
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.22.1",
     "react-i18next": "^11.15.3",
-    "react-icons": "^4.3.1",
     "react-markdown": "^7.1.1",
     "react-redux": "^7.2.6",
     "react-reflex": "^4.0.3",

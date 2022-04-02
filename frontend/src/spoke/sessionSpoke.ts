@@ -20,7 +20,7 @@ class SessionSpoke extends SpokeBase {
 
   public async setLocale(request: SetLocaleRequest): Promise<void> {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("SetLocaleAsync", SetLocaleRequest);
+    return this._hubConnection.invoke("SetLocaleAsync", request);
   }
 
   public async submitPersonalInfo(request: SubmitPersonalInfoRequest): Promise<void> {
@@ -69,4 +69,4 @@ class SessionSpoke extends SpokeBase {
   }
 }
 
-export default new SessionSpoke("/hubs/session");
+export default new SessionSpoke(import.meta.env.VITE_SESSION_HUB_URL);

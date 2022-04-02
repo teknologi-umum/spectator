@@ -6,7 +6,9 @@ import svgr from "@svgr/rollup";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: "classic"
+    }),
     svgr({
       memo: true
     })
@@ -30,12 +32,12 @@ export default defineConfig({
           codemirror_php: ["@codemirror/lang-php"],
           codemirror: ["@codemirror/gutter", "@uiw/react-codemirror"],
           chakra: [
-            "@chakra-ui/icons",
             "@chakra-ui/react",
             "@emotion/react",
             "@emotion/styled",
             "framer-motion"
-          ]
+          ],
+          react_tour: ["@reactour/tour"]
         }
       }
     }

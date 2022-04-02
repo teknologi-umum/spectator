@@ -1,5 +1,5 @@
 import type { Language } from "./Language";
-import type { TestResult } from "./TestResult";
+import type { TestResult } from "@/stub/session";
 
 export interface EditorSnapshot {
   questionNumber: number;

@@ -4,14 +4,21 @@ import type { FC } from "react";
 import { Provider } from "react-redux";
 import { fireEvent, render } from "@testing-library/react";
 import { store } from "@/store";
-import { Menu } from "@/components/CodingTest";
+import TopBar from "@/components/CodingTest/TopBar";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const reduxWrapper: FC = ({ children }) => (
-  <Provider store={store}>{children}</Provider>
+  <Provider store={store}>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={children} />
+      </Routes>
+    </BrowserRouter>
+  </Provider>
 );
 
 test("should be able to change editor language using <Select />", () => {
-  const { getByTestId } = render(<Menu bg="black" fgDarker="white" />, {
+  const { getByTestId } = render(<TopBar bg="black" fg="white" />, {
     wrapper: reduxWrapper
   });
 
@@ -23,7 +30,7 @@ test("should be able to change editor language using <Select />", () => {
 });
 
 test("should be able to change editor fontsize using <Select />", () => {
-  const { getByTestId } = render(<Menu bg="black" fgDarker="white" />, {
+  const { getByTestId } = render(<TopBar bg="black" fg="white" />, {
     wrapper: reduxWrapper
   });
 

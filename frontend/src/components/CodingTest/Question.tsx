@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Flex,
@@ -17,6 +17,7 @@ import { useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import { UIEventHandler } from "react";
 import { useTranslation } from "react-i18next";
+import Result from "./Result";
 
 interface QuestionProps {
   bg: string;
@@ -32,8 +33,18 @@ export default function Question({
   onScroll
 }: QuestionProps) {
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
-  const borderBg = useColorModeValue("gray.300", "gray.400", "gray.400");
-  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
+  const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
+  const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
+  const currentSnapshot = useMemo(
+    () => snapshotByQuestionNumber[currentQuestionNumber],
+    [snapshotByQuestionNumber, currentQuestionNumber]
+  );
+  const isResultTabDisabled = useMemo(
+    () => !(currentSnapshot?.testResults !== null && currentSnapshot?.testResults?.length > 0),
+    [currentSnapshot]
+  );
 
   const { t } = useTranslation();
 
@@ -51,8 +62,12 @@ export default function Question({
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
         <TabList borderColor={borderBg}>
-          <Tab color={fgDarker}>{t("translation.translations.ui.prompt")}</Tab>
-          <Tab color={fgDarker}>
+          <Tab color={fgDarker} data-tour="question-step-1">{t("translation.translations.ui.prompt")}</Tab>
+          <Tab
+            color={fgDarker}
+            isDisabled={isResultTabDisabled}
+            data-tour="question-step-2"
+          >
             {t("translation.translations.ui.your_result")}
           </Tab>
         </TabList>
@@ -61,7 +76,7 @@ export default function Question({
           <TabPanel p="2" h="full">
             <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
               <Heading size="lg" color={fg}>
-                {t(`question.questions.${currentQuestionNumber}.title`)}
+                {t(`question.questions.${currentQuestionNumber - 1}.title`)}
               </Heading>
               <ReactMarkdown
                 components={{
@@ -90,13 +105,13 @@ export default function Question({
                   )
                 }}
               >
-                {t(`question.questions.${currentQuestionNumber}.question`)}
+                {t(`question.questions.${currentQuestionNumber - 1}.question`)}
               </ReactMarkdown>
             </Box>
             1
           </TabPanel>
-          <TabPanel p="2">
-            <Heading>Result</Heading>
+          <TabPanel p="2" h="full">
+            <Result fg={fg} fgDarker={fgDarker} />
           </TabPanel>
         </TabPanels>
       </Tabs>
