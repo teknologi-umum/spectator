@@ -93,7 +93,7 @@ jobs:
           LOGGER_SERVER_TOKEN: testing
           MINIO_TOKEN: ''
   frontend:
-    name: Frontend check
+    name: Frontend
     runs-on: ubuntu-latest
     timeout-minutes: 5
     defaults:
@@ -115,6 +115,30 @@ jobs:
         run: npm run build:prod
       - name: Test
         run: npm run test:coverage
+  rce:
+    name: RCE
+    runs-on: ubuntu-latest
+    container: node:16.14.0-bullseye
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./rce
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup packages && nosocket
+        run: >
+          apt-get update &&
+          apt-get install -y coreutils binutils build-essential libseccomp-dev gcc apt-utils &&
+          make -C ./nosocket/ all && make -C ./nosocket/ install
+      - name: Install dependencies
+        run: npm install
+      - name: Lint
+        run: npx eslint --ext .ts,.js,.cjs .
+      - name: Build
+        run: npm run build
+      - name: Test & coverage
+        run: npm run test
   # configs:
   #   name: Verify config
   #   runs-on: ubuntu-latest

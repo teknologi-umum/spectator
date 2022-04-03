@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package rce;
+
+option java_package = "com.teknologiumum.rce";
+option java_multiple_files = true;
+option go_package = "spectator/proto/rce";
+option csharp_namespace = "Spectator.Protos.Rce";
+
+service CodeExecutionEngineService {
+    rpc ListRuntimes(EmptyRequest) returns (Runtimes);
+    rpc Execute(CodeRequest) returns (CodeResponse);
+    rpc Ping(EmptyRequest) returns (PingResponse);
+}
+
+message EmptyRequest {}
+
+message Runtimes {
+    repeated Runtime runtime = 1;
+}
+
+message Runtime {
+    string language = 1;
+    string version = 2;
+    repeated string aliases = 3;
+    bool compiled = 4;
+}
+
+message PingResponse {
+    string message = 1;
+}
+
+message CodeRequest {
+    string language = 1;
+    string version = 2;
+    string code = 3;
+    int32 compile_timeout = 4;
+    int32 run_timeout = 5;
+	int32 memory_limit = 6;
+}
+
+message CodeResponse {
+    string language = 1;
+    string version = 2;
+    string stdout = 3;
+    string stderr = 4;
+    string output = 5;
+    int32 exitCode = 6;
+}
