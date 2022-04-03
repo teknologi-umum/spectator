@@ -7,7 +7,6 @@ import { LoggerClient } from "@/stub/logger_pb.grpc-client";
 export class Logger {
   private _loggerClient: LoggerClient;
   private readonly _language = "Javascript";
-  private environment: string;
 
   constructor(
     _loggerServerAddress = "",
@@ -20,8 +19,6 @@ export class Logger {
       _loggerServerAddress,
       grpc.credentials.createInsecure()
     );
-
-    this.environment = process.env?.ENVIRONMENT ?? "development";
   }
 
   private _getLogEnvironment() {
@@ -45,16 +42,14 @@ export class Logger {
     requestID: string,
     body: Record<string, string>
   ): void {
-    if (this.environment !== "production") {
-      console.log(`[${this._language}] ${message}`);
-      return;
-    }
-
     const env = this._getLogEnvironment();
 
     if (env !== Environment.PRODUCTION) {
-      // eslint-disable-next-line no-console
       console.log(message);
+
+      if (env === Environment.DEVELOPMENT) {
+        return;
+      }
     }
 
     if (requestID === "") {
@@ -76,7 +71,6 @@ export class Logger {
       },
       (err) => {
         if (err !== null) {
-          // eslint-disable-next-line no-console
           console.error(
             `An error has occured while trying to create a log to the logger service: ${err}\n\nTrying to send: ${message}`
           );

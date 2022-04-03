@@ -13,6 +13,7 @@ import { Logger } from "@/Logger";
 import { KnownOnly } from "./magic";
 import { Level } from "./stub/logger_pb";
 import { randomUUID } from "crypto";
+import console from "console";
 
 export type IRceService = KnownOnly<ICodeExecutionEngineService>;
 

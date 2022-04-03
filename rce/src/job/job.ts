@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
-import console from "node:console";
+import console from "console";
 import childProcess from "child_process";
 import { Runtime } from "@/runtime/runtime";
 import { User } from "@/user/user";
