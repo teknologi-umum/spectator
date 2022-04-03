@@ -21,6 +21,7 @@
   <ItemGroup>
     <Protobuf Include="enums.proto" />
     <Protobuf Include="session.proto" />
+    <Protobuf Include="events.proto" />
   </ItemGroup>
 
 </Project>

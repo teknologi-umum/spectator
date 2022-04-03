@@ -109,6 +109,7 @@ app.UseEndpoints(endpoints => {
 
 // Map SignalR Hubs
 app.MapHub<SessionHub>("/hubs/session");
+app.MapHub<EventHub>("/hubs/event");
 
 // Run app
 app.Run();
