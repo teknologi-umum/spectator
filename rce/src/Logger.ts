@@ -1,6 +1,7 @@
+import { randomUUID } from "crypto";
+import console from "console";
 import grpc from "@grpc/grpc-js";
 import { Environment, Level } from "@/stub/logger_pb";
-import { randomUUID } from "crypto";
 import { LoggerClient } from "@/stub/logger_pb.grpc-client";
 
 export class Logger {
@@ -44,8 +45,11 @@ export class Logger {
     const env = this._getLogEnvironment();
 
     if (env !== Environment.PRODUCTION) {
-      // eslint-disable-next-line no-console
       console.log(message);
+
+      if (env === Environment.DEVELOPMENT) {
+        return;
+      }
     }
 
     if (requestID === "") {
@@ -67,7 +71,6 @@ export class Logger {
       },
       (err) => {
         if (err !== null) {
-          // eslint-disable-next-line no-console
           console.error(
             `An error has occured while trying to create a log to the logger service: ${err}\n\nTrying to send: ${message}`
           );

@@ -13,6 +13,7 @@ import { Logger } from "@/Logger";
 import { KnownOnly } from "./magic";
 import { Level } from "./stub/logger_pb";
 import { randomUUID } from "crypto";
+import console from "console";
 
 export type IRceService = KnownOnly<ICodeExecutionEngineService>;
 
@@ -49,60 +50,86 @@ export class RceServiceImpl implements IRceService {
         call: ServerUnaryCall<CodeRequest, CodeResponse>,
         callback: sendUnaryData<CodeResponse>
     ) {
-        // TODO(aldy505): should add try catch?
         const req = call.request;
         const requestID = randomUUID();
 
-        // TODO: validate if the runtime is supported, then we acquire the runtime.
-        const runtimeIndex = this._registeredRuntimes.findIndex(
-            (r) => r.language === req.language && r.version === req.version
-        );
-        if (runtimeIndex < 0) {
-            callback(new Error("Runtime not found"), null);
-            this._logger.log("Runtime not found", Level.ERROR, requestID, {
-                language: req.language,
-                version: req.version,
-                code: req.code,
-                runTimeout: String(req.runTimeout),
-                compileTimeout: String(req.compileTimeout)
+        try {
+            // TODO: validate if the runtime is supported, then we acquire the runtime.
+            const runtimeIndex = this._registeredRuntimes.findIndex(
+                (r) => r.language === req.language && r.version === req.version
+            );
+            if (runtimeIndex < 0) {
+                callback(new Error("Runtime not found"), null);
+                this._logger.log("Runtime not found", Level.ERROR, requestID, {
+                    language: req.language,
+                    version: req.version,
+                    code: req.code,
+                    runTimeout: String(req.runTimeout),
+                    compileTimeout: String(req.compileTimeout)
+                });
+                return;
+            }
+
+            const runtime = this._registeredRuntimes[runtimeIndex];
+
+            // Acquire the available user.
+            const user = this._users.acquire();
+            if (user === null) {
+                callback(new Error("No user available"), null);
+                this._logger.log("No user available", Level.ERROR, requestID, {
+                    language: req.language,
+                    version: req.version,
+                    code: req.code,
+                    runTimeout: String(req.runTimeout),
+                    compileTimeout: String(req.compileTimeout)
+                });
+                return;
+            }
+
+            // Create a job.
+            const job = new Job(user, runtime, req.code, req.compileTimeout, req.memoryLimit);
+            await job.createFile();
+            if (runtime.compiled) {
+                await job.compile();
+            }
+
+            const commandOutput = await job.run();
+            // Release the user.
+            this._users.release(user.uid);
+
+            callback(null, {
+                exitCode: commandOutput.exitCode,
+                language: runtime.language,
+                output: commandOutput.output,
+                stderr: commandOutput.stderr,
+                stdout: commandOutput.stdout,
+                version: runtime.version
             });
-            return;
+        } catch (err: unknown) {
+            console.log(err);
+
+            if (err instanceof Error) {
+                callback({ details: err.message }, null);
+                this._logger.log(err.message, Level.ERROR, requestID, {
+                    language: req.language,
+                    version: req.version,
+                    code: req.code,
+                    runTimeout: String(req.runTimeout),
+                    compileTimeout: String(req.compileTimeout)
+                });
+                return;
+            }
+
+            callback({ details: "Unknown error" }, null);
+            if (typeof err === "string") {
+                this._logger.log(err, Level.ERROR, requestID, {
+                    language: req.language,
+                    version: req.version,
+                    code: req.code,
+                    runTimeout: String(req.runTimeout),
+                    compileTimeout: String(req.compileTimeout)
+                });
+            }
         }
-
-        const runtime = this._registeredRuntimes[runtimeIndex];
-
-        // Acquire the available user.
-        const user = this._users.acquire();
-        if (user === null) {
-            callback(new Error("No user available"), null);
-            this._logger.log("No user available", Level.ERROR, requestID, {
-                language: req.language,
-                version: req.version,
-                code: req.code,
-                runTimeout: String(req.runTimeout),
-                compileTimeout: String(req.compileTimeout)
-            });
-            return;
-        }
-
-        // Create a job.
-        const job = new Job(user, runtime, req.code, req.compileTimeout);
-        const filePath = await job.createFile();
-        if (runtime.compiled) {
-            job.compile(filePath);
-        }
-
-        const commandOutput = job.run(filePath);
-        // Release the user.
-        this._users.release(user.uid);
-
-        callback(null, {
-            exitCode: commandOutput.exitCode,
-            language: runtime.language,
-            output: commandOutput.output,
-            stderr: commandOutput.stderr,
-            stdout: commandOutput.stdout,
-            version: runtime.version
-        });
     }
 }

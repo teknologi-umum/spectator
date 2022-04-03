@@ -36,6 +36,7 @@ message CodeRequest {
     string code = 3;
     int32 compile_timeout = 4;
     int32 run_timeout = 5;
+	int32 memory_limit = 6;
 }
 
 message CodeResponse {
