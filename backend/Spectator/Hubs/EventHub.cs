@@ -3,63 +3,119 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
+using Spectator.DomainEvents.InputDomain;
+using Spectator.DomainServices.InputDomain;
 using Spectator.PoormansAuth;
+using Spectator.Primitives;
 using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Input;
 
 namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
-	public class EventHub : Hub<IEventHub> {
+	public class EventHub : Hub<IEventHub>, IEventHub {
 		private readonly PoormansAuthentication _poormansAuthentication;
-		private readonly IServiceProvider _serviceProvider;
+		private readonly InputServices _inputServices;
 
 		public EventHub(
 			PoormansAuthentication poormansAuthentication,
-			IServiceProvider serviceProvider
+			InputServices inputServices
 		) {
 			_poormansAuthentication = poormansAuthentication;
-			_serviceProvider = serviceProvider;
+			_inputServices = inputServices;
 		}
 
-		public async Task<EventReply> MouseClickAsync(MouseClickRequest request) {
-			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+		public async Task<EventReply> LogMouseClickedAsync(MouseClickInfo mouseClickInfo) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(mouseClickInfo.AccessToken);
 
-			// TODO: process the request properly
-			Console.WriteLine("MOUSE CLICK", request);
+			// Send event
+			await _inputServices.AddInputEventAsync(new MouseClickedEvent(
+				SessionId: session.Id,
+				Timestamp: DateTimeOffset.UtcNow,
+				X: mouseClickInfo.X,
+				Y: mouseClickInfo.Y,
+				Button: (MouseButton)mouseClickInfo.Button
+			));
 
+			// Reply OK
 			return new EventReply {
 				Message = "OK"
 			};
 		}
 
-		public async Task<EventReply> MouseMoveAsync(MouseMoveRequest request) {
-			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+		public async Task<EventReply> LogMouseMovedAsync(MouseMoveInfo mouseMoveInfo) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(mouseMoveInfo.AccessToken);
 
-			// TODO: process the request properly
-			Console.WriteLine("MOUSE MOVE", request);
+			// Send event
+			await _inputServices.AddInputEventAsync(new MouseMovedEvent(
+				SessionId: session.Id,
+				Timestamp: DateTimeOffset.UtcNow,
+				X: mouseMoveInfo.X,
+				Y: mouseMoveInfo.Y,
+				Direction: (MouseDirection)mouseMoveInfo.Direction
+			));
 
+			// Reply OK
 			return new EventReply {
 				Message = "OK"
 			};
 		}
 
-		public async Task<EventReply> MouseScrollAsync(MouseScrollRequest request) {
-			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+		public async Task<EventReply> LogMouseScrolledAsync(MouseScrollInfo mouseScrollInfo) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(mouseScrollInfo.AccessToken);
 
-			// TODO: process the request properly
-			Console.WriteLine("MOUSE SCROLL", request);
+			// Send event
+			await _inputServices.AddInputEventAsync(new MouseScrolledEvent(
+				SessionId: session.Id,
+				Timestamp: DateTimeOffset.UtcNow,
+				X: mouseScrollInfo.X,
+				Y: mouseScrollInfo.Y,
+				Delta: mouseScrollInfo.Delta
+			));
 
+			// Reply OK
 			return new EventReply {
 				Message = "OK"
 			};
 		}
 
-		public async Task<EventReply> KeystrokeAsync(KeystrokeRequest request) {
-			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+		public async Task<EventReply> LogKeystrokeAsync(KeystrokeInfo keystrokeInfo) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(keystrokeInfo.AccessToken);
 
-			// TODO: process the request properly
-			Console.WriteLine("KEYSTROKE", request);
+			// Send event
+			await _inputServices.AddInputEventAsync(new KeystrokeEvent(
+				SessionId: session.Id,
+				Timestamp: DateTimeOffset.UtcNow,
+				KeyChar: keystrokeInfo.KeyChar,
+				Shift: keystrokeInfo.Shift,
+				Alt: keystrokeInfo.Alt,
+				Control: keystrokeInfo.Control,
+				Meta: keystrokeInfo.Meta,
+				UnrelatedKey: keystrokeInfo.UnrelatedKey
+			));
 
+			// Reply OK
+			return new EventReply {
+				Message = "OK"
+			};
+		}
+
+		public async Task<EventReply> LogWindowSizedAsync(WindowSizeInfo windowSizeInfo) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(windowSizeInfo.AccessToken);
+
+			// Send event
+			await _inputServices.AddInputEventAsync(new WindowSizedEvent(
+				SessionId: session.Id,
+				Timestamp: DateTimeOffset.UtcNow,
+				Width: windowSizeInfo.Width,
+				Height: windowSizeInfo.Height
+			));
+
+			// Reply OK
 			return new EventReply {
 				Message = "OK"
 			};

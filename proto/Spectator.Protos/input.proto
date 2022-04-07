@@ -7,36 +7,41 @@ package input;
 import "enums.proto";
 
 service InputService {
-	rpc MouseClick (MouseClickRequest) returns (EventReply);
-	rpc MouseMove (MouseMoveRequest) returns (EventReply);
-	rpc MouseScroll (MouseScrollRequest) returns (EventReply);
-	rpc Keystroke (KeystrokeRequest) returns (EventReply);
+	rpc LogMouseClicked (MouseClickInfo) returns (EventReply);
+	rpc LogMouseMoved (MouseMoveInfo) returns (EventReply);
+	rpc LogMouseScrolled (MouseScrollInfo) returns (EventReply);
+	rpc LogKeystroke (KeystrokeInfo) returns (EventReply);
+	rpc LogWindowSized (WindowSizeInfo) returns (EventReply);
 }
 
-message MouseClickRequest {
+message MouseClickInfo {
 	string access_token = 1;
 	int32 question_number = 2;
-	enums.MouseButton button = 3;
-	int64 time = 4;
+	int32 x = 3;
+	int32 y = 4;
+	enums.MouseButton button = 5;
+	int64 time = 6;
 } 
 
-message MouseMoveRequest {
+message MouseMoveInfo {
 	string access_token = 1;
 	int32 question_number = 2;
-	enums.Direction direction = 3;
-	int32 x_position = 4;
-	int32 y_position = 5;
-	int32 window_width = 6;
-	int32 window_height = 7;
-	int64 time = 8;
+	int32 x = 3;
+	int32 y = 4;
+	enums.MouseDirection direction = 5;
+	int64 time = 6;
 }
 
-message MouseScrollRequest {
+message MouseScrollInfo {
 	string access_token = 1;
-	int64 time = 2;
+	int32 question_number = 2;
+	int32 x = 3;
+	int32 y = 4;
+	int32 delta = 5;
+	int64 time = 6;
 }
 
-message KeystrokeRequest {
+message KeystrokeInfo {
 	string access_token = 1;
 	int32 question_number = 2;
 	string key_char = 3;
@@ -46,6 +51,14 @@ message KeystrokeRequest {
 	bool meta = 7;
 	bool unrelated_key = 8;
 	int64 time = 9;
+}
+
+message WindowSizeInfo {
+	string access_token = 1;
+	int32 question_number = 2;
+	int32 width = 3;
+	int32 height = 4;
+	int64 time = 5;
 }
 
 message EventReply {

@@ -4,6 +4,11 @@ namespace Spectator.DomainEvents.InputDomain {
 	public record KeystrokeEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,
-		ConsoleKeyInfo KeystrokeInfo
+		string KeyChar,
+		bool Shift,
+		bool Alt,
+		bool Control,
+		bool Meta,
+		bool UnrelatedKey
 	) : InputEventBase(SessionId, Timestamp);
 }
