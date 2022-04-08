@@ -47,3 +47,45 @@ export enum Language {
      */
     PYTHON = 6
 }
+/**
+ * @generated from protobuf enum enums.Direction
+ */
+export enum Direction {
+    /**
+     * @generated from protobuf enum value: STOP = 0;
+     */
+    STOP = 0,
+    /**
+     * @generated from protobuf enum value: UP = 1;
+     */
+    UP = 1,
+    /**
+     * @generated from protobuf enum value: LEFT = 2;
+     */
+    LEFT = 2,
+    /**
+     * @generated from protobuf enum value: RIGHT = 3;
+     */
+    RIGHT = 3,
+    /**
+     * @generated from protobuf enum value: DOWN = 4;
+     */
+    DOWN = 4
+}
+/**
+ * @generated from protobuf enum enums.MouseButton
+ */
+export enum MouseButton {
+    /**
+     * @generated from protobuf enum value: LEFT_BUTTON = 0;
+     */
+    LEFT_BUTTON = 0,
+    /**
+     * @generated from protobuf enum value: RIGHT_BUTTON = 1;
+     */
+    RIGHT_BUTTON = 1,
+    /**
+     * @generated from protobuf enum value: MIDDLE_BUTTON = 2;
+     */
+    MIDDLE_BUTTON = 2
+}

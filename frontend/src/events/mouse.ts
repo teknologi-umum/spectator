@@ -1,20 +1,26 @@
-import { calculateDirection } from "@/utils/getMouseDirection";
-import type { CodingEventMouseClick, CodingEventMouseMove } from "./types";
 import { eventSpoke } from "@/spoke";
+import { MouseButton } from "@/stub/enums";
+import { MouseClickRequest, MouseMoveRequest } from "@/stub/events";
+import { calculateDirection } from "@/utils/getMouseDirection";
 
-export function mouseClickHandler(questionNumber: number | null) {
+const eventButtonToEnum = [
+  MouseButton.LEFT_BUTTON,
+  MouseButton.MIDDLE_BUTTON,
+  MouseButton.RIGHT_BUTTON
+];
+
+export function mouseClickHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
   return async (e: MouseEvent) => {
-    if (questionNumber === null) return;
+    if (questionNumber === null || accessToken === null) return;
 
-    const data: CodingEventMouseClick = {
-      // TODO(elianiva): revisit session_id
-      session_id: "TBD",
-      type: "coding_event_mouseclick",
-      left_click: e.button === 0,
-      middle_click: e.button === 1,
-      right_click: e.button === 2,
-      question_number: questionNumber,
-      time: new Date(Date.now())
+    const data: MouseClickRequest = {
+      accessToken: accessToken,
+      questionNumber: questionNumber,
+      button: eventButtonToEnum[e.button],
+      time: Date.now() as unknown as bigint
     };
 
     try {
@@ -27,25 +33,26 @@ export function mouseClickHandler(questionNumber: number | null) {
 }
 
 // TODO(elianiva): emit position and direction as a single event??
-export function mouseMoveHandler(questionNumber: number | null) {
+export function mouseMoveHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
   return async (e: MouseEvent) => {
-    if (questionNumber === null) return;
+    if (questionNumber === null || accessToken === null) return;
 
     // only emit if it's actually moving
     const direction = calculateDirection(e);
     if (direction === null) return;
 
-    const data: CodingEventMouseMove = {
-      // TODO(elianiva): revisit session_id
-      session_id: "TBD",
-      type: "coding_event_mousemove",
+    const data: MouseMoveRequest = {
+      accessToken: accessToken,
       direction: direction,
-      x_position: e.pageX,
-      y_position: e.pageY,
-      window_width: window.innerWidth,
-      window_height: window.innerHeight,
-      question_number: questionNumber,
-      time: new Date(Date.now())
+      xPosition: e.pageX,
+      yPosition: e.pageY,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+      questionNumber: questionNumber,
+      time: Date.now() as unknown as bigint
     };
 
     try {
