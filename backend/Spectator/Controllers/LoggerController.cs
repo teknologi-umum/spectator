@@ -10,6 +10,7 @@ using Environment = Spectator.Protos.Logger.Environment;
 
 namespace Spectator.Controllers;
 
+[Route("log")]
 public class Logger : Controller {
 	private readonly LoggerServices _loggerClient;
 	private readonly string _loggerAccessToken;
@@ -21,8 +22,7 @@ public class Logger : Controller {
 	}
 
 	[HttpPost]
-	[Route("/log")]
-	public async Task<IActionResult> LogAsync(CancellationToken cancellationToken, [FromBody] LoggerRequest request) {
+	public async Task<IActionResult> LogAsync([FromBody] LoggerRequest request, CancellationToken cancellationToken) {
 		if (request == null) throw new ArgumentNullException(nameof(request));
 		if (request.Timestamp == null) throw new ArgumentNullException(nameof(request.Timestamp));
 		var logData = new LogData {
