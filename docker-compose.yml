@@ -21,7 +21,7 @@ services:
       - ASPNETCORE_InfluxDbOptions__SessionEventsBucket=session_events
       - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
       - ASPNETCORE_InfluxDbOptions__Org=teknum_spectator
-      - ASPNETCORE_PistonOptions__BaseUrl=http://piston/
+      - ASPNETCORE_RceOptions__BaseUrl=http://rce/
       - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
     ports:
       - 5000:80
@@ -69,13 +69,13 @@ services:
     volumes:
       - ./data/influx:/var/lib/influxdb
 
-  piston:
-    image: ./piston/
+  rce:
+    image: ./rce/
     restart: on-failure:5
-    hostname: piston_node
+    hostname: rce_node
     volumes:
-      - ./data/piston:/piston
-  
+      - ./data/rce:/rce
+
   worker:
     build: ./worker/
     restart: always
