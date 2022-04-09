@@ -69,8 +69,9 @@ services:
     build: ./rce/
     restart: on-failure:5
     hostname: rce_node
-    volumes:
-      - ./data/rce:/rce
+    environment:
+      LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+      LOGGER_SERVER_ADDRESS: logger:3000
 
   worker:
     build: ./worker/
