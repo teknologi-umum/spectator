@@ -5,6 +5,7 @@ from utils import random_date
 
 _MouseButton = ["Left", "Right", "Middle"]
 
+
 class InputEventBase:
     session_id: str
     type: str
