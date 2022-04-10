@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+option csharp_namespace = "Spectator.Protos.Input";
+
+package input;
+
+import "enums.proto";
+
+service InputService {
+	rpc LogMouseClicked (MouseClickInfo) returns (EventReply);
+	rpc LogMouseMoved (MouseMoveInfo) returns (EventReply);
+	rpc LogMouseScrolled (MouseScrollInfo) returns (EventReply);
+	rpc LogKeystroke (KeystrokeInfo) returns (EventReply);
+	rpc LogWindowSized (WindowSizeInfo) returns (EventReply);
+}
+
+message MouseClickInfo {
+	string access_token = 1;
+	int32 question_number = 2;
+	int32 x = 3;
+	int32 y = 4;
+	enums.MouseButton button = 5;
+	int64 time = 6;
+} 
+
+message MouseMoveInfo {
+	string access_token = 1;
+	int32 question_number = 2;
+	int32 x = 3;
+	int32 y = 4;
+	enums.MouseDirection direction = 5;
+	int64 time = 6;
+}
+
+message MouseScrollInfo {
+	string access_token = 1;
+	int32 question_number = 2;
+	int32 x = 3;
+	int32 y = 4;
+	int32 delta = 5;
+	int64 time = 6;
+}
+
+message KeystrokeInfo {
+	string access_token = 1;
+	int32 question_number = 2;
+	string key_char = 3;
+	bool shift = 4;
+	bool alt = 5;
+	bool control = 6;
+	bool meta = 7;
+	bool unrelated_key = 8;
+	int64 time = 9;
+}
+
+message WindowSizeInfo {
+	string access_token = 1;
+	int32 question_number = 2;
+	int32 width = 3;
+	int32 height = 4;
+	int64 time = 5;
+}
+
+message EventReply {
+	string message = 1;
+}

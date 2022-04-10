@@ -48,9 +48,9 @@ export enum Language {
     PYTHON = 6
 }
 /**
- * @generated from protobuf enum enums.Direction
+ * @generated from protobuf enum enums.MouseDirection
  */
-export enum Direction {
+export enum MouseDirection {
     /**
      * @generated from protobuf enum value: STOP = 0;
      */

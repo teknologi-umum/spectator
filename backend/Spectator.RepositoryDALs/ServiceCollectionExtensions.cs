@@ -18,6 +18,7 @@ namespace Spectator.RepositoryDALs {
 			services.AddSingleton<IDomainObjectMapper, DomainObjectMapper>();
 			services.AddTransient<IQuestionRepository, QuestionRepositoryDAL>();
 			services.AddTransient<ISessionEventRepository, SessionEventRepositoryDAL>();
+			services.AddTransient<IInputEventRepository, InputEventRepositoryDAL>();
 			return services;
 		}
 	}
