@@ -35,7 +35,7 @@ builder.Services.Setup(services => {
 	services.Configure<LoggerOptions>(builder.Configuration.GetSection("LoggerOptions"));
 	services.Configure<WorkerOptions>(builder.Configuration.GetSection("WorkerOptions"));
 
-	// Add application layers
+	// Add application layers 
 	services.AddHttpClient();
 	services.AddMemoryCache();
 	services.AddRepositoryDALs();
