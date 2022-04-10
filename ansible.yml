@@ -11,21 +11,21 @@
     git_sha: "{{ lookup('env', 'GITHUB_SHA') }}"
   tasks:
     - name: ping to server
-      ping:
+      ansible.builtin.ping:
     # We check if the server is up
     - name: docker enabled and running
-      service:
+      ansible.builtin.service:
         name: docker
         enabled: true
         state: started
     - name: check if the git directory exists
-      command:
+      ansible.builtin.command:
         cmd: ls /home/{{ ssh_username }}/spectator
       changed_when: false
       register: directory_exists
     # We check if there's a running docker container
     - name: check current running docker containers
-      command:
+      ansible.builtin.command:
         cmd: docker-compose ps
         chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
       when: directory_exists.stdout.find('docker-compose.yml') != -1
@@ -33,7 +33,7 @@
     # If there is one, we stop it
     # See: https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html
     - name: stop current running docker container
-      command:
+      ansible.builtin.command:
         cmd: docker-compose down
         chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
       when:
@@ -43,14 +43,14 @@
     # After we stop the docker container, we check the directory that has the git repository
     # If it's exists, we delete it
     - name: remove the old spectator directory
-      file:
+      ansible.builtin.file:
         state: absent
         path: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
       when:
         - directory_exists.stdout.find('docker-compose.yml') != -1
 
     - name: pull git repository
-      git:
+      ansible.builtin.git:
         clone: true
         repo: "https://{{ git_token }}@github.com/teknologi-umum/spectator.git"
         dest: /home/{{ ssh_username }}/spectator
@@ -58,12 +58,12 @@
         version: "{{ git_sha }}"
     # Run the docker container
     - name: build the docker container
-      command:
+      ansible.builtin.command:
         cmd: docker-compose up --no-start
         chdir: /home/{{ ssh_username }}/spectator
       changed_when: false
     - name: start the docker container
-      command:
+      ansible.builtin.command:
         cmd: docker-compose start
         chdir: /home/{{ ssh_username }}/spectator
       changed_when: false

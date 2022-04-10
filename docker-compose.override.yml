@@ -1,0 +1,119 @@
+services:
+  caddy:
+    image: caddy:2.4.6-alpine
+    restart: always
+    volumes:
+      - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - host_pub
+
+  backend:
+    image: ${DOCKER_REGISTRY-}backend
+    build: ./backend/Spectator/
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_InfluxDbOptions__Url=http://influx:8086
+      - ASPNETCORE_InfluxDbOptions__Token=${INFLUXDB_TOKEN}
+      - ASPNETCORE_InfluxDbOptions__SessionEventsBucket=session_events
+      - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
+      - ASPNETCORE_InfluxDbOptions__Org=${INFLUXDB_ORG}
+      - ASPNETCORE_LoggerOptions__AccessToken=${LOGGER_TOKEN}
+      - ASPNETCORE_LoggerOptions__Address=logger:3000
+      - ASPNETCORE_RceOptions__BaseUrl=rce:50051
+      - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
+    ports:
+      - 5000:80
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      - worker
+      - logger
+      - influx
+      - minio
+
+  frontend:
+    build: ./frontend/
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+      - minio
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+    command: server /data --console-address ":9001"
+    restart: always
+    hostname: minio_node
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+    volumes:
+      - ./data/minio:/data
+
+  influx:
+    image: influxdb:2.1.1-alpine
+    hostname: influx_node
+    restart: always
+    environment:
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+    volumes:
+      - ./data/influx:/var/lib/influxdb
+
+  rce:
+    image: ./rce/
+    restart: on-failure:5
+    hostname: rce_node
+    environment:
+      ENVIRONMENT: production
+      PORT: 50051
+      LOGGER_TOKEN: ${LOGGER_TOKEN}
+      LOGGER_SERVER_ADDRESS: logger:3000
+
+  worker:
+    build: ./worker/
+    restart: always
+    environment:
+      ENVIRONMENT: production
+      PORT: 3000
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_HOST: http://influx:8086
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_ID: teknum
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_TOKEN: ''
+      LOGGER_SERVER_ADDRESS: logger:3000
+      LOGGER_TOKEN: ${LOGGER_TOKEN}
+    depends_on:
+      - logger
+      - influx
+      - minio
+
+  logger:
+    build: ./logger/
+    restart: always
+    environment:
+      ENVIRONMENT: production
+      PORT: 3000
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_URL: http://influx:8086
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      ACCESS_TOKEN: ${LOGGER_TOKEN}
+    depends_on:
+      - influx
+
+networks:
+  host_pub:
+    driver: "bridge"
