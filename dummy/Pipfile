@@ -8,6 +8,7 @@ influxdb-client = {extras = ["ciso"], version = "*"}
 python-dotenv = "*"
 
 [dev-packages]
+black = "*"
 
 [requires]
 python_version = "3.10"
