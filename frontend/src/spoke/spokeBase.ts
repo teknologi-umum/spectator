@@ -1,6 +1,7 @@
 import { store } from "@/store";
 import { setConnectionState } from "@/store/slices/signalRSlice";
 import * as SignalR from "@microsoft/signalr";
+import { Logger } from "./logger";
 
 export default class SpokeBase {
   protected _hubConnection: SignalR.HubConnection;
@@ -19,18 +20,20 @@ export default class SpokeBase {
         withCredentials: true
       })
       .withHubProtocol(new SignalR.JsonHubProtocol())
-      // TODO(elianiva): might want to change this later since Debug is very
-      //                 verbose
-      .configureLogging(SignalR.LogLevel.Debug)
+      .configureLogging(new Logger(import.meta.env.VITE_LOGGER_URL))
       .build();
 
     this._hubConnection.onclose(async () => {
-      store.dispatch(setConnectionState(SignalR.HubConnectionState.Disconnected));
+      store.dispatch(
+        setConnectionState(SignalR.HubConnectionState.Disconnected)
+      );
       await this.start();
     });
 
     this._hubConnection.onreconnecting(() => {
-      store.dispatch(setConnectionState(SignalR.HubConnectionState.Reconnecting));
+      store.dispatch(
+        setConnectionState(SignalR.HubConnectionState.Reconnecting)
+      );
     });
 
     this._hubConnection.onreconnected(() => {
