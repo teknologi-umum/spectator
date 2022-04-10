@@ -19,7 +19,7 @@ enum Language {
 	PYTHON = 6;
 }
 
-enum Direction {
+enum MouseDirection {
 	STOP = 0;
 	UP = 1;
 	LEFT = 2;
