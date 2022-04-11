@@ -39,10 +39,19 @@ function CodingTest() {
 
   const { setIsOpen } = useTour();
 
-  useEventListener("mousedown", mouseClickHandler(currentQuestionNumber));
-  useEventListener("mousemove", mouseMoveHandler(currentQuestionNumber));
-  useEventListener("keydown", keystrokeHandler(currentQuestionNumber));
-  useEventListener("scroll", scrollHandler(currentQuestionNumber));
+  useEventListener(
+    "mousedown",
+    mouseClickHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "mousemove",
+    mouseMoveHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "keydown",
+    keystrokeHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener("scroll", scrollHandler(currentQuestionNumber, accessToken));
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
@@ -88,7 +97,7 @@ function CodingTest() {
                   bg={bg}
                   fg={fg}
                   fgDarker={fgDarker}
-                  onScroll={scrollHandler(currentQuestionNumber)}
+                  onScroll={scrollHandler(currentQuestionNumber, accessToken)}
                 />
               </ReflexElement>
 
@@ -105,7 +114,7 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <Editor
                       bg={bg}
-                      onScroll={scrollHandler(currentQuestionNumber)}
+                      onScroll={scrollHandler(currentQuestionNumber, accessToken)}
                     />
                   </ReflexElement>
 
@@ -120,7 +129,7 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <ScratchPad
                       bg={bg}
-                      onScroll={scrollHandler(currentQuestionNumber)}
+                      onScroll={scrollHandler(currentQuestionNumber, accessToken)}
                     />
                   </ReflexElement>
                 </ReflexContainer>
