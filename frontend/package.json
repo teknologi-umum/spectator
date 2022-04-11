@@ -12,7 +12,7 @@
     "test:open": "vitest --open",
     "test:watch": "vitest",
     "test": "vitest run",
-    "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto events.proto"
+    "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto input.proto"
   },
   "dependencies": {
     "@microsoft/signalr": "^6.0.1",
