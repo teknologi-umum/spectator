@@ -43,6 +43,7 @@ from utils import random_date
 
 
 def write_into_file(filename: str, data):
+    # return
     with open("generated/" + filename, "w") as f:
         data = json.dumps(data, sort_keys=True, indent=2, ensure_ascii=False)
         f.write(data)
@@ -53,6 +54,7 @@ def main():
 
     for _ in range(5):
         user = generate_user()
+        print(user["session_id"])
         users.append(user)
 
     print("Generating user personal data...")
@@ -67,17 +69,17 @@ def main():
         current_input_events: list[dict[str, any]] = []
         current_session_events: list[dict[str, any]] = []
         # Generate 2 random dates that are close to each other
-        date_start_int: int = random_date(
+        date_start_int = random_date(
             datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59)
         )
-        date_start: datetime = datetime.fromtimestamp(date_start_int)
-        additional_duration: timedelta = timedelta(minutes=random.randint(6, 21))
-        date_ends: datetime = datetime.fromtimestamp(
+        date_start = datetime.fromtimestamp(date_start_int)
+        additional_duration = timedelta(minutes=random.randint(6, 21))
+        date_ends = datetime.fromtimestamp(
             date_start_int + additional_duration.total_seconds()
         )
 
-        _event_input = ["keystroke", "mousemove", "window_sized", "mouseclick"]
-        _event_session = [
+        INPUT_EVENTS = ["keystroke", "mousemove", "window_sized", "mouseclick"]
+        SESSION_EVENTS = [
             "solution_accepted",
             "solution_rejected",
             "locale_set",
@@ -88,13 +90,14 @@ def main():
             "exam_forfeited",
             "exam_ide_reloaded",
             "exam_started",
+            "session_started",
             "exam_before_sam_submited",
             "exam_after_sam_submitted",
         ]
 
-        for _ in range(random.randint(420 * 10, 666 * 12)):
+        for _ in range(random.randint(1000, 10000)):
             # generate random input event.
-            choice = random.choice(_event_input)
+            choice = random.choice(INPUT_EVENTS)
             if choice == "keystroke":
                 event = generate_event_keystroke(current_session, date_start, date_ends)
             elif choice == "mousemove":
@@ -111,58 +114,68 @@ def main():
         # Add the current events to the list of events
         input_events.extend(current_input_events)
 
-        for _ in range(random.randint(100, 200)):
-            choice = random.choice(_event_session)
-            # true randomness
-            if choice == "solution_accepted":
-                event = generate_event_solution_accepted(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "solution_rejected":
-                event = generate_event_solution_rejected(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "locale_set":
-                event = generate_event_locale_set(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "personal_info_submitted":
-                event = generate_event_personal_info_submitted(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "session_started":
-                event = generate_event_session_started(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "deadline_passed":
-                event = generate_event_deadline_passed(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "exam_ended":
-                event = generate_event_exam_ended(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "exam_forfeited":
-                event = generate_event_exam_forfeited(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "exam_ide_reloaded":
+        # a user always starts a session
+        event = generate_event_session_started(
+            current_session, date_start, date_ends
+        )
+        current_session_events.append(event)
+
+        # first and foremost, personal is going to be submitted
+        event = generate_event_personal_info_submitted(
+            current_session, date_start, date_ends
+        )
+        current_session_events.append(event)
+
+        # after that, they will submit a SAM test result before the exam
+        event = generate_event_before_exam_SAM_Submited(
+            current_session, date_start, date_ends
+        )
+        current_session_events.append(event)
+
+        # and then they will start the exam
+        event = generate_event_exam_started(
+            current_session, date_start, date_ends
+        )
+        current_session_events.append(event)
+
+        # both of these will appear randomly
+        for i in range(0, 10):
+            random_int = random.randint(0, 4)
+            if random_int == 0:
                 event = generate_event_exam_ide_reloaded(
                     current_session, date_start, date_ends
                 )
-            elif choice == "exam_started":
-                event = generate_event_exam_started(
+                current_session_events.append(event)
+            elif random_int == 1:
+                event = generate_event_locale_set(
                     current_session, date_start, date_ends
                 )
-            elif choice == "before_exam_sam_submited":
-                event = generate_event_before_exam_SAM_Submited(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "after_exam_sam_submitted":
-                event = generate_event_after_exam_SAM_Submited(
-                    current_session, date_start, date_ends
-                )
+                current_session_events.append(event)
+
+        # there are 3 ways of ending the test
+        random_int = random.randint(0, 2)
+        if random_int == 0:
+            event = generate_event_deadline_passed(
+                current_session, date_start, date_ends
+            )
             current_session_events.append(event)
+        elif random_int == 1:
+            event = generate_event_exam_ended(
+                current_session, date_start, date_ends
+            )
+            current_session_events.append(event)
+        elif random_int == 2:
+            event = generate_event_exam_forfeited(
+                current_session, date_start, date_ends
+            )
+            current_session_events.append(event)
+
+        # finally, they will submit a SAM test after the exam
+        event = generate_event_after_exam_SAM_Submited(
+            current_session, date_start, date_ends
+        )
+        current_session_events.append(event)
+
         session_event.extend(current_session_events)
     print(f"Generated { len(input_events) } input events. Writing into file.")
     write_into_file("input_events.json", input_events)

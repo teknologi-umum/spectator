@@ -3,7 +3,8 @@ import datetime
 from generate_key_event import event_which_to_event_code
 from utils import random_date
 
-_MouseButton = ["Left", "Right", "Middle"]
+MOUSE_BUTTON = ["Left", "Right", "Middle"]
+MOUSE_DIRECTIONS = ["up", "down", "left", "right"]
 
 class InputEventBase:
     session_id: str
@@ -203,7 +204,7 @@ def generate_event_mousemove(
         dict[str, any]: [description]
     """
     question_number = random.randint(1, 6)
-    direction = random.choice(["up", "down", "left", "right"])
+    direction = random.choice(MOUSE_DIRECTIONS)
     window_height = random.randint(0, 1080)
     window_width = random.randint(0, 1920)
     x_position = random.randint(0, window_width)
@@ -235,7 +236,7 @@ def generate_event_mouseclick(
     window_width = random.randint(0, 1920)
     x_position = random.randint(0, window_width)
     y_position = random.randint(0, window_height)
-    button = random.choice(_MouseButton)
+    button = random.choice(MOUSE_BUTTON)
     time = random_date(date_start, date_ends)
 
     return (

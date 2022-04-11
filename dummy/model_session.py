@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 from utils import random_date
 
-_Language = {
+LANGUAGE = {
     "Undefined": 0,
     "C": 1,
     "CPP": 2,
@@ -13,7 +13,7 @@ _Language = {
     "Python": 6,
 }
 
-_Locale = {"EN": 0, "ID": 1}
+LOCALE = {"EN": 0, "ID": 1}
 
 
 class SessionEventBase:
@@ -26,7 +26,11 @@ class SessionEventBase:
         self._time = time
 
     def as_dictionary(self) -> dict[str, any]:
-        return {"type": self.type, "session_id": self.session_id, "time": self._time}
+        return {
+            "type": self.type,
+            "session_id": self.session_id,
+            "time": self._time
+        }
 
 
 class EventSolution(SessionEventBase):
@@ -114,11 +118,13 @@ class EventLocaleSet(SessionEventBase):
 
     def __init__(self, session_id: str, time: int, locale: int) -> None:
         super().__init__(session_id, time)
-        self.type = "exam_started"
-        self.locale = _Locale[locale]
+        self.type = "locale_set"
+        self.locale = LOCALE[locale]
 
     def as_dictionary(self):
-        return {"locale": self.locale} | super().as_dictionary()
+        return {
+            "locale": self.locale
+        } | super().as_dictionary()
 
 
 class EventPersonalInfoSubmited(SessionEventBase):
@@ -157,11 +163,13 @@ class EventSessionStarted(SessionEventBase):
 
     def __init__(self, session_id: str, time: int, locale: int) -> None:
         super().__init__(session_id, time)
-        self.type = "exam_started"
-        self.locale = _Locale[locale]
+        self.type = "session_started"
+        self.locale = LOCALE[locale]
 
     def as_dictionary(self):
-        return {"locale": self.locale} | super().as_dictionary()
+        return {
+            "locale": self.locale
+        } | super().as_dictionary()
 
 
 class EventDeadlinePassed(SessionEventBase):
@@ -245,7 +253,7 @@ def _generate_event_solution(
     session_id, date_start: datetime, date_ends: datetime
 ) -> dict[str, any]:
     question_number = random.randint(1, 6)
-    language = random.choice(list(_Language.keys()))
+    language = random.choice(list(LANGUAGE.keys()))
     solution = generate_gibberish_code()
     scratchpad = generate_gibberish_code()
     serialized_test_results = ""  # add gibbrish ??
@@ -299,7 +307,7 @@ def generate_event_locale_set(
     session_id, date_start: datetime, date_ends: datetime
 ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    locale = random.choice(list(_Locale.keys()))
+    locale = random.choice(list(LOCALE.keys()))
     return EventLocaleSet(session_id, time, locale).as_dictionary()
 
 
@@ -325,7 +333,7 @@ def generate_event_session_started(
     session_id, date_start: datetime, date_ends: datetime
 ) -> dict[str, any]:
     time = random_date(date_start, date_ends)
-    locale = random.choice(list(_Locale.keys()))
+    locale = random.choice(list(LOCALE.keys()))
     return_object = EventSessionStarted(session_id, time, locale)
     return return_object.as_dictionary()
 
