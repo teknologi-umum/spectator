@@ -41,7 +41,7 @@ from model_user import generate_user
 from utils import random_date
 
 INPUT_EVENTS = ["keystroke", "mousemove", "window_sized", "mouseclick"]
-MINUTES_TO_MILIS = 60 * 1000
+MINUTES_TO_MILLIS = 60 * 1000
 
 
 def write_into_file(filename: str, data):
@@ -70,7 +70,6 @@ def main():
         current_session = user["session_id"]
         current_input_events: list[dict[str, any]] = []
         current_session_events: list[dict[str, any]] = []
-        # Generate 2 random dates that are close to each other
         time = random_date(
             datetime(2022, 1, 1, 0, 0, 0), datetime(2022, 1, 1, 20, 0, 0)
         )
@@ -83,7 +82,7 @@ def main():
 
         # a user need to submit their personal info before starting the exam
         # let's assume every personal info requires at least 1 minute and at most 10 minutes
-        time = time + random.randrange(1, 10) * MINUTES_TO_MILIS
+        time = time + random.randint(1, 10) * MINUTES_TO_MILLIS
         event = generate_personal_info_submitted_event(
             current_session, time
         )
@@ -91,7 +90,7 @@ def main():
 
         # after that, they will submit a SAM test result before the exam
         # let's assume every sam test requires at least 5 minutes and at most 15 minutes
-        time = time + random.randrange(5, 15) * MINUTES_TO_MILIS
+        time = time + random.randint(5, 15) * MINUTES_TO_MILLIS
         event = generate_before_exam_SAM_submited_event(
             current_session, time
         )
@@ -99,7 +98,7 @@ def main():
 
         # and then they will start the exam
         # let's just say they need 30 to 60 seconds to start the exam
-        time = time + random.randrange(30, 60) * 1000  # s to ms conversion
+        time = time + random.randint(30, 60) * 1000  # s to ms conversion
         event = generate_exam_started_event(
             current_session, time
         )
@@ -109,7 +108,7 @@ def main():
         for i in range(0, 10):
             # this event could happen at any time through the exam parallel to other events
             # hence why we don't want to mutate the original `time` variable
-            random_time = time + random.randrange(1, 90) * MINUTES_TO_MILIS
+            random_time = time + random.randint(1, 90) * MINUTES_TO_MILLIS
             random_int = random.randint(0, 4)
             if random_int == 0:
                 event = generate_exam_ide_reloaded_event(
@@ -127,7 +126,7 @@ def main():
             # these events will also happen parallel to each other so we shouldn't mutate the original timestamp
             # the events will be generated in the range of 1 to 90 minutes
             # and the delta will be randomised between 1ms to (9 * 60 * 1000)ms
-            random_time = time + random.randrange(1, 90 * MINUTES_TO_MILIS)
+            random_time = time + random.randint(1, 90 * MINUTES_TO_MILLIS)
             # generate random input event.
             choice = random.choice(INPUT_EVENTS)
             if choice == "keystroke":
@@ -144,7 +143,7 @@ def main():
         for _ in range(6):
             # the question will be submitted in the range of 1 to 80 minutes
             # these events will also happen parallel to the other ones so don't mutate the original timestamp
-            random_time = time + random.randrange(1, 80) * MINUTES_TO_MILIS
+            random_time = time + random.randint(1, 80) * MINUTES_TO_MILLIS
             random_int = random.randint(0, 1)
             if random_int == 0:
                 event = generate_solution_accepted_event(
@@ -161,7 +160,7 @@ def main():
         random_int = random.randint(0, 2)
         if random_int == 0:
             # deadline passed means the time limit has ended
-            time = time + 90 * MINUTES_TO_MILIS
+            time = time + 90 * MINUTES_TO_MILLIS
             event = generate_deadline_passed_event(
                 current_session, time
             )
@@ -170,7 +169,7 @@ def main():
             # exam ended means the user pressed the 'finish' button
             # let's say the minimum time required to finish the test is 30 minutes and the maximum is 89 minutes
             # we don't want it to be 90 minutes otherwise it's going to be the same as deadline passed
-            time = time + random.randrange(30, 89) * MINUTES_TO_MILIS
+            time = time + random.randint(30, 89) * MINUTES_TO_MILLIS
             event = generate_exam_ended_event(
                 current_session, time
             )
@@ -178,7 +177,7 @@ def main():
         elif random_int == 2:
             # exam forfeited means the user pressed the 'surrender' button
             # the logic is going to be the same as exam ended, just with a different range
-            time = time + random.randrange(10, 80) * MINUTES_TO_MILIS
+            time = time + random.randint(10, 80) * MINUTES_TO_MILLIS
             event = generate_exam_forfeited_event(
                 current_session, time
             )
@@ -186,7 +185,7 @@ def main():
 
         # finally, they will submit a SAM test after the exam
         # let's assume every sam test requires at least 5 minutes and at most 15 minutes
-        time = time + random.randrange(5, 15) * MINUTES_TO_MILIS
+        time = time + random.randint(5, 15) * MINUTES_TO_MILLIS
         event = generate_after_exam_SAM_submited_event(
             current_session, time
         )
