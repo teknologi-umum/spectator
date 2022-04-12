@@ -1,6 +1,6 @@
 import { eventSpoke } from "@/spoke";
 import { MouseButton } from "@/stub/enums";
-import { MouseClickRequest, MouseMoveRequest } from "@/stub/events";
+import { MouseClickInfo, MouseMoveInfo } from "@/stub/input";
 import { calculateDirection } from "@/utils/getMouseDirection";
 
 const eventButtonToEnum = [
@@ -16,9 +16,11 @@ export function mouseClickHandler(
   return async (e: MouseEvent) => {
     if (questionNumber === null || accessToken === null) return;
 
-    const data: MouseClickRequest = {
+    const data: MouseClickInfo = {
       accessToken: accessToken,
       questionNumber: questionNumber,
+      x: e.clientX,
+      y: e.clientY,
       button: eventButtonToEnum[e.button],
       time: Date.now() as unknown as bigint
     };
@@ -44,13 +46,11 @@ export function mouseMoveHandler(
     const direction = calculateDirection(e);
     if (direction === null) return;
 
-    const data: MouseMoveRequest = {
+    const data: MouseMoveInfo = {
       accessToken: accessToken,
       direction: direction,
-      xPosition: e.pageX,
-      yPosition: e.pageY,
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
+      x: e.pageX,
+      y: e.pageY,
       questionNumber: questionNumber,
       time: Date.now() as unknown as bigint
     };

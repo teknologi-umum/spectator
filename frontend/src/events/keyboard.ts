@@ -1,5 +1,5 @@
 import { eventSpoke } from "@/spoke";
-import { KeystrokeRequest } from "@/stub/events";
+import { KeystrokeInfo } from "@/stub/input";
 
 const F_KEYS: Record<string, boolean> = {
   F1: true,
@@ -23,7 +23,7 @@ export function keystrokeHandler(
   return async (e: KeyboardEvent) => {
     if (questionNumber === null || accessToken === null) return;
 
-    const data: KeystrokeRequest = {
+    const data: KeystrokeInfo = {
       accessToken: accessToken,
       questionNumber: questionNumber,
       keyChar: e.key,

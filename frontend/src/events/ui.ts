@@ -1,10 +1,7 @@
 import { eventSpoke } from "@/spoke";
-import { MouseScrollRequest } from "@/stub/events";
+import { MouseScrollInfo } from "@/stub/input";
 import type { UIEvent } from "react";
 
-// Only for testing purposes
-// could be deleted later or being adjusted with different concepts
-// after backend is ready
 export function scrollHandler<T extends Element>(
   questionNumber: number | null,
   accessToken: string | null
@@ -12,8 +9,13 @@ export function scrollHandler<T extends Element>(
   return async (e: Event | UIEvent<T, globalThis.UIEvent>) => {
     if (questionNumber === null || accessToken === null) return;
 
-    const data: MouseScrollRequest = {
+    const data: MouseScrollInfo = {
       accessToken: accessToken,
+      // TODO(elianiva): implement proper logic
+      delta: (e.currentTarget as HTMLElement).scrollTop,
+      x: 0,
+      y: 0,
+      questionNumber: questionNumber,
       time: Date.now() as unknown as bigint
     };
 
