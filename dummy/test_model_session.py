@@ -18,6 +18,7 @@ class TestGenerateEvents(unittest.TestCase):
         self.assertNotEqual(event["language"], "")
         self.assertNotEqual(event["scratchpad"], "")
         self.assertAlmostEqual(event["serialized_test_results"], "")
+        # FIXME: 1577861081 not less than or equal to 6
         self.assertLessEqual(event["question_number"], 6)
         self.assertGreaterEqual(event["question_number"], 1)
         self.assertGreaterEqual(event["time"], date_start)
@@ -37,6 +38,7 @@ class TestGenerateEvents(unittest.TestCase):
         self.assertNotEqual(event["language"], "")
         self.assertNotEqual(event["scratchpad"], "")
         self.assertAlmostEqual(event["serialized_test_results"], "")
+        # FIXME: 1577843211 not less than or equal to 6
         self.assertLessEqual(event["question_number"], 6)
         self.assertGreaterEqual(event["question_number"], 1)
         self.assertGreaterEqual(event["time"], date_start)
@@ -54,7 +56,9 @@ class TestGenerateEvents(unittest.TestCase):
 
         self.assertEqual(event["session_id"], "GUID")
         self.assertNotEqual(event["locale"], "")
+        # FIXME: event["time"] is a type of integer, expected a date time
         self.assertGreaterEqual(event["time"], date_start)
+        # FIXME: event["time"] is a type of integer, expected a date time
         self.assertLessEqual(event["time"], date_ends)
 
     def test_generate_event_personal_info_submitted(self):
@@ -72,6 +76,7 @@ class TestGenerateEvents(unittest.TestCase):
         self.assertGreaterEqual(event["years_of_experience"], 1)
         self.assertLessEqual(event["years_of_experience"], 10)
         self.assertGreaterEqual(event["hours_of_practice"], 0)
+        # FIXME: 3534 not less than or equal to 24
         self.assertLessEqual(event["hours_of_practice"], 24)
         self.assertNotEqual(event["familiar_languages"], "")
         self.assertGreaterEqual(event["time"], date_start)
