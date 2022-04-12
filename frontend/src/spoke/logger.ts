@@ -54,3 +54,5 @@ export class Logger implements ILogger {
     }
   }
 }
+
+export const loggerInstance = new Logger(import.meta.env.VITE_LOGGER_URL);

@@ -1,7 +1,9 @@
 import { eventSpoke } from "@/spoke";
+import { loggerInstance } from "@/spoke/logger";
 import { MouseButton } from "@/stub/enums";
 import { MouseClickInfo, MouseMoveInfo } from "@/stub/input";
 import { calculateDirection } from "@/utils/getMouseDirection";
+import { LogLevel } from "@microsoft/signalr";
 
 const eventButtonToEnum = [
   MouseButton.LEFT_BUTTON,
@@ -28,13 +30,17 @@ export function mouseClickHandler(
     try {
       await eventSpoke.mouseClicked(data);
     } catch (err) {
-      // TODO(elianiva): replace with proper logging
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   };
 }
 
-// TODO(elianiva): emit position and direction as a single event??
 export function mouseMoveHandler(
   questionNumber: number | null,
   accessToken: string | null
@@ -58,8 +64,13 @@ export function mouseMoveHandler(
     try {
       await eventSpoke.mouseMoved(data);
     } catch (err) {
-      // TODO(elianiva): replace with proper logging
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   };
 }
