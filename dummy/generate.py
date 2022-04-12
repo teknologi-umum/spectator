@@ -34,12 +34,15 @@ from model_session import (
     generate_event_locale_set,
     generate_event_personal_info_submitted,
     generate_event_session_started,
-    generate_event_solution_accepted,
-    generate_event_solution_rejected,
+    generate_solution_accepted_event,
+    generate_solution_rejected_event,
 )
 
 from model_user import generate_user
 from utils import random_date
+
+INPUT_EVENTS = ["keystroke", "mousemove", "window_sized", "mouseclick"]
+MINUTES_TO_MILIS = 60 * 1000
 
 
 def write_into_file(filename: str, data):
@@ -69,114 +72,130 @@ def main():
         current_input_events: list[dict[str, any]] = []
         current_session_events: list[dict[str, any]] = []
         # Generate 2 random dates that are close to each other
-        date_start_int = random_date(
-            datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59)
+        time = random_date(
+            datetime(2022, 1, 1, 0, 0, 0), datetime(2022, 1, 1, 20, 0, 0)
         )
-        date_start = datetime.fromtimestamp(date_start_int)
-        additional_duration = timedelta(minutes=random.randint(6, 21))
-        date_ends = datetime.fromtimestamp(
-            date_start_int + additional_duration.total_seconds()
-        )
-
-        INPUT_EVENTS = ["keystroke", "mousemove", "window_sized", "mouseclick"]
-        SESSION_EVENTS = [
-            "solution_accepted",
-            "solution_rejected",
-            "locale_set",
-            "personal_info_submitted",
-            "session_started",
-            "deadline_passed",
-            "exam_ended",
-            "exam_forfeited",
-            "exam_ide_reloaded",
-            "exam_started",
-            "session_started",
-            "exam_before_sam_submited",
-            "exam_after_sam_submitted",
-        ]
-
-        for _ in range(random.randint(1000, 10000)):
-            # generate random input event.
-            choice = random.choice(INPUT_EVENTS)
-            if choice == "keystroke":
-                event = generate_event_keystroke(current_session, date_start, date_ends)
-            elif choice == "mousemove":
-                event = generate_event_mousemove(current_session, date_start, date_ends)
-            elif choice == "window_sized":
-                event = generate_event_window_sized(
-                    current_session, date_start, date_ends
-                )
-            elif choice == "mouseclick":
-                event = generate_event_mouseclick(
-                    current_session, date_start, date_ends
-                )
-            current_input_events.append(event)
-        # Add the current events to the list of events
-        input_events.extend(current_input_events)
 
         # a user always starts a session
         event = generate_event_session_started(
-            current_session, date_start, date_ends
+            current_session, time
         )
         current_session_events.append(event)
 
-        # first and foremost, personal is going to be submitted
+        # a user need to submit their personal info before starting the exam
+        # let's assume every personal info requires at least 1 minute and at most 10 minutes
+        time = time + random.randrange(1, 10) * MINUTES_TO_MILIS
         event = generate_event_personal_info_submitted(
-            current_session, date_start, date_ends
+            current_session, time
         )
         current_session_events.append(event)
 
         # after that, they will submit a SAM test result before the exam
+        # let's assume every sam test requires at least 5 minutes and at most 15 minutes
+        time = time + random.randrange(5, 15) * MINUTES_TO_MILIS
         event = generate_event_before_exam_SAM_Submited(
-            current_session, date_start, date_ends
+            current_session, time
         )
         current_session_events.append(event)
 
         # and then they will start the exam
+        # let's just say they need 30 to 60 seconds to start the exam
+        time = time + random.randrange(30, 60) * 1000  # s to ms conversion
         event = generate_event_exam_started(
-            current_session, date_start, date_ends
+            current_session, time
         )
         current_session_events.append(event)
 
         # both of these will appear randomly
         for i in range(0, 10):
+            # this event could happen at any time through the exam parallel to other events
+            # hence why we don't want to mutate the original `time` variable
+            random_time = time + random.randrange(1, 90) * MINUTES_TO_MILIS
             random_int = random.randint(0, 4)
             if random_int == 0:
                 event = generate_event_exam_ide_reloaded(
-                    current_session, date_start, date_ends
+                    current_session, random_time
                 )
                 current_session_events.append(event)
             elif random_int == 1:
                 event = generate_event_locale_set(
-                    current_session, date_start, date_ends
+                    current_session, random_time
                 )
                 current_session_events.append(event)
+
+        # these are the events that will occur in the exam
+        for _ in range(random.randint(1000, 10000)):
+            # these events will also happen parallel to each other so we shouldn't mutate the original timestamp
+            # the events will be generated in the range of 1 to 90 minutes
+            # and the delta will be randomised between 1ms to (9 * 60 * 1000)ms
+            random_time = time + random.randrange(1, 90 * MINUTES_TO_MILIS)
+            # generate random input event.
+            choice = random.choice(INPUT_EVENTS)
+            if choice == "keystroke":
+                event = generate_event_keystroke(current_session, random_time)
+            elif choice == "mousemove":
+                event = generate_event_mousemove(current_session, random_time)
+            elif choice == "window_sized":
+                event = generate_event_window_sized(current_session, random_time)
+            elif choice == "mouseclick":
+                event = generate_event_mouseclick(current_session, random_time)
+            current_input_events.append(event)
+
+        # there will be 6 questions
+        for _ in range(6):
+            # the question will be submitted in the range of 1 to 80 minutes
+            # these events will also happen parallel to the other ones so don't mutate the original timestamp
+            random_time = time + random.randrange(1, 80) * MINUTES_TO_MILIS
+            random_int = random.randint(0, 1)
+            if random_int == 0:
+                event = generate_solution_accepted_event(
+                    current_session, random_time
+                )
+                current_input_events.append(event)
+            elif random_int == 1:
+                event = generate_solution_rejected_event(
+                    current_session, random_time
+                )
+                current_input_events.append(event)
 
         # there are 3 ways of ending the test
         random_int = random.randint(0, 2)
         if random_int == 0:
+            # deadline passed means the time limit has ended
+            time = time + 90 * MINUTES_TO_MILIS
             event = generate_event_deadline_passed(
-                current_session, date_start, date_ends
+                current_session, time
             )
             current_session_events.append(event)
         elif random_int == 1:
+            # exam ended means the user pressed the 'finish' button
+            # let's say the minimum time required to finish the test is 30 minutes and the maximum is 89 minutes
+            # we don't want it to be 90 minutes otherwise it's going to be the same as deadline passed
+            time = time + random.randrange(30, 89) * MINUTES_TO_MILIS
             event = generate_event_exam_ended(
-                current_session, date_start, date_ends
+                current_session, time
             )
             current_session_events.append(event)
         elif random_int == 2:
+            # exam forfeited means the user pressed the 'surrender' button
+            # the logic is going to be the same as exam ended, just with a different range
+            time = time + random.randrange(10, 80) * MINUTES_TO_MILIS
             event = generate_event_exam_forfeited(
-                current_session, date_start, date_ends
+                current_session, time
             )
             current_session_events.append(event)
 
         # finally, they will submit a SAM test after the exam
+        # let's assume every sam test requires at least 5 minutes and at most 15 minutes
+        time = time + random.randrange(5, 15) * MINUTES_TO_MILIS
         event = generate_event_after_exam_SAM_Submited(
-            current_session, date_start, date_ends
+            current_session, time
         )
         current_session_events.append(event)
 
+        input_events.extend(current_input_events)
         session_event.extend(current_session_events)
+
     print(f"Generated { len(input_events) } input events. Writing into file.")
     write_into_file("input_events.json", input_events)
 
