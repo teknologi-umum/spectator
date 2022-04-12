@@ -302,14 +302,14 @@ def generate_solution_rejected_event(
     return SolutionRejectedEvent(**data).as_dictionary()
 
 
-def generate_event_locale_set(
+def generate_locale_set_event(
     session_id, time
 ) -> dict[str, any]:
     locale = random.choice(list(LOCALE.keys()))
     return LocaleSetEvent(session_id, time, locale).as_dictionary()
 
 
-def generate_event_personal_info_submitted(
+def generate_personal_info_submitted_event(
     session_id, time
 ) -> dict[str, any]:
     student_number = random.randint(999999999, 9999999999)
@@ -326,7 +326,7 @@ def generate_event_personal_info_submitted(
     ).as_dictionary()
 
 
-def generate_event_session_started(
+def generate_session_started_event(
     session_id, time
 ) -> dict[str, any]:
     locale = random.choice(list(LOCALE.keys()))
@@ -334,35 +334,35 @@ def generate_event_session_started(
     return return_object.as_dictionary()
 
 
-def generate_event_deadline_passed(
+def generate_deadline_passed_event(
     session_id, time
 ) -> dict[str, any]:
     return_object = DeadlinePassedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_event_exam_ended(
+def generate_exam_ended_event(
     session_id, time
 ) -> dict[str, any]:
     return_object = ExamEndedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_event_exam_forfeited(
+def generate_exam_forfeited_event(
     session_id, time
 ) -> dict[str, any]:
     return_object = ExamForfeitedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_event_exam_ide_reloaded(
+def generate_exam_ide_reloaded_event(
     session_id, time
 ) -> dict[str, any]:
     return_object = ExamIDEReloadedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_event_exam_started(
+def generate_exam_started_event(
     session_id, time
 ) -> dict[str, any]:
     question_numbers = [1, 2, 3, 4, 5, 6]
@@ -371,7 +371,7 @@ def generate_event_exam_started(
     return return_object.as_dictionary()
 
 
-def generate_event_before_exam_SAM_Submited(
+def generate_before_exam_SAM_submited_event(
     session_id, time
 ) -> dict[str, any]:
     aroused_level = random.randint(0, 5)
@@ -382,7 +382,7 @@ def generate_event_before_exam_SAM_Submited(
     return return_object.as_dictionary()
 
 
-def generate_event_after_exam_SAM_Submited(
+def generate_after_exam_SAM_submited_event(
     session_id, time
 ) -> dict[str, any]:
     aroused_level = random.randint(0, 5)

@@ -149,7 +149,7 @@ class EventWindowSized(InputEventBase):
         } | super().as_dictionary()
 
 
-def generate_event_keystroke(
+def generate_keystroke_event(
     session_id: str, time
 ) -> dict[str, any]:
     question_number = random.randint(1, 6)
@@ -177,7 +177,7 @@ def generate_event_keystroke(
     ).as_dictionary()
 
 
-def generate_event_mousemove(
+def generate_mousemove_event(
     session_id: str, time
 ) -> dict[str, any]:
     question_number = random.randint(1, 6)
@@ -194,7 +194,7 @@ def generate_event_mousemove(
     ).as_dictionary()
 
 
-def generate_event_mouseclick(
+def generate_mouseclick_event(
     session_id: str, time
 ) -> dict[str, any]:
     question_number = random.randint(1, 6)
@@ -211,7 +211,7 @@ def generate_event_mouseclick(
     ).as_dictionary()
 
 
-def generate_event_window_sized(
+def generate_window_sized_event(
     session_id: str, time
 ) -> dict[str, any]:
     question_number = random.randint(1, 6)
