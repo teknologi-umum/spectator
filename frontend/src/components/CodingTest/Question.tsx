@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Flex,
@@ -32,6 +32,9 @@ export default function Question({
   fgDarker,
   onScroll
 }: QuestionProps) {
+  const [tabIndex, setTabIndex] = useState(0);
+  // this is used to make useEffect not run on initial render
+  const isMounted = useRef(false);
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
@@ -42,9 +45,22 @@ export default function Question({
     [snapshotByQuestionNumber, currentQuestionNumber]
   );
   const isResultTabDisabled = useMemo(
-    () => !(currentSnapshot?.testResults !== null && currentSnapshot?.testResults?.length > 0),
-    [currentSnapshot]
+    () =>
+      !(
+        currentSnapshot?.testResults !== null &&
+        currentSnapshot?.testResults?.length > 0
+      ),
+    [currentSnapshot.testResults]
   );
+
+  useEffect(() => {
+    if (isMounted.current) {
+      // move to the result tab whenever the current submission changes
+      setTabIndex(1);
+    } else {
+      isMounted.current = true;
+    }
+  }, [currentSnapshot.testResults]);
 
   const { t } = useTranslation();
 
@@ -60,9 +76,16 @@ export default function Question({
       shadow="md"
     >
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
-      <Tabs h="calc(100% - 2.75rem)" isLazy>
+      <Tabs
+        index={tabIndex}
+        onChange={(idx) => setTabIndex(idx)}
+        isLazy
+        h="calc(100% - 2.75rem)"
+      >
         <TabList borderColor={borderBg}>
-          <Tab color={fgDarker} data-tour="question-step-1">{t("translation.translations.ui.prompt")}</Tab>
+          <Tab color={fgDarker} data-tour="question-step-1">
+            {t("translation.translations.ui.prompt")}
+          </Tab>
           <Tab
             color={fgDarker}
             isDisabled={isResultTabDisabled}

@@ -12,8 +12,9 @@ import {
   setLanguage,
   setSnapshot
 } from "@/store/slices/editorSlice";
-import type { Language } from "@/models/Language";
-import { LANGUAGES } from "@/models/Language";
+import type { EditorSnapshot } from "@/models/EditorSnapshot";
+import { Language as LanguageEnum } from "@/stub/enums";
+import { LANGUAGES, Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useTranslation } from "react-i18next";
 import { useColorModeValue } from "@/hooks";
@@ -41,6 +42,15 @@ interface MenuProps {
   bg: string;
   fg: string;
 }
+
+const LANGUAGE_TO_ENUM: Record<Language, LanguageEnum> = {
+  c: LanguageEnum.C,
+  cpp: LanguageEnum.CPP,
+  java: LanguageEnum.JAVA,
+  javascript: LanguageEnum.JAVASCRIPT,
+  php: LanguageEnum.PHP,
+  python: LanguageEnum.PYTHON
+};
 
 export default function TopBar({ bg, fg }: MenuProps) {
   const toast = useToast();
@@ -82,7 +92,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
     return () => clearInterval(endTimer);
   });
 
-  const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber!];
+  const currentSnapshot: EditorSnapshot | undefined =
+    snapshotByQuestionNumber[currentQuestionNumber];
   const isSubmitted =
     currentSnapshot !== undefined ? currentSnapshot.submissionAccepted : false;
   const isRefactored =
@@ -91,15 +102,20 @@ export default function TopBar({ bg, fg }: MenuProps) {
       : false;
 
   async function handleSubmit() {
-    if (currentQuestionNumber === null || accessToken === null) return;
+    if (
+      currentQuestionNumber === null ||
+      accessToken === null ||
+      currentSnapshot === undefined
+    ) {
+      return;
+    }
 
     try {
       const submissionResult = await sessionSpoke.submitSolution({
-        // FIXME(elianiva): fix this dumb thing
         accessToken,
-        language: 1,
-        solution: "",
-        scratchPad: "",
+        language: LANGUAGE_TO_ENUM[currentLanguage],
+        solution: currentSnapshot.solutionByLanguage[currentLanguage],
+        scratchPad: currentSnapshot.scratchPad,
         questionNumber: currentQuestionNumber
       });
 
@@ -107,13 +123,10 @@ export default function TopBar({ bg, fg }: MenuProps) {
         setSnapshot({
           language: currentLanguage,
           questionNumber: currentQuestionNumber,
-          scratchPad: currentSnapshot?.scratchPad || "",
-          solutionByLanguage: {
-            ...currentSnapshot?.solutionByLanguage,
-            [currentLanguage]: ""
-          },
+          scratchPad: currentSnapshot.scratchPad,
+          solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
-          submissionRefactored: currentSnapshot?.submissionSubmitted || false,
+          submissionRefactored: currentSnapshot.submissionSubmitted,
           submissionSubmitted: true,
           testResults: submissionResult.testResults
         })
