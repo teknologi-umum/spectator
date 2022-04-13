@@ -30,9 +30,8 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		ctx,
 		`from (bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) =>
-			(r["_measurement"] == "`+common.MeasurementExamStarted+`" and r["session_id"] == "`+sessionID.String()+`"))
-		|> yield()`,
+		|> filter(fn: (r) => (r["_measurement"] == "`+common.MeasurementExamStarted+`" and
+			                  r["session_id"] == "`+sessionID.String()+`"))`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query session start time: %w", err)
@@ -40,74 +39,51 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	defer examStartedRow.Close()
 
 	var startTime int64
-	var endTime int64
 
 	if examStartedRow.Next() {
 		startTime = examStartedRow.Record().Time().Unix()
 	}
 
-	examEndedRow, err := queryAPI.Query(
-		ctx,
-		`from (bucket: "`+common.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`" and
-                       		(r["_measurement"] == "`+common.MeasurementDeadlinePassed+`" or
-                        	 r["_measurement"] == "`+common.MeasurementExamEnded+`" or
-                        	 r["_measurement"] == "`+common.MeasurementExamForfeited+`"))`,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to query session end time: %w", err)
-	}
-	defer examEndedRow.Close()
-
-	if examEndedRow.Next() {
-		endTime = examEndedRow.Record().Time().Unix()
-	}
-
 	// keystrokesIgnore contains the keys that might appear on the "key_char" that we don't
 	// want to count into the resulting words per minute.
-	keystrokesIgnore := []string{"backspace", "delete", "insert", "pageup", "pagedown"}
+	keystrokesIgnore := []string{"Backspace", "AudioVolumeUp", "Insert", "PageUp", "PageDown"}
 	// wordsPerMinute contains the array of each minute's words per minute.
 	// This can be used to calculate the average of all the words per minute.
 	var wordsPerMinute []int64
 
-	// Find the delta between endTime and startTime in minute.
-	delta := (endTime - startTime) / 60
-
-	// Now we loop over the delta and calculate the words per minute.
-	var i int64
-	for i = 0; i < delta; i++ {
-		rows, err := queryAPI.Query(
-			ctx,
-			`from(bucket: "`+common.BucketInputEvents+`")
-			|> range(start: `+fmt.Sprintf("%d", startTime+int64(i)*60)+`)
-			|> window(every: 1m)
+	rows, err := queryAPI.Query(
+		ctx,
+		`from(bucket: "`+common.BucketInputEvents+`")
+			|> range(start: `+fmt.Sprintf("%d", startTime)+`)
 			|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementKeystroke+`")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-			|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-			|> sort(columns: ["_time"])`,
-		)
-		if err != nil {
-			return fmt.Errorf("failed to query keystroke events: %w", err)
-		}
-		defer rows.Close()
-
-		var currentWordCount int64
-		for rows.Next() {
-			record := rows.Record()
-
-			keyChar, ok := record.ValueByKey("key_char").(string)
-			if !ok {
-				return fmt.Errorf("failed to parse key_char data: %v", err)
-			}
-
-			if !contains(keystrokesIgnore, keyChar) {
-				currentWordCount++
-			}
-		}
-
-		wordsPerMinute = append(wordsPerMinute, currentWordCount)
+			|> pivot(columnKey: ["_field"], rowKey: ["_time"], valueColumn: "_value")
+			|> filter(fn: (r) => r["unrelated_key"] == false)
+			|> filter(fn: (r) => contains(value: r["key_char"],
+										  set: ["`+strings.Join(keystrokesIgnore, `", "`)+`"]) == false)
+			|> window(every: 1m)
+			|> count(column: "unrelated_key")`,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to query keystroke events: %w", err)
 	}
+	defer rows.Close()
+
+	var currentWordCount int64
+	for rows.Next() {
+		record := rows.Record()
+
+		keyChar, ok := record.ValueByKey("key_char").(string)
+		if !ok {
+			return fmt.Errorf("failed to parse key_char data: %v", err)
+		}
+
+		if !contains(keystrokesIgnore, keyChar) {
+			currentWordCount++
+		}
+	}
+
+	wordsPerMinute = append(wordsPerMinute, currentWordCount)
 
 	// Check the wordsPerMinute length, if it's zero, we return an error
 	// because it shouldn't be zero.
