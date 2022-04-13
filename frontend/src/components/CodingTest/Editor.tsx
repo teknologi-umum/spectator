@@ -27,10 +27,9 @@ const LANGUAGES = {
 
 interface EditorProps {
   bg: string;
-  onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-export default function Editor({ bg, onScroll }: EditorProps) {
+export default function Editor({ bg }: EditorProps) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [theme, highlightTheme] = useCodemirrorTheme();
@@ -120,7 +119,6 @@ export default function Editor({ bg, onScroll }: EditorProps) {
               ]}
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
-              onScroll={onScroll}
               onChange={handleChange}
             />
           </TabPanel>

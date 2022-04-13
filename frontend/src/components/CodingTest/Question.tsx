@@ -23,15 +23,9 @@ interface QuestionProps {
   bg: string;
   fg: string;
   fgDarker: string;
-  onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-export default function Question({
-  bg,
-  fg,
-  fgDarker,
-  onScroll
-}: QuestionProps) {
+export default function Question({ bg, fg, fgDarker }: QuestionProps) {
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
@@ -42,7 +36,11 @@ export default function Question({
     [snapshotByQuestionNumber, currentQuestionNumber]
   );
   const isResultTabDisabled = useMemo(
-    () => !(currentSnapshot?.testResults !== null && currentSnapshot?.testResults?.length > 0),
+    () =>
+      !(
+        currentSnapshot?.testResults !== null &&
+        currentSnapshot?.testResults?.length > 0
+      ),
     [currentSnapshot]
   );
 
@@ -62,7 +60,9 @@ export default function Question({
       {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs h="calc(100% - 2.75rem)" isLazy>
         <TabList borderColor={borderBg}>
-          <Tab color={fgDarker} data-tour="question-step-1">{t("translation.translations.ui.prompt")}</Tab>
+          <Tab color={fgDarker} data-tour="question-step-1">
+            {t("translation.translations.ui.prompt")}
+          </Tab>
           <Tab
             color={fgDarker}
             isDisabled={isResultTabDisabled}
@@ -74,7 +74,7 @@ export default function Question({
 
         <TabPanels h="full">
           <TabPanel p="2" h="full">
-            <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
+            <Box p="4" overflowY="auto" flex="1" h="full">
               <Heading size="lg" color={fg}>
                 {t(`question.questions.${currentQuestionNumber - 1}.title`)}
               </Heading>

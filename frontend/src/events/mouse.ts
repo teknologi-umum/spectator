@@ -1,6 +1,6 @@
 import { eventSpoke } from "@/spoke";
 import { MouseButton } from "@/stub/enums";
-import { MouseClickInfo, MouseMoveInfo } from "@/stub/input";
+import { MouseScrollInfo, MouseClickInfo, MouseMoveInfo } from "@/stub/input";
 import { calculateDirection } from "@/utils/getMouseDirection";
 
 const eventButtonToEnum = [
@@ -34,7 +34,6 @@ export function mouseClickHandler(
   };
 }
 
-// TODO(elianiva): emit position and direction as a single event??
 export function mouseMoveHandler(
   questionNumber: number | null,
   accessToken: string | null
@@ -59,6 +58,31 @@ export function mouseMoveHandler(
       await eventSpoke.mouseMoved(data);
     } catch (err) {
       // TODO(elianiva): replace with proper logging
+      console.error(err);
+    }
+  };
+}
+
+export function mouseScrollHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
+  return async (e: WheelEvent) => {
+    if (questionNumber === null || accessToken === null) return;
+
+
+    const data: MouseScrollInfo = {
+      accessToken: accessToken,
+      delta: e.deltaY,
+      x: e.clientX,
+      y: e.clientY,
+      questionNumber: questionNumber,
+      time: Date.now() as unknown as bigint
+    };
+
+    try {
+      await eventSpoke.mouseScrolled(data);
+    } catch (err) {
       console.error(err);
     }
   };
