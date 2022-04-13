@@ -145,8 +145,32 @@ export default function TopBar({ bg, fg }: MenuProps) {
           />
         )
       });
+
+      const allSnapshots = Object.values(snapshotByQuestionNumber);
+      if (allSnapshots.length < 6) {
+        // if they haven't submit all of the submissions
+        // don't bother checking if they're all have been accepted or not
+        return;
+      }
+
+      // this will only be true when every submissions have been accepted
+      const isLastSolution = allSnapshots.reduce((acc, curr) => {
+        return curr.submissionAccepted && acc;
+      }, false);
+
+      if (isLastSolution) {
+        // automatically end the exam when all of their submissions have been accepted
+        // and this is the last submission that was accepted
+        try {
+          await sessionSpoke.endExam({ accessToken });
+          navigate("/fun-fact");
+        } catch (err) {
+          // TODO(elianiva): proper logging
+          console.error(err);
+        }
+      }
     } catch (e) {
-      // eslint-disable-next-line no-console
+      // TODO(elianiva): proper logging
       console.error(e);
     }
   }
