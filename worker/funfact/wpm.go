@@ -44,9 +44,21 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		startTime = examStartedRow.Record().Time().Unix()
 	}
 
-	// keystrokesIgnore contains the keys that might appear on the "key_char" that we don't
+	// whitelist contains the keys that might appear on the "key_char" that we
 	// want to count into the resulting words per minute.
-	keystrokesIgnore := []string{"Backspace", "AudioVolumeUp", "Insert", "PageUp", "PageDown"}
+	whitelist := []string{
+		// Letters
+		"KeyA", "KeyB", "KeyC", "KeyD", "KeyE", "KeyF", "KeyG", "KeyH", "KeyI", "KeyJ", "KeyK", "KeyL", "KeyM",
+		"KeyN", "KeyO", "KeyP", "KeyQ", "KeyR", "KeyS", "KeyT", "KeyU", "KeyV", "KeyW", "KeyX", "KeyY", "KeyZ",
+		// Numbers
+		"Digit0", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9",
+		"Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5", "Numpad6", "Numpad7", "Numpad8", "Numpad9",
+		// Punctuation
+		"Comma", "Period", "Semicolon", "Slash", "Backslash", "BracketLeft", "BracketRight", "Quote", "Backquote",
+		"Minus", "Equal", "Subtract", "Add", "Multiply", "Divide", "Space",
+		// Numpad Punctuation
+		"NumpadAdd", "NumpadSubtract", "NumpadDecimal",
+	}
 	// wordsPerMinute contains the array of each minute's words per minute.
 	// This can be used to calculate the average of all the words per minute.
 	var wordsPerMinute []int64
@@ -60,7 +72,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 			|> pivot(columnKey: ["_field"], rowKey: ["_time"], valueColumn: "_value")
 			|> filter(fn: (r) => r["unrelated_key"] == false)
 			|> filter(fn: (r) => contains(value: r["key_char"],
-										  set: ["`+strings.Join(keystrokesIgnore, `", "`)+`"]) == false)
+										  set: ["`+strings.Join(whitelist, `", "`)+`"]))
 			|> window(every: 1m)
 			|> count(column: "unrelated_key")`,
 	)
@@ -71,18 +83,9 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 
 	var currentWordCount int64
 	for rows.Next() {
-		record := rows.Record()
-
-		keyChar, ok := record.ValueByKey("key_char").(string)
-		if !ok {
-			return fmt.Errorf("failed to parse key_char data: %v", err)
-		}
-
-		if !contains(keystrokesIgnore, keyChar) {
-			currentWordCount++
-		}
+		keystrokeAmount := rows.Record().ValueByKey("unrelated_key").(int64)
+		currentWordCount += keystrokeAmount
 	}
-
 	wordsPerMinute = append(wordsPerMinute, currentWordCount)
 
 	// Check the wordsPerMinute length, if it's zero, we return an error
