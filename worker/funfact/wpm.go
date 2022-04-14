@@ -3,6 +3,7 @@ package funfact
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 	"worker/common"
 
@@ -39,7 +40,6 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	defer examStartedRow.Close()
 
 	var startTime int64
-
 	if examStartedRow.Next() {
 		startTime = examStartedRow.Record().Time().Unix()
 	}
@@ -59,9 +59,6 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		// Numpad Punctuation
 		"NumpadAdd", "NumpadSubtract", "NumpadDecimal",
 	}
-	// wordsPerMinute contains the array of each minute's words per minute.
-	// This can be used to calculate the average of all the words per minute.
-	var wordsPerMinute []int64
 
 	rows, err := queryAPI.Query(
 		ctx,
@@ -70,23 +67,29 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 			|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementKeystroke+`")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 			|> pivot(columnKey: ["_field"], rowKey: ["_time"], valueColumn: "_value")
+			|> drop(columns: ["_measurement", "question_number", "alt", "control", "meta", "shift", "key_code"])
 			|> filter(fn: (r) => r["unrelated_key"] == false)
 			|> filter(fn: (r) => contains(value: r["key_char"],
 										  set: ["`+strings.Join(whitelist, `", "`)+`"]))
 			|> window(every: 1m)
-			|> count(column: "unrelated_key")`,
+			|> count(column: "unrelated_key")
+			|> duplicate(column: "_stop", as: "_time")
+			|> window(every: inf)`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query keystroke events: %w", err)
 	}
 	defer rows.Close()
 
-	var currentWordCount int64
+	// wordsPerMinute contains the array of each minute's words per minute.
+	// This can be used to calculate the average of all the words per minute.
+	var wordsPerMinute []float64
 	for rows.Next() {
-		keystrokeAmount := rows.Record().ValueByKey("unrelated_key").(int64)
-		currentWordCount += keystrokeAmount
+		// each row is a minute worth of keystrokes.
+		keystrokeAmount := float64(rows.Record().ValueByKey("unrelated_key").(int64))
+		// 5 is the average length of a word.
+		wordsPerMinute = append(wordsPerMinute, keystrokeAmount/5)
 	}
-	wordsPerMinute = append(wordsPerMinute, currentWordCount)
 
 	// Check the wordsPerMinute length, if it's zero, we return an error
 	// because it shouldn't be zero.
@@ -94,30 +97,15 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		return fmt.Errorf("no keystroke events found")
 	}
 
-	var averageWpm int64
-	var wordsSum int64
+	var averageWpm float64
+	var wordsSum float64
 	for _, wpm := range wordsPerMinute {
-		wordsSum += wpm / 5
+		wordsSum += wpm
 	}
 
-	averageWpm = wordsSum / int64(len(wordsPerMinute))
+	averageWpm = wordsSum / float64(len(wordsPerMinute))
 
 	// Return the result here
-	result <- averageWpm
+	result <- int64(math.Round(averageWpm))
 	return nil
-}
-
-// contains checks whether a string is in a slice of strings.
-// It's case insensitive, meaning it will convert the string value
-// into lowercase, then compare it to the corresponding
-// string input.
-func contains(s []string, e string) bool {
-	eLower := strings.ToLower(e)
-	for _, a := range s {
-		if strings.ToLower(a) == eLower {
-			return true
-		}
-	}
-
-	return false
 }
