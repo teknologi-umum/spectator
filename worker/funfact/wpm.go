@@ -94,16 +94,24 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	// Check the wordsPerMinute length, if it's zero, we return an error
 	// because it shouldn't be zero.
 	if len(wordsPerMinute) == 0 {
+		// TODO(elianiva): figure out what to do with this
 		return fmt.Errorf("no keystroke events found")
 	}
 
-	var averageWpm float64
-	var wordsSum float64
+	// filter the ones that are less than 10 wpm
+	var filteredWordsPerMinute []float64
 	for _, wpm := range wordsPerMinute {
+		if wpm > 10 {
+			filteredWordsPerMinute = append(filteredWordsPerMinute, wpm)
+		}
+	}
+
+	var wordsSum float64
+	for _, wpm := range filteredWordsPerMinute {
 		wordsSum += wpm
 	}
 
-	averageWpm = wordsSum / float64(len(wordsPerMinute))
+	averageWpm := wordsSum / float64(len(filteredWordsPerMinute))
 
 	// Return the result here
 	result <- int64(math.Round(averageWpm))

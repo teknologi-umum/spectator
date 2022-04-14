@@ -130,7 +130,6 @@ def main():
             # generate random input event.
             choice = random.choice(INPUT_EVENTS)
             if choice == "keystroke":
-                # just generate a lot more for keystroke because why not
                 event = generate_keystroke_event(current_session, random_time)
                 current_input_events.append(event)
             elif choice == "mousemove":
