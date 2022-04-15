@@ -310,7 +310,7 @@ def generate_locale_set_event(
 
 
 def generate_personal_info_submitted_event(
-    user, time
+    user: dict[str, any], time: int
 ) -> dict[str, any]:
     return PersonalInfoSubmitedEvent(
         user["session_id"],
