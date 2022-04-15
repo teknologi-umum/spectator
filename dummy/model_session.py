@@ -76,8 +76,8 @@ class SolutionAcceptedEvent(SolutionEventBase):
     ) -> None:
         super().__init__(
             session_id,
-            question_number,
             time,
+            question_number,
             language,
             solution,
             scratchpad,
@@ -99,8 +99,8 @@ class SolutionRejectedEvent(SolutionEventBase):
     ) -> None:
         super().__init__(
             session_id,
-            question_number,
             time,
+            question_number,
             language,
             solution,
             scratchpad,
