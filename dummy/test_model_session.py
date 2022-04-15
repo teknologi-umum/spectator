@@ -1,7 +1,12 @@
 from datetime import datetime
 import unittest
 
-from model_session import generate_personal_info_submitted_event, generate_solution_accepted_event, generate_solution_rejected_event, generate_locale_set_event
+from model_session import (
+    generate_personal_info_submitted_event,
+    generate_solution_accepted_event,
+    generate_solution_rejected_event,
+    generate_locale_set_event,
+)
 
 
 class TestGenerateEvents(unittest.TestCase):
@@ -24,10 +29,7 @@ class TestGenerateEvents(unittest.TestCase):
     def test_generate_solution_rejected_event(self):
         time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
 
-        event = generate_solution_rejected_event(
-            session_id="GUID",
-            time=time
-        )
+        event = generate_solution_rejected_event(session_id="GUID", time=time)
 
         self.assertEqual(event["session_id"], "GUID")
         self.assertNotEqual(event["language"], "")
@@ -41,10 +43,7 @@ class TestGenerateEvents(unittest.TestCase):
     def test_generate_locale_set_event(self):
         time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
 
-        event = generate_locale_set_event(
-            session_id="GUID",
-            time=time
-        )
+        event = generate_locale_set_event(session_id="GUID", time=time)
 
         self.assertEqual(event["session_id"], "GUID")
         self.assertNotEqual(event["locale"], "")
@@ -55,10 +54,7 @@ class TestGenerateEvents(unittest.TestCase):
     def test_generate_personal_info_submitted_event(self):
         time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
 
-        event = generate_personal_info_submitted_event(
-            session_id="GUID",
-            time=time
-        )
+        event = generate_personal_info_submitted_event(session_id="GUID", time=time)
 
         self.assertEqual(event["session_id"], "GUID")
         self.assertNotEqual(event["student_number"], "")

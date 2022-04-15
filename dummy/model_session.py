@@ -26,11 +26,7 @@ class SessionEventBase:
         self._time = time
 
     def as_dictionary(self) -> dict[str, any]:
-        return {
-            "type": self.type,
-            "session_id": self.session_id,
-            "time": self._time
-        }
+        return {"type": self.type, "session_id": self.session_id, "time": self._time}
 
 
 class SolutionEventBase(SessionEventBase):
@@ -122,9 +118,7 @@ class LocaleSetEvent(SessionEventBase):
         self.locale = LOCALE[locale]
 
     def as_dictionary(self):
-        return {
-            "locale": self.locale
-        } | super().as_dictionary()
+        return {"locale": self.locale} | super().as_dictionary()
 
 
 class PersonalInfoSubmitedEvent(SessionEventBase):
@@ -167,9 +161,7 @@ class SessionStartedEvent(SessionEventBase):
         self.locale = LOCALE[locale]
 
     def as_dictionary(self):
-        return {
-            "locale": self.locale
-        } | super().as_dictionary()
+        return {"locale": self.locale} | super().as_dictionary()
 
 
 class DeadlinePassedEvent(SessionEventBase):
@@ -249,9 +241,7 @@ class BeforeExamSAMSubmittedEvent(SAMSubmittedEventBase):
         self.type = "before_exam_sam_submitted"
 
 
-def _generate_solution_event(
-    session_id, time
-) -> dict[str, any]:
+def _generate_solution_event(session_id, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
     language = random.choice(list(LANGUAGE.keys()))
     solution = generate_gibberish_code()
@@ -268,9 +258,7 @@ def _generate_solution_event(
     }
 
 
-def generate_solution_accepted_event(
-    session_id, time
-) -> dict[str, any]:
+def generate_solution_accepted_event(session_id, time) -> dict[str, any]:
     """Generate an EventSolutionAccepted class with random values.
     The "language" key may only be either "Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"
 
@@ -285,9 +273,7 @@ def generate_solution_accepted_event(
     return SolutionAcceptedEvent(**data).as_dictionary()
 
 
-def generate_solution_rejected_event(
-    session_id, time
-) -> dict[str, any]:
+def generate_solution_rejected_event(session_id, time) -> dict[str, any]:
     """Generate an EventSolutionRejected class with random values.
     The "language" key may only be either "Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"
 
@@ -302,9 +288,7 @@ def generate_solution_rejected_event(
     return SolutionRejectedEvent(**data).as_dictionary()
 
 
-def generate_locale_set_event(
-    session_id, time
-) -> dict[str, any]:
+def generate_locale_set_event(session_id, time) -> dict[str, any]:
     locale = random.choice(list(LOCALE.keys()))
     return LocaleSetEvent(session_id, time, locale).as_dictionary()
 
@@ -322,45 +306,33 @@ def generate_personal_info_submitted_event(
     ).as_dictionary()
 
 
-def generate_session_started_event(
-    session_id: str, time: int
-) -> dict[str, any]:
+def generate_session_started_event(session_id: str, time: int) -> dict[str, any]:
     locale = random.choice(list(LOCALE.keys()))
     return_object = SessionStartedEvent(session_id, time, locale)
     return return_object.as_dictionary()
 
 
-def generate_deadline_passed_event(
-    session_id: str, time: int
-) -> dict[str, any]:
+def generate_deadline_passed_event(session_id: str, time: int) -> dict[str, any]:
     return_object = DeadlinePassedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_exam_ended_event(
-    session_id: str, time: int
-) -> dict[str, any]:
+def generate_exam_ended_event(session_id: str, time: int) -> dict[str, any]:
     return_object = ExamEndedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_exam_forfeited_event(
-    session_id: str, time: int
-) -> dict[str, any]:
+def generate_exam_forfeited_event(session_id: str, time: int) -> dict[str, any]:
     return_object = ExamForfeitedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_exam_ide_reloaded_event(
-    session_id: str, time: int
-) -> dict[str, any]:
+def generate_exam_ide_reloaded_event(session_id: str, time: int) -> dict[str, any]:
     return_object = ExamIDEReloadedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
-def generate_exam_started_event(
-    session_id: str, time: int
-) -> dict[str, any]:
+def generate_exam_started_event(session_id: str, time: int) -> dict[str, any]:
     question_numbers = [1, 2, 3, 4, 5, 6]
     deadline = time + (90 * 60 * 1000)  # 90 minutes
     return_object = ExamStartedEvent(session_id, time, question_numbers, deadline)

@@ -150,9 +150,7 @@ class EventWindowSized(InputEventBase):
         } | super().as_dictionary()
 
 
-def generate_keystroke_event(
-    session_id: str, time
-) -> dict[str, any]:
+def generate_keystroke_event(session_id: str, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
     key_code = random.choice(list(event_which_to_event_code.keys()))
     key_char = event_which_to_event_code[key_code]
@@ -178,9 +176,7 @@ def generate_keystroke_event(
     ).as_dictionary()
 
 
-def generate_mousemove_event(
-    session_id: str, time
-) -> dict[str, any]:
+def generate_mousemove_event(session_id: str, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
     direction = random.choice(MOUSE_DIRECTIONS)
     window_height = random.randint(0, 1080)
@@ -195,9 +191,7 @@ def generate_mousemove_event(
     ).as_dictionary()
 
 
-def generate_mouseclick_event(
-    session_id: str, time
-) -> dict[str, any]:
+def generate_mouseclick_event(session_id: str, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
     window_height = random.randint(0, 1080)
     window_width = random.randint(0, 1920)
@@ -212,9 +206,7 @@ def generate_mouseclick_event(
     ).as_dictionary()
 
 
-def generate_window_sized_event(
-    session_id: str, time
-) -> dict[str, any]:
+def generate_window_sized_event(session_id: str, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
     width = random.randint(400, 1920)
     height = random.randint(200, 1080)
