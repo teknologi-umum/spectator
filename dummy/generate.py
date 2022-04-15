@@ -84,7 +84,7 @@ def main():
         # let's assume every personal info requires at least 1 minute and at most 10 minutes
         time = time + random.randint(1, 10) * MINUTES_TO_MILLIS
         event = generate_personal_info_submitted_event(
-            current_session, time
+            user, time
         )
         current_session_events.append(event)
 

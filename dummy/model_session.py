@@ -310,19 +310,15 @@ def generate_locale_set_event(
 
 
 def generate_personal_info_submitted_event(
-    session_id, time
+    user: dict[str, any], time: int
 ) -> dict[str, any]:
-    student_number = random.randint(999999999, 9999999999)
-    years_of_experience = random.randint(1, 10)
-    hours_of_practice = random.randint(0, 10000)
-    familiar_languages = ""
     return PersonalInfoSubmitedEvent(
-        session_id,
+        user["session_id"],
         time,
-        student_number,
-        years_of_experience,
-        hours_of_practice,
-        familiar_languages,
+        user["student_number"],
+        user["years_of_experience"],
+        user["hours_of_practice"],
+        user["familiar_languages"],
     ).as_dictionary()
 
 
