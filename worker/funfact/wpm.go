@@ -50,9 +50,10 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		ctx,
 		`from (bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
-		|> filter(fn: (r) =>
-			(r["_measurement"] == "`+common.MeasurementExamEnded+`" and r["session_id"] == "`+sessionID.String()+`"))
-		|> yield()`,
+		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`" and
+                       		(r["_measurement"] == "`+common.MeasurementDeadlinePassed+`" or
+                        	 r["_measurement"] == "`+common.MeasurementExamEnded+`" or
+                        	 r["_measurement"] == "`+common.MeasurementExamForfeited+`"))`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query session end time: %w", err)
@@ -61,30 +62,6 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 
 	if examEndedRow.Next() {
 		endTime = examEndedRow.Record().Time().Unix()
-	}
-
-	// If the end time is 0, we check from the exam_forfeited measurement.
-	if endTime == 0 {
-		examForfeitedRow, err := queryAPI.Query(
-			ctx,
-			`from (bucket: "`+common.BucketSessionEvents+`")
-			|> range(start: 0)
-			|> filter(fn: (r) =>
-				(r["_measurement"] == "`+common.MeasurementExamForfeited+`" and r["session_id"] == "`+sessionID.String()+`"))
-			|> yield()`,
-		)
-		if err != nil {
-			return fmt.Errorf("failed to query session forfeited time: %w", err)
-		}
-		defer examForfeitedRow.Close()
-
-		if examForfeitedRow.Next() {
-			endTime = examForfeitedRow.Record().Time().Unix()
-		}
-
-		if endTime == 0 {
-			return fmt.Errorf("session end time is not defined")
-		}
 	}
 
 	// keystrokesIgnore contains the keys that might appear on the "key_char" that we don't

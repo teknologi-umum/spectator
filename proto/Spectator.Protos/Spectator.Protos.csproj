@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <None Remove="enums.proto" />
+    <None Remove="input.proto" />
     <None Remove="session.proto" />
   </ItemGroup>
 
@@ -20,8 +21,8 @@
 
   <ItemGroup>
     <Protobuf Include="enums.proto" />
+    <Protobuf Include="input.proto" />
     <Protobuf Include="session.proto" />
-    <Protobuf Include="events.proto" />
   </ItemGroup>
 
 </Project>

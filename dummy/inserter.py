@@ -114,16 +114,19 @@ def main():
                 point = (
                     Point(event["type"])
                     .tag("session_id", event["session_id"])
-                    .time(event["time"], write_precision=WritePrecision.S)
+                    .time(event["time"], write_precision=WritePrecision.MS)
                 )
                 fields = set(event.keys()) - set(["session_id", "type", "time"])
-                for field in fields:
-                    if type(event[field]) == type([]):
-                        point = point.field(
-                            field, ",".join([str(i) for i in event[field]])
-                        )
-                    else:
-                        point = point.field(field, event[field])
+                if len(fields) < 1:
+                    point = point.field("__placeholder", 0)
+                else:
+                    for field in fields:
+                        if type(event[field]) == type([]):
+                            point = point.field(
+                                field, ",".join([str(i) for i in event[field]])
+                            )
+                        else:
+                            point = point.field(field, event[field])
 
                 write_client.write(
                     bucket="session_events",

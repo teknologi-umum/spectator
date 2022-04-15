@@ -1,12 +1,7 @@
 // see: https://codepen.io/ronnygunawan/pen/wvrojXg
 // obviously i'm not smart enough to figure these out
-export enum Direction {
-  STOP = "stop",
-  UP = "up",
-  LEFT = "left",
-  RIGHT = "right",
-  DOWN = "down"
-}
+
+import { Direction } from "@/stub/enums";
 
 interface MovementSample {
   t: number;

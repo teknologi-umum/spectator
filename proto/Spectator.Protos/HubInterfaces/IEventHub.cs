@@ -1,11 +1,12 @@
-using System.Threading.Tasks;
-using Spectator.Protos.Events;
+﻿using System.Threading.Tasks;
+using Spectator.Protos.Input;
 
 namespace Spectator.Protos.HubInterfaces {
 	public interface IEventHub {
-		Task<EventReply> MouseClickAsync(MouseClickRequest request);
-		Task<EventReply> MouseMoveAsync(MouseMoveRequest request);
-		Task<EventReply> MouseScrollAsync(MouseScrollRequest request);
-		Task<EventReply> KeystrokeAsync(KeystrokeRequest request);
+		Task<EventReply> LogMouseClickedAsync(MouseClickInfo mouseClickInfo);
+		Task<EventReply> LogMouseMovedAsync(MouseMoveInfo mouseMoveInfo);
+		Task<EventReply> LogMouseScrolledAsync(MouseScrollInfo mouseScrollInfo);
+		Task<EventReply> LogKeystrokeAsync(KeystrokeInfo keystrokeInfo);
+		Task<EventReply> LogWindowSizedAsync(WindowSizeInfo windowSizeInfo);
 	}
 }
