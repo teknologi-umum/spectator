@@ -1,17 +1,15 @@
 from datetime import datetime
 import unittest
 
-from model_session import generate_event_locale_set, generate_event_personal_info_submitted, generate_event_solution_accepted, generate_event_solution_rejected
+from model_session import generate_personal_info_submitted_event, generate_solution_accepted_event, generate_solution_rejected_event, generate_locale_set_event
 
 
 class TestGenerateEvents(unittest.TestCase):
-    def test_generate_event_solution_accepted(self):
-        date_start =datetime.fromisoformat("2020-01-01T00:00:00")
-        date_ends = datetime.fromisoformat("2020-01-02T00:00:00")
-        event = generate_event_solution_accepted(
+    def test_generate_solution_accepted_event(self):
+        time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
+        event = generate_solution_accepted_event(
             session_id="GUID",
-            date_start=date_start,
-            date_ends=date_ends,
+            time=time,
         )
 
         self.assertEqual(event["session_id"], "GUID")
@@ -21,17 +19,14 @@ class TestGenerateEvents(unittest.TestCase):
         # FIXME: 1577861081 not less than or equal to 6
         self.assertLessEqual(event["question_number"], 6)
         self.assertGreaterEqual(event["question_number"], 1)
-        self.assertGreaterEqual(event["time"], date_start)
-        self.assertLessEqual(event["time"], date_ends)
+        self.assertGreaterEqual(event["time"], time)
 
-    def test_generate_event_solution_rejected(self):
-        date_start = datetime.fromisoformat("2020-01-01T00:00:00")
-        date_ends = datetime.fromisoformat("2020-01-02T00:00:00")
+    def test_generate_solution_rejected_event(self):
+        time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
 
-        event = generate_event_solution_rejected(
+        event = generate_solution_rejected_event(
             session_id="GUID",
-            date_start=date_start,
-            date_ends=date_ends
+            time=time
         )
 
         self.assertEqual(event["session_id"], "GUID")
@@ -41,34 +36,28 @@ class TestGenerateEvents(unittest.TestCase):
         # FIXME: 1577843211 not less than or equal to 6
         self.assertLessEqual(event["question_number"], 6)
         self.assertGreaterEqual(event["question_number"], 1)
-        self.assertGreaterEqual(event["time"], date_start)
-        self.assertLessEqual(event["time"], date_ends)
+        self.assertGreaterEqual(event["time"], time)
 
-    def test_generate_event_locale_set(self):
-        date_start = datetime.fromisoformat("2020-01-01T00:00:00")
-        date_ends = datetime.fromisoformat("2020-01-02T00:00:00")
+    def test_generate_locale_set_event(self):
+        time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
 
-        event = generate_event_locale_set(
+        event = generate_locale_set_event(
             session_id="GUID",
-            date_start=date_start,
-            date_ends=date_ends,
+            time=time
         )
 
         self.assertEqual(event["session_id"], "GUID")
         self.assertNotEqual(event["locale"], "")
         # FIXME: event["time"] is a type of integer, expected a date time
-        self.assertGreaterEqual(event["time"], date_start)
+        self.assertGreaterEqual(event["time"], time)
         # FIXME: event["time"] is a type of integer, expected a date time
-        self.assertLessEqual(event["time"], date_ends)
 
-    def test_generate_event_personal_info_submitted(self):
-        date_start = datetime.fromisoformat("2020-01-01T00:00:00")
-        date_ends = datetime.fromisoformat("2020-01-02T00:00:00")
+    def test_generate_personal_info_submitted_event(self):
+        time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
 
-        event = generate_event_personal_info_submitted(
+        event = generate_personal_info_submitted_event(
             session_id="GUID",
-            date_start=date_start,
-            date_ends=date_ends,
+            time=time
         )
 
         self.assertEqual(event["session_id"], "GUID")
@@ -79,5 +68,4 @@ class TestGenerateEvents(unittest.TestCase):
         # FIXME: 3534 not less than or equal to 24
         self.assertLessEqual(event["hours_of_practice"], 24)
         self.assertNotEqual(event["familiar_languages"], "")
-        self.assertGreaterEqual(event["time"], date_start)
-        self.assertLessEqual(event["time"], date_ends)
+        self.assertGreaterEqual(event["time"], time)
