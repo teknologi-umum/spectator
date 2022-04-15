@@ -33,7 +33,7 @@ class User:
             "student_number": self.student_number,
             "hours_of_practice": self.hours_of_practice,
             "years_of_experience": self.years_of_experience,
-            "familiar_language": self.familiar_languages,
+            "familiar_languages": self.familiar_languages,
         }
 
 
