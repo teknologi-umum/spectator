@@ -29,25 +29,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Setup pipenv
+        run: python3 -m pip install --upgrade pipenv
       - name: Install dependencies
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-          command: install --dev
+        run: pipenv install --dev
         env:
           PIPENV_VENV_IN_PROJECT: 1
       - name: Lint
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-          command: run lint
+        run: pipenv run lint
       - name: Test
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-          command: run test
+        run: pipenv run test
         env:
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: iKPpruHfaXygrwSV
       - name: Collect coverage
-        uses: VaultVulp/action-pipenv@v2.0.1
-        with:
-          command: run report
+        run: pipenv run report
