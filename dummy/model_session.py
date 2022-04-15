@@ -323,7 +323,7 @@ def generate_personal_info_submitted_event(
 
 
 def generate_session_started_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     locale = random.choice(list(LOCALE.keys()))
     return_object = SessionStartedEvent(session_id, time, locale)
@@ -331,35 +331,35 @@ def generate_session_started_event(
 
 
 def generate_deadline_passed_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     return_object = DeadlinePassedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
 def generate_exam_ended_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     return_object = ExamEndedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
 def generate_exam_forfeited_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     return_object = ExamForfeitedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
 def generate_exam_ide_reloaded_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     return_object = ExamIDEReloadedEvent(session_id, time)
     return return_object.as_dictionary()
 
 
 def generate_exam_started_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     question_numbers = [1, 2, 3, 4, 5, 6]
     deadline = time + (90 * 60 * 1000)  # 90 minutes
@@ -368,7 +368,7 @@ def generate_exam_started_event(
 
 
 def generate_before_exam_SAM_submited_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     aroused_level = random.randint(0, 5)
     pleased_level = random.randint(0, 5)
@@ -379,7 +379,7 @@ def generate_before_exam_SAM_submited_event(
 
 
 def generate_after_exam_SAM_submited_event(
-    session_id, time
+    session_id: str, time: int
 ) -> dict[str, any]:
     aroused_level = random.randint(0, 5)
     pleased_level = random.randint(0, 5)
@@ -406,7 +406,7 @@ def fake_basic_info_generate():
     }
 
 
-def generate_gibberish_code():
+def generate_gibberish_code() -> str:
     return random.choice(
         [
             """

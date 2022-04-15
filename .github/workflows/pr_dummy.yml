@@ -1,0 +1,45 @@
+name: Check
+
+on:
+  pull_request:
+    paths:
+      - "dummy/**"
+
+jobs:
+  dummy:
+    name: Dummy
+    runs-on: ubuntu-latest
+    container: python:3.10-bullseye
+    timeout-minutes: 5
+    services:
+      db:
+        image: influxdb:2.1
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+    defaults:
+      run:
+        working-directory: ./dummy
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build test
+        run: pip install --user pipenv
+      - name: Install dependencies
+        run: pipenv install --dev
+        env:
+          PIPENV_VENV_IN_PROJECT: 1
+      - name: Lint
+        run: pipenv run black --check .
+      - name: Test
+        run: pipenv run coverage run -m unittest discover &&  pipenv run coverage report
+        env:
+          INFLUX_URL: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: iKPpruHfaXygrwSV

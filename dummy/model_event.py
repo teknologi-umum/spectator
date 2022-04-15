@@ -6,6 +6,7 @@ from utils import random_date
 MOUSE_BUTTON = ["Left", "Right", "Middle"]
 MOUSE_DIRECTIONS = ["up", "down", "left", "right"]
 
+
 class InputEventBase:
     session_id: str
     type: str
