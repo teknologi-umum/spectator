@@ -1,7 +1,7 @@
 import { eventSpoke } from "@/spoke";
 import { loggerInstance } from "@/spoke/logger";
 import { MouseButton } from "@/stub/enums";
-import { MouseClickInfo, MouseMoveInfo } from "@/stub/input";
+import { MouseScrollInfo, MouseClickInfo, MouseMoveInfo } from "@/stub/input";
 import { calculateDirection } from "@/utils/getMouseDirection";
 import { LogLevel } from "@microsoft/signalr";
 
@@ -71,6 +71,31 @@ export function mouseMoveHandler(
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
       }
+    }
+  };
+}
+
+export function mouseScrollHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
+  return async (e: WheelEvent) => {
+    if (questionNumber === null || accessToken === null) return;
+
+
+    const data: MouseScrollInfo = {
+      accessToken: accessToken,
+      delta: e.deltaY,
+      x: e.clientX,
+      y: e.clientY,
+      questionNumber: questionNumber,
+      time: Date.now() as unknown as bigint
+    };
+
+    try {
+      await eventSpoke.mouseScrolled(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 }
