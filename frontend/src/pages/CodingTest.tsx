@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
@@ -37,6 +37,8 @@ function CodingTest() {
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
+  const videoStream = useRef<MediaStream | null>();
+  const mediaRecorder = useRef<MediaRecorder | null>();
 
   const { setIsOpen } = useTour();
 
@@ -83,6 +85,63 @@ function CodingTest() {
           console.error(`Unable to resume the exam session. ${err}`);
         });
     }
+  }, []);
+
+  useEffect(() => {
+    if (accessToken === null) {
+      return;
+    }
+
+    // We want to generate the filename here because we need it as a marker
+    // for the start of the recording.
+    // `MediaRecorder` splice the video stream into chunks, only the first chunk is a valid video
+    // so we need to mark this first chunk.
+    // A user could theoretically refresh the page and the recording would get restarted.
+    // If we don't have this marker, we wouldn't know which one is the first chunk for each recording session.
+    const filename = `${Date.now()}.webm`;
+
+    (async () => {
+      // TODO(elianiva): move this section into its own video stream client class
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: 640,
+          height: 320
+        }
+      });
+      videoStream.current = stream;
+      mediaRecorder.current = new MediaRecorder(stream, {
+        mimeType: "video/webm;codecs=vp9",
+        videoBitsPerSecond: 200_000 // 0.2Mbits / sec
+      });
+      mediaRecorder.current.start(1000); // send blob every second
+      mediaRecorder.current.onstart = () => {
+        console.log("Start recording...");
+      };
+      mediaRecorder.current.ondataavailable = async (e: BlobEvent) => {
+        const formData = new FormData();
+        formData.append("accessToken", accessToken);
+        formData.append("file", e.data, filename);
+        await fetch(import.meta.env.VITE_VIDEO_STREAM_URL, {
+          method: "POST",
+          headers: {
+            "Content-Length": e.data.size.toString()
+          },
+          body: formData
+        });
+      };
+    })();
+
+    () => {
+      if (mediaRecorder.current) {
+        mediaRecorder.current.stop();
+        mediaRecorder.current.onstop = () => {
+          console.log("Stop recording...");
+        };
+        videoStream.current = null;
+        mediaRecorder.current = null;
+      }
+    };
   }, []);
 
   return (

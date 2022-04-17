@@ -18,6 +18,7 @@
     <PackageReference Include="InfluxDB.Client.Linq" Version="3.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageReference Include="Minio" Version="4.0.2" />
     <PackageReference Include="RG.Ninja" Version="1.0.8" />
   </ItemGroup>
 
