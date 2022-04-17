@@ -62,9 +62,9 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	}
 
 	var result = struct {
-		Wpm          int64  `json:"wpm"`
+		Wpm          int64   `json:"wpm"`
 		DeletionRate float64 `json:"deletion_rate"`
-		Attempt      int64  `json:"attempt"`
+		Attempt      int64   `json:"attempt"`
 	}{
 		<-wpm,
 		<-deletionRate,

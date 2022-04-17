@@ -97,7 +97,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	prepareCancel()
-	
+
 	fmt.Println("Cleaning up...")
 
 	// Setup a context for cleaning up things
@@ -136,13 +136,13 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 			if err != nil && err.Error() != "bucket '"+b+"' not found" {
 				return fmt.Errorf("finding bucket: %v", err)
 			}
-	
+
 			if err != nil && err.Error() == "bucket '"+b+"' not found" {
 				orgDomain, err := organizationAPI.FindOrganizationByName(gctx, org)
 				if err != nil {
 					return fmt.Errorf("finding organization: %v", err)
 				}
-	
+
 				_, err = bucketsAPI.CreateBucketWithName(gctx, orgDomain, b)
 				if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
 					return fmt.Errorf("creating bucket: %v", err)

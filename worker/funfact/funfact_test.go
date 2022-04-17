@@ -364,7 +364,7 @@ func seedData(ctx context.Context) error {
 			childWg.Wait()
 			wg.Done()
 		}()
-		
+
 		temporaryDate = temporaryDate.Add(1 * time.Minute)
 	}
 
