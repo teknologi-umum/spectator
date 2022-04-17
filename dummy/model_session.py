@@ -362,6 +362,7 @@ def generate_after_exam_SAM_submited_event(
 
 
 # checker
+# TODO: this is unused
 def fake_basic_info_generate():
     date_start_int: int = random_date(
         datetime(2021, 6, 1, 0, 0, 0), datetime(2021, 12, 29, 23, 59, 59)
