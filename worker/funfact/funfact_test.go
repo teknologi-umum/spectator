@@ -16,7 +16,6 @@ import (
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
-	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -410,104 +409,22 @@ func cleanup(ctx context.Context) error {
 		return fmt.Errorf("finding organization: %v", err)
 	}
 
-	// delete bucket data
-	deleteAPI := deps.DB.DeleteAPI()
-
-	g, gctx := errgroup.WithContext(ctx)
-
-	g.Go(func() error {
-		// find input_events bucket
-		inputEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputEvents)
+	for _, bucket := range []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketInputStatisticEvents} {
+		acquiredBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, bucket)
 		if err != nil {
-			return fmt.Errorf("finding bucket: %v", err)
+			return fmt.Errorf("finding bucket: %w", err)
 		}
 
-		inputEventMeasurement := []string{
-			common.MeasurementKeystroke,
-			common.MeasurementMouseDown,
-			common.MeasurementMouseUp,
-			common.MeasurementMouseMoved,
-			common.MeasurementMouseScrolled,
-			common.MeasurementWindowSized,
-		}
-		for _, measurement := range inputEventMeasurement {
-			err = deleteAPI.Delete(gctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
-			if err != nil {
-				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
-			}
-		}
-
-		return nil
-	})
-
-	g.Go(func() error {
-		// find input_events bucket
-		sessionEventsBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketSessionEvents)
+		err = deps.DB.BucketsAPI().DeleteBucket(ctx, acquiredBucket)
 		if err != nil {
-			return fmt.Errorf("finding bucket: %v", err)
+			return fmt.Errorf("deleting bucket: %w", err)
 		}
 
-		sessionEventMeasurements := []string{
-			common.MeasurementCodeTestAttempt,
-			common.MeasurementExamForfeited,
-			common.MeasurementExamEnded,
-			common.MeasurementExamStarted,
-			common.MeasurementSolutionRejected,
-			common.MeasurementSolutionAccepted,
-			common.MeasurementSessionStarted,
-			common.MeasurementPersonalInfoSubmitted,
-			common.MeasurementLocaleSet,
-			common.MeasurementExamIDEReloaded,
-			common.MeasurementDeadlinePassed,
-			common.MeasurementBeforeExamSAMSubmitted,
-			common.MeasurementAfterExamSAMSubmitted,
-		}
-
-		// More speed hack, we create a child errgroup
-		c, cctx := errgroup.WithContext(gctx)
-		c.Go(func() error {
-			for _, measurement := range sessionEventMeasurements[:len(sessionEventMeasurements)/2] {
-				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
-				if err != nil {
-					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
-				}
-			}
-			return nil
-		})
-
-		c.Go(func() error {
-			for _, measurement := range sessionEventMeasurements[len(sessionEventMeasurements)/2:] {
-				err = deleteAPI.Delete(cctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
-				if err != nil {
-					return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
-				}
-			}
-			return nil
-		})
-
-		return c.Wait()
-	})
-
-	g.Go(func() error {
-		// find statistics bucket
-		statisticBucket, err := deps.DB.BucketsAPI().FindBucketByName(gctx, common.BucketInputStatisticEvents)
+		_, err = deps.DB.BucketsAPI().CreateBucketWithName(ctx, currentOrganization, bucket)
 		if err != nil {
-			return fmt.Errorf("finding bucket: %v", err)
+			return fmt.Errorf("creating bucket: %w", err)
 		}
+	}
 
-		statisticEventMeasurements := []string{
-			common.MeasurementFunfactProjection,
-		}
-
-		for _, measurement := range statisticEventMeasurements {
-			err = deleteAPI.Delete(gctx, currentOrganization, statisticBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
-			if err != nil {
-				return fmt.Errorf("deleting bucket data: [%s] %v", measurement, err)
-			}
-		}
-
-		return nil
-	})
-
-	return g.Wait()
+	return nil
 }
