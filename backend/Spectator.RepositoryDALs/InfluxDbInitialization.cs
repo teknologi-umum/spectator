@@ -4,10 +4,10 @@ namespace Spectator.RepositoryDALs;
 
 public static class InfluxDbInitialization {
 	 public static async Task InitializeAsync(InfluxDBClient client, InfluxDbOptions options) {
-		 var organization = await client.GetOrganizationsApi()
+		 var organizations = await client.GetOrganizationsApi()
 			 .FindOrganizationsAsync(limit: 1, org: options.Org);
 
-		 if (organization.Count == 0) {
+		 if (organizations.Count == 0) {
 			 throw new Exception("Organization was not found");
 		 }
 
@@ -15,14 +15,14 @@ public static class InfluxDbInitialization {
 			 await client.GetBucketsApi().FindBucketByNameAsync(options.InputEventsBucket);
 		 } catch (NotFoundException) {
 			 await client.GetBucketsApi()
-				 .CreateBucketAsync(options.InputEventsBucket, organization[0]);
+				 .CreateBucketAsync(options.InputEventsBucket, organizations[0]);
 		 }
 
 		 try {
 			 await client.GetBucketsApi().FindBucketByNameAsync(options.SessionEventsBucket);
 		 } catch (NotFoundException) {
 			 await client.GetBucketsApi()
-				 .CreateBucketAsync(options.SessionEventsBucket, organization[0]);
+				 .CreateBucketAsync(options.SessionEventsBucket, organizations[0]);
 		 }
 	 }
 }
