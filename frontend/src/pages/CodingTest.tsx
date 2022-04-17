@@ -12,7 +12,8 @@ import {
   keystrokeHandler,
   mouseClickHandler,
   mouseMoveHandler,
-  scrollHandler
+  scrollHandler,
+  windowResizeHandler
 } from "@/events";
 import { useColorModeValue } from "@/hooks";
 import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
@@ -52,6 +53,10 @@ function CodingTest() {
     keystrokeHandler(currentQuestionNumber, accessToken)
   );
   useEventListener("scroll", scrollHandler(currentQuestionNumber, accessToken));
+  useEventListener(
+    "resize",
+    windowResizeHandler(currentQuestionNumber, accessToken)
+  );
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
@@ -114,7 +119,10 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <Editor
                       bg={bg}
-                      onScroll={scrollHandler(currentQuestionNumber, accessToken)}
+                      onScroll={scrollHandler(
+                        currentQuestionNumber,
+                        accessToken
+                      )}
                     />
                   </ReflexElement>
 
@@ -129,7 +137,10 @@ function CodingTest() {
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
                     <ScratchPad
                       bg={bg}
-                      onScroll={scrollHandler(currentQuestionNumber, accessToken)}
+                      onScroll={scrollHandler(
+                        currentQuestionNumber,
+                        accessToken
+                      )}
                     />
                   </ReflexElement>
                 </ReflexContainer>
