@@ -12,7 +12,8 @@ import {
   keystrokeHandler,
   mouseClickHandler,
   mouseMoveHandler,
-  scrollHandler
+  mouseScrollHandler,
+  windowResizeHandler
 } from "@/events";
 import { useColorModeValue } from "@/hooks";
 import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
@@ -51,7 +52,14 @@ function CodingTest() {
     "keydown",
     keystrokeHandler(currentQuestionNumber, accessToken)
   );
-  useEventListener("scroll", scrollHandler(currentQuestionNumber, accessToken));
+  useEventListener(
+    "wheel",
+    mouseScrollHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "resize",
+    windowResizeHandler(currentQuestionNumber, accessToken)
+  );
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
@@ -93,12 +101,7 @@ function CodingTest() {
           <Box h="calc(100% - 3.5rem)">
             <ReflexContainer orientation="vertical">
               <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-                <Question
-                  bg={bg}
-                  fg={fg}
-                  fgDarker={fgDarker}
-                  onScroll={scrollHandler(currentQuestionNumber, accessToken)}
-                />
+                <Question bg={bg} fg={fg} fgDarker={fgDarker} />
               </ReflexElement>
 
               <ReflexSplitter
@@ -112,10 +115,7 @@ function CodingTest() {
               <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
                 <ReflexContainer orientation="horizontal">
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                    <Editor
-                      bg={bg}
-                      onScroll={scrollHandler(currentQuestionNumber, accessToken)}
-                    />
+                    <Editor bg={bg} />
                   </ReflexElement>
 
                   <ReflexSplitter
@@ -127,10 +127,7 @@ function CodingTest() {
                   />
 
                   <ReflexElement minSize={200} style={{ overflow: "hidden" }}>
-                    <ScratchPad
-                      bg={bg}
-                      onScroll={scrollHandler(currentQuestionNumber, accessToken)}
-                    />
+                    <ScratchPad bg={bg} />
                   </ReflexElement>
                 </ReflexContainer>
               </ReflexElement>

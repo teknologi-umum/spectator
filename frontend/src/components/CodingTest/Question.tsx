@@ -23,18 +23,9 @@ interface QuestionProps {
   bg: string;
   fg: string;
   fgDarker: string;
-  onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-export default function Question({
-  bg,
-  fg,
-  fgDarker,
-  onScroll
-}: QuestionProps) {
-  const [tabIndex, setTabIndex] = useState(0);
-  // this is used to make useEffect not run on initial render
-  const isMounted = useRef(false);
+export default function Question({ bg, fg, fgDarker }: QuestionProps) {
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
@@ -97,7 +88,7 @@ export default function Question({
 
         <TabPanels h="full">
           <TabPanel p="2" h="full">
-            <Box p="4" overflowY="auto" flex="1" h="full" onScroll={onScroll}>
+            <Box p="4" overflowY="auto" flex="1" h="full">
               <Heading size="lg" color={fg}>
                 {t(`question.questions.${currentQuestionNumber - 1}.title`)}
               </Heading>

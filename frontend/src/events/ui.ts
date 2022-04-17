@@ -1,26 +1,23 @@
 import { eventSpoke } from "@/spoke";
-import { MouseScrollInfo } from "@/stub/input";
-import type { UIEvent } from "react";
+import { WindowSizeInfo } from "@/stub/input";
 
-export function scrollHandler<T extends Element>(
+export function windowResizeHandler(
   questionNumber: number | null,
   accessToken: string | null
 ) {
-  return async (e: Event | UIEvent<T, globalThis.UIEvent>) => {
+  return async () => {
     if (questionNumber === null || accessToken === null) return;
 
-    const data: MouseScrollInfo = {
+    const data: WindowSizeInfo = {
       accessToken: accessToken,
-      // TODO(elianiva): implement proper logic
-      delta: (e.currentTarget as HTMLElement).scrollTop,
-      x: 0,
-      y: 0,
       questionNumber: questionNumber,
+      width: window.innerWidth,
+      height: window.innerHeight,
       time: Date.now() as unknown as bigint
     };
 
     try {
-      await eventSpoke.mouseScrolled(data);
+      await eventSpoke.windowResized(data);
     } catch (err) {
       console.error(err);
     }

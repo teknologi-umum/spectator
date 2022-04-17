@@ -1,5 +1,7 @@
 import { eventSpoke } from "@/spoke";
+import { loggerInstance } from "@/spoke/logger";
 import { KeystrokeInfo } from "@/stub/input";
+import { LogLevel } from "@microsoft/signalr";
 
 const F_KEYS: Record<string, boolean> = {
   F1: true,
@@ -47,8 +49,13 @@ export function keystrokeHandler(
       try {
         await eventSpoke.keystroke(data);
       } catch (err) {
-        // TODO(elianiva): replace with proper logging
-        console.error(err);
+        if (import.meta.env.DEV) {
+          console.error(err);
+        }
+
+        if (err instanceof Error) {
+          loggerInstance.log(LogLevel.Error, err.message);
+        }
       }
 
       return;
@@ -60,8 +67,13 @@ export function keystrokeHandler(
     try {
       await eventSpoke.keystroke(data);
     } catch (err) {
-      // TODO(elianiva): replace with proper logging
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
 
     // don't allow to do anything outside of the code editor
