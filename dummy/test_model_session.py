@@ -27,7 +27,10 @@ class TestGenerateSessions(unittest.TestCase):
         )
 
         self.assertEqual(event["session_id"], "GUID")
-        self.assertIn(event["language"], ["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"])
+        self.assertIn(
+            event["language"],
+            ["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"],
+        )
         self.assertNotEqual(event["scratchpad"], "")
         self.assertAlmostEqual(event["serialized_test_results"], "")
         self.assertLessEqual(event["question_number"], 6)
@@ -41,7 +44,10 @@ class TestGenerateSessions(unittest.TestCase):
 
         self.assertEqual(event["type"], "solution_rejected")
         self.assertEqual(event["session_id"], "GUID")
-        self.assertIn(event["language"], ["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"])
+        self.assertIn(
+            event["language"],
+            ["Undefined", "C", "CPP", "PHP", "Javascript", "Java", "Python"],
+        )
         self.assertNotEqual(event["scratchpad"], "")
         self.assertAlmostEqual(event["serialized_test_results"], "")
         self.assertLessEqual(event["question_number"], 6)
@@ -159,5 +165,3 @@ class TestGenerateSessions(unittest.TestCase):
         self.assertGreaterEqual(event["aroused_level"], 0)
         self.assertLessEqual(event["pleased_level"], 5)
         self.assertGreaterEqual(event["pleased_level"], 0)
-
-

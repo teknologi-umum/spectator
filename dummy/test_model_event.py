@@ -1,7 +1,12 @@
 from datetime import datetime
 import unittest
 
-from model_event import generate_keystroke_event, generate_mouseclick_event, generate_mousemove_event, generate_window_sized_event
+from model_event import (
+    generate_keystroke_event,
+    generate_mouseclick_event,
+    generate_mousemove_event,
+    generate_window_sized_event,
+)
 
 
 class TestGenerateEvents(unittest.TestCase):

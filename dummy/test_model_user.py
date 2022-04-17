@@ -2,6 +2,7 @@ import unittest
 
 from model_user import generate_user
 
+
 class TestGenerateUser(unittest.TestCase):
     def test_generate_user(self):
         user = generate_user()
