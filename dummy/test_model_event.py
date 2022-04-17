@@ -36,8 +36,8 @@ class TestGenerateEvents(unittest.TestCase):
         self.assertLessEqual(event["y"], 1080)
         self.assertEqual(event["session_id"], "GUID")
         self.assertEqual(event["time"], time)
-        self.assertLessEqual(int(event["question_number"]), 6)
-        self.assertGreaterEqual(int(event["question_number"]), 1)
+        self.assertLessEqual(event["question_number"], 6)
+        self.assertGreaterEqual(event["question_number"], 1)
 
     def test_generate_mouseclick_event(self):
         time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
@@ -52,8 +52,8 @@ class TestGenerateEvents(unittest.TestCase):
         self.assertLessEqual(event["y"], 1080)
         self.assertEqual(event["session_id"], "GUID")
         self.assertEqual(event["time"], time)
-        self.assertLessEqual(int(event["question_number"]), 6)
-        self.assertGreaterEqual(int(event["question_number"]), 1)
+        self.assertLessEqual(event["question_number"], 6)
+        self.assertGreaterEqual(event["question_number"], 1)
 
     def test_generate_window_sized_event(self):
         time = int(datetime.fromisoformat("2020-01-01T00:00:00").timestamp())
@@ -67,5 +67,5 @@ class TestGenerateEvents(unittest.TestCase):
         self.assertLessEqual(event["height"], 1080)
         self.assertEqual(event["session_id"], "GUID")
         self.assertEqual(event["time"], time)
-        self.assertLessEqual(int(event["question_number"]), 6)
-        self.assertGreaterEqual(int(event["question_number"]), 1)
+        self.assertLessEqual(event["question_number"], 6)
+        self.assertGreaterEqual(event["question_number"], 1)

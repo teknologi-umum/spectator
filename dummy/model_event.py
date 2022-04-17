@@ -11,7 +11,7 @@ class InputEventBase:
     session_id: str
     type: str
     _time: int
-    question_number: str
+    question_number: int
 
     def __init__(self, session_id: str, time: int, question_number: int) -> None:
         self.session_id = session_id
@@ -111,7 +111,7 @@ class EventMouseClick(InputEventBase):
     def __init__(
         self,
         session_id: str,
-        question_number: str,
+        question_number: int,
         button: str,
         x_position: int,
         y_position: int,
@@ -136,7 +136,7 @@ class EventWindowSized(InputEventBase):
     height: int
 
     def __init__(
-        self, session_id: str, question_number: str, width: int, height: int, time: int
+        self, session_id: str, question_number: int, width: int, height: int, time: int
     ) -> None:
         super().__init__(session_id, time, question_number)
         self.type = "window_sized"
@@ -201,7 +201,7 @@ def generate_mouseclick_event(session_id: str, time) -> dict[str, any]:
 
     return (
         EventMouseClick(
-            session_id, str(question_number), button, x_position, y_position, time
+            session_id, question_number, button, x_position, y_position, time
         )
     ).as_dictionary()
 
@@ -212,5 +212,5 @@ def generate_window_sized_event(session_id: str, time) -> dict[str, any]:
     height = random.randint(200, 1080)
 
     return (
-        EventWindowSized(session_id, str(question_number), width, height, time)
+        EventWindowSized(session_id, question_number, width, height, time)
     ).as_dictionary()
