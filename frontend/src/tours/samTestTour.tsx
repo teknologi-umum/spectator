@@ -16,26 +16,23 @@ export const samTestTour: StepType[] = [
   {
     selector: "[data-tour=\"step-2\"]",
     content: (
-      <p>
-        When you&apos;re satisfied with your choice, you can press this button
-        to continue to the next question.
-      </p>
-    )
-  },
-  {
-    selector: "[data-tour=\"step-3\"]",
-    content: <p>You can press this button to go to the previous question.</p>
-  },
-  {
-    selector: "[data-tour=\"step-4\"]",
-    content: (
-      <p>
-        You can press this button to finish the SAM test session and go to the
-        Coding Test page.
-      </p>
+      <>
+        <p>
+          When you&apos;re satisfied with your choice, you can press this button
+          to continue to the next question.
+        </p>
+        <p>
+          There will be a <kbd>Previous</kbd> on the next page which you can
+          press to go to the previous question.
+        </p>
+        <p>
+          You can press the <kbd>Finish</kbd> button to finish the SAM test
+          session and go to the Coding Test page.
+        </p>
+      </>
     ),
     action: () => {
-      store.dispatch(markTourCompleted("personalInfo"));
+      store.dispatch(markTourCompleted("samTest"));
     }
   }
 ];
