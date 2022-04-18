@@ -138,10 +138,10 @@ def main():
             random_int = random.randint(0, 1)
             if random_int == 0:
                 event = generate_solution_accepted_event(current_session, random_time)
-                current_input_events.append(event)
+                current_session_events.append(event)
             elif random_int == 1:
                 event = generate_solution_rejected_event(current_session, random_time)
-                current_input_events.append(event)
+                current_session_events.append(event)
 
         # there are 3 ways of ending the test
         random_int = random.randint(0, 2)
