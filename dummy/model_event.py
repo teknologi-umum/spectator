@@ -1,7 +1,5 @@
 import random
-import datetime
 from generate_key_event import event_which_to_event_code
-from utils import random_date
 
 MOUSE_BUTTON = ["Left", "Right", "Middle"]
 MOUSE_DIRECTIONS = ["up", "down", "left", "right"]
@@ -50,7 +48,7 @@ class EventKeystroke(InputEventBase):
         time: int,
     ) -> None:
         super().__init__(session_id, time, question_number)
-        self.type = "coding_event_keystroke"
+        self.type = "keystroke"
         self.key_char = key_char
         self.key_code = key_code
         self.shift = shift
@@ -89,7 +87,7 @@ class EventMouseMove(InputEventBase):
         time: int,
     ) -> None:
         super().__init__(session_id, time, question_number)
-        self.type = "coding_event_mousemove"
+        self.type = "mouse_moved"
         self.direction = direction
         self.x_position = x_position
         self.y_position = y_position
@@ -118,7 +116,7 @@ class EventMouseClick(InputEventBase):
         time: int,
     ) -> None:
         super().__init__(session_id, time, question_number)
-        self.type = "coding_event_mouseclick"
+        self.type = "mouse_click"
         self.x_position = x_position
         self.y_position = y_position
         self.button = button
@@ -158,7 +156,7 @@ def generate_keystroke_event(session_id: str, time) -> dict[str, any]:
     alt = random.choice([True, False])
     control = random.choice([True, False])
     meta = random.choice([True, False])
-    unrelated_key = random.choice([True, False])
+    unrelated_key = random.choice([True, False, False, False, False]) # 0.8 biased to false
 
     return (
         EventKeystroke(
