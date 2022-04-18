@@ -49,7 +49,6 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	defer solutionSubmittedRows.Close()
 
 	for solutionSubmittedRows.Next() {
-		fmt.Print(solutionSubmittedRows.Record().ValueByKey("language"))
 		output += solutionSubmittedRows.Record().ValueByKey("language").(int64)
 	}
 
