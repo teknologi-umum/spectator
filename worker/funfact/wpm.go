@@ -111,6 +111,14 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		wordsSum += wpm
 	}
 
+	// if the wordsSum is 0, just send it back.
+	// the reason why is when we divide 0 with 0, it became NaN for some reason
+	// and the final result will became a weird number like -9223372036854775808
+	if wordsSum == 0 {
+		result <- 0
+		return nil
+	}
+
 	averageWpm := wordsSum / float64(len(filteredWordsPerMinute))
 
 	// Return the result here
