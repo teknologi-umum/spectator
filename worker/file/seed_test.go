@@ -378,7 +378,7 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
-			
+
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
 				log.Fatalf("Error writing point: %v", err)
@@ -407,7 +407,7 @@ func seedData(ctx context.Context) error {
 
 				points = append(points, point)
 			}
-			
+
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
 				log.Fatalf("Error writing point: %v", err)

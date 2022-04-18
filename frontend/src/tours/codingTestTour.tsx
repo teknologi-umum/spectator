@@ -143,7 +143,7 @@ export const codingTestTour: StepType[] = [
       </>
     ),
     action: () => {
-      store.dispatch(markTourCompleted("personalInfo"));
+      store.dispatch(markTourCompleted("codingTest"));
     }
   }
 ];
