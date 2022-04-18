@@ -76,7 +76,7 @@ def main():
                     .field("student_number", user["student_number"])
                     .field("hours_of_practice", user["hours_of_practice"])
                     .field("years_of_experience", user["years_of_experience"])
-                    .field("familiar_language", user["familiar_language"])
+                    .field("familiar_languages", user["familiar_languages"])
                 )
                 write_client.write(
                     bucket="session_events",
