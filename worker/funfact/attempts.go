@@ -31,40 +31,26 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	// output contains the number of accepted and rejected solutions
 	var output int64
 
-	solutionAcceptedRows, err := queryAPI.Query(
+	solutionSubmittedRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementSolutionAccepted+`")
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
-		|> yield()`,
+			|> range(start: 0)
+			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`" and
+								(r["_measurement"] == "`+common.MeasurementSolutionAccepted+`" or
+								r["_measurement"] == "`+common.MeasurementSolutionRejected+`"))
+			|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+			|> drop(columns: ["_measurement", "_start", "_stop", "_time", "question_number", "scratchpad", "serialized_test_results", "solution", "session_id"])
+			|> count(column: "language")
+			|> yield()`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query solution_accepted measurement: %w", err)
 	}
-	defer solutionAcceptedRows.Close()
+	defer solutionSubmittedRows.Close()
 
-	for solutionAcceptedRows.Next() {
-		output += 1
-	}
-
-	solutionRejectedRows, err := queryAPI.Query(
-		ctx,
-		`from(bucket: "`+common.BucketSessionEvents+`")
-		|> range(start: 0)
-		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementSolutionRejected+`")
-		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
-		|> yield()`,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to query solution_rejected measurement: %w", err)
-	}
-	defer solutionRejectedRows.Close()
-
-	for solutionRejectedRows.Next() {
-		output += 1
+	for solutionSubmittedRows.Next() {
+		fmt.Print(solutionSubmittedRows.Record().ValueByKey("language"))
+		output += solutionSubmittedRows.Record().ValueByKey("language").(int64)
 	}
 
 	result <- output
