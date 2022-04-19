@@ -1,3 +1,6 @@
+import { loggerInstance } from "@/spoke/logger";
+import { LogLevel } from "@microsoft/signalr";
+
 export function uploadVideo(accessToken: string, startedAt: number) {
   return async (e: BlobEvent) => {
     const formData = new FormData();
@@ -15,9 +18,8 @@ export function uploadVideo(accessToken: string, startedAt: number) {
         body: formData
       });
     } catch (err) {
-      // TODO(elianiva): proper logging
       if (err instanceof Error) {
-        console.error(err.message);
+        await loggerInstance.log(LogLevel.Error, err.message);
       }
     }
   };
