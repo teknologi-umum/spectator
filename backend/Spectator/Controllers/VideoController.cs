@@ -35,9 +35,10 @@ public class VideoController : ControllerBase {
 	// TODO: Refactor this method so it doesn't get fat
 	[HttpPost]
 	[Route("/video")]
-	public async Task<IActionResult> LoginAsync([FromForm] VideoRequest request, [FromHeader] string accessToken) {
+	public async Task<IActionResult> LoginAsync([FromForm] VideoRequest request, [FromHeader(Name = "ACCESS_TOKEN")] string accessToken) {
 		if (request.File == null) throw new ArgumentNullException(nameof(request.File));
-		if (string.IsNullOrEmpty(request.SessionId)) throw new ArgumentNullException(nameof(request.SessionId));
+		if (request.StartedAt == null) throw new ArgumentNullException(nameof(request.StartedAt));
+		if (request.StoppedAt == null) throw new ArgumentNullException(nameof(request.StoppedAt));
 
 		// Only registered users can upload videos
 		if (string.IsNullOrEmpty(accessToken)) return Unauthorized();
@@ -53,16 +54,17 @@ public class VideoController : ControllerBase {
 
 		try {
 			var found = await _minioClient.BucketExistsAsync(
-				new BucketExistsArgs().WithBucket(request.SessionId)
+				new BucketExistsArgs().WithBucket(session.Id.ToString())
 			);
 			if (!found) {
 				await _minioClient.MakeBucketAsync(
-					new MakeBucketArgs().WithBucket(request.SessionId)
+					new MakeBucketArgs().WithBucket(session.Id.ToString())
 				);
 			}
 
+			var filename = $"{request.StartedAt}_{request.StoppedAt}.webm";
 			await _minioClient.PutObjectAsync(
-				new PutObjectArgs().WithBucket(request.SessionId)
+				new PutObjectArgs().WithBucket(session.Id.ToString())
 								   .WithContentType("video/webm")
 								   .WithFileName(request.File.FileName)
 								   .WithStreamData(request.File.OpenReadStream())
