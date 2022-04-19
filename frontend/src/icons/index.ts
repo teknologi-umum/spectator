@@ -23,3 +23,4 @@ export * from "./CodeIcon";
 export * from "./IndonesiaFlagIcon";
 export * from "./UnitedKingdomFlagIcon";
 export * from "./ChevronDownIcon";
+export * from "./VideoIcon";

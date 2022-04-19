@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Flex, ToastId, useToast } from "@chakra-ui/react";
+import { Flex, ToastId, useToast } from "@chakra-ui/react";
 import { useAppSelector } from "@/store";
 import { HubConnectionState } from "@microsoft/signalr";
 import { CheckmarkIcon, CrossIcon, InfoIcon } from "@/icons";
 import { useColorModeValue } from "@/hooks";
+import ToastBase from "./ToastBase";
 
 export default function ToastOverlay() {
   const toast = useToast();
   const { connectionState: state } = useAppSelector((state) => state.signalR);
   const [borderColor, setBorderColor] = useState("");
-  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
-  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
-  const green = useColorModeValue("green.500", "green.400", "green.300");
+  
   const blue = useColorModeValue("blue.500", "blue.400", "blue.300");
+  const green = useColorModeValue("green.500", "green.400", "green.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
 
   const toastContent = useMemo(() => {
@@ -45,22 +45,12 @@ export default function ToastOverlay() {
     const id = toast({
       position: "top-right",
       render: () => (
-        <Box
-          bg={toastBg}
-          color={toastFg}
-          borderLeft="4px"
+        <ToastBase
           borderColor={borderColor}
-          p={4}
-          borderRadius="md"
-          fontSize="md"
-          fontWeight="bold"
-          textAlign="left"
-          shadow="sm"
           onClick={() => toast.close(id as ToastId)}
-          cursor="pointer"
         >
           {toastContent}
-        </Box>
+        </ToastBase>
       )
     });
   }, [state]);
