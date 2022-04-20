@@ -156,7 +156,9 @@ def generate_keystroke_event(session_id: str, time) -> dict[str, any]:
     alt = random.choice([True, False])
     control = random.choice([True, False])
     meta = random.choice([True, False])
-    unrelated_key = random.choice([True, False, False, False, False]) # 0.8 biased to false
+    unrelated_key = random.choice(
+        [True, False, False, False, False]
+    )  # 0.8 biased to false
 
     return (
         EventKeystroke(
