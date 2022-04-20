@@ -11,6 +11,8 @@ export default function ToastOverlay() {
   const { connectionState: state } = useAppSelector((state) => state.signalR);
   const [borderColor, setBorderColor] = useState("");
   
+  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
+  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
   const blue = useColorModeValue("blue.500", "blue.400", "blue.300");
   const green = useColorModeValue("green.500", "green.400", "green.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
@@ -46,6 +48,8 @@ export default function ToastOverlay() {
       position: "top-right",
       render: () => (
         <ToastBase
+          bg={toastBg}
+          fg={toastFg}
           borderColor={borderColor}
           onClick={() => toast.close(id as ToastId)}
         >

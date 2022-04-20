@@ -49,6 +49,8 @@ function CodingTest() {
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
   const green = useColorModeValue("green.500", "green.400", "green.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
+  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
+  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
 
   const videoStream = useRef<MediaStream | null>();
   const mediaRecorder = useRef<MediaRecorder | null>();
@@ -56,26 +58,26 @@ function CodingTest() {
   const toast = useToast();
   const { setIsOpen } = useTour();
 
-  useEventListener(
-    "mousedown",
-    mouseClickHandler(currentQuestionNumber, accessToken)
-  );
-  useEventListener(
-    "mousemove",
-    mouseMoveHandler(currentQuestionNumber, accessToken)
-  );
-  useEventListener(
-    "keydown",
-    keystrokeHandler(currentQuestionNumber, accessToken)
-  );
-  useEventListener(
-    "wheel",
-    mouseScrollHandler(currentQuestionNumber, accessToken)
-  );
-  useEventListener(
-    "resize",
-    windowResizeHandler(currentQuestionNumber, accessToken)
-  );
+  // useEventListener(
+  //   "mousedown",
+  //   mouseClickHandler(currentQuestionNumber, accessToken)
+  // );
+  // useEventListener(
+  //   "mousemove",
+  //   mouseMoveHandler(currentQuestionNumber, accessToken)
+  // );
+  // useEventListener(
+  //   "keydown",
+  //   keystrokeHandler(currentQuestionNumber, accessToken)
+  // );
+  // useEventListener(
+  //   "wheel",
+  //   mouseScrollHandler(currentQuestionNumber, accessToken)
+  // );
+  // useEventListener(
+  //   "resize",
+  //   windowResizeHandler(currentQuestionNumber, accessToken)
+  // );
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
@@ -134,11 +136,14 @@ function CodingTest() {
           position: "top-right",
           render: () => (
             <ToastBase
+              bg={toastBg}
+              fg={toastFg}
               borderColor={green}
               onClick={() => toast.close(id as ToastId)}
             >
               <Flex align="center" gap="2" color={green}>
-                <VideoIcon width="1.25rem" height="1.25rem" /> Recording started!
+                <VideoIcon width="1.25rem" height="1.25rem" /> Recording
+                started!
               </Flex>
             </ToastBase>
           )
@@ -149,11 +154,14 @@ function CodingTest() {
           position: "top-right",
           render: () => (
             <ToastBase
+              bg={toastBg}
+              fg={toastFg}
               borderColor={red}
               onClick={() => toast.close(id as ToastId)}
             >
               <Flex align="center" gap="2" color={red}>
-                <VideoIcon width="1.25rem" height="1.25rem" /> Recording stopped!
+                <VideoIcon width="1.25rem" height="1.25rem" /> Recording
+                stopped!
               </Flex>
             </ToastBase>
           )
