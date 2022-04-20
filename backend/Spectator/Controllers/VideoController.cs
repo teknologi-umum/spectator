@@ -62,10 +62,12 @@ public class VideoController : ControllerBase {
 				);
 			}
 
+			var filestream = request.File.OpenReadStream();
 			await _minioClient.PutObjectAsync(
 				new PutObjectArgs().WithBucket(registeredSession.Id.ToString())
-								   .WithFileName($"{request.StartedAt}_{request.StoppedAt}.webm")
-								   .WithStreamData(request.File.OpenReadStream())
+								   .WithObject($"{request.StartedAt}_{request.StoppedAt}.webm")
+								   .WithStreamData(filestream)
+								   .WithObjectSize(filestream.Length)
 			);
 		} catch (Exception e) {
 			var logData = new LogData {
