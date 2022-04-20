@@ -13,7 +13,7 @@ export function uploadVideo(accessToken: string, startedAt: number) {
         method: "POST",
         headers: {
           "Content-Length": e.data.size.toString(),
-          Token: accessToken
+          "Authorization": accessToken
         },
         body: formData
       });

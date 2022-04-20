@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace Spectator.DTO;
 
 public class VideoRequest {
-	public DateTimeOffset? StartedAt { get; set; }
-	public DateTimeOffset? StoppedAt { get; set; }
+	public long? StartedAt { get; set; }
+	public long? StoppedAt { get; set; }
 	public IFormFile? File { get; set; }
 }

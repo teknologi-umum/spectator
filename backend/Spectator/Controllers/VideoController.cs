@@ -35,7 +35,7 @@ public class VideoController : ControllerBase {
 	// TODO: Refactor this method so it doesn't get fat
 	[HttpPost]
 	[Route("/video")]
-	public async Task<IActionResult> LoginAsync([FromForm] VideoRequest request, [FromHeader(Name = "ACCESS_TOKEN")] string accessToken) {
+	public async Task<IActionResult> LoginAsync([FromForm] VideoRequest request, [FromHeader(Name = "Authorization")] string accessToken) {
 		if (request.File == null) throw new ArgumentNullException(nameof(request.File));
 		if (request.StartedAt == null) throw new ArgumentNullException(nameof(request.StartedAt));
 		if (request.StoppedAt == null) throw new ArgumentNullException(nameof(request.StoppedAt));
@@ -54,19 +54,17 @@ public class VideoController : ControllerBase {
 
 		try {
 			var found = await _minioClient.BucketExistsAsync(
-				new BucketExistsArgs().WithBucket(session.Id.ToString())
+				new BucketExistsArgs().WithBucket(registeredSession.Id.ToString())
 			);
 			if (!found) {
 				await _minioClient.MakeBucketAsync(
-					new MakeBucketArgs().WithBucket(session.Id.ToString())
+					new MakeBucketArgs().WithBucket(registeredSession.Id.ToString())
 				);
 			}
 
-			var filename = $"{request.StartedAt}_{request.StoppedAt}.webm";
 			await _minioClient.PutObjectAsync(
-				new PutObjectArgs().WithBucket(session.Id.ToString())
-								   .WithContentType("video/webm")
-								   .WithFileName(request.File.FileName)
+				new PutObjectArgs().WithBucket(registeredSession.Id.ToString())
+								   .WithFileName($"{request.StartedAt}_{request.StoppedAt}.webm")
 								   .WithStreamData(request.File.OpenReadStream())
 			);
 		} catch (Exception e) {
