@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - name: Install dependencies
         run: npm install
       - name: Protoc
@@ -28,4 +31,5 @@ jobs:
         env:
           VITE_SESSION_HUB_URL: /fake/session
           VITE_EVENT_HUB_URL: /fake/event
+          VITE_LOGGER_URL: /fake/log
         run: npm run test:coverage

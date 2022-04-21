@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 option go_package = "worker_proto";
+option csharp_namespace = "Spectator.Protos.Worker";
 
 package worker_proto;
 

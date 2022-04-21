@@ -181,16 +181,10 @@ function SAMTest() {
                     colorScheme="blue"
                     variant="outline"
                     onClick={() => goto("prev")}
-                    data-tour="step-3"
                   >
                     {t("translation.translations.ui.previous")}
                   </Button>
-                  <Button
-                    colorScheme="blue"
-                    variant="solid"
-                    onClick={onOpen}
-                    data-tour="step-4"
-                  >
+                  <Button colorScheme="blue" variant="solid" onClick={onOpen}>
                     {t("translation.translations.ui.finish")}
                   </Button>
                 </>

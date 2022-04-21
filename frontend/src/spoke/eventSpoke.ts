@@ -1,32 +1,36 @@
-import type {
-  CodingEventKeystroke,
-  CodingEventMouseClick,
-  CodingEventMouseMove
-} from "@/events/types";
 import SpokeBase from "@/spoke/spokeBase";
+import {
+  KeystrokeInfo,
+  MouseClickInfo,
+  MouseMoveInfo,
+  MouseScrollInfo,
+  WindowSizeInfo
+} from "@/stub/input";
 
-// TODO(elianiva): replace with the proper method names
-//                 currently these are just some fake methods to
-//                 make it easier to replace later
 class EventSpoke extends SpokeBase {
-  public async mouseScrolled(request: any /* TODO(elianiva): add type */) {
+  public async mouseScrolled(request: MouseScrollInfo) {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("MouseScrolledAsync");
+    return this._hubConnection.invoke("LogMouseScrolledAsync", request);
   }
 
-  public async mouseClicked(request: CodingEventMouseClick) {
+  public async mouseClicked(request: MouseClickInfo) {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("MouseClickedAsync", request);
+    return this._hubConnection.invoke("LogMouseClickedAsync", request);
   }
 
-  public async mouseMoved(request: CodingEventMouseMove) {
+  public async mouseMoved(request: MouseMoveInfo) {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("MouseMovedAsync", request);
+    return this._hubConnection.invoke("LogMouseMovedAsync", request);
   }
 
-  public async keyboardPressed(request: CodingEventKeystroke) {
+  public async keystroke(request: KeystrokeInfo) {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("KeyboardPressedAsync", request);
+    return this._hubConnection.invoke("LogKeystrokeAsync", request);
+  }
+
+  public async windowResized(request: WindowSizeInfo) {
+    await this._startIfDisconnected();
+    return this._hubConnection.invoke("LogWindowSizedAsync", request);
   }
 }
 

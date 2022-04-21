@@ -3,6 +3,7 @@ import os
 from random import randrange
 from datetime import datetime, timedelta
 
+
 def random_date(start: datetime, end: datetime) -> int:
     """
     This function will return a random datetime between two datetime
@@ -12,7 +13,8 @@ def random_date(start: datetime, end: datetime) -> int:
     int_delta: int = (delta.days * 24 * 60 * 60) + delta.seconds
     random_second: int = randrange(int_delta)
     time_addition = start + timedelta(seconds=random_second)
-    return int(time.mktime(time_addition.timetuple()))
+    return int(time.mktime(time_addition.timetuple())) * 1000
+
 
 def file_exists(file_name: str) -> bool:
     """

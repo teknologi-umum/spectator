@@ -45,8 +45,9 @@ def main():
 
     print("Environment variables are set. Let's connect to InfluxDB.")
 
-    client = influxdb_client.InfluxDBClient(url=influx_url, token=influx_token,
-                                            org=influx_org)
+    client = influxdb_client.InfluxDBClient(
+        url=influx_url, token=influx_token, org=influx_org
+    )
 
     # Check whether the bucket exists
     buckets_api = client.buckets_api()
@@ -69,12 +70,14 @@ def main():
             users = json.load(f)
             print(f"Found {len(users)} users. Writing into InfluxDB")
             for user in users:
-                point = Point(user["type"]) \
-                    .tag("session_id", user["session_id"]) \
-                    .field("student_number", user["student_number"]) \
-                    .field("hours_of_practice", user["hours_of_practice"]) \
-                    .field("years_of_experience", user["years_of_experience"]) \
-                    .field("familiar_language", user["familiar_language"])
+                point = (
+                    Point(user["type"])
+                    .tag("session_id", user["session_id"])
+                    .field("student_number", user["student_number"])
+                    .field("hours_of_practice", user["hours_of_practice"])
+                    .field("years_of_experience", user["years_of_experience"])
+                    .field("familiar_languages", user["familiar_languages"])
+                )
                 write_client.write(
                     bucket="session_events",
                     org=influx_org,
@@ -84,15 +87,19 @@ def main():
         with open("generated/input_events.json") as f:
             print("Reading events data from file.")
             events = json.load(f)
-            print( f"Found {len(events)} input_events. Writing into InfluxDB" )
+            print(f"Found {len(events)} input_events. Writing into InfluxDB")
             for event in events:
-                point = Point(event["type"]) \
-                    .tag("session_id", event["session_id"]) \
-                    .tag("question_number", event["question_number"])\
-                    .time(event["time"], write_precision=WritePrecision.S)
-                fields = set(event.keys())-set(["session_id","type","time","question_number"])
+                point = (
+                    Point(event["type"])
+                    .tag("session_id", event["session_id"])
+                    .tag("question_number", event["question_number"])
+                    .time(event["time"], write_precision=WritePrecision.MS)
+                )
+                fields = set(event.keys()) - set(
+                    ["session_id", "type", "time", "question_number"]
+                )
                 for field in fields:
-                    point= point.field(field,event[field])
+                    point = point.field(field, event[field])
                 write_client.write(
                     bucket="input_events",
                     org=influx_org,
@@ -102,17 +109,24 @@ def main():
         with open("generated/session_events.json") as f:
             print("Reading events data from file.")
             events = json.load(f)
-            print( f"Found {len(events)} session_events. Writing into InfluxDB" )
+            print(f"Found {len(events)} session_events. Writing into InfluxDB")
             for event in events:
-                point = Point(event["type"]) \
-                    .tag("session_id", event["session_id"]) \
-                    .time(event["time"], write_precision=WritePrecision.S)
-                fields = set(event.keys())-set(["session_id","type","time"])
-                for field in fields:
-                    if type(event[field]) == type([]):
-                        point= point.field(field,",".join([str(i) for i in event[field]]))
-                    else:
-                        point= point.field(field,event[field])
+                point = (
+                    Point(event["type"])
+                    .tag("session_id", event["session_id"])
+                    .time(event["time"], write_precision=WritePrecision.MS)
+                )
+                fields = set(event.keys()) - set(["session_id", "type", "time"])
+                if len(fields) < 1:
+                    point = point.field("__placeholder", 0)
+                else:
+                    for field in fields:
+                        if type(event[field]) == type([]):
+                            point = point.field(
+                                field, ",".join([str(i) for i in event[field]])
+                            )
+                        else:
+                            point = point.field(field, event[field])
 
                 write_client.write(
                     bucket="session_events",
@@ -121,6 +135,7 @@ def main():
                 )
 
             print("Done. Please don't do anything until the script exits itself.")
+
 
 if __name__ == "__main__":
     main()

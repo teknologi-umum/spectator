@@ -90,6 +90,8 @@ namespace Spectator.RepositoryDALs.Mapper {
 					arguments[i] = (string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName);
 				} else if (parameterType == typeof(int)) {
 					arguments[i] = Convert.ToInt32(fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
+				} else if (parameterType == typeof(bool)) {
+					arguments[i] = Convert.ToBoolean(fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
 				} else if (parameterType == typeof(DateTimeOffset)) {
 					arguments[i] = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(fluxRecord.GetValueByKey(fluxProp.FluxFieldName)) / 1_000_000);
 				} else if (parameterType == typeof(MouseButton)) {
@@ -137,6 +139,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 					null => throw new ArgumentException($"event.{fluxProperty.PropertyInfo.Name} is null", nameof(@event)),
 					string s => pointData.Field(fluxProperty.FluxFieldName, s),
 					int i => pointData.Field(fluxProperty.FluxFieldName, i),
+					bool b => pointData.Field(fluxProperty.FluxFieldName, b),
 					DateTimeOffset dto => pointData.Field(fluxProperty.FluxFieldName, dto.ToUnixTimeMilliseconds() * 1_000_000),
 					MouseButton mb => pointData.Field(fluxProperty.FluxFieldName, mb.ToString()),
 					Locale l => pointData.Field(fluxProperty.FluxFieldName, l.ToString().ToUpperInvariant()),

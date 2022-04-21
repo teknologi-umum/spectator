@@ -10,9 +10,8 @@ import { useTranslation } from "react-i18next";
 
 interface ScratchPadProps {
   bg: string;
-  onScroll: UIEventHandler<HTMLDivElement>;
 }
-export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
+export default function ScratchPad({ bg }: ScratchPadProps) {
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
@@ -67,7 +66,6 @@ export default function ScratchPad({ bg, onScroll }: ScratchPadProps) {
               extensions={[highlightTheme, lineNumbers()]}
               theme={theme}
               style={{ height: "calc(100% - 2.75rem)" }}
-              onScroll={onScroll}
               onChange={handleChange}
             />
           </TabPanel>

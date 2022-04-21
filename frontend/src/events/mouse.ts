@@ -1,57 +1,100 @@
-import { calculateDirection } from "@/utils/getMouseDirection";
-import type { CodingEventMouseClick, CodingEventMouseMove } from "./types";
 import { eventSpoke } from "@/spoke";
+import { loggerInstance } from "@/spoke/logger";
+import { MouseButton } from "@/stub/enums";
+import { MouseScrollInfo, MouseClickInfo, MouseMoveInfo } from "@/stub/input";
+import { calculateDirection } from "@/utils/getMouseDirection";
+import { LogLevel } from "@microsoft/signalr";
 
-export function mouseClickHandler(questionNumber: number | null) {
+const eventButtonToEnum = [
+  MouseButton.LEFT_BUTTON,
+  MouseButton.MIDDLE_BUTTON,
+  MouseButton.RIGHT_BUTTON
+];
+
+export function mouseClickHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
   return async (e: MouseEvent) => {
-    if (questionNumber === null) return;
+    if (questionNumber === null || accessToken === null) return;
 
-    const data: CodingEventMouseClick = {
-      // TODO(elianiva): revisit session_id
-      session_id: "TBD",
-      type: "coding_event_mouseclick",
-      left_click: e.button === 0,
-      middle_click: e.button === 1,
-      right_click: e.button === 2,
-      question_number: questionNumber,
-      time: new Date(Date.now())
+    const data: MouseClickInfo = {
+      accessToken: accessToken,
+      questionNumber: questionNumber,
+      x: e.clientX,
+      y: e.clientY,
+      button: eventButtonToEnum[e.button],
+      time: Date.now() as unknown as bigint
     };
 
     try {
       await eventSpoke.mouseClicked(data);
     } catch (err) {
-      // TODO(elianiva): replace with proper logging
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   };
 }
 
-// TODO(elianiva): emit position and direction as a single event??
-export function mouseMoveHandler(questionNumber: number | null) {
+export function mouseMoveHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
   return async (e: MouseEvent) => {
-    if (questionNumber === null) return;
+    if (questionNumber === null || accessToken === null) return;
 
     // only emit if it's actually moving
     const direction = calculateDirection(e);
     if (direction === null) return;
 
-    const data: CodingEventMouseMove = {
-      // TODO(elianiva): revisit session_id
-      session_id: "TBD",
-      type: "coding_event_mousemove",
+    const data: MouseMoveInfo = {
+      accessToken: accessToken,
       direction: direction,
-      x_position: e.pageX,
-      y_position: e.pageY,
-      window_width: window.innerWidth,
-      window_height: window.innerHeight,
-      question_number: questionNumber,
-      time: new Date(Date.now())
+      x: e.pageX,
+      y: e.pageY,
+      questionNumber: questionNumber,
+      time: Date.now() as unknown as bigint
     };
 
     try {
       await eventSpoke.mouseMoved(data);
     } catch (err) {
-      // TODO(elianiva): replace with proper logging
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
+    }
+  };
+}
+
+export function mouseScrollHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
+  return async (e: WheelEvent) => {
+    if (questionNumber === null || accessToken === null) return;
+
+
+    const data: MouseScrollInfo = {
+      accessToken: accessToken,
+      delta: e.deltaY,
+      x: e.clientX,
+      y: e.clientY,
+      questionNumber: questionNumber,
+      time: Date.now() as unknown as bigint
+    };
+
+    try {
+      await eventSpoke.mouseScrolled(data);
+    } catch (err) {
       console.error(err);
     }
   };
