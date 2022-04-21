@@ -15,7 +15,7 @@ class TestGenerateEvents(unittest.TestCase):
 
         event = generate_keystroke_event(session_id="GUID", time=time)
 
-        self.assertEqual(event["type"], "coding_event_keystroke")
+        self.assertEqual(event["type"], "keystroke")
         self.assertEqual(event["session_id"], "GUID")
         self.assertNotIn(event["key_char"], ["", None])
         self.assertNotIn(event["key_code"], ["", None])
@@ -33,7 +33,7 @@ class TestGenerateEvents(unittest.TestCase):
 
         event = generate_mousemove_event(session_id="GUID", time=time)
 
-        self.assertEqual(event["type"], "coding_event_mousemove")
+        self.assertEqual(event["type"], "mouse_moved")
         self.assertIn(event["direction"], ["up", "down", "left", "right"])
         self.assertGreaterEqual(event["x"], 0)
         self.assertLessEqual(event["x"], 1920)
@@ -49,7 +49,7 @@ class TestGenerateEvents(unittest.TestCase):
 
         event = generate_mouseclick_event(session_id="GUID", time=time)
 
-        self.assertEqual(event["type"], "coding_event_mouseclick")
+        self.assertEqual(event["type"], "mouse_click")
         self.assertIn(event["button"], ["Left", "Right", "Middle"])
         self.assertGreaterEqual(event["x"], 0)
         self.assertLessEqual(event["x"], 1920)
