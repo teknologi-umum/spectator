@@ -24,12 +24,31 @@ namespace Spectator.Hubs {
 			_inputServices = inputServices;
 		}
 
-		public async Task<EventReply> LogMouseClickedAsync(MouseClickInfo mouseClickInfo) {
+		public async Task<EventReply> LogMouseUpAsync(MouseClickInfo mouseClickInfo) {
 			// Authenticate
 			var session = _poormansAuthentication.Authenticate(mouseClickInfo.AccessToken);
 
 			// Send event
-			await _inputServices.AddInputEventAsync(new MouseClickedEvent(
+			await _inputServices.AddInputEventAsync(new MouseUpEvent(
+				SessionId: session.Id,
+				Timestamp: DateTimeOffset.UtcNow,
+				X: mouseClickInfo.X,
+				Y: mouseClickInfo.Y,
+				Button: (MouseButton)mouseClickInfo.Button
+			));
+
+			// Reply OK
+			return new EventReply {
+				Message = "OK"
+			};
+		}
+
+		public async Task<EventReply> LogMouseDownAsync(MouseClickInfo mouseClickInfo) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(mouseClickInfo.AccessToken);
+
+			// Send event
+			await _inputServices.AddInputEventAsync(new MouseDownEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
 				X: mouseClickInfo.X,

@@ -10,10 +10,11 @@ import {
 } from "@/components/CodingTest";
 import {
   keystrokeHandler,
-  mouseClickHandler,
+  mouseUpHandler,
   mouseMoveHandler,
   mouseScrollHandler,
-  windowResizeHandler
+  windowResizeHandler,
+  mouseDownHandler
 } from "@/events";
 import { useColorModeValue } from "@/hooks";
 import { Box, Flex, theme, useEventListener } from "@chakra-ui/react";
@@ -42,7 +43,11 @@ function CodingTest() {
 
   useEventListener(
     "mousedown",
-    mouseClickHandler(currentQuestionNumber, accessToken)
+    mouseDownHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "mouseup",
+    mouseUpHandler(currentQuestionNumber, accessToken)
   );
   useEventListener(
     "mousemove",

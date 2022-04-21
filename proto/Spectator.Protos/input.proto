@@ -7,7 +7,8 @@ package input;
 import "enums.proto";
 
 service InputService {
-	rpc LogMouseClicked (MouseClickInfo) returns (EventReply);
+	rpc LogMouseUp (MouseClickInfo) returns (EventReply);
+	rpc LogMouseDown (MouseClickInfo) returns (EventReply);
 	rpc LogMouseMoved (MouseMoveInfo) returns (EventReply);
 	rpc LogMouseScrolled (MouseScrollInfo) returns (EventReply);
 	rpc LogKeystroke (KeystrokeInfo) returns (EventReply);

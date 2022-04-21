@@ -100,7 +100,7 @@ class EventMouseMove(InputEventBase):
         } | super().as_dictionary()
 
 
-class EventMouseClick(InputEventBase):
+class EventMouseDown(InputEventBase):
     button: str
     x_position: int
     y_position: int
@@ -116,7 +116,36 @@ class EventMouseClick(InputEventBase):
         time: int,
     ) -> None:
         super().__init__(session_id, time, question_number)
-        self.type = "mouse_click"
+        self.type = "mouse_down"
+        self.x_position = x_position
+        self.y_position = y_position
+        self.button = button
+
+    def as_dictionary(self):
+        return {
+            "button": self.button,
+            "x": self.x_position,
+            "y": self.y_position,
+        } | super().as_dictionary()
+
+
+class EventMouseUp(InputEventBase):
+    button: str
+    x_position: int
+    y_position: int
+    _time: int
+
+    def __init__(
+        self,
+        session_id: str,
+        question_number: int,
+        button: str,
+        x_position: int,
+        y_position: int,
+        time: int,
+    ) -> None:
+        super().__init__(session_id, time, question_number)
+        self.type = "mouse_up"
         self.x_position = x_position
         self.y_position = y_position
         self.button = button
@@ -190,20 +219,33 @@ def generate_mousemove_event(session_id: str, time) -> dict[str, any]:
         )
     ).as_dictionary()
 
-
-def generate_mouseclick_event(session_id: str, time) -> dict[str, any]:
+# generates a pair of mousedown and mouse up with a random interval
+# they will always come in pairs
+def generate_mouseclick_event(session_id: str, time: int) -> list[dict[str, any]]:
     question_number = random.randint(1, 6)
     window_height = random.randint(0, 1080)
     window_width = random.randint(0, 1920)
     x_position = random.randint(0, window_width)
     y_position = random.randint(0, window_height)
     button = random.choice(MOUSE_BUTTON)
+    interval = random.randint(1, 5000) # 1 to 5 seconds in milliseconds precision
 
-    return (
-        EventMouseClick(
+    result = []
+
+    result.append(
+        EventMouseDown(
             session_id, question_number, button, x_position, y_position, time
-        )
-    ).as_dictionary()
+        ).as_dictionary()
+    )
+
+    # mouseup occurs randomly after mousedown with a random interval
+    result.append(
+        EventMouseUp(
+            session_id, question_number, button, x_position, y_position, time + interval
+        ).as_dictionary()
+    )
+
+    return result
 
 
 def generate_window_sized_event(session_id: str, time) -> dict[str, any]:
