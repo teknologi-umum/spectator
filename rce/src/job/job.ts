@@ -6,19 +6,19 @@ import { Runtime } from "@/runtime/runtime";
 import { User } from "@/user/user";
 
 export interface JobPrerequisites {
-    user: User
-    runtime: Runtime
-    code: string
-    timeout: number
-    memoryLimit: number
+    user: User;
+    runtime: Runtime;
+    code: string;
+    timeout: number;
+    memoryLimit: number;
 }
 
 export interface CommandOutput {
-    stdout: string
-    stderr: string
-    output: string
-    exitCode: number
-    signal: string
+    stdout: string;
+    stderr: string;
+    output: string;
+    exitCode: number;
+    signal: string;
 }
 
 export class Job implements JobPrerequisites {
@@ -50,7 +50,11 @@ export class Job implements JobPrerequisites {
             this.timeout = 5_000;
         }
 
-        if (memoryLimit !== undefined && memoryLimit !== null && memoryLimit >= 1) {
+        if (
+            memoryLimit !== undefined &&
+            memoryLimit !== null &&
+            memoryLimit >= 1
+        ) {
             this.memoryLimit = memoryLimit;
         } else {
             this.memoryLimit = 128 * 1024 * 1024;
@@ -73,11 +77,11 @@ export class Job implements JobPrerequisites {
         this._sourceFilePath = filePath;
     }
 
-    async compile(): Promise<void> {
-        if (!this.runtime.compiled) {
-            return;
-        }
-
+    /**
+     * Compiles the source code to a binary file. This is only necessary for
+     * compiled languages.
+     */
+    async compile(): Promise<CommandOutput> {
         const fileName = path.basename(this._sourceFilePath);
         const buildCommand: string[] = [
             "/usr/bin/nice",
@@ -85,18 +89,23 @@ export class Job implements JobPrerequisites {
             "--nproc=128",
             "--nofile=2048",
             "--fsize=10000000", // 10MB
-            "--rttime="+this.timeout.toString(),
-            "--as="+this.memoryLimit.toString(),
+            "--rttime=" + this.timeout.toString(),
+            "--as=" + this.memoryLimit.toString(),
             "nosocket",
-            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
+            ...this.runtime.buildCommand.map((arg) =>
+                arg.replace("{file}", fileName)
+            )
         ];
 
         const buildCommandOutput = await this.executeCommand(buildCommand);
-        if (buildCommandOutput.exitCode !== 0) {
-            throw new Error(buildCommandOutput.output);
+        if (buildCommandOutput.exitCode === 0) {
+            this._builtFilePath = this._sourceFilePath.replace(
+                `code.${this.runtime.extension}`,
+                "code"
+            );
         }
 
-        this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
+        return buildCommandOutput;
     }
 
     async run(): Promise<CommandOutput> {
@@ -112,14 +121,12 @@ export class Job implements JobPrerequisites {
                 "--nproc=64",
                 "--nofile=2048",
                 "--fsize=10000000", // 10MB
-                "--rttime="+this.timeout.toString(),
-                "--as="+this.memoryLimit.toString(),
+                "--rttime=" + this.timeout.toString(),
+                "--as=" + this.memoryLimit.toString(),
                 "nosocket",
-                ...this.runtime.runCommand.map(
-                    arg => arg.replace(
-                        "{file}",
-                        finalFileName
-                    ))
+                ...this.runtime.runCommand.map((arg) =>
+                    arg.replace("{file}", finalFileName)
+                )
             ];
 
             const result = await this.executeCommand(runCommand);

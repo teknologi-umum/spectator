@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -59,10 +55,20 @@ namespace Spectator.Piston {
 				cancellationToken: cancellationToken
 			);
 
-			// TODO: report runtime error together with passing and failing tests
-			if (executeResult.ExitCode != 0) return ImmutableArray.Create<TestResultBase>(new RuntimeErrorResult(executeResult.Stderr));
+			if (executeResult.CompileResult.ExitCode != 0) {
+				return ImmutableArray.Create<TestResultBase>(
+					new CompileErrorResult(executeResult.CompileResult.Stderr)
+				);
+			}
 
-			return ResultParser.ParseTestResults(executeResult.Stdout);
+			// TODO: report runtime error together with passing and failing tests
+			if (executeResult.RunResult.ExitCode != 0) {
+				return ImmutableArray.Create<TestResultBase>(
+					new RuntimeErrorResult(executeResult.RunResult.Stderr)
+				);
+			}
+
+			return ResultParser.ParseTestResults(executeResult.RunResult.Stdout);
 		}
 
 		internal async Task<CodeResponse> ExecuteAsync(string language, string code, CancellationToken cancellationToken) {

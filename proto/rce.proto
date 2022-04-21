@@ -42,8 +42,20 @@ message CodeRequest {
 message CodeResponse {
     string language = 1;
     string version = 2;
-    string stdout = 3;
-    string stderr = 4;
-    string output = 5;
-    int32 exitCode = 6;
+	CompileResult compile_result = 3;
+	RunResult run_result = 4;
+}
+
+message CompileResult {
+	string stdout = 1;
+	string stderr = 2;
+	string output = 3;
+	int32 exitCode = 4;
+}
+
+message RunResult {
+	string stdout = 1;
+	string stderr = 2;
+	string output = 3;
+	int32 exitCode = 4;
 }

@@ -46,10 +46,10 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(0);
-			executeResult.Run.Stdout.Should().BeEmpty();
-			executeResult.Run.Stderr.Should().BeEmpty();
-			executeResult.Run.Output.Should().BeEmpty();
+			executeResult.RunResult.ExitCode.Should().Be(0);
+			executeResult.RunResult.Stdout.Should().BeEmpty();
+			executeResult.RunResult.Stderr.Should().BeEmpty();
+			executeResult.RunResult.Output.Should().BeEmpty();
 
 			// Wait 500ms to avoid HTTP 429
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -65,10 +65,10 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(0);
-			executeResult.Run.Stdout.Should().Be("Hello world");
-			executeResult.Run.Stderr.Should().BeEmpty();
-			executeResult.Run.Output.Should().Be("Hello world");
+			executeResult.RunResult.ExitCode.Should().Be(0);
+			executeResult.RunResult.Stdout.Should().Be("Hello world");
+			executeResult.RunResult.Stderr.Should().BeEmpty();
+			executeResult.RunResult.Output.Should().Be("Hello world");
 
 			// Wait 500ms to avoid HTTP 429
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -83,10 +83,10 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(1);
-			executeResult.Run.Stdout.Should().BeEmpty();
-			executeResult.Run.Stderr.Should().BeEmpty();
-			executeResult.Run.Output.Should().BeEmpty();
+			executeResult.RunResult.ExitCode.Should().Be(1);
+			executeResult.RunResult.Stdout.Should().BeEmpty();
+			executeResult.RunResult.Stderr.Should().BeEmpty();
+			executeResult.RunResult.Output.Should().BeEmpty();
 		}
 
 		[Fact]
@@ -109,10 +109,10 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(127);
-			executeResult.Run.Stdout.Should().BeEmpty();
-			executeResult.Run.Stderr.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
-			executeResult.Run.Output.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
+			executeResult.RunResult.ExitCode.Should().Be(127);
+			executeResult.RunResult.Stdout.Should().BeEmpty();
+			executeResult.RunResult.Stderr.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
+			executeResult.RunResult.Output.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
 		}
 	}
 }

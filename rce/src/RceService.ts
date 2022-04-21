@@ -87,23 +87,38 @@ export class RceServiceImpl implements IRceService {
             }
 
             // Create a job.
-            const job = new Job(user, runtime, req.code, req.compileTimeout, req.memoryLimit);
+            const job = new Job(
+                user,
+                runtime,
+                req.code,
+                req.compileTimeout,
+                req.memoryLimit
+            );
+
             await job.createFile();
+
             if (runtime.compiled) {
-                await job.compile();
+                const compileOutput = await job.compile();
+                if (compileOutput.exitCode !== 0) {
+                    callback(null, {
+                        language: runtime.language,
+                        version: runtime.version,
+                        compileResult: compileOutput,
+                        runResult: undefined
+                    });
+                    return;
+                }
             }
 
-            const commandOutput = await job.run();
+            const executeOutput = await job.run();
             // Release the user.
             this._users.release(user.uid);
 
             callback(null, {
-                exitCode: commandOutput.exitCode,
+                version: runtime.version,
                 language: runtime.language,
-                output: commandOutput.output,
-                stderr: commandOutput.stderr,
-                stdout: commandOutput.stdout,
-                version: runtime.version
+                runResult: executeOutput,
+                compileResult: undefined
             });
         } catch (err: unknown) {
             console.log(err);
