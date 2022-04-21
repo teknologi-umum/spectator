@@ -219,6 +219,7 @@ def generate_mousemove_event(session_id: str, time) -> dict[str, any]:
         )
     ).as_dictionary()
 
+
 # generates a pair of mousedown and mouse up with a random interval
 # they will always come in pairs
 def generate_mouseclick_event(session_id: str, time: int) -> list[dict[str, any]]:
@@ -228,7 +229,7 @@ def generate_mouseclick_event(session_id: str, time: int) -> list[dict[str, any]
     x_position = random.randint(0, window_width)
     y_position = random.randint(0, window_height)
     button = random.choice(MOUSE_BUTTON)
-    interval = random.randint(1, 5000) # 1 to 5 seconds in milliseconds precision
+    interval = random.randint(1, 5000)  # 1 to 5 seconds in milliseconds precision
 
     result = []
 
