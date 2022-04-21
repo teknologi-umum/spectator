@@ -15,7 +15,6 @@ import {
 import ReactMarkdown from "react-markdown";
 import { useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
-import { UIEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import Result from "./Result";
 
@@ -26,6 +25,9 @@ interface QuestionProps {
 }
 
 export default function Question({ bg, fg, fgDarker }: QuestionProps) {
+  const isMounted = useRef(false);
+  const [tabIndex, setTabIndex] = useState(0);
+
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
