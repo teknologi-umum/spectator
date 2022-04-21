@@ -20,7 +20,7 @@ class EventSpoke extends SpokeBase {
 
   public async mouseDown(request: MouseClickInfo) {
     await this._startIfDisconnected();
-    return this._hubConnection.invoke("LogMouseUpAsync", request);
+    return this._hubConnection.invoke("LogMouseDownAsync", request);
   }
 
   public async mouseMoved(request: MouseMoveInfo) {
