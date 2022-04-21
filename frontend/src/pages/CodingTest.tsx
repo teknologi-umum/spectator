@@ -58,26 +58,26 @@ function CodingTest() {
   const toast = useToast();
   const { setIsOpen } = useTour();
 
-  // useEventListener(
-  //   "mousedown",
-  //   mouseClickHandler(currentQuestionNumber, accessToken)
-  // );
-  // useEventListener(
-  //   "mousemove",
-  //   mouseMoveHandler(currentQuestionNumber, accessToken)
-  // );
-  // useEventListener(
-  //   "keydown",
-  //   keystrokeHandler(currentQuestionNumber, accessToken)
-  // );
-  // useEventListener(
-  //   "wheel",
-  //   mouseScrollHandler(currentQuestionNumber, accessToken)
-  // );
-  // useEventListener(
-  //   "resize",
-  //   windowResizeHandler(currentQuestionNumber, accessToken)
-  // );
+  useEventListener(
+    "mousedown",
+    mouseClickHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "mousemove",
+    mouseMoveHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "keydown",
+    keystrokeHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "wheel",
+    mouseScrollHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "resize",
+    windowResizeHandler(currentQuestionNumber, accessToken)
+  );
 
   // disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
