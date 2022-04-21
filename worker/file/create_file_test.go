@@ -22,7 +22,7 @@ func TestCreateFile(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	
+
 	// Check for MinIO bucket existence
 	bucketFound, err := deps.Bucket.BucketExists(ctx, "spectator")
 	if err != nil {

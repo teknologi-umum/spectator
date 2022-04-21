@@ -76,7 +76,7 @@ def main():
                     .field("student_number", user["student_number"])
                     .field("hours_of_practice", user["hours_of_practice"])
                     .field("years_of_experience", user["years_of_experience"])
-                    .field("familiar_language", user["familiar_language"])
+                    .field("familiar_languages", user["familiar_languages"])
                 )
                 write_client.write(
                     bucket="session_events",
@@ -93,7 +93,7 @@ def main():
                     Point(event["type"])
                     .tag("session_id", event["session_id"])
                     .tag("question_number", event["question_number"])
-                    .time(event["time"], write_precision=WritePrecision.S)
+                    .time(event["time"], write_precision=WritePrecision.MS)
                 )
                 fields = set(event.keys()) - set(
                     ["session_id", "type", "time", "question_number"]

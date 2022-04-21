@@ -110,7 +110,7 @@ def main():
                 current_session_events.append(event)
 
         # these are the events that will occur in the exam
-        for _ in range(random.randint(1000, 10000)):
+        for _ in range(random.randint(4000, 5000)):
             # these events will also happen parallel to each other so we shouldn't mutate the original timestamp
             # the events will be generated in the range of 1 to 90 minutes
             # and the delta will be randomised between 1ms to (9 * 60 * 1000)ms
@@ -119,13 +119,16 @@ def main():
             choice = random.choice(INPUT_EVENTS)
             if choice == "keystroke":
                 event = generate_keystroke_event(current_session, random_time)
+                current_input_events.append(event)
             elif choice == "mousemove":
                 event = generate_mousemove_event(current_session, random_time)
+                current_input_events.append(event)
             elif choice == "window_sized":
                 event = generate_window_sized_event(current_session, random_time)
+                current_input_events.append(event)
             elif choice == "mouseclick":
                 event = generate_mouseclick_event(current_session, random_time)
-            current_input_events.append(event)
+                current_input_events.append(event)
 
         # there will be 6 questions
         for _ in range(6):
@@ -135,10 +138,10 @@ def main():
             random_int = random.randint(0, 1)
             if random_int == 0:
                 event = generate_solution_accepted_event(current_session, random_time)
-                current_input_events.append(event)
+                current_session_events.append(event)
             elif random_int == 1:
                 event = generate_solution_rejected_event(current_session, random_time)
-                current_input_events.append(event)
+                current_session_events.append(event)
 
         # there are 3 ways of ending the test
         random_int = random.randint(0, 2)
