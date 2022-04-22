@@ -73,30 +73,43 @@ export class Job implements JobPrerequisites {
         this._sourceFilePath = filePath;
     }
 
-    async compile(): Promise<void> {
+    async compile(): Promise<CommandOutput> {
         if (!this.runtime.compiled) {
-            return;
+            return {
+                stdout: "",
+                stderr: "",
+                output: "",
+                exitCode: 0,
+                signal: ""
+            };
         }
 
-        const fileName = path.basename(this._sourceFilePath);
-        const buildCommand: string[] = [
-            "/usr/bin/nice",
-            "prlimit",
-            "--nproc=128",
-            "--nofile=2048",
-            "--fsize=10000000", // 10MB
-            "--rttime="+this.timeout.toString(),
-            "--as="+this.memoryLimit.toString(),
-            "nosocket",
-            ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
-        ];
+        try {
+            const fileName = path.basename(this._sourceFilePath);
+            const buildCommand: string[] = [
+                "/usr/bin/nice",
+                "prlimit",
+                "--nproc=128",
+                "--nofile=2048",
+                "--fsize=10000000", // 10MB
+                "--rttime=" + this.timeout.toString(),
+                "--as=" + this.memoryLimit.toString(),
+                "nosocket",
+                ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
+            ];
 
-        const buildCommandOutput = await this.executeCommand(buildCommand);
-        if (buildCommandOutput.exitCode !== 0) {
-            throw new Error(buildCommandOutput.output);
+            const buildCommandOutput = await this.executeCommand(buildCommand);
+            if (buildCommandOutput.exitCode !== 0) {
+                throw new Error(buildCommandOutput.output);
+            }
+
+            this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
+
+            return buildCommandOutput;
+        } catch (error) {
+            await this.cleanup();
+            throw error;
         }
-
-        this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
     }
 
     async run(): Promise<CommandOutput> {
@@ -112,8 +125,8 @@ export class Job implements JobPrerequisites {
                 "--nproc=64",
                 "--nofile=2048",
                 "--fsize=10000000", // 10MB
-                "--rttime="+this.timeout.toString(),
-                "--as="+this.memoryLimit.toString(),
+                "--rttime=" + this.timeout.toString(),
+                "--as=" + this.memoryLimit.toString(),
                 "nosocket",
                 ...this.runtime.runCommand.map(
                     arg => arg.replace(
@@ -132,13 +145,13 @@ export class Job implements JobPrerequisites {
     }
 
     private async cleanup(): Promise<void> {
-        await fs.rm(this._sourceFilePath);
+        await fs.rm(this._sourceFilePath, { force: true });
         if (process.env.ENVIRONMENT === "development") {
             console.log(`Cleaned up: ${this._sourceFilePath}`);
         }
 
         if (this.runtime.compiled) {
-            await fs.rm(this._builtFilePath);
+            await fs.rm(this._builtFilePath, { force: true });
             if (process.env.ENVIRONMENT === "development") {
                 console.log(`Cleaned up: ${this._builtFilePath}`);
             }
