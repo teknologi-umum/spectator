@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="InfluxDB.Client" Version="3.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.Json" Version="6.0.2" />
+    <PackageReference Include="Minio" Version="4.0.2" />
     <PackageReference Include="RG.Ninja" Version="1.0.8" />
     <PackageReference Include="RG.ProtobufConverters.Json" Version="1.0.6" />
     <PackageReference Include="SignalRSwaggerGen" Version="2.5.0" />

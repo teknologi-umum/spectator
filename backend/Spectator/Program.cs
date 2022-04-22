@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RG.ProtobufConverters.Json;
 using Spectator.DomainServices;
 using Spectator.Hubs;
@@ -16,6 +18,7 @@ using Spectator.Piston;
 using Spectator.PoormansAuth;
 using Spectator.RepositoryDALs;
 using Spectator.WorkerClient;
+using InfluxDB.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +81,8 @@ builder.Services.Setup(services => {
 // Build app
 var app = builder.Build();
 
+app.Services.MigrateDatabase().Wait();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
 	app.UseSwagger();
@@ -113,3 +118,12 @@ app.MapHub<EventHub>("/hubs/event");
 
 // Run app
 app.Run();
+
+public static class Application {
+	public static async Task MigrateDatabase(this IServiceProvider services) {
+		using IServiceScope serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+		InfluxDBClient client = serviceScope.ServiceProvider.GetRequiredService<InfluxDBClient>();
+		IOptions<InfluxDbOptions> options = serviceScope.ServiceProvider.GetRequiredService<IOptions<InfluxDbOptions>>();
+		await InfluxDbInitialization.InitializeAsync(client, options.Value);
+	}
+}
