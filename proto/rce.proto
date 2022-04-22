@@ -40,22 +40,15 @@ message CodeRequest {
 }
 
 message CodeResponse {
+	message Output {
+		string stdout = 1;
+		string stderr = 2;
+		string output = 3;
+		int32 exitCode = 4;
+	}
+	
     string language = 1;
     string version = 2;
-	CompileResult compile_result = 3;
-	RunResult run_result = 4;
-}
-
-message CompileResult {
-	string stdout = 1;
-	string stderr = 2;
-	string output = 3;
-	int32 exitCode = 4;
-}
-
-message RunResult {
-	string stdout = 1;
-	string stderr = 2;
-	string output = 3;
-	int32 exitCode = 4;
+	Output compile = 3;
+	Output runtime = 4;
 }

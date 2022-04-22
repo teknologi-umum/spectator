@@ -8,7 +8,7 @@ import {
 } from "@/stub/rce_pb";
 import { Runtime as RceRuntime } from "@/runtime/runtime";
 import { SystemUsers } from "./user/user";
-import { Job } from "./job/job";
+import { CommandOutput, Job } from "./job/job";
 import { Logger } from "@/Logger";
 import { KnownOnly } from "./magic";
 import { Level } from "./stub/logger_pb";
@@ -54,7 +54,6 @@ export class RceServiceImpl implements IRceService {
         const requestID = randomUUID();
 
         try {
-            // TODO: validate if the runtime is supported, then we acquire the runtime.
             const runtimeIndex = this._registeredRuntimes.findIndex(
                 (r) => r.language === req.language && r.version === req.version
             );
@@ -96,29 +95,38 @@ export class RceServiceImpl implements IRceService {
             );
 
             await job.createFile();
+            const compileOutput: CommandOutput = {
+                stdout: "",
+                stderr: "",
+                output: "",
+                exitCode: 0,
+                signal: ""
+            };
 
             if (runtime.compiled) {
-                const compileOutput = await job.compile();
-                if (compileOutput.exitCode !== 0) {
-                    callback(null, {
-                        language: runtime.language,
-                        version: runtime.version,
-                        compileResult: compileOutput,
-                        runResult: undefined
-                    });
-                    return;
-                }
+                const output = await job.compile();
+                Object.assign(compileOutput, output);
             }
 
-            const executeOutput = await job.run();
+            const runtimeOutput = await job.run();
             // Release the user.
             this._users.release(user.uid);
 
             callback(null, {
-                version: runtime.version,
                 language: runtime.language,
-                runResult: executeOutput,
-                compileResult: undefined
+                version: runtime.version,
+                compile: {
+                    output: compileOutput.output,
+                    stderr: compileOutput.stderr,
+                    stdout: compileOutput.stdout,
+                    exitCode: compileOutput.exitCode
+                },
+                runtime: {
+                    output: runtimeOutput.output,
+                    stdout: runtimeOutput.stdout,
+                    stderr: runtimeOutput.stderr,
+                    exitCode: runtimeOutput.exitCode
+                }
             });
         } catch (err: unknown) {
             console.log(err);

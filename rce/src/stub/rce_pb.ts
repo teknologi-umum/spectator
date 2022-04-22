@@ -89,39 +89,18 @@ export interface CodeResponse {
      */
     version: string;
     /**
-     * @generated from protobuf field: rce.CompileResult compile_result = 3;
+     * @generated from protobuf field: rce.CodeResponse.Output compile = 3;
      */
-    compileResult?: CompileResult;
+    compile?: CodeResponse_Output;
     /**
-     * @generated from protobuf field: rce.RunResult run_result = 4;
+     * @generated from protobuf field: rce.CodeResponse.Output runtime = 4;
      */
-    runResult?: RunResult;
+    runtime?: CodeResponse_Output;
 }
 /**
- * @generated from protobuf message rce.CompileResult
+ * @generated from protobuf message rce.CodeResponse.Output
  */
-export interface CompileResult {
-    /**
-     * @generated from protobuf field: string stdout = 1;
-     */
-    stdout: string;
-    /**
-     * @generated from protobuf field: string stderr = 2;
-     */
-    stderr: string;
-    /**
-     * @generated from protobuf field: string output = 3;
-     */
-    output: string;
-    /**
-     * @generated from protobuf field: int32 exitCode = 4;
-     */
-    exitCode: number;
-}
-/**
- * @generated from protobuf message rce.RunResult
- */
-export interface RunResult {
+export interface CodeResponse_Output {
     /**
      * @generated from protobuf field: string stdout = 1;
      */
@@ -211,8 +190,8 @@ class CodeResponse$Type extends MessageType<CodeResponse> {
         super("rce.CodeResponse", [
             { no: 1, name: "language", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "version", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "compile_result", kind: "message", T: () => CompileResult },
-            { no: 4, name: "run_result", kind: "message", T: () => RunResult }
+            { no: 3, name: "compile", kind: "message", T: () => CodeResponse_Output },
+            { no: 4, name: "runtime", kind: "message", T: () => CodeResponse_Output }
         ]);
     }
 }
@@ -221,9 +200,9 @@ class CodeResponse$Type extends MessageType<CodeResponse> {
  */
 export const CodeResponse = new CodeResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class CompileResult$Type extends MessageType<CompileResult> {
+class CodeResponse_Output$Type extends MessageType<CodeResponse_Output> {
     constructor() {
-        super("rce.CompileResult", [
+        super("rce.CodeResponse.Output", [
             { no: 1, name: "stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "stderr", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "output", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -232,24 +211,9 @@ class CompileResult$Type extends MessageType<CompileResult> {
     }
 }
 /**
- * @generated MessageType for protobuf message rce.CompileResult
+ * @generated MessageType for protobuf message rce.CodeResponse.Output
  */
-export const CompileResult = new CompileResult$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class RunResult$Type extends MessageType<RunResult> {
-    constructor() {
-        super("rce.RunResult", [
-            { no: 1, name: "stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "stderr", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "output", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "exitCode", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
-        ]);
-    }
-}
-/**
- * @generated MessageType for protobuf message rce.RunResult
- */
-export const RunResult = new RunResult$Type();
+export const CodeResponse_Output = new CodeResponse_Output$Type();
 /**
  * @generated ServiceType for protobuf service rce.CodeExecutionEngineService
  */

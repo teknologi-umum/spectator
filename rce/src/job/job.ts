@@ -77,35 +77,43 @@ export class Job implements JobPrerequisites {
         this._sourceFilePath = filePath;
     }
 
-    /**
-     * Compiles the source code to a binary file. This is only necessary for
-     * compiled languages.
-     */
     async compile(): Promise<CommandOutput> {
-        const fileName = path.basename(this._sourceFilePath);
-        const buildCommand: string[] = [
-            "/usr/bin/nice",
-            "prlimit",
-            "--nproc=128",
-            "--nofile=2048",
-            "--fsize=10000000", // 10MB
-            "--rttime=" + this.timeout.toString(),
-            "--as=" + this.memoryLimit.toString(),
-            "nosocket",
-            ...this.runtime.buildCommand.map((arg) =>
-                arg.replace("{file}", fileName)
-            )
-        ];
-
-        const buildCommandOutput = await this.executeCommand(buildCommand);
-        if (buildCommandOutput.exitCode === 0) {
-            this._builtFilePath = this._sourceFilePath.replace(
-                `code.${this.runtime.extension}`,
-                "code"
-            );
+        if (!this.runtime.compiled) {
+            return {
+                stdout: "",
+                stderr: "",
+                output: "",
+                exitCode: 0,
+                signal: ""
+            };
         }
 
-        return buildCommandOutput;
+        try {
+            const fileName = path.basename(this._sourceFilePath);
+            const buildCommand: string[] = [
+                "/usr/bin/nice",
+                "prlimit",
+                "--nproc=128",
+                "--nofile=2048",
+                "--fsize=10000000", // 10MB
+                "--rttime=" + this.timeout.toString(),
+                "--as=" + this.memoryLimit.toString(),
+                "nosocket",
+                ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
+            ];
+
+            const buildCommandOutput = await this.executeCommand(buildCommand);
+            if (buildCommandOutput.exitCode !== 0) {
+                throw new Error(buildCommandOutput.output);
+            }
+
+            this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
+
+            return buildCommandOutput;
+        } catch (error) {
+            await this.cleanup();
+            throw error;
+        }
     }
 
     async run(): Promise<CommandOutput> {
@@ -139,13 +147,13 @@ export class Job implements JobPrerequisites {
     }
 
     private async cleanup(): Promise<void> {
-        await fs.rm(this._sourceFilePath);
+        await fs.rm(this._sourceFilePath, { force: true });
         if (process.env.ENVIRONMENT === "development") {
             console.log(`Cleaned up: ${this._sourceFilePath}`);
         }
 
         if (this.runtime.compiled) {
-            await fs.rm(this._builtFilePath);
+            await fs.rm(this._builtFilePath, { force: true });
             if (process.env.ENVIRONMENT === "development") {
                 console.log(`Cleaned up: ${this._builtFilePath}`);
             }
