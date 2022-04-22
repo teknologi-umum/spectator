@@ -76,8 +76,8 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		))
 	case *MouseEvents:
 		// MouseDown, MouseUp, MouseMoved, MouseScrolled
-		currentFileName := fileName + "_" + "mousedown"
-		dataCSV, err := gocsv.MarshalBytes(*(s.MouseDown))
+		currentFileName := fileName + "_" + "mouse_click"
+		dataCSV, err := gocsv.MarshalBytes(*(s.MouseClick))
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
 		}
@@ -99,30 +99,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 			time.Now(),
 		))
 
-		currentFileName = fileName + "_" + "mouseup"
-		dataCSV, err = gocsv.MarshalBytes(*(s.MouseUp))
-		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
-		}
-
-		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
-		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
-		}
-
-		points = append(points, influxdb2.NewPoint(
-			common.MeasurementExportedData,
-			map[string]string{
-				"session_id":     sessionID.String(),
-				"student_number": studentNumber,
-			},
-			map[string]interface{}{
-				"file_csv_url": "/public/" + studentNumber + "_" + currentFileName + ".csv",
-			},
-			time.Now(),
-		))
-
-		currentFileName = fileName + "_" + "mousemoved"
+		currentFileName = fileName + "_" + "mouse_moved"
 		dataCSV, err = gocsv.MarshalBytes(*(s.MouseMoved))
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)

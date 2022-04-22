@@ -59,15 +59,9 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	// Mouse events queries
-	outputMouseDown, err := d.QueryMouseDown(ctx, queryAPI, sessionID)
+	outputMouseClick, err := d.QueryMouseClick(ctx, queryAPI, sessionID)
 	if err != nil {
-		cfDeps.sendErrorLog(err, "failed to query mouse down", requestID, sessionID)
-		return
-	}
-
-	outputMouseUp, err := d.QueryMouseUp(ctx, queryAPI, sessionID)
-	if err != nil {
-		cfDeps.sendErrorLog(err, "failed to query mouse up", requestID, sessionID)
+		cfDeps.sendErrorLog(err, "failed to query mouse click", requestID, sessionID)
 		return
 	}
 
@@ -180,8 +174,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	mouseEvents := &MouseEvents{
-		MouseDown:     outputMouseDown,
-		MouseUp:       outputMouseUp,
+		MouseClick:    outputMouseClick,
 		MouseMoved:    outputMouseMove,
 		MouseScrolled: outputMouseScrolled,
 	}
