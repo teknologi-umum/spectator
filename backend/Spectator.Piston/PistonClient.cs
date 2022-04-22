@@ -55,20 +55,20 @@ namespace Spectator.Piston {
 				cancellationToken: cancellationToken
 			);
 
-			if (executeResult.CompileResult.ExitCode != 0) {
+			if (executeResult.Compile.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new CompileErrorResult(executeResult.CompileResult.Stderr)
+					new CompileErrorResult(executeResult.Compile.Stderr)
 				);
 			}
 
 			// TODO: report runtime error together with passing and failing tests
-			if (executeResult.RunResult.ExitCode != 0) {
+			if (executeResult.Runtime.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new RuntimeErrorResult(executeResult.RunResult.Stderr)
+					new RuntimeErrorResult(executeResult.Compile.Stderr)
 				);
 			}
 
-			return ResultParser.ParseTestResults(executeResult.RunResult.Stdout);
+			return ResultParser.ParseTestResults(executeResult.Runtime.Stdout);
 		}
 
 		internal async Task<CodeResponse> ExecuteAsync(string language, string code, CancellationToken cancellationToken) {

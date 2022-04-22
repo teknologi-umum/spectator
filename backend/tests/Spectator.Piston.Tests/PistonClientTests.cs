@@ -46,10 +46,12 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.RunResult.ExitCode.Should().Be(0);
-			executeResult.RunResult.Stdout.Should().BeEmpty();
-			executeResult.RunResult.Stderr.Should().BeEmpty();
-			executeResult.RunResult.Output.Should().BeEmpty();
+			executeResult.Compile.ExitCode.Should().Be(0);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().BeEmpty();
+			executeResult.Runtime.ExitCode.Should().Be(0);
+			executeResult.Runtime.Stderr.Should().BeEmpty();
+			executeResult.Runtime.Stdout.Should().BeEmpty();
 
 			// Wait 500ms to avoid HTTP 429
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -65,10 +67,12 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.RunResult.ExitCode.Should().Be(0);
-			executeResult.RunResult.Stdout.Should().Be("Hello world");
-			executeResult.RunResult.Stderr.Should().BeEmpty();
-			executeResult.RunResult.Output.Should().Be("Hello world");
+			executeResult.Compile.ExitCode.Should().Be(0);
+			executeResult.Compile.Stdout.Should().Be("Hello world");
+			executeResult.Compile.Stderr.Should().BeEmpty();
+			executeResult.Runtime.ExitCode.Should().Be(0);
+			executeResult.Runtime.Stderr.Should().BeEmpty();
+			executeResult.Runtime.Stdout.Should().Be("Hello world");
 
 			// Wait 500ms to avoid HTTP 429
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
@@ -83,10 +87,12 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.RunResult.ExitCode.Should().Be(1);
-			executeResult.RunResult.Stdout.Should().BeEmpty();
-			executeResult.RunResult.Stderr.Should().BeEmpty();
-			executeResult.RunResult.Output.Should().BeEmpty();
+			executeResult.Compile.ExitCode.Should().Be(0);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().BeEmpty();
+			executeResult.Runtime.ExitCode.Should().Be(1);
+			executeResult.Runtime.Stderr.Should().BeEmpty();
+			executeResult.Runtime.Stdout.Should().BeEmpty();
 		}
 
 		[Fact]
@@ -109,10 +115,10 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.RunResult.ExitCode.Should().Be(127);
-			executeResult.RunResult.Stdout.Should().BeEmpty();
-			executeResult.RunResult.Stderr.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
-			executeResult.RunResult.Output.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
+			executeResult.Compile.ExitCode.Should().Be(127);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
+			executeResult.Compile.Stdout.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
 		}
 	}
 }
