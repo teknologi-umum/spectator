@@ -8,29 +8,25 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Heading,
-  Input,
-  InputGroup
+  Input
 } from "@chakra-ui/react";
-import { useAppDispatch, useAppSelector } from "@/store";
 import { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoginSchema } from "@/schema/SecretPage";
 import { useNavigate } from "react-router-dom";
-import { recordPassword } from "@/store/slices/loginSlice";
 import { LocaleButton } from "@/components/CodingTest";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch } from "@/store";
+import { setSessionId } from "@/store/slices/sessionSlice";
 
 interface FormValues {
   password: string;
 }
 
 export default function Login() {
-  const dispatch = useAppDispatch();
-  const login = useAppSelector((state) => state.login);
-
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const boxBg = useColorModeValue("white", "gray.700", "gray.800");
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
@@ -39,21 +35,37 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors, isSubmitting },
+    setError
   } = useForm({
-    defaultValues: login,
+    defaultValues: { password: "" },
     resolver: yupResolver(LoginSchema),
     reValidateMode: "onBlur"
   });
 
-  const onSubmit: SubmitHandler<FormValues> = ({ password }) => {
-    // TODO(elianiva): properly authenticate user from backend
-    if (password !== "something") {
-      return;
-    }
+  const onSubmit: SubmitHandler<FormValues> = async ({ password }) => {
+    try {
+      const response = await fetch(import.meta.env.VITE_ADMIN_URL + "/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password })
+      });
+      const data = await response.json();
 
-    dispatch(recordPassword(password));
-    navigate("/secret/download");
+      if (response.status !== 200) {
+        setError("password", {
+          message: data.message
+        });
+        return;
+      }
+
+      dispatch(setSessionId(data.sessionId));
+      navigate("/secret/download");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -61,6 +73,14 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
+    if (
+      errors === null ||
+      errors === undefined ||
+      Object.keys(errors).length === 0
+    ) {
+      return;
+    }
+
     console.log("errors", errors);
   }, [errors]);
 
@@ -110,7 +130,11 @@ export default function Login() {
                   placeholder="Type your password..."
                   {...register("password")}
                 />
-                <Button colorScheme="blue" type="submit">
+                <Button
+                  isLoading={isSubmitting}
+                  colorScheme="blue"
+                  type="submit"
+                >
                   Login
                 </Button>
               </Flex>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RG.ProtobufConverters.Json;
 using Spectator.DomainServices;
+using Spectator.DomainServices.ExamReportDomain;
 using Spectator.Hubs;
 using Spectator.JwtAuthentication;
 using Spectator.LoggerClient;
@@ -34,6 +35,7 @@ builder.Services.Setup(services => {
 	services.Configure<PistonOptions>(builder.Configuration.GetSection("PistonOptions"));
 	services.Configure<LoggerOptions>(builder.Configuration.GetSection("LoggerOptions"));
 	services.Configure<WorkerOptions>(builder.Configuration.GetSection("WorkerOptions"));
+	services.Configure<ExamReportOptions>(builder.Configuration.GetSection("ExamReportOptions"));
 
 	// Add application layers 
 	services.AddHttpClient();

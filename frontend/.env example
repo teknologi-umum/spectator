@@ -1,3 +1,4 @@
 VITE_SESSION_HUB_URL=/hub/session
 VITE_EVENT_HUB_URL=/hub/event
 VITE_LOGGER_URL=/log
+VITE_ADMIN_URL=/admin

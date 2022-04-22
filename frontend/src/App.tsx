@@ -1,5 +1,9 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
 import PersonalInfo from "@/pages/PersonalInfoPage";
 import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
@@ -8,6 +12,7 @@ import FunFact from "@/pages/FunFact";
 import Login from "@/pages/secret/Login";
 import Download from "@/pages/secret/Download";
 import { CoercedRoute } from "@/hoc/CoercedRoute";
+import { SecretRoute } from "./hoc/SecretRoute";
 
 function App() {
   return (
@@ -20,7 +25,7 @@ function App() {
           <Route path="coding-test" element={<CodingTest />} />
           <Route path="fun-fact" element={<FunFact />} />
         </Route>
-        <Route path="/secret" element={<Outlet />}>
+        <Route path="/secret" element={<SecretRoute />}>
           <Route path="login" element={<Login />} />
           <Route path="download" element={<Download />} />
         </Route>

@@ -25,6 +25,7 @@ namespace Spectator.DomainServices.MemoryCache {
 		/// string,
 		/// UrlSlug,
 		/// Enum,
+		/// Guid,
 		/// Tuple (which only contains int, string, Enum, HashSet`int, or HashSet`string)
 		/// </summary>
 		private CacheIdentifierBuilder(Type tKey, Type tValue) {
@@ -41,6 +42,7 @@ namespace Spectator.DomainServices.MemoryCache {
 				}
 			} else if (tKey != typeof(string)
 				&& tKey != typeof(int)
+				&& tKey != typeof(Guid)
 				&& !tKey.IsEnum) {
 				throw new InvalidOperationException($"Invalid cache key type: {tKey}");
 			}
@@ -61,6 +63,7 @@ namespace Spectator.DomainServices.MemoryCache {
 		/// string,
 		/// UrlSlug,
 		/// Enum,
+		/// Guid,
 		/// Tuple (which only contains int, string, Enum, HashSet`int, or HashSet`string)
 		/// </summary>
 		public static string SerializeKey<TKey>(TKey key) where TKey : notnull {
@@ -79,6 +82,7 @@ namespace Spectator.DomainServices.MemoryCache {
 					}).ToList();
 					return $"[{string.Join(',', serializedValues)}]";
 
+				case Guid s: return s.ToString();
 				case string s: return $"\"{s}\"";
 				case int i: return i.ToString(CultureInfo.InvariantCulture);
 				case null: return "(null)";

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface State {
+  sessionId: string | null;
   accessToken: string | null;
   firstSAMSubmitted: boolean;
   secondSAMSubmitted: boolean;
@@ -13,6 +14,7 @@ interface State {
 
 const initialState: State = {
   accessToken: null,
+  sessionId: null,
   firstSAMSubmitted: false,
   secondSAMSubmitted: false,
   tourCompleted: {
@@ -26,6 +28,12 @@ export const sessionSlice = createSlice({
   name: "session",
   initialState,
   reducers: {
+    setSessionId: (state, action: PayloadAction<string>) => {
+      state.sessionId = action.payload;
+    },
+    removeSessionId: (state) => {
+      state.sessionId = null;
+    },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
@@ -48,7 +56,9 @@ export const {
   setAccessToken,
   markFirstSAMSubmitted,
   markSecondSAMSubmitted,
-  markTourCompleted
+  markTourCompleted,
+  setSessionId,
+  removeSessionId
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;
