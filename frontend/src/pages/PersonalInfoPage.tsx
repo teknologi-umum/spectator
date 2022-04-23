@@ -168,6 +168,25 @@ function PersonalInfoPage() {
               {errors?.familiarLanguages?.message}!
             </FormErrorMessage>
           </FormControl>
+          
+          <FormControl
+            mt="6"
+            isInvalid={errors.familiarLanguages !== undefined}
+          >
+            <FormLabel>
+              {t(
+                "translation.translations.personal_info.wallet_number"
+              )}
+            </FormLabel>
+            <Input
+              type="text"
+              {...register("walletNumber")}
+              autoComplete="off"
+            />
+            <FormErrorMessage>
+              {errors?.walletNumber?.message}!
+            </FormErrorMessage>
+          </FormControl>
         </Box>
 
         <Button

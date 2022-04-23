@@ -3,4 +3,5 @@ export interface PersonalInfo {
   yearsOfExperience: number;
   hoursOfPractice: number;
   familiarLanguages: string;
+  walletNumber: string;
 }

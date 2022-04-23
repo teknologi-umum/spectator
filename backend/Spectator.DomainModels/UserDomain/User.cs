@@ -7,6 +7,7 @@ namespace Spectator.DomainModels.UserDomain {
 		public int YearsOfExperience { get; }
 		public int HoursOfPractice { get; }
 		public string FamiliarLanguages { get; }
+		public string WalletNumber { get; }
 		public DateTimeOffset CreatedAt { get; }
 		public DateTimeOffset UpdatedAt { get; private init; }
 
@@ -15,6 +16,7 @@ namespace Spectator.DomainModels.UserDomain {
 			int yearsOfExperience,
 			int hoursOfPractice,
 			string familiarLanguages,
+			string walletNumber,
 			DateTimeOffset createdAt,
 			DateTimeOffset updatedAt
 		) {
@@ -22,6 +24,7 @@ namespace Spectator.DomainModels.UserDomain {
 			YearsOfExperience = yearsOfExperience;
 			HoursOfPractice = hoursOfPractice;
 			FamiliarLanguages = familiarLanguages;
+			WalletNumber = walletNumber;
 			CreatedAt = createdAt;
 			UpdatedAt = updatedAt;
 		}
@@ -31,6 +34,7 @@ namespace Spectator.DomainModels.UserDomain {
 			yearsOfExperience: @event.YearsOfExperience,
 			hoursOfPractice: @event.HoursOfPractice,
 			familiarLanguages: @event.FamiliarLanguages,
+			walletNumber: @event.WalletNumber,
 			createdAt: @event.Timestamp,
 			updatedAt: @event.Timestamp
 		);
