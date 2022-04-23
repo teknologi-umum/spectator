@@ -11,7 +11,7 @@ const eventButtonToEnum = [
   MouseButton.RIGHT_BUTTON
 ];
 
-export function mouseClickHandler(
+export function mouseUpHandler(
   questionNumber: number | null,
   accessToken: string | null
 ) {
@@ -28,7 +28,38 @@ export function mouseClickHandler(
     };
 
     try {
-      await eventSpoke.mouseClicked(data);
+      await eventSpoke.mouseUp(data);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
+    }
+  };
+}
+
+
+export function mouseDownHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
+  return async (e: MouseEvent) => {
+    if (questionNumber === null || accessToken === null) return;
+
+    const data: MouseClickInfo = {
+      accessToken: accessToken,
+      questionNumber: questionNumber,
+      x: e.clientX,
+      y: e.clientY,
+      button: eventButtonToEnum[e.button],
+      time: Date.now() as unknown as bigint
+    };
+
+    try {
+      await eventSpoke.mouseDown(data);
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error(err);

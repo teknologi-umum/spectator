@@ -10,7 +10,8 @@ import {
 } from "@/components/CodingTest";
 import {
   keystrokeHandler,
-  mouseClickHandler,
+  mouseUpHandler,
+  mouseDownHandler,
   mouseMoveHandler,
   mouseScrollHandler,
   windowResizeHandler,
@@ -60,7 +61,11 @@ function CodingTest() {
 
   useEventListener(
     "mousedown",
-    mouseClickHandler(currentQuestionNumber, accessToken)
+    mouseDownHandler(currentQuestionNumber, accessToken)
+  );
+  useEventListener(
+    "mouseup",
+    mouseUpHandler(currentQuestionNumber, accessToken)
   );
   useEventListener(
     "mousemove",

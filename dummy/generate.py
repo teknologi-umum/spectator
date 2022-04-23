@@ -127,8 +127,8 @@ def main():
                 event = generate_window_sized_event(current_session, random_time)
                 current_input_events.append(event)
             elif choice == "mouseclick":
-                event = generate_mouseclick_event(current_session, random_time)
-                current_input_events.append(event)
+                events = generate_mouseclick_event(current_session, random_time)
+                current_input_events += events
 
         # there will be 6 questions
         for _ in range(6):
