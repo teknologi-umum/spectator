@@ -94,9 +94,7 @@ def main():
                     .tag("session_id", event["session_id"])
                     .time(event["time"], write_precision=WritePrecision.MS)
                 )
-                fields = set(event.keys()) - set(
-                    ["session_id", "type", "time"]
-                )
+                fields = set(event.keys()) - set(["session_id", "type", "time"])
                 for field in fields:
                     point = point.field(field, event[field])
                 write_client.write(
