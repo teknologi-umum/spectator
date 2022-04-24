@@ -43,10 +43,12 @@ func (d *Dependency) QueryMouseDistanceTraveled(ctx context.Context, queryAPI ap
 	for rows.Next() {
 		record := rows.Record()
 
-		questionNumber := record.ValueByKey("question_number").(int64)
-		// if !ok {
-		// 	questionNumber = 0
-		// }
+		questionNumber, ok := record.ValueByKey("question_number").(int64)
+		if !ok {
+			// If this happened, this would be an invalid case
+			// as the question number would starts at 1
+			questionNumber = 0
+		}
 
 		x, ok := record.ValueByKey("x").(int64)
 		if !ok {
