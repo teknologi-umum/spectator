@@ -19,8 +19,7 @@ type KeystrokeEvents struct {
 }
 
 type MouseEvents struct {
-	MouseDown     *[]Mouse         `json:"mouse_down" csv:"mouse_down"`
-	MouseUp       *[]Mouse         `json:"mouse_up" csv:"mouse_up"`
+	MouseClick    *[]MouseClick    `json:"mouse_click" csv:"mouse_click"`
 	MouseMoved    *[]MouseMovement `json:"mouse_moved" csv:"mouse_moved"`
 	MouseScrolled *[]MouseScrolled `json:"mouse_scrolled" csv:"mouse_scrolled"`
 }

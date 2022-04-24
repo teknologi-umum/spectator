@@ -154,15 +154,33 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	bucketFound, err := minioConn.BucketExists(ctx, "spectator")
+	bucketFound, err := minioConn.BucketExists(ctx, "public")
 	if err != nil {
 		log.Fatalf("Error checking MinIO bucket: %s\n", err)
 	}
 
 	if !bucketFound {
-		err = minioConn.MakeBucket(ctx, "spectator", minio.MakeBucketOptions{})
+		err = minioConn.MakeBucket(ctx, "public", minio.MakeBucketOptions{})
 		if err != nil {
-			log.Fatalf("Error creating MinIObucket: %s\n", err)
+			log.Fatalf("Error creating MinIO bucket: %s\n", err)
+		}
+
+		policy := `{
+			"Version":"2012-10-17",
+			"Statement":[
+			  {
+				"Sid": "AddPerm",
+				"Effect": "Allow",
+				"Principal": "*",
+				"Action":["s3:GetObject"],
+				"Resource":["arn:aws:s3:::public/*"]
+			  }
+			]
+		  }`
+
+		err = minioConn.SetBucketPolicy(ctx, "public", policy)
+		if err != nil {
+			log.Fatalf("Error setting bucket policy: %s\n", err)
 		}
 	}
 

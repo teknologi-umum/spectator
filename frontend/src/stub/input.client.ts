@@ -18,9 +18,13 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface IInputServiceClient {
     /**
-     * @generated from protobuf rpc: LogMouseClicked(input.MouseClickInfo) returns (input.EventReply);
+     * @generated from protobuf rpc: LogMouseUp(input.MouseClickInfo) returns (input.EventReply);
      */
-    logMouseClicked(input: MouseClickInfo, options?: RpcOptions): UnaryCall<MouseClickInfo, EventReply>;
+    logMouseUp(input: MouseClickInfo, options?: RpcOptions): UnaryCall<MouseClickInfo, EventReply>;
+    /**
+     * @generated from protobuf rpc: LogMouseDown(input.MouseClickInfo) returns (input.EventReply);
+     */
+    logMouseDown(input: MouseClickInfo, options?: RpcOptions): UnaryCall<MouseClickInfo, EventReply>;
     /**
      * @generated from protobuf rpc: LogMouseMoved(input.MouseMoveInfo) returns (input.EventReply);
      */
@@ -48,38 +52,45 @@ export class InputServiceClient implements IInputServiceClient, ServiceInfo {
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * @generated from protobuf rpc: LogMouseClicked(input.MouseClickInfo) returns (input.EventReply);
+     * @generated from protobuf rpc: LogMouseUp(input.MouseClickInfo) returns (input.EventReply);
      */
-    logMouseClicked(input: MouseClickInfo, options?: RpcOptions): UnaryCall<MouseClickInfo, EventReply> {
+    logMouseUp(input: MouseClickInfo, options?: RpcOptions): UnaryCall<MouseClickInfo, EventReply> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
+        return stackIntercept<MouseClickInfo, EventReply>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: LogMouseDown(input.MouseClickInfo) returns (input.EventReply);
+     */
+    logMouseDown(input: MouseClickInfo, options?: RpcOptions): UnaryCall<MouseClickInfo, EventReply> {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
         return stackIntercept<MouseClickInfo, EventReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: LogMouseMoved(input.MouseMoveInfo) returns (input.EventReply);
      */
     logMouseMoved(input: MouseMoveInfo, options?: RpcOptions): UnaryCall<MouseMoveInfo, EventReply> {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept<MouseMoveInfo, EventReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: LogMouseScrolled(input.MouseScrollInfo) returns (input.EventReply);
      */
     logMouseScrolled(input: MouseScrollInfo, options?: RpcOptions): UnaryCall<MouseScrollInfo, EventReply> {
-        const method = this.methods[2], opt = this._transport.mergeOptions(options);
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
         return stackIntercept<MouseScrollInfo, EventReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: LogKeystroke(input.KeystrokeInfo) returns (input.EventReply);
      */
     logKeystroke(input: KeystrokeInfo, options?: RpcOptions): UnaryCall<KeystrokeInfo, EventReply> {
-        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<KeystrokeInfo, EventReply>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: LogWindowSized(input.WindowSizeInfo) returns (input.EventReply);
      */
     logWindowSized(input: WindowSizeInfo, options?: RpcOptions): UnaryCall<WindowSizeInfo, EventReply> {
-        const method = this.methods[4], opt = this._transport.mergeOptions(options);
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
         return stackIntercept<WindowSizeInfo, EventReply>("unary", this._transport, method, opt, input);
     }
 }

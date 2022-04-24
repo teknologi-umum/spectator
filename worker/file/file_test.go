@@ -134,18 +134,18 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 		g.Go(func() error {
 			_, err := bucketsAPI.FindBucketByName(gctx, b)
 			if err != nil && err.Error() != "bucket '"+b+"' not found" {
-				return fmt.Errorf("finding bucket: %v", err)
+				return fmt.Errorf("finding bucket: %w", err)
 			}
 
 			if err != nil && err.Error() == "bucket '"+b+"' not found" {
 				orgDomain, err := organizationAPI.FindOrganizationByName(gctx, org)
 				if err != nil {
-					return fmt.Errorf("finding organization: %v", err)
+					return fmt.Errorf("finding organization: %w", err)
 				}
 
 				_, err = bucketsAPI.CreateBucketWithName(gctx, orgDomain, b)
 				if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
-					return fmt.Errorf("creating bucket: %v", err)
+					return fmt.Errorf("creating bucket: %w", err)
 				}
 			}
 
@@ -161,7 +161,7 @@ func cleanup(ctx context.Context) error {
 	// find current organization
 	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
 	if err != nil {
-		return fmt.Errorf("finding organization: %v", err)
+		return fmt.Errorf("finding organization: %w", err)
 	}
 
 	for _, bucket := range []string{common.BucketFileEvents, common.BucketInputEvents, common.BucketInputStatisticEvents, common.BucketSessionEvents} {

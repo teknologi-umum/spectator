@@ -89,19 +89,32 @@ export interface CodeResponse {
      */
     version: string;
     /**
-     * @generated from protobuf field: string stdout = 3;
+     * @generated from protobuf field: rce.CodeResponse.Output compile = 3;
+     */
+    compile?: CodeResponse_Output;
+    /**
+     * @generated from protobuf field: rce.CodeResponse.Output runtime = 4;
+     */
+    runtime?: CodeResponse_Output;
+}
+/**
+ * @generated from protobuf message rce.CodeResponse.Output
+ */
+export interface CodeResponse_Output {
+    /**
+     * @generated from protobuf field: string stdout = 1;
      */
     stdout: string;
     /**
-     * @generated from protobuf field: string stderr = 4;
+     * @generated from protobuf field: string stderr = 2;
      */
     stderr: string;
     /**
-     * @generated from protobuf field: string output = 5;
+     * @generated from protobuf field: string output = 3;
      */
     output: string;
     /**
-     * @generated from protobuf field: int32 exitCode = 6;
+     * @generated from protobuf field: int32 exitCode = 4;
      */
     exitCode: number;
 }
@@ -177,10 +190,8 @@ class CodeResponse$Type extends MessageType<CodeResponse> {
         super("rce.CodeResponse", [
             { no: 1, name: "language", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "version", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "stderr", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "output", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "exitCode", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 3, name: "compile", kind: "message", T: () => CodeResponse_Output },
+            { no: 4, name: "runtime", kind: "message", T: () => CodeResponse_Output }
         ]);
     }
 }
@@ -188,6 +199,21 @@ class CodeResponse$Type extends MessageType<CodeResponse> {
  * @generated MessageType for protobuf message rce.CodeResponse
  */
 export const CodeResponse = new CodeResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CodeResponse_Output$Type extends MessageType<CodeResponse_Output> {
+    constructor() {
+        super("rce.CodeResponse.Output", [
+            { no: 1, name: "stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "stderr", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "output", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "exitCode", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+}
+/**
+ * @generated MessageType for protobuf message rce.CodeResponse.Output
+ */
+export const CodeResponse_Output = new CodeResponse_Output$Type();
 /**
  * @generated ServiceType for protobuf service rce.CodeExecutionEngineService
  */
