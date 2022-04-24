@@ -16,14 +16,14 @@ func (d *Dependency) mkFileAndUpload(ctx context.Context, data []byte, path stri
 
 	uploadInformation, err := d.Bucket.PutObject(
 		ctx,
-		"spectator",
+		"public",
 		path,
 		file,
 		file.Size(),
 		minio.PutObjectOptions{ContentType: "application/octet-stream"},
 	)
 	if err != nil {
-		return &minio.UploadInfo{}, fmt.Errorf("uploading a file: %v", err)
+		return &minio.UploadInfo{}, fmt.Errorf("uploading a file: %w", err)
 	}
 
 	return &uploadInformation, nil

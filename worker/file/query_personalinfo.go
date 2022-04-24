@@ -72,7 +72,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 			HoursOfPractice:   hoursOfPractice,
 			YearsOfExperience: yearsOfExperience,
 			FamiliarLanguages: familiarLanguages,
-			Timestamp:         time.Now(),
+			Timestamp:         record.Time(),
 		}
 	}
 

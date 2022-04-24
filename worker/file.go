@@ -25,7 +25,7 @@ func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.Empt
 				"info":       "parsing uuid",
 			},
 		)
-		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %v", err)
+		return &pb.EmptyResponse{}, fmt.Errorf("parsing uuid: %w", err)
 	}
 
 	go d.File.CreateFile(in.RequestId, sessionID)

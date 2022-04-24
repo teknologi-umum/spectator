@@ -102,18 +102,18 @@ func prepareBuckets(ctx context.Context) error {
 	for _, bucket := range bucketNames {
 		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
 		if err != nil && err.Error() != "bucket '"+bucket+"' not found" {
-			return fmt.Errorf("finding bucket: %v", err)
+			return fmt.Errorf("finding bucket: %w", err)
 		}
 
 		if err != nil && err.Error() == "bucket '"+bucket+"' not found" {
 			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, deps.DBOrganization)
 			if err != nil {
-				return fmt.Errorf("finding organization: %v", err)
+				return fmt.Errorf("finding organization: %w", err)
 			}
 
 			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, bucket)
 			if err != nil && err.Error() != "conflict: bucket with name "+bucket+" already exists" {
-				return fmt.Errorf("creating bucket: %v", err)
+				return fmt.Errorf("creating bucket: %w", err)
 			}
 		}
 	}
@@ -132,14 +132,14 @@ func seedData(ctx context.Context) error {
 	// specific use case.
 	id, err := uuid.NewRandom()
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("failed to generate uuid: %w", err)
 	}
 
 	globalID = id
 
 	id, err = uuid.NewRandom()
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("failed to generate uuid: %w", err)
 	}
 
 	globalID2 = id
@@ -406,7 +406,7 @@ func cleanup(ctx context.Context) error {
 	// find current organization
 	currentOrganization, err := deps.DB.OrganizationsAPI().FindOrganizationByName(ctx, deps.DBOrganization)
 	if err != nil {
-		return fmt.Errorf("finding organization: %v", err)
+		return fmt.Errorf("finding organization: %w", err)
 	}
 
 	for _, bucket := range []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketInputStatisticEvents} {
