@@ -39,5 +39,15 @@ export const PersonalInfoSchema = yup.object().shape({
     .string()
     .label("Familiar Languages")
     .ensure()
+    .required(),
+  walletNumber: yup
+    .string()
+    .label("GrabPay Wallet / GoPay Number")
+    .ensure()
+    .required(),
+  walletType: yup
+    .string()
+    .label("Wallet Type")
+    .oneOf(["grabpay", "gopay"])
     .required()
 });
