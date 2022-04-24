@@ -16,9 +16,7 @@ func (d *Dependency) CheckIfSessionExists(ctx context.Context, sessionID uuid.UU
 		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
 		|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
-		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementPersonalInfoSubmitted+`")
-		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-		|> sort(columns: ["_time"])`,
+		|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementPersonalInfoSubmitted+`")`,
 	)
 	if err != nil {
 		return false, fmt.Errorf("failed to query session exists: %w", err)
