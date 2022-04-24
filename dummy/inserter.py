@@ -92,11 +92,10 @@ def main():
                 point = (
                     Point(event["type"])
                     .tag("session_id", event["session_id"])
-                    .tag("question_number", event["question_number"])
                     .time(event["time"], write_precision=WritePrecision.MS)
                 )
                 fields = set(event.keys()) - set(
-                    ["session_id", "type", "time", "question_number"]
+                    ["session_id", "type", "time"]
                 )
                 for field in fields:
                     point = point.field(field, event[field])
