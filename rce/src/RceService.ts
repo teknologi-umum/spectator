@@ -8,7 +8,7 @@ import {
 } from "@/stub/rce_pb";
 import { Runtime as RceRuntime } from "@/runtime/runtime";
 import { SystemUsers } from "./user/user";
-import { Job } from "./job/job";
+import { CommandOutput, Job } from "./job/job";
 import { Logger } from "@/Logger";
 import { KnownOnly } from "./magic";
 import { Level } from "./stub/logger_pb";
@@ -54,7 +54,6 @@ export class RceServiceImpl implements IRceService {
         const requestID = randomUUID();
 
         try {
-            // TODO: validate if the runtime is supported, then we acquire the runtime.
             const runtimeIndex = this._registeredRuntimes.findIndex(
                 (r) => r.language === req.language && r.version === req.version
             );
@@ -89,21 +88,38 @@ export class RceServiceImpl implements IRceService {
             // Create a job.
             const job = new Job(user, runtime, req.code, req.compileTimeout, req.memoryLimit);
             await job.createFile();
+            const compileOutput: CommandOutput = {
+                stdout: "",
+                stderr: "",
+                output: "",
+                exitCode: 0,
+                signal: ""
+            };
+
             if (runtime.compiled) {
-                await job.compile();
+                const output = await job.compile();
+                Object.assign(compileOutput, output);
             }
 
-            const commandOutput = await job.run();
+            const runtimeOutput = await job.run();
             // Release the user.
             this._users.release(user.uid);
 
             callback(null, {
-                exitCode: commandOutput.exitCode,
                 language: runtime.language,
-                output: commandOutput.output,
-                stderr: commandOutput.stderr,
-                stdout: commandOutput.stdout,
-                version: runtime.version
+                version: runtime.version,
+                compile: {
+                    output: compileOutput.output,
+                    stderr: compileOutput.stderr,
+                    stdout: compileOutput.stdout,
+                    exitCode: compileOutput.exitCode
+                },
+                runtime: {
+                    output: runtimeOutput.output,
+                    stdout: runtimeOutput.stdout,
+                    stderr: runtimeOutput.stderr,
+                    exitCode: runtimeOutput.exitCode
+                }
             });
         } catch (err: unknown) {
             console.log(err);

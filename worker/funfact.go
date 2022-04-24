@@ -26,7 +26,7 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 				"info":       "parsing uuid",
 			},
 		)
-		return &pb.FunFactResponse{}, fmt.Errorf("parsing uuid: %v", err)
+		return &pb.FunFactResponse{}, fmt.Errorf("parsing uuid: %w", err)
 	}
 
 	// Read about buffered channel vs non-buffered channels
@@ -58,7 +58,7 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 				"info":       "calculating fun fact",
 			},
 		)
-		return &pb.FunFactResponse{}, fmt.Errorf("calculating fun fact: %v", err)
+		return &pb.FunFactResponse{}, fmt.Errorf("calculating fun fact: %w", err)
 	}
 
 	var result = struct {

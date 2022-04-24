@@ -651,7 +651,8 @@ export const EventReply = new EventReply$Type();
  * @generated ServiceType for protobuf service input.InputService
  */
 export const InputService = new ServiceType("input.InputService", [
-    { name: "LogMouseClicked", options: {}, I: MouseClickInfo, O: EventReply },
+    { name: "LogMouseUp", options: {}, I: MouseClickInfo, O: EventReply },
+    { name: "LogMouseDown", options: {}, I: MouseClickInfo, O: EventReply },
     { name: "LogMouseMoved", options: {}, I: MouseMoveInfo, O: EventReply },
     { name: "LogMouseScrolled", options: {}, I: MouseScrollInfo, O: EventReply },
     { name: "LogKeystroke", options: {}, I: KeystrokeInfo, O: EventReply },

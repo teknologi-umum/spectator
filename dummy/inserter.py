@@ -136,6 +136,8 @@ def main():
 
             print("Done. Please don't do anything until the script exits itself.")
 
+        write_client.close()
+
 
 if __name__ == "__main__":
     main()

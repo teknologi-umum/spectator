@@ -23,12 +23,12 @@ func seedData(ctx context.Context) error {
 	// specific use case.
 	id, err := uuid.NewRandom()
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("failed to generate uuid: %w", err)
 	}
 
 	id2, err := uuid.NewRandom()
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("failed to generate uuid: %w", err)
 	}
 
 	globalID = id
