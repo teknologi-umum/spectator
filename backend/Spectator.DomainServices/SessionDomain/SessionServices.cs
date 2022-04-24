@@ -70,7 +70,15 @@ namespace Spectator.DomainServices.SessionDomain {
 			await _sessionEventRepository.AddEventAsync(@event);
 		}
 
-		public async Task SubmitPersonalInfoAsync(Guid sessionId, string studentNumber, int yearsOfExperience, int hoursOfPractice, string familiarLanguages, string walletNumber) {
+		public async Task SubmitPersonalInfoAsync(
+			Guid sessionId, 
+			string studentNumber, 
+			int yearsOfExperience, 
+			int hoursOfPractice, 
+			string familiarLanguages, 
+			string walletNumber, 
+			string walletType
+		) {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
 
@@ -82,7 +90,8 @@ namespace Spectator.DomainServices.SessionDomain {
 				YearsOfExperience: yearsOfExperience,
 				HoursOfPractice: hoursOfPractice,
 				FamiliarLanguages: familiarLanguages,
-				WalletNumber: walletNumber
+				WalletNumber: walletNumber,
+				WalletType: walletType
 			);
 
 			// Dispatch event

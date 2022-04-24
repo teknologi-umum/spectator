@@ -8,6 +8,7 @@ namespace Spectator.DomainEvents.SessionDomain {
 		int YearsOfExperience,
 		int HoursOfPractice,
 		string FamiliarLanguages,
-		string WalletNumber
+		string WalletNumber,
+		string WalletType
 	) : SessionEventBase(SessionId, Timestamp);
 }

@@ -75,7 +75,8 @@ namespace Spectator.RepositoryDALs.Tests {
 				YearsOfExperience: 25,
 				HoursOfPractice: 12,
 				FamiliarLanguages: "Java, English, Tagalog, Brainfuck",
-				WalletNumber: "123456789"
+				WalletNumber: "123456789",
+				WalletType: "grabpay"
 			);
 
 			// Add event to log
@@ -98,6 +99,7 @@ namespace Spectator.RepositoryDALs.Tests {
 			personalInfoSubmittedEvent.HoursOfPractice.Should().Be(12);
 			personalInfoSubmittedEvent.FamiliarLanguages.Should().Be("Java, English, Tagalog, Brainfuck");
 			personalInfoSubmittedEvent.WalletNumber.Should().Be("123456789");
+			personalInfoSubmittedEvent.WalletType.Should().Be("grabpay");
 		}
 
 		[Fact]

@@ -68,7 +68,8 @@ namespace Spectator.Hubs {
 				yearsOfExperience: request.YearsOfExperience,
 				hoursOfPractice: request.HoursOfPractice,
 				familiarLanguages: request.FamiliarLanguages,
-				walletNumber: request.WalletNumber
+				walletNumber: request.WalletNumber,
+				walletType: request.WalletType
 			);
 		}
 

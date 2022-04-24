@@ -4,4 +4,5 @@ export interface PersonalInfo {
   hoursOfPractice: number;
   familiarLanguages: string;
   walletNumber: string;
+  walletType: "grabpay" | "gopay";
 }

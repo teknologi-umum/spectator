@@ -35,7 +35,8 @@ namespace Spectator.DomainModels.Tests {
 				YearsOfExperience: 1,
 				HoursOfPractice: 2,
 				FamiliarLanguages: "C",
-				WalletNumber: "1234567890"
+				WalletNumber: "1234567890",
+				WalletType: "gopay"
 			);
 			var registeredSession = anonymousSession.Apply(personalInfoSubmittedEvent);
 			registeredSession.Id.Should().Be(anonymousSession.Id);
@@ -58,6 +59,7 @@ namespace Spectator.DomainModels.Tests {
 			registeredSession.User.HoursOfPractice.Should().Be(2);
 			registeredSession.User.FamiliarLanguages.Should().Be("C");
 			registeredSession.User.WalletNumber.Should().Be("1234567890");
+			registeredSession.User.WalletType.Should().Be("gopay");
 
 			return registeredSession;
 		}
@@ -73,7 +75,8 @@ namespace Spectator.DomainModels.Tests {
 				YearsOfExperience: 1,
 				HoursOfPractice: 2,
 				FamiliarLanguages: "C",
-				WalletNumber: "1234567890"
+				WalletNumber: "1234567890",
+				WalletType: "gopay"
 			);
 			new Action(() => anonymousSession.Apply(personalInfoSubmittedEvent)).Should().Throw<ArgumentException>()
 				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");

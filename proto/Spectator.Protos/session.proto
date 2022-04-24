@@ -38,6 +38,7 @@ message SubmitPersonalInfoRequest {
 	int32 hours_of_practice = 4;
 	string familiar_languages = 5;
 	string wallet_number = 6;
+	string wallet_type = 7;
 }
 
 message SubmitSAMRequest {
