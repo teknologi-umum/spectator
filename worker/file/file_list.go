@@ -3,6 +3,7 @@ package file
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 	"worker/common"
 
@@ -51,11 +52,12 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File
 			file.SessionId = ""
 		}
 
-		file.JSONFile, ok = rows.ValueByKey("file_url_json").(string)
+		file.JSONFile, ok = rows.ValueByKey("file_json_url").(string)
 		if !ok {
 			file.JSONFile = ""
 		}
-		file.CSVFile, ok = rows.ValueByKey("file_url_csv").(string)
+
+		file.CSVFile, ok = rows.ValueByKey("file_csv_url").(string)
 		if !ok {
 			file.CSVFile = ""
 		}
@@ -67,7 +69,7 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File
 	defer newCancel()
 
 	for _, i := range outputFile {
-		_, err := d.Bucket.StatObject(newCtx, "spectator", i.JSONFile, minio.GetObjectOptions{})
+		_, err := d.Bucket.StatObject(newCtx, "public", strings.Replace(i.JSONFile, "/public", "", 1), minio.GetObjectOptions{})
 		if err != nil {
 			errCode := minio.ToErrorResponse(err)
 			if errCode.Code == "NoSuchKey" {
@@ -75,7 +77,7 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File
 			}
 		}
 
-		_, err = d.Bucket.StatObject(newCtx, "spectator", i.CSVFile, minio.GetObjectOptions{})
+		_, err = d.Bucket.StatObject(newCtx, "public", strings.Replace(i.CSVFile, "/public", "", 1), minio.GetObjectOptions{})
 		if err != nil {
 			errCode := minio.ToErrorResponse(err)
 			if errCode.Code == "NoSuchKey" {

@@ -86,7 +86,7 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 			FamiliarLanguages: familiarLanguages,
 			WalletNumber:      walletNumber,
 			WalletType:        walletType,
-			Timestamp:         time.Now(),
+			Timestamp:         record.Time(),
 		}
 	}
 

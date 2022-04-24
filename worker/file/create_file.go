@@ -37,6 +37,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		)
 	}()
 
+	log.Printf("[%s] Got request to create file for session %s", requestID, sessionID.String())
+
 	// Let's create a new context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
 	defer cancel()
@@ -210,6 +212,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		cfDeps.sendErrorLog(err, "failed to convert and upload", requestID, sessionID)
 		return
 	}
+
+	log.Printf("[%s] Successfully converted and uploaded all events for session: %s", requestID, sessionID.String())
 }
 
 // createFile is a struct that implements sendErrorLog method.
