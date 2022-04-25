@@ -79,6 +79,12 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
+	outputMouseDistanceTraveled, err := d.QueryMouseDistanceTraveled(ctx, queryAPI, sessionID)
+	if err != nil {
+		cfDeps.sendErrorLog(err, "failed to query mouse distance traveled", requestID, sessionID)
+		return
+	}
+
 	// Session events queries (regarding the user information and so on forth)
 	outputPersonalInfo, err := d.QueryPersonalInfo(ctx, queryAPI, sessionID)
 	if err != nil {
@@ -176,9 +182,10 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	mouseEvents := &MouseEvents{
-		MouseClick:    outputMouseClick,
-		MouseMoved:    outputMouseMove,
-		MouseScrolled: outputMouseScrolled,
+		MouseClick:            outputMouseClick,
+		MouseMoved:            outputMouseMove,
+		MouseScrolled:         outputMouseScrolled,
+		MouseDistanceTraveled: outputMouseDistanceTraveled,
 	}
 
 	keystrokeEvents := &KeystrokeEvents{
