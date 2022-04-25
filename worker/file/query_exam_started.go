@@ -54,7 +54,7 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 			SessionId:       sessionID.String(),
 			QuestionNumbers: questionNumbers,
 			Deadline:        deadline,
-			Timestamp:       time.Unix(0, 0),
+			Timestamp:       record.Time(),
 		}
 	}
 
