@@ -17,6 +17,8 @@ type PersonalInfo struct {
 	HoursOfPractice   int64     `json:"hours_of_practice" csv:"hours_of_experience"`
 	YearsOfExperience int64     `json:"years_of_experience" csv:"years_of_experience"`
 	FamiliarLanguages string    `json:"familiar_languages" csv:"familliar_languages"`
+	WalletNumber      string    `json:"wallet_number" csv:"wallet_number"`
+	WalletType        string    `json:"wallet_type" csv:"wallet_type"`
 	Timestamp         time.Time `json:"timestamp" csv:"timestamp"`
 }
 
@@ -65,6 +67,16 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 			familiarLanguages = ""
 		}
 
+		walletNumber, ok := record.ValueByKey("wallet_number").(string)
+		if !ok {
+			walletNumber = ""
+		}
+
+		walletType, ok := record.ValueByKey("wallet_type").(string)
+		if !ok {
+			walletType = ""
+		}
+
 		personalInfo = PersonalInfo{
 			Measurement:       common.MeasurementPersonalInfoSubmitted,
 			SessionID:         sessionId,
@@ -72,6 +84,8 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 			HoursOfPractice:   hoursOfPractice,
 			YearsOfExperience: yearsOfExperience,
 			FamiliarLanguages: familiarLanguages,
+			WalletNumber:      walletNumber,
+			WalletType:        walletType,
 			Timestamp:         record.Time(),
 		}
 	}
