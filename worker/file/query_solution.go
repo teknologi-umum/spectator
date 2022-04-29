@@ -76,7 +76,7 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 			outputSolution,
 			Solution{
 				SessionID:            sessionID.String(),
-				Timestamp:            time.Now(),
+				Timestamp:            record.Time(),
 				QuestionNumber:       questionNumber,
 				Language:             language,
 				Solution:             solution,
