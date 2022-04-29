@@ -47,14 +47,14 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 			deadlineUnix = 0
 		}
 
-		deadline := time.Unix(deadlineUnix, 0)
+		deadline := time.UnixMilli(deadlineUnix)
 
 		outputExamStarted = ExamStarted{
 			Measurement:     common.MeasurementExamStarted,
 			SessionId:       sessionID.String(),
 			QuestionNumbers: questionNumbers,
 			Deadline:        deadline,
-			Timestamp:       time.Unix(0, 0),
+			Timestamp:       record.Time(),
 		}
 	}
 
