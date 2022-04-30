@@ -180,14 +180,12 @@ class EventWindowSized(InputEventBase):
 def generate_keystroke_event(session_id: str, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
     key_code = random.choice(list(event_which_to_event_code.keys()))
-    key_char = event_which_to_event_code[key_code]
+    key_char = event_which_to_event_code[key_code] # 48 - 90, 8, 32, 186 - 222 should appear more often
     shift = random.choice([True, False])
     alt = random.choice([True, False])
     control = random.choice([True, False])
     meta = random.choice([True, False])
-    unrelated_key = random.choice(
-        [True, False, False, False, False]
-    )  # 0.8 biased to false
+    unrelated_key = random.randint(0, 5) < 5  # 0.8 biased to false
 
     return (
         EventKeystroke(

@@ -40,7 +40,7 @@ from model_session import (
 from model_user import generate_user
 from utils import random_date
 
-INPUT_EVENTS = ["keystroke", "mousemove", "window_sized", "mouseclick"]
+INPUT_EVENTS = ["mousemove", "window_sized", "mouseclick"]
 MINUTES_TO_MILLIS = 60 * 1000
 
 
@@ -54,7 +54,7 @@ def write_into_file(filename: str, data):
 def main():
     users: list[dict[str, any]] = []
 
-    for _ in range(5):
+    for _ in range(1):
         user = generate_user()
         print(user["session_id"])
         users.append(user)
@@ -109,6 +109,18 @@ def main():
                 event = generate_locale_set_event(current_session, random_time)
                 current_session_events.append(event)
 
+        # generate a bunch of keystrokes events in 90 minutes
+        keystroke_time = time
+        while keystroke_time - time < 90 * MINUTES_TO_MILLIS:
+            # generate more keystrokes event with different timestamp
+            random_int = random.randint(0, 5) # decides whether to burst or not
+            delta = random.randint(200, 330) if random_int < 5 else random.randint(4000, 10000)
+            print(delta)
+            # 1 - 300ms time difference
+            keystroke_time = keystroke_time + delta
+            event = generate_keystroke_event(current_session, keystroke_time)
+            current_input_events.append(event)
+
         # these are the events that will occur in the exam
         for _ in range(random.randint(50_000, 70_000)):
             # these events will also happen parallel to each other so we shouldn't mutate the original timestamp
@@ -117,10 +129,7 @@ def main():
             random_time = time + random.randint(1, 90 * MINUTES_TO_MILLIS)
             # generate random input event.
             choice = random.choice(INPUT_EVENTS)
-            if choice == "keystroke":
-                event = generate_keystroke_event(current_session, random_time)
-                current_input_events.append(event)
-            elif choice == "mousemove":
+            if choice == "mousemove":
                 event = generate_mousemove_event(current_session, random_time)
                 current_input_events.append(event)
             elif choice == "window_sized":

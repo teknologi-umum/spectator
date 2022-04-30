@@ -3,7 +3,6 @@ package funfact
 import (
 	"context"
 	"fmt"
-	"math"
 	"strings"
 	"worker/common"
 
@@ -67,61 +66,76 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 			|> filter(fn: (r) => r["_measurement"] == "`+common.MeasurementKeystroke+`")
 			|> filter(fn: (r) => r["session_id"] == "`+sessionID.String()+`")
 			|> pivot(columnKey: ["_field"], rowKey: ["_time"], valueColumn: "_value")
-			|> drop(columns: ["_measurement", "question_number", "alt", "control", "meta", "shift", "key_code"])
 			|> filter(fn: (r) => r["unrelated_key"] == false)
+			|> keep(columns: ["_time", "_value", "_measurement", "key_char"])
 			|> filter(fn: (r) => contains(value: r["key_char"],
 										  set: ["`+strings.Join(whitelist, `", "`)+`"]))
-			|> window(every: 1m)
-			|> count(column: "unrelated_key")
-			|> duplicate(column: "_stop", as: "_time")
-			|> window(every: inf)`,
+			|> sort(columns: ["_time"])
+			|> elapsed(unit: 1ms, timeColumn: "_time", columnName: "elapsed")`,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to query keystroke events: %w", err)
 	}
 	defer rows.Close()
 
-	// wordsPerMinute contains the array of each minute's words per minute.
-	// This can be used to calculate the average of all the words per minute.
-	var wordsPerMinute []float64
+	// calculate wpm every short burst
+	var totalKeystrokes []int64
+	var currentFrame []int64
 	for rows.Next() {
-		// each row is a minute worth of keystrokes.
-		keystrokeAmount := float64(rows.Record().ValueByKey("unrelated_key").(int64))
-		// 5 is the average length of a word.
-		wordsPerMinute = append(wordsPerMinute, keystrokeAmount/5)
+		record := rows.Record()
+		// elapsed is the time delta between current keypress and previous keypress
+		elapsed := record.ValueByKey("elapsed").(int64)
+
+		// go to the next timeframe if the distance between keypress is more than 330ms
+		if elapsed >= 330 && len(currentFrame) != 0 {
+			// only accept at least 10 keystrokes per burst
+			if len(currentFrame) > 10 {
+				var characters int64
+				start := currentFrame[0]
+				end := currentFrame[len(currentFrame)-1]
+				duration := (end - start) / 1000 // burst duration in seconds
+				// less than 1 second means 1 second
+				if duration == 0 {
+					duration = 1
+				}
+
+				for i := 0; i < len(currentFrame); i++ {
+					characters++
+				}
+
+				words := characters / 5
+
+				totalKeystrokes = append(totalKeystrokes, (words/duration)*60)
+			}
+			// reset current frame when the distance between 2 keystrokes is too long
+			currentFrame = []int64{}
+			continue
+		}
+
+		currentFrame = append(currentFrame, record.Time().UnixMilli())
 	}
 
 	// Check the wordsPerMinute length, if it's zero, we return an error
 	// because it shouldn't be zero.
-	if len(wordsPerMinute) == 0 {
+	if len(totalKeystrokes) == 0 {
 		// TODO(elianiva): figure out what to do with this
 		return fmt.Errorf("no keystroke events found")
 	}
 
-	// filter the ones that are less than 10 wpm
-	var filteredWordsPerMinute []float64
-	for _, wpm := range wordsPerMinute {
-		if wpm > 10 {
-			filteredWordsPerMinute = append(filteredWordsPerMinute, wpm)
-		}
-	}
-
-	var wordsSum float64
-	for _, wpm := range filteredWordsPerMinute {
-		wordsSum += wpm
+	var totalWpm int64
+	for _, wpm := range totalKeystrokes {
+		totalWpm += wpm
 	}
 
 	// if the wordsSum is 0, just send it back.
 	// the reason why is when we divide 0 with 0, it became NaN for some reason
 	// and the final result will became a weird number like -9223372036854775808
-	if wordsSum == 0 {
+	if totalWpm == 0 {
 		result <- 0
 		return nil
 	}
 
-	averageWpm := wordsSum / float64(len(filteredWordsPerMinute))
-
 	// Return the result here
-	result <- int64(math.Round(averageWpm))
+	result <- totalWpm
 	return nil
 }
