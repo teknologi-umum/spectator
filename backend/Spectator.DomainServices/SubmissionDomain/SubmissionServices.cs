@@ -19,14 +19,16 @@ namespace Spectator.DomainServices.PistonDomain {
 			_questionServices = questionServices;
 		}
 
-		public async Task<Submission> EvaluateSubmissionAsync(int questionNumber, Locale locale, Language language, string solution, string scratchPad, CancellationToken cancellationToken) {
+		public async Task<Submission> EvaluateSubmissionAsync(int questionNumber, Locale locale, Language language, string directives, string solution, string scratchPad, CancellationToken cancellationToken) {
 			// load assertion template
 			var questionsByLocale = await _questionServices.GetAllAsync(cancellationToken);
 			var question = questionsByLocale[locale].Single(q => q.QuestionNumber == questionNumber);
 			var assertion = question.AssertionByLanguage[language];
 
-			// insert solution into the placeholder in assertion template
-			var testCode = assertion.Replace("_REPLACE_ME_", solution);
+			// insert directives and solution into the placeholder in assertion template
+			var testCode = assertion
+				.Replace("_REPLACE_ME_WITH_DIRECTIVES_", directives)
+				.Replace("_REPLACE_ME_WITH_SOLUTION_", solution);
 
 			// execute tests
 			var testResults = await _pistonClient.ExecuteTestsAsync(

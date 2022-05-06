@@ -175,6 +175,7 @@ namespace Spectator.Hubs {
 				sessionId: session.Id,
 				questionNumber: request.QuestionNumber,
 				language: (Language)request.Language,
+				directives: request.Directives,
 				solution: request.Solution,
 				scratchPad: request.ScratchPad,
 				cancellationToken: Context.ConnectionAborted

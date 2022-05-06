@@ -73,6 +73,7 @@ message SubmissionRequest {
 	enums.Language language = 3;
 	string solution = 4;
 	string scratch_pad = 5;
+	string directives = 6;
 }
 
 message TestResult {

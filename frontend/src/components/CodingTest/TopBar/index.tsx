@@ -98,6 +98,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         // FIXME(elianiva): fix this dumb thing
         accessToken,
         language: 1,
+        directives: "",
         solution: "",
         scratchPad: "",
         questionNumber: currentQuestionNumber

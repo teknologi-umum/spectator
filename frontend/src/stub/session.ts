@@ -175,6 +175,10 @@ export interface SubmissionRequest {
      * @generated from protobuf field: string scratch_pad = 5;
      */
     scratchPad: string;
+    /**
+     * @generated from protobuf field: string directives = 6;
+     */
+    directives: string;
 }
 /**
  * @generated from protobuf message session.TestResult
@@ -823,11 +827,12 @@ class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
             { no: 2, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 3, name: "language", kind: "enum", T: () => ["enums.Language", Language] },
             { no: 4, name: "solution", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "scratch_pad", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 5, name: "scratch_pad", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "directives", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubmissionRequest>): SubmissionRequest {
-        const message = { accessToken: "", questionNumber: 0, language: 0, solution: "", scratchPad: "" };
+        const message = { accessToken: "", questionNumber: 0, language: 0, solution: "", scratchPad: "", directives: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubmissionRequest>(this, message, value);
@@ -852,6 +857,9 @@ class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
                     break;
                 case /* string scratch_pad */ 5:
                     message.scratchPad = reader.string();
+                    break;
+                case /* string directives */ 6:
+                    message.directives = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -880,6 +888,9 @@ class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
         /* string scratch_pad = 5; */
         if (message.scratchPad !== "")
             writer.tag(5, WireType.LengthDelimited).string(message.scratchPad);
+        /* string directives = 6; */
+        if (message.directives !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.directives);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
