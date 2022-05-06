@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	logger "worker/logger_proto"
 	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (d *Dependency) ListFiles(ctx context.Context, in *pb.Member) (*pb.FilesList, error) {
@@ -22,7 +23,7 @@ func (d *Dependency) ListFiles(ctx context.Context, in *pb.Member) (*pb.FilesLis
 				"info":       "parsing uuid",
 			},
 		)
-		return &pb.FilesList{}, fmt.Errorf("parsing uuid: %v", err)
+		return &pb.FilesList{}, status.Errorf(codes.InvalidArgument, "parsing uuid: %v", err)
 	}
 
 	result, err := d.File.ListFiles(ctx, sessionID)
@@ -37,7 +38,7 @@ func (d *Dependency) ListFiles(ctx context.Context, in *pb.Member) (*pb.FilesLis
 				"info":       "listing file",
 			},
 		)
-		return &pb.FilesList{}, fmt.Errorf("listing file: %v", err)
+		return &pb.FilesList{}, status.Errorf(codes.Internal, "listing file: %v", err)
 	}
 
 	// We map the files returned by the ListFiles function into Protobuf format
@@ -69,7 +70,7 @@ func (d *Dependency) ListMultipleFiles(ctx context.Context, in *pb.Members) (*pb
 					"info":       "parsing uuid",
 				},
 			)
-			return &pb.FilesLists{}, fmt.Errorf("parsing uuid: %v", err)
+			return &pb.FilesLists{}, status.Errorf(codes.InvalidArgument, "parsing uuid: %v", err)
 		}
 
 		result, err := d.File.ListFiles(ctx, sessionId)
@@ -84,7 +85,7 @@ func (d *Dependency) ListMultipleFiles(ctx context.Context, in *pb.Members) (*pb
 					"info":       "listing file",
 				},
 			)
-			return &pb.FilesLists{}, fmt.Errorf("listing file: %v", err)
+			return &pb.FilesLists{}, status.Errorf(codes.Internal, "listing file: %v", err)
 		}
 
 		var files []*pb.File

@@ -27,12 +27,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 
 	dataJSON, err := json.MarshalIndent(&data, "", " ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal json %s data: %v", fileName, err)
+		return fmt.Errorf("failed to marshal json %s data: %w", fileName, err)
 	}
 
 	_, err = d.mkFileAndUpload(ctx, dataJSON, studentNumber+"_"+fileName+".json")
 	if err != nil {
-		return fmt.Errorf("failed to upload json %s file: %v", fileName, err)
+		return fmt.Errorf("failed to upload json %s file: %w", fileName, err)
 	}
 
 	points = append(points, influxdb2.NewPoint(
@@ -55,12 +55,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	case *KeystrokeEvents:
 		dataCSV, err := gocsv.MarshalBytes(*(s.Keystroke))
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", fileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", fileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+fileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", fileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", fileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -75,16 +75,16 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 			time.Now(),
 		))
 	case *MouseEvents:
-		// MouseDown, MouseUp, MouseMoved, MouseScrolled
-		currentFileName := fileName + "_" + "mousedown"
-		dataCSV, err := gocsv.MarshalBytes(*(s.MouseDown))
+		// MouseDown, MouseUp, MouseMoved, MouseScrolled, MouseDistanceTraveled
+		currentFileName := fileName + "_" + "mouse_click"
+		dataCSV, err := gocsv.MarshalBytes(*(s.MouseClick))
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -99,38 +99,15 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 			time.Now(),
 		))
 
-		currentFileName = fileName + "_" + "mouseup"
-		dataCSV, err = gocsv.MarshalBytes(*(s.MouseUp))
-		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
-		}
-
-		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
-		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
-		}
-
-		points = append(points, influxdb2.NewPoint(
-			common.MeasurementExportedData,
-			map[string]string{
-				"session_id":     sessionID.String(),
-				"student_number": studentNumber,
-			},
-			map[string]interface{}{
-				"file_csv_url": "/public/" + studentNumber + "_" + currentFileName + ".csv",
-			},
-			time.Now(),
-		))
-
-		currentFileName = fileName + "_" + "mousemoved"
+		currentFileName = fileName + "_" + "mouse_moved"
 		dataCSV, err = gocsv.MarshalBytes(*(s.MouseMoved))
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -148,12 +125,35 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName = fileName + "_" + "mousescrolled"
 		dataCSV, err = gocsv.MarshalBytes(*(s.MouseScrolled))
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
+		}
+
+		points = append(points, influxdb2.NewPoint(
+			common.MeasurementExportedData,
+			map[string]string{
+				"session_id":     sessionID.String(),
+				"student_number": studentNumber,
+			},
+			map[string]interface{}{
+				"file_csv_url": "/public/" + studentNumber + "_" + currentFileName + ".csv",
+			},
+			time.Now(),
+		))
+
+		currentFileName = fileName + "_" + "mouse_distance_traveled"
+		dataCSV, err = gocsv.MarshalBytes(*(s.MouseDistanceTraveled))
+		if err != nil {
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
+		}
+
+		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
+		if err != nil {
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -172,12 +172,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName := fileName + "_" + "solutionaccepted"
 		dataCSV, err := gocsv.MarshalBytes(*(s.SolutionAccepted))
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -195,12 +195,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName = fileName + "_" + "solutionrejected"
 		dataCSV, err = gocsv.MarshalBytes(*(s.SolutionRejected))
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -219,12 +219,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName := fileName + "_" + "personalinfo"
 		dataCSV, err := gocsv.MarshalBytes([]PersonalInfo{*(s.PersonalInfo)})
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -242,12 +242,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName = fileName + "_" + "sambefore"
 		dataCSV, err = gocsv.MarshalBytes([]SelfAssessmentManekin{*(s.SelfAssessmentManekinBeforeTest)})
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -265,12 +265,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName = fileName + "_" + "samafter"
 		dataCSV, err = gocsv.MarshalBytes([]SelfAssessmentManekin{*(s.SelfAssessmentManekinAfterTest)})
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -288,12 +288,12 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		currentFileName = fileName + "_" + "examstarted"
 		dataCSV, err = gocsv.MarshalBytes([]ExamStarted{*(s.ExamStarted)})
 		if err != nil {
-			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
 
 		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
 		if err != nil {
-			return fmt.Errorf("failed to upload csv %s file: %v", currentFileName, err)
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
 		}
 
 		points = append(points, influxdb2.NewPoint(
@@ -428,7 +428,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 
 	err = d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketFileEvents).WritePoint(ctx, points...)
 	if err != nil {
-		return fmt.Errorf("failed to write %s test result: %v", fileName, err)
+		return fmt.Errorf("failed to write %s test result: %w", fileName, err)
 	}
 
 	return nil

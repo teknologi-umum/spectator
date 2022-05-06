@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"sync"
 	"time"
 	"worker/common"
@@ -23,12 +24,12 @@ func seedData(ctx context.Context) error {
 	// specific use case.
 	id, err := uuid.NewRandom()
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("failed to generate uuid: %w", err)
 	}
 
 	id2, err := uuid.NewRandom()
 	if err != nil {
-		return fmt.Errorf("failed to generate uuid: %v", err)
+		return fmt.Errorf("failed to generate uuid: %w", err)
 	}
 
 	globalID = id
@@ -268,6 +269,7 @@ func seedData(ctx context.Context) error {
 	go func() {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			var points []*write.Point
+			var questionNumber = 1
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementKeystroke,
@@ -275,18 +277,25 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"key_char":      "a",
-						"key_code":      "65",
-						"alt":           false,
-						"control":       false,
-						"shift":         false,
-						"meta":          false,
-						"unrelated_key": false,
+						"question_number": questionNumber,
+						"key_char":        "a",
+						"key_code":        "65",
+						"alt":             false,
+						"control":         false,
+						"shift":           false,
+						"meta":            false,
+						"unrelated_key":   false,
 					},
 					eventStart.Add(time.Minute*13+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
+
+				if questionNumber == 6 {
+					questionNumber = 1
+				} else {
+					questionNumber++
+				}
 			}
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
@@ -302,6 +311,7 @@ func seedData(ctx context.Context) error {
 	go func() {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			var points []*write.Point
+			var questionNumber = 1
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseMoved,
@@ -309,14 +319,21 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"direction": "right",
-						"x":         20,
-						"y":         30,
+						"question_number": questionNumber,
+						"direction":       "right",
+						"x":               rand.Intn(1920),
+						"y":               rand.Intn(1080),
 					},
 					eventStart.Add(time.Minute*14+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
+
+				if questionNumber == 6 {
+					questionNumber = 1
+				} else {
+					questionNumber++
+				}
 			}
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
@@ -332,6 +349,7 @@ func seedData(ctx context.Context) error {
 	go func() {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			var points []*write.Point
+			var questionNumber int = 1
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseDown,
@@ -339,14 +357,21 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x":      6,
-						"y":      5,
-						"button": int64(common.MouseButtonRight),
+						"question_number": questionNumber,
+						"x":               rand.Intn(1920),
+						"y":               rand.Intn(1080),
+						"button":          int64(common.MouseButtonRight),
 					},
 					eventStart.Add(time.Minute*15+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
+
+				if questionNumber == 6 {
+					questionNumber = 1
+				} else {
+					questionNumber++
+				}
 			}
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
@@ -362,6 +387,7 @@ func seedData(ctx context.Context) error {
 	go func() {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			var points []*write.Point
+			var questionNumber = 1
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseUp,
@@ -369,16 +395,23 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x":      1,
-						"y":      2,
-						"button": int64(common.MouseButtonMiddle),
+						"question_number": questionNumber,
+						"x":               rand.Intn(1920),
+						"y":               rand.Intn(1080),
+						"button":          int64(common.MouseButtonMiddle),
 					},
 					eventStart.Add(time.Minute*16+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
+
+				if questionNumber == 6 {
+					questionNumber = 1
+				} else {
+					questionNumber++
+				}
 			}
-			
+
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
 				log.Fatalf("Error writing point: %v", err)
@@ -392,6 +425,7 @@ func seedData(ctx context.Context) error {
 	go func() {
 		for _, sessionID := range []string{globalID.String(), globalID2.String()} {
 			var points []*write.Point
+			var questionNumber = 1
 			for i := 0; i < 50; i++ {
 				point := influxdb2.NewPoint(
 					common.MeasurementMouseScrolled,
@@ -399,15 +433,22 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"x": 1,
-						"y": 2,
+						"question_number": questionNumber,
+						"x":               rand.Intn(1920),
+						"y":               rand.Intn(1080),
 					},
 					eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
 				)
 
 				points = append(points, point)
+
+				if questionNumber == 6 {
+					questionNumber = 1
+				} else {
+					questionNumber++
+				}
 			}
-			
+
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
 				log.Fatalf("Error writing point: %v", err)
@@ -428,8 +469,9 @@ func seedData(ctx context.Context) error {
 						"session_id": sessionID,
 					},
 					map[string]interface{}{
-						"width":  i,
-						"height": i,
+						"question_number": rand.Intn(5) + 1,
+						"width":           i,
+						"height":          i,
 					},
 					eventStart.Add(time.Minute*18+time.Second*time.Duration(i)),
 				)

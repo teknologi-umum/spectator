@@ -21,7 +21,8 @@
       "student_number": "Nomor Mahasiswa",
       "programming_years": "Sudah berapa tahun kamu melalukan pemrograman?",
       "programming_practice": "Berapa jam per minggu kamu berlatih pemrograman?",
-      "programming_experience": "Bahasa pemrograman apa yang kamu bisa ? (contoh: Java, Python, C)"
+      "programming_experience": "Bahasa pemrograman apa yang kamu bisa ? (contoh: Java, Python, C)",
+      "wallet_number": "Grab Wallet / Gopay Number"
     },
     "instructions": {
       "title": "Instruksi",

@@ -1,32 +1,41 @@
-import type {
-  CodingEventKeystroke,
-  CodingEventMouseClick,
-  CodingEventMouseMove
-} from "@/events/types";
 import SpokeBase from "@/spoke/spokeBase";
+import {
+  KeystrokeInfo,
+  MouseClickInfo,
+  MouseMoveInfo,
+  MouseScrollInfo,
+  WindowSizeInfo
+} from "@/stub/input";
 
-// TODO(elianiva): replace with the proper method names
-//                 currently these are just some fake methods to
-//                 make it easier to replace later
 class EventSpoke extends SpokeBase {
-  public async mouseScrolled(request: any /* TODO(elianiva): add type */) {
-    await this._startIfDisconnected();
-    return this._hubConnection.invoke("MouseScrolledAsync");
+  public async mouseScrolled(request: MouseScrollInfo) {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("LogMouseScrolledAsync", request);
   }
 
-  public async mouseClicked(request: CodingEventMouseClick) {
-    await this._startIfDisconnected();
-    return this._hubConnection.invoke("MouseClickedAsync", request);
+  public async mouseUp(request: MouseClickInfo) {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("LogMouseUpAsync", request);
   }
 
-  public async mouseMoved(request: CodingEventMouseMove) {
-    await this._startIfDisconnected();
-    return this._hubConnection.invoke("MouseMovedAsync", request);
+  public async mouseDown(request: MouseClickInfo) {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("LogMouseDownAsync", request);
   }
 
-  public async keyboardPressed(request: CodingEventKeystroke) {
-    await this._startIfDisconnected();
-    return this._hubConnection.invoke("KeyboardPressedAsync", request);
+  public async mouseMoved(request: MouseMoveInfo) {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("LogMouseMovedAsync", request);
+  }
+
+  public async keystroke(request: KeystrokeInfo) {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("LogKeystrokeAsync", request);
+  }
+
+  public async windowResized(request: WindowSizeInfo) {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("LogWindowSizedAsync", request);
   }
 }
 

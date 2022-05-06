@@ -1,12 +1,7 @@
 // see: https://codepen.io/ronnygunawan/pen/wvrojXg
 // obviously i'm not smart enough to figure these out
-export enum Direction {
-  STOP = "stop",
-  UP = "up",
-  LEFT = "left",
-  RIGHT = "right",
-  DOWN = "down"
-}
+
+import { MouseDirection } from "@/stub/enums";
 
 interface MovementSample {
   t: number;
@@ -19,19 +14,19 @@ const MAX_SAMPLES = 20;
 const TIME_WINDOW = 1000; // 1 second
 const EMA_FACTOR = 0.6;
 
-function getDirection(vx: number, vy: number): Direction {
+function getDirection(vx: number, vy: number): MouseDirection {
   const isHorizontal = Math.abs(vx) > Math.abs(vy);
   const isRight = vx > 0;
   const isDown = vy > 0;
 
   /* prettier-ignore */
   return isHorizontal
-    ? (isRight ? Direction.RIGHT : Direction.LEFT)
-    : (isDown ? Direction.DOWN : Direction.UP);
+    ? (isRight ? MouseDirection.RIGHT : MouseDirection.LEFT)
+    : (isDown ? MouseDirection.DOWN : MouseDirection.UP);
 }
 
 // save direction history
-let direction: Direction = Direction.STOP;
+let direction: MouseDirection = MouseDirection.STOP;
 
 /**
  * `calculateDirection` will return mouse move direction.
@@ -39,7 +34,7 @@ let direction: Direction = Direction.STOP;
  * @param e - Mouse move event from the event handler
  * @return The direction of the mouse
  */
-export function calculateDirection(e: MouseEvent): Direction | null {
+export function calculateDirection(e: MouseEvent): MouseDirection | null {
   const now = Date.now();
   samples.push({ t: now, x: e.pageX, y: e.pageY });
 
@@ -51,7 +46,7 @@ export function calculateDirection(e: MouseEvent): Direction | null {
   // not enough samples
   const prevDir = direction;
   if (samples.length <= 5) {
-    direction = Direction.STOP;
+    direction = MouseDirection.STOP;
     if (prevDir !== direction) {
       return direction;
     }
@@ -73,75 +68,75 @@ export function calculateDirection(e: MouseEvent): Direction | null {
   }
 
   switch (direction) {
-    case Direction.STOP:
+    case MouseDirection.STOP:
       direction = getDirection(vx, vy);
       return direction;
-    case Direction.RIGHT:
+    case MouseDirection.RIGHT:
       if (vx < 0) {
         if (Math.abs(vy) > Math.abs(vx) * 5) {
           if (vy > 0) {
-            direction = Direction.DOWN;
+            direction = MouseDirection.DOWN;
             return direction;
           } else {
-            direction = Direction.UP;
+            direction = MouseDirection.UP;
             return direction;
           }
         } else {
-          direction = Direction.LEFT;
+          direction = MouseDirection.LEFT;
           return direction;
         }
       } else {
         direction = getDirection(vx, vy);
         return getDirection(vx, vy);
       }
-    case Direction.LEFT:
+    case MouseDirection.LEFT:
       if (vx > 0) {
         if (Math.abs(vy) > Math.abs(vx) * 5) {
           if (vy > 0) {
-            direction = Direction.DOWN;
+            direction = MouseDirection.DOWN;
             return direction;
           } else {
-            direction = Direction.UP;
+            direction = MouseDirection.UP;
             return direction;
           }
         } else {
-          direction = Direction.RIGHT;
+          direction = MouseDirection.RIGHT;
           return direction;
         }
       } else {
         direction = getDirection(vx, vy);
         return direction;
       }
-    case Direction.UP:
+    case MouseDirection.UP:
       if (vy > 0) {
         if (Math.abs(vx) > Math.abs(vy) * 5) {
           if (vx > 0) {
-            direction = Direction.RIGHT;
+            direction = MouseDirection.RIGHT;
             return direction;
           } else {
-            direction = Direction.LEFT;
+            direction = MouseDirection.LEFT;
             return direction;
           }
         } else {
-          direction = Direction.DOWN;
+          direction = MouseDirection.DOWN;
           return direction;
         }
       } else {
         direction = getDirection(vx, vy);
         return direction;
       }
-    case Direction.DOWN:
+    case MouseDirection.DOWN:
       if (vy < 0) {
         if (Math.abs(vx) > Math.abs(vy) * 5) {
           if (vx > 0) {
-            direction = Direction.RIGHT;
+            direction = MouseDirection.RIGHT;
             return direction;
           } else {
-            direction = Direction.LEFT;
+            direction = MouseDirection.LEFT;
             return direction;
           }
         } else {
-          direction = Direction.UP;
+          direction = MouseDirection.UP;
           return direction;
         }
       } else {

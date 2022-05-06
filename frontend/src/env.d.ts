@@ -4,6 +4,7 @@ interface ImportMetaEnv {
   readonly VITE_SESSION_HUB_URL: string
   readonly VITE_EVENT_HUB_URL: string
   readonly VITE_LOGGER_URL: string
+  readonly VITE_VIDEO_STREAM_URL: string;
 }
 
 interface ImportMeta {

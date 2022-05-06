@@ -69,6 +69,14 @@ export interface SubmitPersonalInfoRequest {
      * @generated from protobuf field: string familiar_languages = 5;
      */
     familiarLanguages: string;
+    /**
+     * @generated from protobuf field: string wallet_number = 6;
+     */
+    walletNumber: string;
+    /**
+     * @generated from protobuf field: string wallet_type = 7;
+     */
+    walletType: string;
 }
 /**
  * @generated from protobuf message session.SubmitSAMRequest
@@ -438,11 +446,13 @@ class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoReque
             { no: 2, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 4, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 5, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 5, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "wallet_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "wallet_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubmitPersonalInfoRequest>): SubmitPersonalInfoRequest {
-        const message = { accessToken: "", studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "" };
+        const message = { accessToken: "", studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "", walletNumber: "", walletType: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubmitPersonalInfoRequest>(this, message, value);
@@ -467,6 +477,12 @@ class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoReque
                     break;
                 case /* string familiar_languages */ 5:
                     message.familiarLanguages = reader.string();
+                    break;
+                case /* string wallet_number */ 6:
+                    message.walletNumber = reader.string();
+                    break;
+                case /* string wallet_type */ 7:
+                    message.walletType = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -495,6 +511,12 @@ class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoReque
         /* string familiar_languages = 5; */
         if (message.familiarLanguages !== "")
             writer.tag(5, WireType.LengthDelimited).string(message.familiarLanguages);
+        /* string wallet_number = 6; */
+        if (message.walletNumber !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.walletNumber);
+        /* string wallet_type = 7; */
+        if (message.walletType !== "")
+            writer.tag(7, WireType.LengthDelimited).string(message.walletType);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

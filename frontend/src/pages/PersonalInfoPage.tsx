@@ -14,7 +14,10 @@ import {
   Heading,
   Button,
   FormErrorMessage,
-  Flex
+  Flex,
+  InputGroup,
+  Select,
+  InputRightElement
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { LocaleButton, ThemeButton } from "@/components/CodingTest";
@@ -29,17 +32,20 @@ import { sessionSpoke } from "@/spoke";
 function PersonalInfoPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { accessToken, tourCompleted } = useAppSelector((state) => state.session);
+  const { accessToken, tourCompleted } = useAppSelector(
+    (state) => state.session
+  );
   const personalInfo = useAppSelector((state) => state.personalInfo);
   const navigate = useNavigate();
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
+  const darkerBg = useColorModeValue("gray.100", "gray.800", "gray.900");
   const { setIsOpen } = useTour();
 
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = useForm({
     defaultValues: personalInfo,
     resolver: yupResolver(PersonalInfoSchema),
@@ -168,6 +174,40 @@ function PersonalInfoPage() {
               {errors?.familiarLanguages?.message}!
             </FormErrorMessage>
           </FormControl>
+
+          <FormControl
+            mt="6"
+            isInvalid={errors.familiarLanguages !== undefined}
+          >
+            <FormLabel>
+              {t("translation.translations.personal_info.wallet_number")}
+            </FormLabel>
+            <InputGroup>
+              <Input
+                type="text"
+                {...register("walletNumber")}
+                autoComplete="off"
+                pr="28"
+              />
+              <InputRightElement width="28">
+                <Select
+                  {...register("walletType")}
+                  size="sm"
+                  variant="filled"
+                  mr="1"
+                  bg={darkerBg}
+                >
+                  <option value="grabpay" selected>
+                    GrabPay
+                  </option>
+                  <option value="grabpay">GoPay</option>
+                </Select>
+              </InputRightElement>
+            </InputGroup>
+            <FormErrorMessage>
+              {errors?.walletNumber?.message}!
+            </FormErrorMessage>
+          </FormControl>
         </Box>
 
         <Button
@@ -177,6 +217,7 @@ function PersonalInfoPage() {
           type="submit"
           display="block"
           data-tour="step-2"
+          isLoading={isSubmitting}
         >
           {t("translation.translations.ui.continue")}
         </Button>

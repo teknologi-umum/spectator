@@ -1,5 +1,7 @@
 import { eventSpoke } from "@/spoke";
-import type { CodingEventKeystroke } from "./types";
+import { loggerInstance } from "@/spoke/logger";
+import { KeystrokeInfo } from "@/stub/input";
+import { LogLevel } from "@microsoft/signalr";
 
 const F_KEYS: Record<string, boolean> = {
   F1: true,
@@ -16,52 +18,62 @@ const F_KEYS: Record<string, boolean> = {
   F12: true
 };
 
-export function keystrokeHandler(questionNumber: number | null) {
+export function keystrokeHandler(
+  questionNumber: number | null,
+  accessToken: string | null
+) {
   return async (e: KeyboardEvent) => {
-    if (questionNumber === null) return;
+    if (questionNumber === null || accessToken === null) return;
 
-    const data: CodingEventKeystroke = {
-      // TODO(elianiva): revisit session_id
-      session_id: "TBD",
-      type: "coding_event_keystroke",
-      question_number: questionNumber,
-      key_char: e.key,
-      key_code: e.keyCode,
+    const data: KeystrokeInfo = {
+      accessToken: accessToken,
+      questionNumber: questionNumber,
+      keyChar: e.key,
       shift: e.shiftKey,
       alt: e.altKey,
       control: e.ctrlKey,
       meta: e.metaKey,
-      unrelated_key: false,
-      time: new Date(Date.now())
+      unrelatedKey: false,
+      time: Date.now() as unknown as bigint
     };
 
     // ignore if it's triggered from codemirror because we it has separate
     // listener
     if ((e.target as HTMLDivElement).classList[0] === "cm-content") {
       // everything INSIDE the editor is always related except F-keys
-      data.unrelated_key = F_KEYS[e.key] !== undefined;
+      data.unrelatedKey = F_KEYS[e.key] !== undefined;
 
       // don't allow pressing F-keys inside the editor
       if (F_KEYS[e.key]) e.preventDefault();
 
       try {
-        await eventSpoke.keyboardPressed(data);
+        await eventSpoke.keystroke(data);
       } catch (err) {
-        // TODO(elianiva): replace with proper logging
-        console.error(err);
+        if (import.meta.env.DEV) {
+          console.error(err);
+        }
+
+        if (err instanceof Error) {
+          loggerInstance.log(LogLevel.Error, err.message);
+        }
       }
 
       return;
     }
 
     // everything OUTSIDE the editor is always unrelated
-    data.unrelated_key = true;
+    data.unrelatedKey = true;
 
     try {
-      await eventSpoke.keyboardPressed(data);
+      await eventSpoke.keystroke(data);
     } catch (err) {
-      // TODO(elianiva): replace with proper logging
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.error(err);
+      }
+
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
 
     // don't allow to do anything outside of the code editor

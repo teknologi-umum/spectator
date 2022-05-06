@@ -40,7 +40,7 @@ export default function SideBar({ bg, fg }: SideBarProps) {
   return (
     <Flex
       position="relative"
-      h="100vh"
+      h="full"
       w={isCollapsed ? "65px" : "200px"}
       bg={bg}
       color={fg}

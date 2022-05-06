@@ -37,6 +37,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		)
 	}()
 
+	log.Printf("[%s] Got request to create file for session %s", requestID, sessionID.String())
+
 	// Let's create a new context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
 	defer cancel()
@@ -59,15 +61,9 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	// Mouse events queries
-	outputMouseDown, err := d.QueryMouseDown(ctx, queryAPI, sessionID)
+	outputMouseClick, err := d.QueryMouseClick(ctx, queryAPI, sessionID)
 	if err != nil {
-		cfDeps.sendErrorLog(err, "failed to query mouse down", requestID, sessionID)
-		return
-	}
-
-	outputMouseUp, err := d.QueryMouseUp(ctx, queryAPI, sessionID)
-	if err != nil {
-		cfDeps.sendErrorLog(err, "failed to query mouse up", requestID, sessionID)
+		cfDeps.sendErrorLog(err, "failed to query mouse click", requestID, sessionID)
 		return
 	}
 
@@ -80,6 +76,12 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	outputMouseScrolled, err := d.QueryMouseScrolled(ctx, queryAPI, sessionID)
 	if err != nil {
 		cfDeps.sendErrorLog(err, "failed to query mouse scrolled", requestID, sessionID)
+		return
+	}
+
+	outputMouseDistanceTraveled, err := d.QueryMouseDistanceTraveled(ctx, queryAPI, sessionID)
+	if err != nil {
+		cfDeps.sendErrorLog(err, "failed to query mouse distance traveled", requestID, sessionID)
 		return
 	}
 
@@ -180,10 +182,10 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	mouseEvents := &MouseEvents{
-		MouseDown:     outputMouseDown,
-		MouseUp:       outputMouseUp,
-		MouseMoved:    outputMouseMove,
-		MouseScrolled: outputMouseScrolled,
+		MouseClick:            outputMouseClick,
+		MouseMoved:            outputMouseMove,
+		MouseScrolled:         outputMouseScrolled,
+		MouseDistanceTraveled: outputMouseDistanceTraveled,
 	}
 
 	keystrokeEvents := &KeystrokeEvents{
@@ -217,6 +219,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		cfDeps.sendErrorLog(err, "failed to convert and upload", requestID, sessionID)
 		return
 	}
+
+	log.Printf("[%s] Successfully converted and uploaded all events for session: %s", requestID, sessionID.String())
 }
 
 // createFile is a struct that implements sendErrorLog method.

@@ -51,7 +51,7 @@ export default function WithTour(
           })
         }}
       >
-        <Component />;
+        <Component />
       </TourProvider>
     );
   };

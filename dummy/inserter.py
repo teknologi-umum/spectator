@@ -76,7 +76,7 @@ def main():
                     .field("student_number", user["student_number"])
                     .field("hours_of_practice", user["hours_of_practice"])
                     .field("years_of_experience", user["years_of_experience"])
-                    .field("familiar_language", user["familiar_language"])
+                    .field("familiar_languages", user["familiar_languages"])
                 )
                 write_client.write(
                     bucket="session_events",
@@ -92,12 +92,9 @@ def main():
                 point = (
                     Point(event["type"])
                     .tag("session_id", event["session_id"])
-                    .tag("question_number", event["question_number"])
-                    .time(event["time"], write_precision=WritePrecision.S)
+                    .time(event["time"], write_precision=WritePrecision.MS)
                 )
-                fields = set(event.keys()) - set(
-                    ["session_id", "type", "time", "question_number"]
-                )
+                fields = set(event.keys()) - set(["session_id", "type", "time"])
                 for field in fields:
                     point = point.field(field, event[field])
                 write_client.write(
@@ -114,16 +111,19 @@ def main():
                 point = (
                     Point(event["type"])
                     .tag("session_id", event["session_id"])
-                    .time(event["time"], write_precision=WritePrecision.S)
+                    .time(event["time"], write_precision=WritePrecision.MS)
                 )
                 fields = set(event.keys()) - set(["session_id", "type", "time"])
-                for field in fields:
-                    if type(event[field]) == type([]):
-                        point = point.field(
-                            field, ",".join([str(i) for i in event[field]])
-                        )
-                    else:
-                        point = point.field(field, event[field])
+                if len(fields) < 1:
+                    point = point.field("__placeholder", 0)
+                else:
+                    for field in fields:
+                        if type(event[field]) == type([]):
+                            point = point.field(
+                                field, ",".join([str(i) for i in event[field]])
+                            )
+                        else:
+                            point = point.field(field, event[field])
 
                 write_client.write(
                     bucket="session_events",
@@ -132,6 +132,8 @@ def main():
                 )
 
             print("Done. Please don't do anything until the script exits itself.")
+
+        write_client.close()
 
 
 if __name__ == "__main__":

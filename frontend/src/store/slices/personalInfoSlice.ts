@@ -5,7 +5,9 @@ const initialState: PersonalInfo = {
   studentNumber: "",
   yearsOfExperience: 0,
   hoursOfPractice: 0,
-  familiarLanguages: ""
+  familiarLanguages: "",
+  walletNumber: "",
+  walletType: "grabpay"
 };
 
 export const personalInfoSlice = createSlice({
@@ -17,6 +19,8 @@ export const personalInfoSlice = createSlice({
       state.yearsOfExperience = action.payload.yearsOfExperience;
       state.hoursOfPractice = action.payload.hoursOfPractice;
       state.familiarLanguages = action.payload.familiarLanguages;
+      state.walletNumber = action.payload.walletNumber;
+      state.walletType = action.payload.walletType;
     }
   }
 });
