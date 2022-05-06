@@ -8,7 +8,7 @@ using Spectator.RepositoryDALs.Mapper;
 using Xunit;
 
 namespace Spectator.RepositoryDALs.Tests {
-	public class ObjectMapperTests {
+	public class SessionEventObjectMapperTests {
 		[Fact]
 		public void CanSerializeSessionStartedEvent() {
 			var sessionId = Guid.NewGuid();
