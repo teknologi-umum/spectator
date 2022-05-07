@@ -90,7 +90,7 @@ namespace Spectator.Piston.Tests {
 				its.ExpectedStdout.Should().Be("-153.15");
 				its.ActualStdout.Should().Be("-153.0");
 			});
-			testResults[8..9].Should().BeOfType<PassingTestResult>();
+			testResults[8..9].Should().AllBeOfType<PassingTestResult>();
 		}
 	}
 }
