@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Spectator.DomainModels.SubmissionDomain;
 using Spectator.Piston.Internals;
+using Spectator.Piston.Tests.Utilities;
 using Xunit;
 
 namespace Spectator.Piston.Tests {
@@ -75,6 +77,20 @@ namespace Spectator.Piston.Tests {
 
 			new Action(() => ResultParser.ParseTestResults(stdout)).Should().Throw<ArgumentException>()
 				.And.Message.Should().Be("Cannot parse stdout (Parameter 'stdout')");
+		}
+
+		[Fact]
+		public void CanParseSampleTestResultFromReinaldy() {
+			const string stdout = "# 1 PASSING\n# 2 PASSING\n# 3 PASSING\n# 4 PASSING\n# 5 PASSING\n# 6 PASSING\n# 7 PASSING\n# 8 FAILED\n> EXPECTED -153.15\n> GOT -153.0\n# 9 PASSING\n# 10 PASSING\n";
+
+			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
+			testResults.Length.Should().Be(10);
+			testResults[0..6].Should().AllBeOfType<PassingTestResult>();
+			testResults[7].Should().BeOfType<FailingTestResult>().Which.Should(its => {
+				its.ExpectedStdout.Should().Be("-153.15");
+				its.ActualStdout.Should().Be("-153.0");
+			});
+			testResults[8..9].Should().BeOfType<PassingTestResult>();
 		}
 	}
 }
