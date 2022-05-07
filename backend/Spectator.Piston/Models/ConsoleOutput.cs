@@ -3,7 +3,7 @@
 		string Stdout,
 		string Stderr,
 		string Output,
-		int Code,
+		int? Code,
 		string? Signal
 	);
 }

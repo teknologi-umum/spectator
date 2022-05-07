@@ -101,7 +101,9 @@ namespace Spectator.Piston {
 				}
 				response.EnsureSuccessStatusCode();
 #pragma warning disable CS0618 // Type or member is obsolete
-				return await response.Content.ReadFromJsonAsync<ExecuteResult>(_jsonSerializerOptions, cancellationToken) ?? throw new ExecutionEngineException();
+				//return await response.Content.ReadFromJsonAsync<ExecuteResult>(_jsonSerializerOptions, cancellationToken) ?? throw new ExecutionEngineException();
+				var json = await response.Content.ReadAsStringAsync(cancellationToken);
+				return JsonSerializer.Deserialize<ExecuteResult>(json, _jsonSerializerOptions) ?? throw new ExecutionEngineException();
 #pragma warning restore CS0618 // Type or member is obsolete
 			} finally {
 				_semaphore!.Release();

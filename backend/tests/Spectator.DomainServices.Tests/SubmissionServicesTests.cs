@@ -68,6 +68,7 @@ namespace Spectator.DomainServices.Tests {
 				questionNumber: 2,
 				locale: Locale.EN,
 				language: Language.CPP,
+				directives: "",
 				solution: code,
 				scratchPad: "wkwkwkwk",
 				cancellationToken: timeoutSource.Token
@@ -115,6 +116,7 @@ namespace Spectator.DomainServices.Tests {
 				questionNumber: 2,
 				locale: Locale.EN,
 				language: Language.CPP,
+				directives: "",
 				solution: code,
 				scratchPad: "wlwlwlwl",
 				cancellationToken: timeoutSource.Token
@@ -166,6 +168,7 @@ namespace Spectator.DomainServices.Tests {
 				questionNumber: 2,
 				locale: Locale.EN,
 				language: Language.CPP,
+				directives: "",
 				solution: code,
 				scratchPad: "wkwkwk",
 				cancellationToken: timeoutSource.Token
@@ -213,6 +216,7 @@ namespace Spectator.DomainServices.Tests {
 				questionNumber: 2,
 				locale: Locale.EN,
 				language: Language.CPP,
+				directives: "",
 				solution: code,
 				scratchPad: "wkwkwkk",
 				cancellationToken: timeoutSource.Token

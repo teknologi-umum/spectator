@@ -6,7 +6,9 @@ const initialState: PersonalInfo = {
   studentNumber: "",
   yearsOfExperience: 0,
   hoursOfPractice: 0,
-  familiarLanguages: ""
+  familiarLanguages: "",
+  walletNumber: "",
+  walletType: "gopay"
 };
 
 test("should return the initial state", () => {
@@ -18,7 +20,9 @@ test("should be able to set personal info data", () => {
     studentNumber: "133017",
     yearsOfExperience: 3,
     hoursOfPractice: 2,
-    familiarLanguages: "rust, haskell"
+    familiarLanguages: "rust, haskell",
+    walletNumber: "08472817817",
+    walletType: "grabpay"
   };
 
   expect(reducer(initialState, setPersonalInfo(data))).toEqual(data);

@@ -114,6 +114,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       const submissionResult = await sessionSpoke.submitSolution({
         accessToken,
         language: LANGUAGE_TO_ENUM[currentLanguage],
+        directives: currentSnapshot.directivesByLanguage[currentLanguage],
         solution: currentSnapshot.solutionByLanguage[currentLanguage],
         scratchPad: currentSnapshot.scratchPad,
         questionNumber: currentQuestionNumber
@@ -124,6 +125,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           language: currentLanguage,
           questionNumber: currentQuestionNumber,
           scratchPad: currentSnapshot.scratchPad,
+          directivesByLanguage: currentSnapshot.directivesByLanguage,
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
           submissionRefactored: currentSnapshot.submissionSubmitted,

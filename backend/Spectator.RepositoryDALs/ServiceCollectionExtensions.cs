@@ -1,4 +1,4 @@
-using Minio;
+﻿using Minio;
 using InfluxDB.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -29,6 +29,7 @@ namespace Spectator.RepositoryDALs {
 			services.AddTransient<IQuestionRepository, QuestionRepositoryDAL>();
 			services.AddTransient<ISessionEventRepository, SessionEventRepositoryDAL>();
 			services.AddTransient<IInputEventRepository, InputEventRepositoryDAL>();
+			services.AddTransient<InfluxDbInitializer>();
 			return services;
 		}
 	}
