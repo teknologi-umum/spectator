@@ -6,19 +6,19 @@ import { Runtime } from "@/runtime/runtime";
 import { User } from "@/user/user";
 
 export interface JobPrerequisites {
-    user: User
-    runtime: Runtime
-    code: string
-    timeout: number
-    memoryLimit: number
+    user: User;
+    runtime: Runtime;
+    code: string;
+    timeout: number;
+    memoryLimit: number;
 }
 
 export interface CommandOutput {
-    stdout: string
-    stderr: string
-    output: string
-    exitCode: number
-    signal: string
+    stdout: string;
+    stderr: string;
+    output: string;
+    exitCode: number;
+    signal: string;
 }
 
 export class Job implements JobPrerequisites {
@@ -50,7 +50,11 @@ export class Job implements JobPrerequisites {
             this.timeout = 5_000;
         }
 
-        if (memoryLimit !== undefined && memoryLimit !== null && memoryLimit >= 1) {
+        if (
+            memoryLimit !== undefined &&
+            memoryLimit !== null &&
+            memoryLimit >= 1
+        ) {
             this.memoryLimit = memoryLimit;
         } else {
             this.memoryLimit = 128 * 1024 * 1024;
@@ -69,7 +73,7 @@ export class Job implements JobPrerequisites {
         // Make sure the file is written properly.
         const stat = await fs.stat(filePath);
         console.log(`File path: ${filePath}`);
-        console.log(`File stat: ${stat.uid} ${stat.gid} ${stat.mode} ${stat.size}`);
+        console.log(`File stat: UID: ${stat.uid}, GID: ${stat.gid}, Mode: ${stat.mode}, Size: ${stat.size}`);
         this._sourceFilePath = filePath;
     }
 
@@ -99,8 +103,9 @@ export class Job implements JobPrerequisites {
             ];
 
             const buildCommandOutput = await this.executeCommand(buildCommand);
+
             if (buildCommandOutput.exitCode !== 0) {
-                throw new Error(buildCommandOutput.output);
+                this.cleanup();
             }
 
             this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
@@ -128,11 +133,9 @@ export class Job implements JobPrerequisites {
                 "--rttime=" + this.timeout.toString(),
                 "--as=" + this.memoryLimit.toString(),
                 "nosocket",
-                ...this.runtime.runCommand.map(
-                    arg => arg.replace(
-                        "{file}",
-                        finalFileName
-                    ))
+                ...this.runtime.runCommand.map((arg) =>
+                    arg.replace("{file}", finalFileName)
+                )
             ];
 
             const result = await this.executeCommand(runCommand);

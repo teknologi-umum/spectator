@@ -190,7 +190,7 @@ namespace Spectator.DomainServices.SessionDomain {
 			);
 		}
 
-		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string solution, string scratchPad, CancellationToken cancellationToken) {
+		public async Task<Submission> SubmitSolutionAsync(Guid sessionId, int questionNumber, Language language, string directives, string solution, string scratchPad, CancellationToken cancellationToken) {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, cancellationToken);
 
@@ -202,7 +202,15 @@ namespace Spectator.DomainServices.SessionDomain {
 			};
 
 			// Execute solution in piston
-			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(questionNumber, locale, language, solution, scratchPad, cancellationToken);
+			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(
+				questionNumber: questionNumber,
+				locale: locale,
+				language: language,
+				directives: directives,
+				solution: solution,
+				scratchPad: scratchPad,
+				cancellationToken: cancellationToken
+			);
 
 			// ----- NOTE: DO NOT USE cancellationToken BELOW THE FOLD!! -----
 

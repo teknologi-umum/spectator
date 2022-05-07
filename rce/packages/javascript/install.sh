@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-VERSION=16.14.2
+VERSION=16.15.0
 
-curl -O https://nodejs.org/dist/latest-v16.x/node-v${VERSION}-linux-x64.tar.gz
+curl -LO https://nodejs.org/dist/v16.15.0/node-v${VERSION}-linux-x64.tar.gz
 tar -zxf node-v${VERSION}-linux-x64.tar.gz
 
 cd node-v${VERSION}-linux-x64
