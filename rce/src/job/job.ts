@@ -6,19 +6,19 @@ import { Runtime } from "@/runtime/runtime";
 import { User } from "@/user/user";
 
 export interface JobPrerequisites {
-    user: User
-    runtime: Runtime
-    code: string
-    timeout: number
-    memoryLimit: number
+    user: User;
+    runtime: Runtime;
+    code: string;
+    timeout: number;
+    memoryLimit: number;
 }
 
 export interface CommandOutput {
-    stdout: string
-    stderr: string
-    output: string
-    exitCode: number
-    signal: string
+    stdout: string;
+    stderr: string;
+    output: string;
+    exitCode: number;
+    signal: string;
 }
 
 export class Job implements JobPrerequisites {
@@ -50,7 +50,11 @@ export class Job implements JobPrerequisites {
             this.timeout = 5_000;
         }
 
-        if (memoryLimit !== undefined && memoryLimit !== null && memoryLimit >= 1) {
+        if (
+            memoryLimit !== undefined &&
+            memoryLimit !== null &&
+            memoryLimit >= 1
+        ) {
             this.memoryLimit = memoryLimit;
         } else {
             this.memoryLimit = 128 * 1024 * 1024;
@@ -128,11 +132,9 @@ export class Job implements JobPrerequisites {
                 "--rttime=" + this.timeout.toString(),
                 "--as=" + this.memoryLimit.toString(),
                 "nosocket",
-                ...this.runtime.runCommand.map(
-                    arg => arg.replace(
-                        "{file}",
-                        finalFileName
-                    ))
+                ...this.runtime.runCommand.map((arg) =>
+                    arg.replace("{file}", finalFileName)
+                )
             ];
 
             const result = await this.executeCommand(runCommand);
