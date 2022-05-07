@@ -105,8 +105,31 @@ export class RceServiceImpl implements IRceService {
 
             if (runtime.compiled) {
                 const output = await job.compile();
+
+                if (output.exitCode !== 0) {
+                    callback(null, {
+                        language: runtime.language,
+                        version: runtime.version,
+                        compile: {
+                            output: output.output,
+                            stderr: output.stderr,
+                            stdout: output.stdout,
+                            exitCode: output.exitCode
+                        },
+                        runtime: {
+                            output: "",
+                            stdout: "",
+                            stderr: "",
+                            exitCode: 0
+                        }
+                    });
+
+                    return;
+                }
+
                 Object.assign(compileOutput, output);
             }
+
 
             const runtimeOutput = await job.run();
             // Release the user.

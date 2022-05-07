@@ -43,13 +43,21 @@ namespace Spectator.Piston {
 		public async Task<ImmutableArray<TestResultBase>> ExecuteTestsAsync(Language language, string testCode, CancellationToken cancellationToken) {
 			var executeResult = await ExecuteAsync(
 				language: language switch {
-					Language.C => "c",
-					Language.CPP => "c++",
-					Language.PHP => "php",
-					Language.Javascript => "javascript",
-					Language.Java => "java",
-					Language.Python => "python",
+					Language.C => "C",
+					Language.CPP => "C++",
+					Language.PHP => "PHP",
+					Language.Javascript => "Javascript",
+					Language.Java => "Java",
+					Language.Python => "Python",
 					_ => throw new InvalidProgramException("Unhandled language")
+				},
+				version: language switch {
+					Language.C => "9.3.0",
+					Language.CPP => "9.3.0",
+					Language.PHP => "8.1",
+					Language.Javascript => "16.15.0",
+					Language.Java => "11",
+					Language.Python => "3.10.2"
 				},
 				code: testCode,
 				cancellationToken: cancellationToken
@@ -71,13 +79,14 @@ namespace Spectator.Piston {
 			return ResultParser.ParseTestResults(executeResult.Runtime.Stdout);
 		}
 
-		internal async Task<CodeResponse> ExecuteAsync(string language, string code, CancellationToken cancellationToken) {
+		internal async Task<CodeResponse> ExecuteAsync(string language, string version, string code, CancellationToken cancellationToken) {
 			await _semaphore!.WaitAsync(cancellationToken);
 			try {
 				var runtime = await GetRuntimeAsync(language, cancellationToken) ?? throw new KeyNotFoundException($"Runtime for {language} not found.");
 				return await _rceClient.ExecuteAsync(
 					new CodeRequest {
 						Code = code,
+						Version = version,
 						Language = language,
 						CompileTimeout = _pistonOptions.CompileTimeout,
 						RunTimeout = _pistonOptions.RunTimeout,

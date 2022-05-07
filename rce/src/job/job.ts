@@ -73,7 +73,7 @@ export class Job implements JobPrerequisites {
         // Make sure the file is written properly.
         const stat = await fs.stat(filePath);
         console.log(`File path: ${filePath}`);
-        console.log(`File stat: ${stat.uid} ${stat.gid} ${stat.mode} ${stat.size}`);
+        console.log(`File stat: UID: ${stat.uid}, GID: ${stat.gid}, Mode: ${stat.mode}, Size: ${stat.size}`);
         this._sourceFilePath = filePath;
     }
 
@@ -103,8 +103,9 @@ export class Job implements JobPrerequisites {
             ];
 
             const buildCommandOutput = await this.executeCommand(buildCommand);
+
             if (buildCommandOutput.exitCode !== 0) {
-                throw new Error(buildCommandOutput.output);
+                this.cleanup();
             }
 
             this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");

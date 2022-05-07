@@ -37,7 +37,8 @@ namespace Spectator.Piston.Tests {
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			var executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -57,7 +58,8 @@ namespace Spectator.Piston.Tests {
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -68,7 +70,7 @@ namespace Spectator.Piston.Tests {
 			);
 
 			executeResult.Compile.ExitCode.Should().Be(0);
-			executeResult.Compile.Stdout.Should().Be("Hello world");
+			executeResult.Compile.Stdout.Should().BeEmpty();
 			executeResult.Compile.Stderr.Should().BeEmpty();
 			executeResult.Runtime.ExitCode.Should().Be(0);
 			executeResult.Runtime.Stderr.Should().BeEmpty();
@@ -78,7 +80,8 @@ namespace Spectator.Piston.Tests {
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -106,7 +109,8 @@ namespace Spectator.Piston.Tests {
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			var executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -115,10 +119,9 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Compile.ExitCode.Should().Be(127);
+			executeResult.Compile.ExitCode.Should().Be(1);
 			executeResult.Compile.Stdout.Should().BeEmpty();
-			executeResult.Compile.Stderr.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
-			executeResult.Compile.Stdout.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
+			executeResult.Compile.Stderr.Should().Be("code.c: In function 'main':\ncode.c:4:16: error: expected ';' before '}' token\n    4 |        return 0\n      |                ^\n      |                ;\n    5 |       }\n      |       ~         \n");
 		}
 	}
 }
