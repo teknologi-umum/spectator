@@ -86,7 +86,14 @@ export class RceServiceImpl implements IRceService {
             }
 
             // Create a job.
-            const job = new Job(user, runtime, req.code, req.compileTimeout, req.memoryLimit);
+            const job = new Job(
+                user,
+                runtime,
+                req.code,
+                req.compileTimeout,
+                req.memoryLimit
+            );
+
             await job.createFile();
             const compileOutput: CommandOutput = {
                 stdout: "",
@@ -98,8 +105,32 @@ export class RceServiceImpl implements IRceService {
 
             if (runtime.compiled) {
                 const output = await job.compile();
+
+                if (output.exitCode !== 0) {
+                    this._users.release(user.uid);
+                    callback(null, {
+                        language: runtime.language,
+                        version: runtime.version,
+                        compile: {
+                            output: output.output,
+                            stderr: output.stderr,
+                            stdout: output.stdout,
+                            exitCode: output.exitCode
+                        },
+                        runtime: {
+                            output: "",
+                            stdout: "",
+                            stderr: "",
+                            exitCode: 0
+                        }
+                    });
+
+                    return;
+                }
+
                 Object.assign(compileOutput, output);
             }
+
 
             const runtimeOutput = await job.run();
             // Release the user.

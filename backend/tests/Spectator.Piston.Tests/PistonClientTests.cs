@@ -37,7 +37,8 @@ namespace Spectator.Piston.Tests {
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			var executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -46,16 +47,19 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(0);
-			executeResult.Run.Stdout.Should().BeEmpty();
-			executeResult.Run.Stderr.Should().BeEmpty();
-			executeResult.Run.Output.Should().BeEmpty();
+			executeResult.Compile.ExitCode.Should().Be(0);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().BeEmpty();
+			executeResult.Runtime.ExitCode.Should().Be(0);
+			executeResult.Runtime.Stderr.Should().BeEmpty();
+			executeResult.Runtime.Stdout.Should().BeEmpty();
 
 			// Wait 500ms to avoid HTTP 429
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -65,16 +69,19 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(0);
-			executeResult.Run.Stdout.Should().Be("Hello world");
-			executeResult.Run.Stderr.Should().BeEmpty();
-			executeResult.Run.Output.Should().Be("Hello world");
+			executeResult.Compile.ExitCode.Should().Be(0);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().BeEmpty();
+			executeResult.Runtime.ExitCode.Should().Be(0);
+			executeResult.Runtime.Stderr.Should().BeEmpty();
+			executeResult.Runtime.Stdout.Should().Be("Hello world");
 
 			// Wait 500ms to avoid HTTP 429
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -83,10 +90,12 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(1);
-			executeResult.Run.Stdout.Should().BeEmpty();
-			executeResult.Run.Stderr.Should().BeEmpty();
-			executeResult.Run.Output.Should().BeEmpty();
+			executeResult.Compile.ExitCode.Should().Be(0);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().BeEmpty();
+			executeResult.Runtime.ExitCode.Should().Be(1);
+			executeResult.Runtime.Stderr.Should().BeEmpty();
+			executeResult.Runtime.Stdout.Should().BeEmpty();
 		}
 
 		[Fact]
@@ -100,7 +109,8 @@ namespace Spectator.Piston.Tests {
 			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			var executeResult = await pistonClient.ExecuteAsync(
-				language: "c",
+				language: "C",
+				version: "9.3.0",
 				code: @"#include <stdio.h>
 
 						int main() {
@@ -109,10 +119,127 @@ namespace Spectator.Piston.Tests {
 				cancellationToken: timeoutSource.Token
 			);
 
-			executeResult.Run.Code.Should().Be(127);
-			executeResult.Run.Stdout.Should().BeEmpty();
-			executeResult.Run.Stderr.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
-			executeResult.Run.Output.Should().Be($"/piston/packages/gcc/{executeResult.Version}/run: line 6: ./a.out: No such file or directory\n");
+			executeResult.Compile.ExitCode.Should().Be(1);
+			executeResult.Compile.Stdout.Should().BeEmpty();
+			executeResult.Compile.Stderr.Should().Be("code.c: In function 'main':\ncode.c:4:16: error: expected ';' before '}' token\n    4 |        return 0\n      |                ^\n      |                ;\n    5 |       }\n      |       ~         \n");
+		}
+
+		[Fact]
+		public async Task CanExecuteTestsAsync() {
+			var pistonClient = ServiceProvider.GetRequiredService<PistonClient>();
+
+			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			var testResult = await pistonClient.ExecuteTestsAsync(language: Primitives.Language.Python,
+				testCode: @"import random as __random
+from decimal import Decimal
+
+ def calculateTemperature(n, a, b):
+        if a == ""Celcius"" and b == ""Fahrenheit"":
+            return (n * 9 / 5) + 32
+
+		elif a == ""Celcius"" and b == ""Kelvin"":
+            return n + 273.15
+
+		elif a == ""Fahrenheit"" and b == ""Celcius"":
+            return (n - 32) * 5 / 9
+
+		elif a == ""Fahrenheit"" and b == ""Kelvin"":
+            return (n - 32) * 5 / 9 + 273.15
+
+		elif a == ""Kelvin"" and b == ""Celcius"":
+            return n - 273.15
+
+		elif a == ""Kelvin"" and b == ""Fahrenheit"":
+            return (n - 273.15) * 9 / 5 + 32
+
+
+		return n
+
+def main():
+    testCases = [
+        {
+            ""got"": calculateTemperature(100, ""Celcius"", ""Fahrenheit""),
+
+			""expected"": 212
+
+		},
+        {
+            ""got"": calculateTemperature(212, ""Fahrenheit"", ""Kelvin""),
+			""expected"": 373
+
+		},
+        {
+            ""got"": calculateTemperature(0, ""Celcius"", ""Kelvin""),
+            ""expected"": 273.15
+        },
+        	""got"": calculateTemperature(0, ""Celcius"", ""Fahrenheit""),
+            ""expected"": 32
+		},
+        {
+			""got"": calculateTemperature(0, ""Kelvin"", ""Fahrenheit""),
+            ""expected"": -459.67
+
+		}
+    ]
+
+    def workingAnswer(n, a, b):
+        if a == ""Celcius"" and b == ""Fahrenheit"":
+            return (n * 9 / 5) + 32
+
+		elif a == ""Celcius"" and b == ""Kelvin"":
+            return n + 273.15
+
+		elif a == ""Fahrenheit"" and b == ""Celcius"":
+            return (n - 32) * 5 / 9
+
+		elif a == ""Fahrenheit"" and b == ""Kelvin"":
+            return (n - 32) * 5 / 9 + 273.15
+
+		elif a == ""Kelvin"" and b == ""Celcius"":
+            return n - 273.15
+
+		elif a == ""Kelvin"" and b == ""Fahrenheit"":
+            return (n - 273.15) * 9 / 5 + 32
+
+
+		return n
+
+
+	temperatures = [""Celcius"", ""Fahrenheit"", ""Kelvin""]
+
+	for _ in range(5):
+
+		fromTemperature = __random.choice(temperatures)
+
+		toTemperature = __random.choice(temperatures)
+
+		n = __random.randint(-500, 500)
+
+		expected = workingAnswer(n, fromTemperature, toTemperature)
+
+		got = calculateTemperature(n, fromTemperature, toTemperature)
+
+		testCases.append({ ""expected"": expected, ""got"": got })
+
+    for i, test in enumerate(testCases):
+
+		if round(float(test[""got""]), 2) == round(float(test[""expected""]), 2):
+            print(f'# {i+1} PASSING')
+
+		else:
+            print(f""# {i+1} FAILED"")
+
+			print(f""> EXPECTED { round(float(test['expected']), 2) }"")
+
+			print(f""> GOT { round(float(test['got']), 2) }"")
+
+if __name__ == ""__main__"":
+    main()
+",
+			cancellationToken: timeoutSource.Token);
+			testResult.Length.Equals(10);
+			Console.WriteLine(testResult);
 		}
 	}
 }

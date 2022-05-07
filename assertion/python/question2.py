@@ -13,7 +13,7 @@ def main():
         },
         {
             "got": calculateTemperature(212, "Fahrenheit", "Kelvin"),
-            "expected": 373
+            "expected": 373.15
         },
         {
             "got": calculateTemperature(0, "Celcius", "Kelvin"),
