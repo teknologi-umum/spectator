@@ -107,6 +107,7 @@ export class RceServiceImpl implements IRceService {
                 const output = await job.compile();
 
                 if (output.exitCode !== 0) {
+                    this._users.release(user.uid);
                     callback(null, {
                         language: runtime.language,
                         version: runtime.version,
