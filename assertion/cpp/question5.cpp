@@ -58,18 +58,20 @@ std::string __genWords(int n) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{
-        {.expected = "A-Bb-Ccc-Dddd",
-         .got = mumble("abcd")},
-        {.expected = "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy",
-         .got = mumble("RqaEzTy")}};
+    std::vector<TestCase> testCases{};
+    testCases[0].expected = "A-Bb-Ccc-Dddd";
+    testCases[0].got = mumble("abcd");
+    testCases[1].expected = "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy";
+    testCases[1].got = mumble("RqaEzTy");
 
     for (int i = 0; i < 8; i++) {
         int n = __randomNumber(4, 20);
         std::string word = __genWords(n);
-        std::string expected = __workingAnswer(word);
-        std::string got = mumble(word);
-        testCases.push_back({ .expected = expected, .got = got });
+
+        TestCase testResult{};
+        testResult.expected =  __workingAnswer(word);;
+        testResult.got = mumble(word);
+        testCases.push_back(testResult);
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {

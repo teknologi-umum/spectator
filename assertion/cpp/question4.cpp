@@ -32,15 +32,16 @@ long __randomNumber(int min, long max) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{
-        {.expected = 19,
-         .got = findHeaterPower(100212373)}};
+    std::vector<TestCase> testCases{};
+    testCases[0].expected = 19;
+    testCases[0].got = findHeaterPower(100212373);
 
     for (int i = 0; i < 9; i++) {
         int n = __randomNumber(1000000000, 9999999999);
-        int expected = __workingAnswer(n);
-        int got = findHeaterPower(n);
-        testCases.push_back({ .expected = expected, .got = got });
+        TestCase testResult{};
+        testResult.expected =  __workingAnswer(n);
+        testResult.got = findHeaterPower(n);
+        testCases.push_back(testResult);
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {
