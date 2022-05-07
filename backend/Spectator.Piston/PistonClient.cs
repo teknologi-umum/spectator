@@ -57,7 +57,9 @@ namespace Spectator.Piston {
 					Language.PHP => "8.1",
 					Language.Javascript => "16.15.0",
 					Language.Java => "11",
-					Language.Python => "3.10.2"
+					Language.Python => "3.10.2",
+					_ => throw new InvalidProgramException("Unhandled language")
+
 				},
 				code: testCode,
 				cancellationToken: cancellationToken
