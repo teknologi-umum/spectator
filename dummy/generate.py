@@ -54,7 +54,7 @@ def write_into_file(filename: str, data):
 def main():
     users: list[dict[str, any]] = []
 
-    for _ in range(1):
+    for _ in range(5):
         user = generate_user()
         print(user["session_id"])
         users.append(user)
@@ -125,7 +125,7 @@ def main():
             current_input_events.append(event)
 
         # these are the events that will occur in the exam
-        for _ in range(random.randint(5000, 6000)):
+        for _ in range(random.randint(50_000, 70_000)):
             # these events will also happen parallel to each other so we shouldn't mutate the original timestamp
             # the events will be generated in the range of 1 to 90 minutes
             # and the delta will be randomised between 1ms to (9 * 60 * 1000)ms
