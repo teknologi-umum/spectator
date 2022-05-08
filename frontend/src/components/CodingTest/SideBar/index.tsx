@@ -44,7 +44,7 @@ export default function SideBar({ bg, fg }: SideBarProps) {
       w={isCollapsed ? "65px" : "200px"}
       bg={bg}
       color={fg}
-      flexShrink="0"
+      flexShrink={0}
       boxShadow="md"
       transition="width 300ms ease"
     >
