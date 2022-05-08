@@ -115,14 +115,13 @@ def main():
             # generate more keystrokes event with different timestamp
             random_int = random.randint(0, 5) # decides whether to burst or not
             delta = random.randint(200, 330) if random_int < 5 else random.randint(4000, 10000)
-            print(delta)
             # 1 - 300ms time difference
             keystroke_time = keystroke_time + delta
             event = generate_keystroke_event(current_session, keystroke_time)
             current_input_events.append(event)
 
         # these are the events that will occur in the exam
-        for _ in range(random.randint(50_000, 70_000)):
+        for _ in range(random.randint(5000, 6000)):
             # these events will also happen parallel to each other so we shouldn't mutate the original timestamp
             # the events will be generated in the range of 1 to 90 minutes
             # and the delta will be randomised between 1ms to (9 * 60 * 1000)ms

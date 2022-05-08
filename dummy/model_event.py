@@ -1,8 +1,11 @@
 import random
 from generate_key_event import event_which_to_event_code
+import numpy as np
 
 MOUSE_BUTTON = ["Left", "Right", "Middle"]
 MOUSE_DIRECTIONS = ["up", "down", "left", "right"]
+
+rng = np.random.default_rng()
 
 
 class InputEventBase:
@@ -179,13 +182,17 @@ class EventWindowSized(InputEventBase):
 
 def generate_keystroke_event(session_id: str, time) -> dict[str, any]:
     question_number = random.randint(1, 6)
-    key_code = random.choice(list(event_which_to_event_code.keys()))
-    key_char = event_which_to_event_code[key_code] # 48 - 90, 8, 32, 186 - 222 should appear more often
+    event_code_keys = list(event_which_to_event_code.keys())
+    # there are 101 keys, the first 54 keys should appear more often than the rest
+    probabilities = np.array([0.4] * 54 + [0.1] * 47)
+    normalised_p = np.array(probabilities/probabilities.sum())
+    key_code = int(rng.choice(event_code_keys, p=normalised_p))
+    key_char = event_which_to_event_code[key_code]
     shift = random.choice([True, False])
     alt = random.choice([True, False])
     control = random.choice([True, False])
     meta = random.choice([True, False])
-    unrelated_key = random.randint(0, 5) < 5  # 0.8 biased to false
+    unrelated_key = bool(rng.choice([True, False], p=[0.2, 0.8]))
 
     return (
         EventKeystroke(
