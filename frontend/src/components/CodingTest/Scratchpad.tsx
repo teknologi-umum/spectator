@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import type { UIEventHandler } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror from "@uiw/react-codemirror";
-import { lineNumbers } from "@codemirror/gutter";
+import { lineNumbers } from "@codemirror/view";
 import { useCodemirrorTheme, useColorModeValue, useDebounce } from "@/hooks";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setScratchPad } from "@/store/slices/editorSlice";

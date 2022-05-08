@@ -15,7 +15,6 @@
     "protoc": "npx protoc --ts_out src/stub --proto_path ../proto/Spectator.Protos enums.proto session.proto input.proto"
   },
   "dependencies": {
-    "@codemirror/highlight": "^0.19.8",
     "@microsoft/signalr": "^6.0.4",
     "@protobuf-ts/runtime-rpc": "^2.5.0",
     "i18next": "^21.7.1",
@@ -24,16 +23,18 @@
   },
   "devDependencies": {
     "@chakra-ui/react": "^1.8.8",
-    "@codemirror/gutter": "^0.19.9",
     "@codemirror/lang-cpp": "^0.20.0",
     "@codemirror/lang-java": "^0.20.0",
     "@codemirror/lang-javascript": "^0.20.0",
     "@codemirror/lang-php": "^0.20.0",
     "@codemirror/lang-python": "^0.20.0",
+    "@codemirror/state": "^0.20.0",
+    "@codemirror/view": "^0.20.4",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.0.0",
     "@fontsource/mulish": "^4.5.10",
     "@hookform/resolvers": "^2.8.8",
+    "@lezer/highlight": "^0.16.0",
     "@protobuf-ts/plugin": "^2.5.0",
     "@reactour/tour": "^2.10.3",
     "@reduxjs/toolkit": "^1.8.1",

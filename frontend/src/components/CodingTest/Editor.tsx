@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-import type { UIEventHandler } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror, { keymap } from "@uiw/react-codemirror";
 import { defaultKeymap } from "@codemirror/commands";
-import { lineNumbers } from "@codemirror/gutter";
+import { lineNumbers } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
 import { java } from "@codemirror/lang-java";
@@ -84,7 +83,14 @@ export default function Editor({ bg }: EditorProps) {
   }
 
   return (
-    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full" data-tour="editor-step-1">
+    <Box
+      bg={bg}
+      rounded="md"
+      shadow="md"
+      flex="1"
+      h="full"
+      data-tour="editor-step-1"
+    >
       <Tabs h="full">
         <TabList borderColor={borderBg}>
           <Tab>Your Solution</Tab>
@@ -102,7 +108,7 @@ export default function Editor({ bg }: EditorProps) {
                   {
                     key: "Ctrl-c",
                     run: () => {
-                      /* noop */
+                      // noop 
                       return true;
                     },
                     preventDefault: true
@@ -110,7 +116,7 @@ export default function Editor({ bg }: EditorProps) {
                   {
                     key: "Ctrl-v",
                     run: () => {
-                      /* noop */
+                      // noop
                       return true;
                     },
                     preventDefault: true
