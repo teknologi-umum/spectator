@@ -113,8 +113,12 @@ def main():
         keystroke_time = time
         while keystroke_time - time < 90 * MINUTES_TO_MILLIS:
             # generate more keystrokes event with different timestamp
-            random_int = random.randint(0, 5) # decides whether to burst or not
-            delta = random.randint(200, 330) if random_int < 5 else random.randint(4000, 10000)
+            random_int = random.randint(0, 5)  # decides whether to burst or not
+            delta = (
+                random.randint(200, 330)
+                if random_int < 5
+                else random.randint(4000, 10000)
+            )
             # 1 - 300ms time difference
             keystroke_time = keystroke_time + delta
             event = generate_keystroke_event(current_session, keystroke_time)

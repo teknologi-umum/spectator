@@ -185,7 +185,7 @@ def generate_keystroke_event(session_id: str, time) -> dict[str, any]:
     event_code_keys = list(event_which_to_event_code.keys())
     # there are 101 keys, the first 54 keys should appear more often than the rest
     probabilities = np.array([0.4] * 54 + [0.1] * 47)
-    normalised_p = np.array(probabilities/probabilities.sum())
+    normalised_p = np.array(probabilities / probabilities.sum())
     key_code = int(rng.choice(event_code_keys, p=normalised_p))
     key_char = event_which_to_event_code[key_code]
     shift = random.choice([True, False])

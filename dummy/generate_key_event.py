@@ -55,7 +55,6 @@ event_which_to_event_code = {
     220: "Backslash",
     221: "BracketRight",
     222: "Quote",
-
     # less pressed keys
     19: "Pause",
     20: "CapsLock",
