@@ -30,7 +30,7 @@ export default defineConfig({
           codemirror_javascript: ["@codemirror/lang-javascript"],
           codemirror_python: ["@codemirror/lang-python"],
           codemirror_php: ["@codemirror/lang-php"],
-          codemirror: ["@codemirror/gutter", "@uiw/react-codemirror"],
+          codemirror: ["@codemirror/state", "@codemirror/view", "@uiw/react-codemirror"],
           chakra: [
             "@chakra-ui/react",
             "@emotion/react",
