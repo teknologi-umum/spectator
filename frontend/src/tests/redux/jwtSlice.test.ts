@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { describe, expect } from "vitest";
 import reducer, { setAccessToken } from "@/store/slices/sessionSlice";
 
 const FAKE_JWT =
@@ -15,15 +15,17 @@ const initialState = {
   }
 };
 
-test("should return the initial state", () => {
-  expect(reducer(undefined, { type: null })).toEqual(initialState);
-});
+describe("jwt", (it) => {
+  it("should return the initial state", () => {
+    expect(reducer(undefined, { type: null })).toEqual(initialState);
+  });
 
-test("should be able to set access token", () => {
-  expect(reducer(initialState, setAccessToken(FAKE_JWT))).toEqual({
-    ...initialState,
-    accessToken: FAKE_JWT,
-    firstSAMSubmitted: false,
-    secondSAMSubmitted: false
+  it("should be able to set access token", () => {
+    expect(reducer(initialState, setAccessToken(FAKE_JWT))).toEqual({
+      ...initialState,
+      accessToken: FAKE_JWT,
+      firstSAMSubmitted: false,
+      secondSAMSubmitted: false
+    });
   });
 });
