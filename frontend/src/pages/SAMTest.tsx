@@ -17,7 +17,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import { LocaleButton, ThemeButton } from "@/components/CodingTest";
+import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -27,7 +27,7 @@ import {
 import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
-import SAMRadioGroup from "@/components/SAMRadioGroup";
+import SAMRadioGroup from "@/components/SAMTest/SAMRadioGroup";
 import WithTour from "@/hoc/WithTour";
 import { samTestTour } from "@/tours";
 import { useTour } from "@reactour/tour";
@@ -44,21 +44,29 @@ function getResponseOptions(
   return icons.map((Icon, idx) => ({ value: idx + 1, Icon }));
 }
 
+enum Page {
+  FIRST,
+  LAST
+}
+
 function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [arousal, setArousal] = useState(1);
-  const [pleasure, setPleasure] = useState(1);
-  const [currentPage, setCurrentPage] = useState(0);
+  const { setIsOpen, setCurrentStep } = useTour();
+
   const bg = useColorModeValue("white", "gray.700", "gray.800");
   const fg = useColorModeValue("gray.700", "gray.200", "gray.200");
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
-  const { t } = useTranslation();
+
+  const [currentPage, setCurrentPage] = useState(Page.FIRST);
+  const [arousal, setArousal] = useState(1);
+  const [pleasure, setPleasure] = useState(1);
+
   const { accessToken, firstSAMSubmitted, tourCompleted } = useAppSelector(
     (state) => state.session
   );
-  const { setIsOpen, setCurrentStep } = useTour();
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -67,10 +75,6 @@ function SAMTest() {
     if (kind === "next") {
       setCurrentPage((prev) => (currentPage >= 1 ? prev : prev + 1));
     }
-  }
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
   }
 
   async function finishSAMTest() {
@@ -122,7 +126,7 @@ function SAMTest() {
         </Flex>
         <Box
           as="form"
-          onSubmit={handleSubmit}
+          onSubmit={(e: FormEvent) => e.preventDefault()}
           mt="20"
           p="6"
           rounded="md"
@@ -136,7 +140,7 @@ function SAMTest() {
               Self Assessment Manikin Test (SAM Test)
             </Heading>
 
-            {currentPage === 0 && (
+            {currentPage === Page.FIRST && (
               <Fade in={currentPage === 0}>
                 <Box data-tour="step-1">
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
@@ -155,8 +159,8 @@ function SAMTest() {
               </Fade>
             )}
 
-            {currentPage === 1 && (
-              <Fade in={currentPage === 1}>
+            {currentPage === Page.LAST && (
+              <Fade in={currentPage === Page.LAST}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     {t("translation.translations.sam_test.pleasure_title")}
@@ -175,7 +179,7 @@ function SAMTest() {
             )}
 
             <Flex justifyContent="end" mt="4" gap="4">
-              {currentPage === 1 ? (
+              {currentPage === Page.LAST ? (
                 <>
                   <Button
                     colorScheme="blue"
