@@ -27,6 +27,61 @@ import {
 } from "@/components/CodingTest";
 import { sessionSpoke } from "@/spoke";
 import { useNavigate } from "react-router-dom";
+import { parser as javascriptParser } from "@lezer/javascript";
+import { parser as phpParser } from "@lezer/php";
+import { parser as javaParser } from "@lezer/java";
+import { parser as cppParser } from "@lezer/cpp";
+import { parser as pythonParser } from "@lezer/python";
+
+const languageParser = {
+  [LanguageEnum.UNDEFINED]: undefined,
+  [LanguageEnum.C]: cppParser,
+  [LanguageEnum.CPP]: cppParser,
+  [LanguageEnum.PHP]: phpParser,
+  [LanguageEnum.JAVASCRIPT]: javascriptParser,
+  [LanguageEnum.JAVA]: javaParser,
+  [LanguageEnum.PYTHON]: pythonParser
+};
+
+const languageDirectiveType = {
+  [LanguageEnum.UNDEFINED]: undefined,
+  [LanguageEnum.C]: "PreprocDirective",
+  [LanguageEnum.CPP]: "PreprocDirective",
+  [LanguageEnum.PHP]: undefined,
+  [LanguageEnum.JAVASCRIPT]: "ImportDeclaration",
+  [LanguageEnum.JAVA]: "ImportDeclaration",
+  [LanguageEnum.PYTHON]: "ImportStatement"
+};
+
+function extractDirective(language: LanguageEnum, content: string) {
+  const parser = languageParser[language];
+  if (parser === undefined) {
+    throw new Error(`Language ${language} is not supported`);
+  }
+
+  const directiveNodeType = languageDirectiveType[language];
+  if (directiveNodeType === undefined) {
+    return "";
+  }
+
+  const tree = parser.parse(content);
+  return tree.topNode
+    .getChildren(directiveNodeType)
+    .map((b) => content.slice(b.from, b.to))
+    .filter((directive) => {
+      // C/C++ special case
+      // filter out any preproc directive that isn't being used to include a header file
+      if (
+        directiveNodeType === "PreprocDirective" &&
+        !directive.startsWith("#include")
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .join("\n");
+}
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -110,12 +165,16 @@ export default function TopBar({ bg, fg }: MenuProps) {
       return;
     }
 
+    const language = LANGUAGE_TO_ENUM[currentLanguage];
+    const solution = currentSnapshot.solutionByLanguage[currentLanguage];
+    const directives = extractDirective(language, solution);
+
     try {
       const submissionResult = await sessionSpoke.submitSolution({
         accessToken,
-        language: LANGUAGE_TO_ENUM[currentLanguage],
-        directives: currentSnapshot.directivesByLanguage[currentLanguage],
-        solution: currentSnapshot.solutionByLanguage[currentLanguage],
+        language: language,
+        directives: directives,
+        solution: solution,
         scratchPad: currentSnapshot.scratchPad,
         questionNumber: currentQuestionNumber
       });
@@ -125,7 +184,6 @@ export default function TopBar({ bg, fg }: MenuProps) {
           language: currentLanguage,
           questionNumber: currentQuestionNumber,
           scratchPad: currentSnapshot.scratchPad,
-          directivesByLanguage: currentSnapshot.directivesByLanguage,
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
           submissionRefactored: currentSnapshot.submissionSubmitted,

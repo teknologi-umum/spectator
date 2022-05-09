@@ -56,16 +56,6 @@ export const editorSlice = createSlice({
     setFontSize: (state, action: PayloadAction<number>) => {
       state.fontSize = action.payload;
     },
-    setDirectives: (state, action: PayloadAction<string>) => {
-      if (!(state.currentQuestionNumber in state.snapshotByQuestionNumber)) {
-        state.snapshotByQuestionNumber[state.currentQuestionNumber] =
-          defaultEditorSnapshot(state);
-      }
-
-      state.snapshotByQuestionNumber[
-        state.currentQuestionNumber
-      ].directivesByLanguage[state.currentLanguage] = action.payload;
-    },
     setSolution: (state, action: PayloadAction<string>) => {
       if (!(state.currentQuestionNumber in state.snapshotByQuestionNumber)) {
         state.snapshotByQuestionNumber[state.currentQuestionNumber] =
@@ -81,7 +71,6 @@ export const editorSlice = createSlice({
         language: action.payload.language,
         questionNumber: action.payload.questionNumber,
         scratchPad: action.payload.scratchPad,
-        directivesByLanguage: action.payload.directivesByLanguage,
         solutionByLanguage: action.payload.solutionByLanguage,
         submissionAccepted: action.payload.submissionAccepted,
         submissionRefactored: action.payload.submissionRefactored,
@@ -106,7 +95,6 @@ export const {
   setCurrentQuestion,
   setLanguage,
   setFontSize,
-  setDirectives,
   setSolution,
   setScratchPad,
   setDeadlineAndQuestions,
