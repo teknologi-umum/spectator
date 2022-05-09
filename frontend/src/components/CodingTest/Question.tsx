@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Flex,
@@ -15,8 +16,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import Result from "./Result";
+import Result from "@/components/CodingTest/Result";
 
 interface QuestionProps {
   bg: string;
@@ -24,19 +24,59 @@ interface QuestionProps {
   fgDarker: string;
 }
 
-export default function Question({ bg, fg, fgDarker }: QuestionProps) {
-  const isMounted = useRef(false);
-  const [tabIndex, setTabIndex] = useState(0);
+function buildParagraph(color: string) {
+  const MDParagraph: FC = ({ children }) => (
+    <Text fontSize="16" lineHeight="6" color={color} py="2">
+      {children}
+    </Text>
+  );
+  return MDParagraph;
+}
 
+function buildUnorderedList() {
+  const MDUnorderedList: FC = ({ children }) => (
+    <UnorderedList>{children}</UnorderedList>
+  );
+  return MDUnorderedList;
+}
+
+function buildListItem() {
+  const MDListItem: FC = ({ children }) => <ListItem>{children}</ListItem>;
+  return MDListItem;
+}
+
+function buildPre(codeBg: string, fg: string) {
+  const Pre: FC = ({ children }) => (
+    <Box
+      as="pre"
+      bg={codeBg}
+      color={fg}
+      p="3"
+      rounded="md"
+      mb="4"
+      overflowX="auto"
+      fontSize="14"
+    >
+      {children}
+    </Box>
+  );
+  return Pre;
+}
+
+export default function Question({ bg, fg, fgDarker }: QuestionProps) {
+  const { t } = useTranslation();
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
+
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
+
   const currentSnapshot = useMemo(
     () => snapshotByQuestionNumber[currentQuestionNumber],
     [snapshotByQuestionNumber, currentQuestionNumber]
   );
+
   const isResultTabDisabled = useMemo(
     () =>
       currentSnapshot?.testResults === null ||
@@ -44,16 +84,16 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
     [currentSnapshot?.testResults]
   );
 
+  const [tabIndex, setTabIndex] = useState(0);
+  const isMounted = useRef(false);
   useEffect(() => {
     if (isMounted.current) {
       // move to the result tab whenever the current submission changes
       setTabIndex(1);
-    } else {
-      isMounted.current = true;
+      return;
     }
+    isMounted.current = true;
   }, [currentSnapshot?.testResults]);
-
-  const { t } = useTranslation();
 
   return (
     <Flex
@@ -66,7 +106,6 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
       rounded="md"
       shadow="md"
     >
-      {/* TODO(elianiva): should automatically switch to 'your result' after pressing submit */}
       <Tabs
         index={tabIndex}
         onChange={(idx) => setTabIndex(idx)}
@@ -94,35 +133,15 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
               </Heading>
               <ReactMarkdown
                 components={{
-                  p: ({ children }) => (
-                    <Text fontSize="16" lineHeight="6" color={fgDarker} py="2">
-                      {children}
-                    </Text>
-                  ),
-                  ul: ({ children }) => (
-                    <UnorderedList>{children}</UnorderedList>
-                  ),
-                  li: ({ children }) => <ListItem>{children}</ListItem>,
-                  pre: ({ children }) => (
-                    <Box
-                      as="pre"
-                      bg={codeBg}
-                      color={fg}
-                      p="3"
-                      rounded="md"
-                      mb="4"
-                      overflowX="auto"
-                      fontSize="14"
-                    >
-                      {children}
-                    </Box>
-                  )
+                  p: buildParagraph(fgDarker),
+                  ul: buildUnorderedList(),
+                  li: buildListItem(),
+                  pre: buildPre(codeBg, fg)
                 }}
               >
                 {t(`question.questions.${currentQuestionNumber - 1}.question`)}
               </ReactMarkdown>
             </Box>
-            1
           </TabPanel>
           <TabPanel p="2" h="full">
             <Result fg={fg} fgDarker={fgDarker} />
