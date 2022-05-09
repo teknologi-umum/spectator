@@ -19,6 +19,7 @@ export default defineConfig({
     }
   },
   build: {
+    ssr: false,
     target: ["es2020"],
     outDir: "../backend/Spectator/wwwroot",
     rollupOptions: {

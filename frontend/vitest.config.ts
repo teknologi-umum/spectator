@@ -5,8 +5,10 @@ import { resolve } from "path";
 
 export default defineConfig({
   test: {
-    global: true,
     environment: "jsdom"
+  },
+  build: {
+    ssr: false
   },
   resolve: {
     alias: {
