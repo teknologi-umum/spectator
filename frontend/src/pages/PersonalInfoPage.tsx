@@ -20,7 +20,7 @@ import {
   InputRightElement
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import { LocaleButton, ThemeButton } from "@/components/CodingTest";
+import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
