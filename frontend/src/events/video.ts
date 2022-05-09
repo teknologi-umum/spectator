@@ -1,5 +1,5 @@
-import type { UploadRequest } from "@/workers/uploader.worker";
-import UploaderWorker from "@/workers/uploader.worker.ts?worker";
+import type { UploadRequest } from "@/events/video.worker";
+import UploaderWorker from "@/events/video.worker.ts?worker";
 
 const worker = new UploaderWorker();
 
