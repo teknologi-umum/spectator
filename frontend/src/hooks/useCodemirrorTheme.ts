@@ -1,4 +1,4 @@
-import { getEditorTheme, getHighlightTheme } from "@/components/CodingTest";
+import { getEditorTheme, getHighlightTheme } from "@/components/CodingTest/editorTheme";
 import { useAppSelector } from "@/store";
 import { useEffect, useState } from "react";
 import { useColorMode } from "@/hooks/";
