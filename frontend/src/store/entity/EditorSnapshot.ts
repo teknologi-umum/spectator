@@ -7,14 +7,6 @@ export function defaultEditorSnapshot<StateDraft extends EditorState>(
     language: state.currentLanguage,
     questionNumber: state.currentQuestionNumber,
     scratchPad: "",
-    directivesByLanguage: {
-      javascript: "",
-      php: "",
-      java: "",
-      python: "",
-      c: "",
-      cpp: ""
-    },
     solutionByLanguage: {
       javascript: "",
       php: "",

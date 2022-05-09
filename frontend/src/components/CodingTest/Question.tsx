@@ -39,11 +39,9 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
   );
   const isResultTabDisabled = useMemo(
     () =>
-      !(
-        currentSnapshot?.testResults !== null &&
-        currentSnapshot?.testResults?.length > 0
-      ),
-    [currentSnapshot.testResults]
+      currentSnapshot?.testResults === null ||
+      currentSnapshot?.testResults?.length > 0,
+    [currentSnapshot?.testResults]
   );
 
   useEffect(() => {
@@ -53,7 +51,7 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
     } else {
       isMounted.current = true;
     }
-  }, [currentSnapshot.testResults]);
+  }, [currentSnapshot?.testResults]);
 
   const { t } = useTranslation();
 

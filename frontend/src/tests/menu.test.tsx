@@ -1,11 +1,16 @@
 import React from "react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import type { FC } from "react";
 import { Provider } from "react-redux";
 import { fireEvent, render } from "@testing-library/react";
 import { store } from "@/store";
 import TopBar from "@/components/CodingTest/TopBar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+vi.stubGlobal("Worker", vi.fn(() => ({
+  onmessage: vi.fn(),
+  postmessage: vi.fn()
+})));
 
 const reduxWrapper: FC = ({ children }) => (
   <Provider store={store}>
@@ -30,11 +35,11 @@ test("should be able to change editor language using <Select />", () => {
 });
 
 test("should be able to change editor fontsize using <Select />", () => {
-  const { getByTestId } = render(<TopBar bg="black" fg="white" />, {
+  const { getAllByTestId } = render(<TopBar bg="black" fg="white" />, {
     wrapper: reduxWrapper
   });
 
-  const languageSelect = getByTestId("editor-fontsize-select");
+  const languageSelect = getAllByTestId("editor-fontsize-select")[0];
 
   fireEvent.change(languageSelect, { target: { value: 18 } });
 

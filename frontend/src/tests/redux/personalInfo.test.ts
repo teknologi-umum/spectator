@@ -8,7 +8,7 @@ const initialState: PersonalInfo = {
   hoursOfPractice: 0,
   familiarLanguages: "",
   walletNumber: "",
-  walletType: "gopay"
+  walletType: "grabpay"
 };
 
 test("should return the initial state", () => {
