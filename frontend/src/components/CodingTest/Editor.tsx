@@ -57,7 +57,7 @@ export default function Editor({ bg }: EditorProps) {
     
     const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
     return currentSnapshot.solutionByLanguage[currentLanguage];
-  }, []);
+  }, [currentQuestionNumber]);
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
