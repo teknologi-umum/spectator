@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
@@ -24,7 +24,7 @@ import {
   mouseScrollHandler,
   windowResizeHandler
 } from "@/events";
-import { useColorModeValue, useVideoRecorder } from "@/hooks";
+import { useColorModeValue, useVideoRecorder, RecordingStatus } from "@/hooks";
 import { useAppSelector } from "@/store";
 import { sessionSpoke } from "@/spoke";
 import { CrossIcon, VideoIcon } from "@/icons";
@@ -53,10 +53,7 @@ function CodingTest() {
   const toast = useToast();
   const { setIsOpen } = useTour();
 
-  const [recordingStatus, setRecordingStatus] = useState<
-    "stopped" | "started" | "unknown"
-  >("unknown");
-  useVideoRecorder({ setRecordingStatus, accessToken });
+  const recordingStatus = useVideoRecorder(accessToken);
 
   useEventListener(
     "mousedown",
@@ -125,9 +122,9 @@ function CodingTest() {
   }, []);
 
   useEffect(() => {
-    if (recordingStatus === "unknown") return;
+    if (recordingStatus === RecordingStatus.UNKNOWN) return;
 
-    const accentColor = recordingStatus === "started" ? green : red;
+    const accentColor = recordingStatus === RecordingStatus.STARTED ? green : red;
     const id = toast({
       position: "top-right",
       render: () => (

@@ -1,18 +1,16 @@
-import { useEffect, useRef } from "react";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, useRef, useState } from "react";
 import { uploadVideo } from "@/events";
 
-interface VideoRecorderHookOptions {
-  setRecordingStatus: Dispatch<
-    SetStateAction<"stopped" | "started" | "unknown">
-  >;
-  accessToken: string | null;
+export enum RecordingStatus {
+  UNKNOWN,
+  STARTED,
+  STOPPED,
 }
 
-export function useVideoRecorder({
-  setRecordingStatus,
-  accessToken
-}: VideoRecorderHookOptions) {
+export function useVideoRecorder(accessToken: string | null) {
+  const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>(
+    RecordingStatus.UNKNOWN
+  );
   const videoStream = useRef<MediaStream | null>();
   const mediaRecorder = useRef<MediaRecorder | null>();
 
@@ -41,10 +39,10 @@ export function useVideoRecorder({
         });
 
         mediaRecorder.current.onstart = () => {
-          setRecordingStatus("started");
+          setRecordingStatus(RecordingStatus.STARTED);
         };
         mediaRecorder.current.onstop = () => {
-          setRecordingStatus("stopped");
+          setRecordingStatus(RecordingStatus.STOPPED);
         };
 
         mediaRecorder.current.start(1000); // send blob every second
@@ -64,4 +62,6 @@ export function useVideoRecorder({
       }
     };
   }, []);
+
+  return recordingStatus;
 }
