@@ -33,11 +33,11 @@ namespace Spectator.RepositoryDALs.Internals {
 		}
 
 		public Task AddEventAsync(InputEventBase @event) {
-			return _db.GetWriteApiAsync(_mapper).WriteMeasurementAsync(_bucket, _org, WritePrecision.Ns, @event);
+			return _db.GetWriteApiAsync(_mapper).WriteMeasurementAsync(@event, bucket: _bucket, org: _org, precision: WritePrecision.Ns);
 		}
 
 		public Task AddEventsAsync(InputEventBase[] events) {
-			return _db.GetWriteApiAsync(_mapper).WriteMeasurementsAsync(_bucket, _org, WritePrecision.Ns, events);
+			return _db.GetWriteApiAsync(_mapper).WriteMeasurementsAsync(events, bucket: _bucket, org: _org, precision: WritePrecision.Ns);
 		}
 	}
 }

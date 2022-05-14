@@ -53,7 +53,6 @@ builder.Services.Setup(services => {
 	services.AddEndpointsApiExplorer();
 	services.AddSwaggerGen(options => {
 		options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Spectator SignalR API v1", Version = "v1" });
-		options.DocumentFilter<SignalRSwaggerGen.SignalRSwaggerGen>(new List<Assembly> { typeof(SessionHub).Assembly });
 	});
 
 	// Add SignalR

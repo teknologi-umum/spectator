@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -15,7 +15,7 @@ using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
 
 namespace Spectator.Hubs {
-	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly PoormansAuthentication _poormansAuthentication;
 		private readonly SessionServices _sessionServices;
@@ -231,7 +231,6 @@ namespace Spectator.Hubs {
 
 			// End exam
 			registeredSession = await _sessionServices.EndExamAsync(session.Id);
-
 
 			// Map results
 			return new ExamResult {
