@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/store";
 import { setSessionId } from "@/store/slices/sessionSlice";
+import { loggerInstance } from "@/spoke/logger";
+import { LogLevel } from "@microsoft/signalr";
 
 interface FormValues {
   password: string;
@@ -63,7 +65,9 @@ export default function Login() {
       dispatch(setSessionId(data.sessionId));
       navigate("/secret/download");
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   };
 
@@ -80,7 +84,10 @@ export default function Login() {
       return;
     }
 
-    console.log("errors", errors);
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.log("errors", errors);
+    }
   }, [errors]);
 
   return (

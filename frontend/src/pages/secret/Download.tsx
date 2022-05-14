@@ -16,6 +16,8 @@ import {
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store";
+import { LogLevel } from "@microsoft/signalr";
+import { loggerInstance } from "@/spoke/logger";
 
 interface FakeData {
   id: number;
@@ -55,7 +57,7 @@ export default function Download() {
         console.log(data);
       } catch (err) {
         if (err instanceof Error) {
-          console.error(err.message);
+          loggerInstance.log(LogLevel.Error, err.message);
         }
       }
     })();
