@@ -1,26 +1,20 @@
-export * from "./SumIcon";
-export * from "./TemperatureIcon";
-export * from "./StarIcon";
-export * from "./DiamondIcon";
-export * from "./PyramidIcon";
-export * from "./EqualIcon";
-export * from "./HamburgerIcon";
-export * from "./ClockIcon";
-export * from "./CheckmarkIcon";
-export * from "./CrossIcon";
-export * from "./WarningIcon";
-export * from "./InfoIcon";
-export * from "./SpeedIcon";
-export * from "./BackspaceIcon";
-export * from "./KeyboardIcon";
-export * from "./ClickIcon";
-export * from "./StopwatchIcon";
-export * from "./ScrollIcon";
-export * from "./RetryIcon";
-export * from "./QuestionOutlineIcon";
-export * from "./QuestionIcon";
-export * from "./CodeIcon";
-export * from "./IndonesiaFlagIcon";
-export * from "./UnitedKingdomFlagIcon";
-export * from "./ChevronDownIcon";
-export * from "./VideoIcon";
+export * from "./SumIcon"; //
+export * from "./TemperatureIcon"; //
+export * from "./StarIcon"; //
+export * from "./DiamondIcon"; //
+export * from "./PyramidIcon"; //
+export * from "./EqualIcon"; //
+export * from "./HamburgerIcon"; //
+export * from "./ClockIcon"; //
+export * from "./CheckmarkIcon"; //
+export * from "./CrossIcon"; //
+export * from "./WarningIcon"; //
+export * from "./InfoIcon"; //
+export * from "./SpeedIcon"; //
+export * from "./BackspaceIcon"; //
+export * from "./RetryIcon"; //
+export * from "./QuestionOutlineIcon"; //
+export * from "./IndonesiaFlagIcon"; //
+export * from "./UnitedKingdomFlagIcon"; //
+export * from "./ChevronDownIcon"; //
+export * from "./VideoIcon"; //

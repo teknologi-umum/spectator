@@ -1,7 +1,8 @@
-import type { UploadRequest } from "@/workers/uploader.worker";
-import UploaderWorker from "@/workers/uploader.worker.ts?worker";
+import type { UploadRequest } from "@/events/video.worker";
 
-const worker = new UploaderWorker();
+const worker = new Worker(new URL("./video.worker.ts", import.meta.url), {
+  type: "module"
+});
 
 export function uploadVideo(accessToken: string, startedAt: number) {
   return (e: BlobEvent) => {

@@ -5,8 +5,10 @@ import { resolve } from "path";
 
 export default defineConfig({
   test: {
-    global: true,
-    environment: "jsdom"
+    environment: "jsdom",
+    transformMode: {
+      web: [/\.([jt]sx?)$/]
+    }
   },
   resolve: {
     alias: {

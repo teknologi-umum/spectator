@@ -1,7 +1,5 @@
-import { expect, test } from "vitest";
-import reducer, {
-  setFontSize
-} from "@/store/slices/editorSlice";
+import { describe, expect } from "vitest";
+import reducer, { setFontSize, setLanguage } from "@/store/slices/editorSlice";
 import type { EditorState } from "@/models/EditorState";
 
 const initialState: EditorState = {
@@ -13,20 +11,41 @@ const initialState: EditorState = {
   snapshotByQuestionNumber: {}
 };
 
-test("should return the initial state", () => {
-  expect(reducer(undefined, { type: null })).toEqual(initialState);
-});
+describe("Editor related state", (it) => {
+  it("should return the initial state", () => {
+    expect(reducer(undefined, { type: null })).toEqual(initialState);
+  });
 
-//test("should be able to set current editor language", () => {
-//  expect(reducer(initialState, changeCurrentLanguage("c++"))).toEqual({
-//    ...initialState,
-//    currentLanguage: "c++"
-//  });
-//});
+  it("should be able to set current editor language", () => {
+    expect(reducer(initialState, setLanguage("cpp"))).toEqual({
+      ...initialState,
+      currentLanguage: "cpp",
+      snapshotByQuestionNumber: {
+        1: {
+          language: "cpp",
+          questionNumber: 1,
+          scratchPad: "",
+          solutionByLanguage: {
+            javascript: "",
+            php: "",
+            java: "",
+            python: "",
+            c: "",
+            cpp: ""
+          },
+          submissionAccepted: false,
+          submissionSubmitted: false,
+          submissionRefactored: false,
+          testResults: null
+        }
+      }
+    });
+  });
 
-test("should be able to set current editor font size", () => {
-  expect(reducer(initialState, setFontSize(18))).toEqual({
-    ...initialState,
-    fontSize: 18
+  it("should be able to set current editor font size", () => {
+    expect(reducer(initialState, setFontSize(18))).toEqual({
+      ...initialState,
+      fontSize: 18
+    });
   });
 });
