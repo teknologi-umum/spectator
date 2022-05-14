@@ -28,6 +28,9 @@ namespace Spectator.RepositoryDALs.Tests {
 			services.AddHttpClient();
 			services.AddRepositoryDALs();
 			ServiceProvider = services.BuildServiceProvider();
+#pragma warning disable RG0006 // Do not call Task.Wait() to invoke a Task
+			ServiceProvider.GetRequiredService<InfluxDbInitializer>().InitializeAsync().Wait();
+#pragma warning restore RG0006 // Do not call Task.Wait() to invoke a Task
 		}
 
 		[Fact]

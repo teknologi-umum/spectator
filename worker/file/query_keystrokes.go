@@ -86,7 +86,7 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 			Control:      control,
 			Meta:         meta,
 			UnrelatedKey: unrelatedKey,
-			Timestamp:    record.ValueByKey("_time").(time.Time),
+			Timestamp:    record.Time(),
 		})
 	}
 

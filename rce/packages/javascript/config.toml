@@ -1,8 +1,8 @@
 language = "Javascript"
-version = "16.14.2"
+version = "16.15.0"
 compiled = false
 extension = "js"
 build_command = []
-run_command = [ "/opt/node/16.14.2/bin/node", "{file}" ]
+run_command = [ "/opt/node/16.15.0/bin/node", "{file}" ]
 test_file = "test.js"
 aliases = ["javascript", "js"]

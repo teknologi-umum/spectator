@@ -1,5 +1,7 @@
 import { eventSpoke } from "@/spoke";
+import { loggerInstance } from "@/spoke/logger";
 import { WindowSizeInfo } from "@/stub/input";
+import { LogLevel } from "@microsoft/signalr";
 
 export function windowResizeHandler(
   questionNumber: number | null,
@@ -19,7 +21,9 @@ export function windowResizeHandler(
     try {
       await eventSpoke.windowResized(data);
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error) {
+        await loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   };
 }

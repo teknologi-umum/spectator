@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Flex,
@@ -16,17 +18,69 @@ import type { EditorSnapshot } from "@/models/EditorSnapshot";
 import { Language as LanguageEnum } from "@/stub/enums";
 import { LANGUAGES, Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { useTranslation } from "react-i18next";
 import { useColorModeValue } from "@/hooks";
 import { ClockIcon } from "@/icons";
-import FeedbackToast from "@/components/FeedbackToast";
-import {
-  MenuDropdown,
-  ThemeButton,
-  LocaleButton
-} from "@/components/CodingTest";
+import CodingResultToast from "@/components/Toast/CodingResultToast";
+import { MenuDropdown, ThemeButton, LocaleButton } from "@/components/TopBar";
 import { sessionSpoke } from "@/spoke";
-import { useNavigate } from "react-router-dom";
+import { parser as javascriptParser } from "@lezer/javascript";
+import { parser as phpParser } from "@lezer/php";
+import { parser as javaParser } from "@lezer/java";
+import { parser as cppParser } from "@lezer/cpp";
+import { parser as pythonParser } from "@lezer/python";
+import { Solution } from "@/models/Solution";
+import { loggerInstance } from "@/spoke/logger";
+import { LogLevel } from "@microsoft/signalr";
+
+const languageParser = {
+  [LanguageEnum.UNDEFINED]: undefined,
+  [LanguageEnum.C]: cppParser,
+  [LanguageEnum.CPP]: cppParser,
+  [LanguageEnum.PHP]: phpParser,
+  [LanguageEnum.JAVASCRIPT]: javascriptParser,
+  [LanguageEnum.JAVA]: javaParser,
+  [LanguageEnum.PYTHON]: pythonParser
+};
+
+const languageDirectiveType = {
+  [LanguageEnum.UNDEFINED]: undefined,
+  [LanguageEnum.C]: "PreprocDirective",
+  [LanguageEnum.CPP]: "PreprocDirective",
+  [LanguageEnum.PHP]: undefined,
+  [LanguageEnum.JAVASCRIPT]: "ImportDeclaration",
+  [LanguageEnum.JAVA]: "ImportDeclaration",
+  [LanguageEnum.PYTHON]: "ImportStatement"
+};
+
+function extractDirective(language: LanguageEnum, content: string) {
+  const parser = languageParser[language];
+  if (parser === undefined) {
+    throw new Error(`Language ${language} is not supported`);
+  }
+
+  const directiveNodeType = languageDirectiveType[language];
+  if (directiveNodeType === undefined) {
+    return "";
+  }
+
+  const tree = parser.parse(content);
+  return tree.topNode
+    .getChildren(directiveNodeType)
+    .map((b) => content.slice(b.from, b.to))
+    .filter((directive) => {
+      // C/C++ special case
+      // filter out any preproc directive that isn't being used to include a header file
+      if (
+        directiveNodeType === "PreprocDirective" &&
+        !directive.startsWith("#include")
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .join("\n");
+}
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -53,12 +107,10 @@ const LANGUAGE_TO_ENUM: Record<Language, LanguageEnum> = {
 };
 
 export default function TopBar({ bg, fg }: MenuProps) {
+  const navigate = useNavigate();
   const toast = useToast();
-  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
-  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
-  const green = useColorModeValue("green.500", "green.400", "green.300");
-  const red = useColorModeValue("red.500", "red.400", "red.300");
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const {
     currentQuestionNumber,
     fontSize,
@@ -66,12 +118,13 @@ export default function TopBar({ bg, fg }: MenuProps) {
     snapshotByQuestionNumber
   } = useAppSelector((state) => state.editor);
   const { accessToken } = useAppSelector((state) => state.session);
-  const navigate = useNavigate();
-
-  const { t } = useTranslation();
-
   const { deadlineUtc } = useAppSelector((state) => state.editor);
   const [time, setTime] = useState(deadlineUtc ? deadlineUtc - Date.now() : 0);
+
+  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
+  const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
+  const green = useColorModeValue("green.500", "green.400", "green.300");
+  const red = useColorModeValue("red.500", "red.400", "red.300");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -84,7 +137,6 @@ export default function TopBar({ bg, fg }: MenuProps) {
   useEffect(() => {
     const endTimer = setInterval(async () => {
       if (accessToken === null) return;
-
       await sessionSpoke.endExam({ accessToken });
       navigate("/sam-test");
     }, time);
@@ -110,11 +162,17 @@ export default function TopBar({ bg, fg }: MenuProps) {
       return;
     }
 
+    const solution = new Solution(
+      currentLanguage,
+      currentSnapshot.solutionByLanguage[currentLanguage]
+    );
+
     try {
       const submissionResult = await sessionSpoke.submitSolution({
         accessToken,
-        language: LANGUAGE_TO_ENUM[currentLanguage],
-        solution: currentSnapshot.solutionByLanguage[currentLanguage],
+        language: solution.language,
+        directives: solution.getDirective(),
+        solution: solution.content,
         scratchPad: currentSnapshot.scratchPad,
         questionNumber: currentQuestionNumber
       });
@@ -135,7 +193,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       const id = toast({
         position: "top-right",
         render: () => (
-          <FeedbackToast
+          <CodingResultToast
             bg={toastBg}
             fg={toastFg}
             green={green}
@@ -165,13 +223,15 @@ export default function TopBar({ bg, fg }: MenuProps) {
           await sessionSpoke.endExam({ accessToken });
           navigate("/fun-fact");
         } catch (err) {
-          // TODO(elianiva): proper logging
-          console.error(err);
+          if (err instanceof Error) {
+            loggerInstance.log(LogLevel.Error, err.message);
+          }
         }
       }
-    } catch (e) {
-      // TODO(elianiva): proper logging
-      console.error(e);
+    } catch (err) {
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   }
 
@@ -285,7 +345,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             px="4"
             colorScheme="blue"
             h="full"
-            onClick={() => handleSubmit()}
+            onClick={handleSubmit}
             data-tour="topbar-step-8"
           >
             {isSubmitted ? "Refactor" : "Submit"}

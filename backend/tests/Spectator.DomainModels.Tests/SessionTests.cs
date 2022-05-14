@@ -22,7 +22,21 @@ namespace Spectator.DomainModels.Tests {
 			return anonymousSession;
 		}
 
-		// TODO: CanChangeLocaleOfAnonymousSession
+		[Fact]
+		public void CanChangeLocaleOfAnonymousSession() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(1);
+			var anonymousSession = CanCreateAnonymousSession();
+			var localeSetEvent = new LocaleSetEvent(
+				SessionId: anonymousSession.Id,
+				Timestamp: timestamp,
+				Locale: Locale.EN
+			);
+			var resultingSession = anonymousSession.Apply(localeSetEvent);
+			resultingSession.Id.Should().Be(anonymousSession.Id);
+			resultingSession.CreatedAt.Should().Be(anonymousSession.CreatedAt);
+			resultingSession.UpdatedAt.Should().Be(timestamp);
+			resultingSession.Locale.Should().Be(Locale.EN);
+		}
 
 		[Fact]
 		public RegisteredSession CanCreateRegisteredSession() {
@@ -82,8 +96,50 @@ namespace Spectator.DomainModels.Tests {
 				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");
 		}
 
-		// TODO: CanChangeLocaleOfRegisteredSession
-		// TODO: CannotChangeLocaleUsingInvalidEvent
+		[Fact]
+		public void CanChangeLocaleOfRegisteredSession() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(2);
+			var registeredSession = CanCreateRegisteredSession();
+			var localeSetEvent = new LocaleSetEvent(
+				SessionId: registeredSession.Id,
+				Timestamp: timestamp,
+				Locale: Locale.EN
+			);
+			var resultingSession = registeredSession.Apply(localeSetEvent);
+
+			resultingSession.Id.Should().Be(registeredSession.Id);
+			resultingSession.CreatedAt.Should().Be(registeredSession.CreatedAt);
+			resultingSession.UpdatedAt.Should().Be(timestamp);
+			resultingSession.Locale.Should().Be(Locale.EN);
+			resultingSession.User.Should().NotBeNull();
+			resultingSession.BeforeExamSAM.Should().BeNull();
+			resultingSession.AfterExamSAM.Should().BeNull();
+			resultingSession.QuestionNumbers.Should().BeNull();
+			resultingSession.SubmissionByQuestionNumber.Should().BeNull();
+			resultingSession.ExamStartedAt.Should().BeNull();
+			resultingSession.ExamEndedAt.Should().BeNull();
+			resultingSession.ExamDeadline.Should().BeNull();
+
+			resultingSession.User.CreatedAt.Should().Be(registeredSession.User.CreatedAt);
+			resultingSession.User.UpdatedAt.Should().Be(registeredSession.User.UpdatedAt);
+			resultingSession.User.StudentNumber.Should().Be("1234567890");
+			resultingSession.User.YearsOfExperience.Should().Be(1);
+			resultingSession.User.HoursOfPractice.Should().Be(2);
+			resultingSession.User.FamiliarLanguages.Should().Be("C");
+		}
+
+		[Fact]
+		public void CannotChangeLocaleUsingInvalidEvent() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(2);
+			var registeredSession = CanCreateRegisteredSession();
+			var localeSetEvent = new LocaleSetEvent(
+				SessionId: Guid.NewGuid(),
+				Timestamp: timestamp,
+				Locale: Locale.EN
+			);
+			new Action(() => registeredSession.Apply(localeSetEvent)).Should().Throw<ArgumentException>()
+				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");
+		}
 
 		[Fact]
 		public RegisteredSession CanSubmitBeforeExamSAM() {
@@ -213,6 +269,34 @@ namespace Spectator.DomainModels.Tests {
 			new Action(() => sessionWithBeforeExamSAM.Apply(examStartedEvent)).Should().Throw<ArgumentException>()
 				.And.Message.Should().Be("Applied event has different SessionId (Parameter 'event')");
 		}
+
+		//[Fact]
+		//public void CanEndExam() {
+		//	var timestamp = DateTimeOffset.UtcNow.AddSeconds(4);
+		//	var sessionWithStartedExam = CanStartExam();
+		//	var examEndedEvent = new ExamEndedEvent(
+		//		SessionId: sessionWithStartedExam.Id,
+		//		Timestamp: timestamp
+		//	);
+		//	var resultingSession = sessionWithStartedExam.Apply(examEndedEvent);
+		//	resultingSession.Id.Should().Be(sessionWithStartedExam.Id);
+		//	resultingSession.CreatedAt.Should().Be(sessionWithStartedExam.CreatedAt);
+		//	resultingSession.UpdatedAt.Should().Be(timestamp);
+		//	resultingSession.Locale.Should().Be(Locale.ID);
+		//	resultingSession.User.Should().NotBeNull();
+		//	resultingSession.BeforeExamSAM.Should().NotBeNull();
+		//	resultingSession.AfterExamSAM.Should().BeNull();
+		//	resultingSession.QuestionNumbers.Should().NotBeNull();
+		//	resultingSession.SubmissionByQuestionNumber.Should().NotBeNull();
+		//	resultingSession.ExamStartedAt.Should().NotBeNull();
+		//	resultingSession.ExamEndedAt.Should().BeNull();
+		//	resultingSession.ExamDeadline.Should().NotBeNull();
+
+		//	resultingSession.QuestionNumbers!.Value.Should().ContainInOrder(1, 2, 3, 4, 5, 6);
+		//	resultingSession.SubmissionByQuestionNumber.Should().BeEmpty();
+		//	resultingSession.ExamStartedAt!.Value.Should().Be(timestamp);
+		//	resultingSession.ExamDeadline!.Value.Should().Be(timestamp.AddMinutes(71));
+		//}
 
 		// Wanna help? Install Visual Studio + Fine Code Coverage or Jetbrains Rider, then implement following test methods:
 

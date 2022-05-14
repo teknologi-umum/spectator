@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
-import type { UIEventHandler } from "react";
+import { useTranslation } from "react-i18next";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror, { keymap } from "@uiw/react-codemirror";
 import { defaultKeymap } from "@codemirror/commands";
-import { lineNumbers } from "@codemirror/gutter";
+import { lineNumbers } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
 import { java } from "@codemirror/lang-java";
@@ -13,7 +13,6 @@ import { useCodemirrorTheme, useColorModeValue } from "@/hooks";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setSolution } from "@/store/slices/editorSlice";
 import { useDebounce } from "@/hooks";
-import { useTranslation } from "react-i18next";
 
 const cLike = cpp();
 const LANGUAGES = {
@@ -36,7 +35,6 @@ export default function Editor({ bg }: EditorProps) {
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
 
   const [code, setCode] = useState("");
-
   const debouncedCode = useDebounce(code, 500);
 
   const { currentQuestionNumber, currentLanguage, snapshotByQuestionNumber } =
@@ -52,12 +50,14 @@ export default function Editor({ bg }: EditorProps) {
     [currentQuestionNumber, currentLanguage]
   );
 
-  const currentSolution =
-    currentQuestionNumber !== null
-      ? snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
-        currentLanguage
-      ]
-      : null;
+  const currentSolution = useMemo(() => {
+    if (currentQuestionNumber === null) {
+      return null;
+    }
+    
+    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
+    return currentSnapshot.solutionByLanguage[currentLanguage];
+  }, [currentQuestionNumber]);
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
@@ -69,10 +69,11 @@ export default function Editor({ bg }: EditorProps) {
       currentSolution !== ""
     ) {
       setCode(currentSolution);
-    } else {
-      setCode(boilerplate);
-      dispatch(setSolution(boilerplate));
+      return;
     }
+
+    setCode(boilerplate);
+    dispatch(setSolution(boilerplate));
   }, [currentQuestionNumber, currentLanguage]);
 
   useEffect(() => {
@@ -83,8 +84,19 @@ export default function Editor({ bg }: EditorProps) {
     setCode(value);
   }
 
+  function noop() {
+    return true;
+  }
+
   return (
-    <Box bg={bg} rounded="md" shadow="md" flex="1" h="full" data-tour="editor-step-1">
+    <Box
+      bg={bg}
+      rounded="md"
+      shadow="md"
+      flex="1"
+      h="full"
+      data-tour="editor-step-1"
+    >
       <Tabs h="full">
         <TabList borderColor={borderBg}>
           <Tab>Your Solution</Tab>
@@ -101,18 +113,12 @@ export default function Editor({ bg }: EditorProps) {
                   ...defaultKeymap,
                   {
                     key: "Ctrl-c",
-                    run: () => {
-                      /* noop */
-                      return true;
-                    },
+                    run: noop,
                     preventDefault: true
                   },
                   {
                     key: "Ctrl-v",
-                    run: () => {
-                      /* noop */
-                      return true;
-                    },
+                    run: noop,
                     preventDefault: true
                   }
                 ])

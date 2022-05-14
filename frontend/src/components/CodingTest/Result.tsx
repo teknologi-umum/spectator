@@ -15,6 +15,23 @@ import {
 } from "@chakra-ui/react";
 import { CheckmarkIcon, CrossIcon, WarningIcon } from "@/icons";
 
+interface OutputBoxProps {
+  expected: string;
+  actual: string;
+}
+function OutputBox({ expected, actual }: OutputBoxProps) {
+  return (
+    <Box>
+      <Text>
+        Expected: <Code>{expected}</Code>
+      </Text>
+      <Text>
+        Actual: <Code>{actual}</Code>
+      </Text>
+    </Box>
+  );
+}
+
 interface ResultProps {
   fg: string;
   fgDarker: string;
@@ -70,76 +87,74 @@ export default function Result({ fg, fgDarker }: ResultProps) {
     []
   );
 
+  function humanizeResultStatus(status: string) {
+    return status.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
+  }
+
   return (
     <Box overflowY="auto" p="4" h="full">
       <Accordion allowToggle allowMultiple>
         {currentSnapshot?.testResults &&
-          currentSnapshot.testResults.map((testResult, index) => {
-            // replace `PascalCase` with `Sentence Case`
-            const status = testResult.result
-              .oneofKind!.replace(/([A-Z]+)/g, " $1")
-              .replace(/([A-Z][a-z])/g, " $1");
+          currentSnapshot.testResults
+            .filter((testResult) => testResult.result.oneofKind !== undefined)
+            .map((testResult, index) => {
+              // the compiler isn't smart enough to know that we already
+              // filtered out `oneOfKind`s that are undefined so we still have to 
+              // do a non-null assertion
+              const status = testResult.result.oneofKind!;
 
-            const currentBadgeColour =
-              badgeColours[testResult.result.oneofKind!];
-            const currentResultIcon = resultIcons[testResult.result.oneofKind!];
+              const humanizedStatus = humanizeResultStatus(status);
+              const itemBadgeColour = badgeColours[status];
+              const itemResultIcon = resultIcons[status];
 
-            return (
-              <AccordionItem
-                key={index}
-                border="none"
-                background={resultBg}
-                mb="3"
-                rounded="sm"
-                _expanded={{ borderRadius: "sm" }}
-              >
-                <AccordionButton
-                  color={fg}
-                  _hover={{ borderRadius: "sm" }}
+              return (
+                <AccordionItem
+                  key={index}
+                  border="none"
+                  background={resultBg}
+                  mb="3"
                   rounded="sm"
+                  _expanded={{ borderRadius: "sm" }}
                 >
-                  <Flex gap="2" align="center" flex="1" textAlign="left">
-                    {currentResultIcon}
-                    <Text fontWeight="bold" color={fgDarker}>
-                      Test Result #{testResult.testNumber}
-                    </Text>
-                    <Badge colorScheme={currentBadgeColour}>{status}</Badge>
-                  </Flex>
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel pb={4} color={fgDarker}>
-                  {testResult.result.oneofKind === "passingTest" && (
-                    <Text>Passed!</Text>
-                  )}
-
-                  {testResult.result.oneofKind === "runtimeError" && (
-                    <Text>{testResult.result.runtimeError.stderr}</Text>
-                  )}
-
-                  {testResult.result.oneofKind === "compileError" && (
-                    <Text>{testResult.result.compileError.stderr}</Text>
-                  )}
-
-                  {testResult.result.oneofKind === "failingTest" && (
-                    <Box>
-                      <Text>
-                        Expected:{" "}
-                        <Code>
-                          {testResult.result.failingTest.expectedStdout}
-                        </Code>
+                  <AccordionButton
+                    color={fg}
+                    _hover={{ borderRadius: "sm" }}
+                    rounded="sm"
+                  >
+                    <Flex gap="2" align="center" flex="1" textAlign="left">
+                      {itemResultIcon}
+                      <Text fontWeight="bold" color={fgDarker}>
+                        Test Result #{testResult.testNumber}
                       </Text>
-                      <Text>
-                        Actual:{" "}
-                        <Code>
-                          {testResult.result.failingTest.actualStdout}
-                        </Code>
-                      </Text>
-                    </Box>
-                  )}
-                </AccordionPanel>
-              </AccordionItem>
-            );
-          })}
+                      <Badge colorScheme={itemBadgeColour}>
+                        {humanizedStatus}
+                      </Badge>
+                    </Flex>
+                    <AccordionIcon />
+                  </AccordionButton>
+                  <AccordionPanel pb={4} color={fgDarker}>
+                    {testResult.result.oneofKind === "passingTest" && (
+                      <Text>Passed!</Text>
+                    )}
+
+                    {testResult.result.oneofKind === "runtimeError" && (
+                      <Text>{testResult.result.runtimeError.stderr}</Text>
+                    )}
+
+                    {testResult.result.oneofKind === "compileError" && (
+                      <Text>{testResult.result.compileError.stderr}</Text>
+                    )}
+
+                    {testResult.result.oneofKind === "failingTest" && (
+                      <OutputBox
+                        expected={testResult.result.failingTest.expectedStdout}
+                        actual={testResult.result.failingTest.actualStdout}
+                      />
+                    )}
+                  </AccordionPanel>
+                </AccordionItem>
+              );
+            })}
       </Accordion>
     </Box>
   );

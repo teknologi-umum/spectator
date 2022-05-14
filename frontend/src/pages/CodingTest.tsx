@@ -1,23 +1,6 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
-import {
-  Editor,
-  TopBar,
-  Question,
-  ScratchPad,
-  SideBar
-} from "@/components/CodingTest";
-import {
-  keystrokeHandler,
-  mouseUpHandler,
-  mouseDownHandler,
-  mouseMoveHandler,
-  mouseScrollHandler,
-  windowResizeHandler,
-  uploadVideo
-} from "@/events";
-import { useColorModeValue } from "@/hooks";
 import {
   Box,
   Flex,
@@ -26,23 +9,37 @@ import {
   useEventListener,
   useToast
 } from "@chakra-ui/react";
-import { useAppSelector } from "@/store";
-import ToastBase from "@/components/ToastBase";
-import ToastOverlay from "@/components/ToastOverlay";
+import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
 import { codingTestTour } from "@/tours";
-import { useTour } from "@reactour/tour";
+import { Editor, Question, ScratchPad, SideBar } from "@/components/CodingTest";
+import ToastBase from "@/components/Toast/ToastBase";
+import ToastOverlay from "@/components/Toast/ToastOverlay";
+import { TopBar } from "@/components/TopBar";
+import {
+  keystrokeHandler,
+  mouseUpHandler,
+  mouseDownHandler,
+  mouseMoveHandler,
+  mouseScrollHandler,
+  windowResizeHandler
+} from "@/events";
+import { useColorModeValue, useVideoRecorder, RecordingStatus } from "@/hooks";
+import { useAppSelector } from "@/store";
 import { sessionSpoke } from "@/spoke";
-import { VideoIcon } from "@/icons";
+import { CrossIcon, VideoIcon } from "@/icons";
+import { loggerInstance } from "@/spoke/logger";
+import { LogLevel } from "@microsoft/signalr";
 
 function CodingTest() {
   const { isCollapsed } = useAppSelector((state) => state.sideBar);
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const { tourCompleted } = useAppSelector((state) => state.session);
   const { accessToken } = useAppSelector((state) => state.session);
-  const isTokenEmpty = useMemo(() => {
-    return accessToken === null || accessToken === undefined;
-  }, [accessToken]);
+  const isTokenEmpty = useMemo(
+    () => accessToken === null || accessToken === undefined,
+    [accessToken]
+  );
 
   const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");
@@ -53,11 +50,10 @@ function CodingTest() {
   const toastBg = useColorModeValue("white", "gray.600", "gray.700");
   const toastFg = useColorModeValue("gray.700", "gray.600", "gray.700");
 
-  const videoStream = useRef<MediaStream | null>();
-  const mediaRecorder = useRef<MediaRecorder | null>();
-
   const toast = useToast();
   const { setIsOpen } = useTour();
+
+  const recordingStatus = useVideoRecorder(accessToken);
 
   useEventListener(
     "mousedown",
@@ -84,7 +80,7 @@ function CodingTest() {
     windowResizeHandler(currentQuestionNumber, accessToken)
   );
 
-  // disable right click
+  // TODO(elianiva): uncomment this on production, disable right click
   // useEventListener("contextmenu", (e) => e.preventDefault());
 
   useEffect(() => {
@@ -103,92 +99,49 @@ function CodingTest() {
           accessToken: accessToken as string
         })
         .catch((err) => {
-          console.error(`Unable to resume the exam session. ${err}`);
+          loggerInstance.log(LogLevel.Error, err);
+
+          const id = toast({
+            position: "top-right",
+            render: () => (
+              <ToastBase
+                bg={toastBg}
+                fg={toastFg}
+                borderColor={red}
+                onClick={() => toast.close(id as ToastId)}
+              >
+                <Flex align="center" gap="2" color={red}>
+                  <CrossIcon width="1.25rem" height="1.25rem" /> Unable to
+                  resume the exam.
+                </Flex>
+              </ToastBase>
+            )
+          });
         });
     }
   }, []);
 
   useEffect(() => {
-    if (accessToken === null) {
-      return;
-    }
+    if (recordingStatus === RecordingStatus.UNKNOWN) return;
 
-    // We want to generate the StartedAt field here because we need it as a marker
-    // for the start of the recording.
-    // `MediaRecorder` splice the video stream into chunks, only the first chunk is a valid video
-    // so we need to mark this first chunk.
-    // A user could theoretically refresh the page and the recording would get restarted.
-    // If we don't have this marker, we wouldn't know which one is the first chunk for each recording session.
-    const startedAt = Date.now();
-
-    (async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          width: 640,
-          height: 320
-        }
-      });
-      videoStream.current = stream;
-
-      mediaRecorder.current = new MediaRecorder(stream, {
-        mimeType: "video/webm;codecs=vp9",
-        videoBitsPerSecond: 200_000 // 0.2Mbits / sec
-      });
-
-      mediaRecorder.current.onstart = () => {
-        const id = toast({
-          position: "top-right",
-          render: () => (
-            <ToastBase
-              bg={toastBg}
-              fg={toastFg}
-              borderColor={green}
-              onClick={() => toast.close(id as ToastId)}
-            >
-              <Flex align="center" gap="2" color={green}>
-                <VideoIcon width="1.25rem" height="1.25rem" /> Recording
-                started!
-              </Flex>
-            </ToastBase>
-          )
-        });
-      };
-      mediaRecorder.current.onstop = () => {
-        const id = toast({
-          position: "top-right",
-          render: () => (
-            <ToastBase
-              bg={toastBg}
-              fg={toastFg}
-              borderColor={red}
-              onClick={() => toast.close(id as ToastId)}
-            >
-              <Flex align="center" gap="2" color={red}>
-                <VideoIcon width="1.25rem" height="1.25rem" /> Recording
-                stopped!
-              </Flex>
-            </ToastBase>
-          )
-        });
-      };
-
-      mediaRecorder.current.start(1000); // send blob every second
-      mediaRecorder.current.ondataavailable = uploadVideo(
-        accessToken,
-        startedAt
-      );
-    })();
-
-    () => {
-      if (mediaRecorder.current) {
-        mediaRecorder.current.stop();
-
-        videoStream.current = null;
-        mediaRecorder.current = null;
-      }
-    };
-  }, []);
+    const accentColor = recordingStatus === RecordingStatus.STARTED ? green : red;
+    const id = toast({
+      position: "top-right",
+      render: () => (
+        <ToastBase
+          bg={toastBg}
+          fg={toastFg}
+          borderColor={accentColor}
+          onClick={() => toast.close(id as ToastId)}
+        >
+          <Flex align="center" gap="2" color={accentColor}>
+            <VideoIcon width="1.25rem" height="1.25rem" /> Recording{" "}
+            {recordingStatus}!
+          </Flex>
+        </ToastBase>
+      )
+    });
+  }, [recordingStatus]);
 
   return (
     <>

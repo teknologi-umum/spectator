@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { IndonesiaFlagIcon, UnitedKingdomFlagIcon } from "@/icons";
 import { Flex, MenuItem } from "@chakra-ui/react";
-import { MenuDropdown } from "@/components/CodingTest";
+import { MenuDropdown } from "@/components/TopBar";
 import { sessionSpoke } from "@/spoke";
 import { Locale } from "@/stub/enums";
 import { useAppSelector } from "@/store";

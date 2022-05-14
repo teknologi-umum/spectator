@@ -2,11 +2,11 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 
-import enTranslation from "./data/en/translations.json";
-import enQuestion from "./data/en/questions.json";
+import enTranslation from "@/i18n/en/translations.json";
+import enQuestion from "@/i18n/en/questions.json";
 
-import idTranslation from "./data/id/translations.json";
-import idQuestion from "./data/id/questions.json";
+import idTranslation from "@/i18n/id/translations.json";
+import idQuestion from "@/i18n/id/questions.json";
 
 i18n
   .use(LanguageDetector)
@@ -32,4 +32,5 @@ i18n
       escapeValue: false
     }
   });
+  
 export default i18n;
