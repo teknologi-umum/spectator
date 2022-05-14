@@ -45,16 +45,18 @@ std::vector<int> genVector(int n) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{
-        {.expected = {75, 67, 40, 33},
-         .got = calculateGrade({75, 67, 40, 33})}};
+    std::vector<TestCase> testCases{};
+    testCases[0].expected = {75, 67, 40, 33};
+    testCases[0].got = calculateGrade({75, 67, 40, 33});
 
     for (int i = 0; i < 8; i++) {
         int len = __randomNumber(4, 20);
         std::vector<int> input = genVector(len);
-        std::vector<int> expected = __workingAnswer(input);
-        std::vector<int> got = calculateGrade(input);
-        testCases.push_back({ .expected = expected, .got = got });
+
+        TestCase testResult{};
+        testResult.expected =  __workingAnswer(input);
+        testResult.got = calculateGrade(input);
+        testCases.push_back(testResult);
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {

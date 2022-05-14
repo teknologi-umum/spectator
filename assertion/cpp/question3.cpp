@@ -22,25 +22,28 @@ int __randomNumber(int min, int max) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{
-        {.expected = false,
-         .got = isSameNumber(100, 212)},
-        {.expected = true,
-         .got = isSameNumber(25, 25)}};
+    std::vector<TestCase> testCases{};
+    testCases[0].expected = false;
+    testCases[0].got = isSameNumber(100, 212);
+    testCases[1].expected = true;
+    testCases[1].got = isSameNumber(25, 25);
 
     for (int i = 0; i < 4; i++) {
         int a = __randomNumber(0, 9999);
         int b = __randomNumber(0, 9999);
-        int expected = a == b;
-        int got = isSameNumber(a, b);
-        testCases.push_back({ .expected = expected, .got = got });
+
+        TestCase testResult{};
+        testResult.expected = a == b;
+        testResult.got = isSameNumber(a, b);;
+        testCases.push_back(testResult);
     }
 
     for (int i = 0; i < 4; i++) {
         int a = __randomNumber(0, 9999);
-        int expected = true;
-        int got = isSameNumber(a, a);
-        testCases.push_back({ .expected = expected, .got = got });
+        TestCase testResult{};
+        testResult.expected = true;
+        testResult.got = isSameNumber(a, a);
+        testCases.push_back(testResult);
     }
 
     for (unsigned int i = 0; i < testCases.size(); i++) {
