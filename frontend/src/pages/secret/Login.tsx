@@ -1,5 +1,5 @@
 import React from "react";
-import ThemeButton from "@/components/CodingTest/TopBar/ThemeButton";
+import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useColorModeValue } from "@/hooks";
 import {
@@ -15,7 +15,6 @@ import { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoginSchema } from "@/schema/SecretPage";
 import { useNavigate } from "react-router-dom";
-import { LocaleButton } from "@/components/CodingTest";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/store";
 import { setSessionId } from "@/store/slices/sessionSlice";

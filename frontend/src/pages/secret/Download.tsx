@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ThemeButton from "@/components/CodingTest/TopBar/ThemeButton";
+import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import {
   Box,
   Button,
@@ -13,7 +13,6 @@ import {
   Thead,
   Tr
 } from "@chakra-ui/react";
-import { LocaleButton } from "@/components/CodingTest";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store";
