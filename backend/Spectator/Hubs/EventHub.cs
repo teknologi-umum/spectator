@@ -11,7 +11,7 @@ using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Input;
 
 namespace Spectator.Hubs {
-	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]
 	public class EventHub : Hub<IEventHub>, IEventHub {
 		private readonly PoormansAuthentication _poormansAuthentication;
 		private readonly InputServices _inputServices;
