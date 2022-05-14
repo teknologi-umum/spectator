@@ -6,7 +6,6 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Badge,
   Box,
   Button,
   Flex,
@@ -15,9 +14,11 @@ import {
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { LogLevel } from "@microsoft/signalr";
 import { loggerInstance } from "@/spoke/logger";
+import { useNavigate } from "react-router-dom";
+import { removeSessionId } from "@/store/slices/sessionSlice";
 
 interface FakeData {
   id: number;
@@ -80,6 +81,8 @@ export default function Download() {
   const [files, setFiles] = useState<GroupedFileEntry>({});
   const { sessionId } = useAppSelector((state) => state.session);
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const boxBg = useColorModeValue("white", "gray.700", "gray.800");
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
@@ -98,6 +101,13 @@ export default function Download() {
             body: JSON.stringify({ sessionId })
           }
         );
+
+        // token has expired
+        if (response.status === 401) {
+          dispatch(removeSessionId());
+          navigate("/secret/login");
+        }
+
         const data: FileEntry[] = await response.json();
         const dataGroupedByStudentNumber = data.reduce((acc, curr) => {
           if (acc[curr.studentNumber] === undefined) {

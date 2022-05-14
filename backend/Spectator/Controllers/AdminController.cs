@@ -56,8 +56,12 @@ namespace Spectator.Controllers {
 				return BadRequest(new { Message = "Invalid session id" });
 			}
 
-			var files = await _examReportServices.GetFilesAsync(sessionId, cancellationToken);
-			return Ok(files);
+			try {
+				var files = await _examReportServices.GetFilesAsync(sessionId, cancellationToken);
+				return Ok(files);
+			} catch (UnauthorizedAccessException) {
+				return Unauthorized();
+			}
 		}
 	}
 }
