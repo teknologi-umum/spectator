@@ -47,7 +47,7 @@ namespace Spectator.Controllers {
 			return Ok();
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route("/admin/files")]
 		public async Task<IActionResult> FilesAsync([FromBody] FilesRequest request , CancellationToken cancellationToken) {
 			if (request.SessionId == null) return BadRequest(new { Message = "SessionId is required" });
