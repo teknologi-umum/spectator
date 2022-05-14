@@ -2,28 +2,33 @@ import React, { useEffect, useMemo } from "react";
 import { useColorModeValue } from "@/hooks";
 import { Box } from "@chakra-ui/react";
 import type { FC } from "react";
-import ToastOverlay from "@/components/ToastOverlay";
+import ToastOverlay from "@/components/Toast/ToastOverlay";
 import { eventSpoke, sessionSpoke } from "@/spoke";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { Locale as DtoLocale } from "@/stub/enums";
 import { setAccessToken } from "@/store/slices/sessionSlice";
-import { HubConnectionState } from "@microsoft/signalr";
+import { HubConnectionState, LogLevel } from "@microsoft/signalr";
+import { loggerInstance } from "@/spoke/logger";
 
 interface LayoutProps {
   display?: "flex" | "block";
 }
 const Layout: FC<LayoutProps> = ({ display = "block", children }) => {
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
+
   const dispatch = useAppDispatch();
   const { locale } = useAppSelector((state) => state.locale);
   const { accessToken } = useAppSelector((state) => state.session);
   const { connectionState } = useAppSelector((state) => state.signalR);
-  const isTokenEmpty = useMemo(() => {
-    return accessToken === null || accessToken === undefined;
-  }, [accessToken]);
-  const isHubDisconnected = useMemo(() => {
-    return connectionState === HubConnectionState.Disconnected;
-  }, [connectionState]);
+
+  const isTokenEmpty = useMemo(
+    () => accessToken === null || accessToken === undefined,
+    [accessToken]
+  );
+  const isHubDisconnected = useMemo(
+    () => connectionState === HubConnectionState.Disconnected,
+    [connectionState]
+  );
 
   useEffect(() => {
     let dtoLocale: DtoLocale;
@@ -48,7 +53,12 @@ const Layout: FC<LayoutProps> = ({ display = "block", children }) => {
           dispatch(setAccessToken(sessionReply.accessToken));
         })
         .catch((err) => {
-          console.error(`Unable to start session. ${err}`);
+          if (err instanceof Error) {
+            loggerInstance.log(
+              LogLevel.Error,
+              `Unable to resume session: ${err.message}`
+            );
+          }
         });
     } else if (!isTokenEmpty && isHubDisconnected) {
       // TODO(elianiva): figure out how to reconnect before the exam started

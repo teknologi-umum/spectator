@@ -8,12 +8,7 @@ export default class SpokeBase {
   protected _accessToken: string;
 
   constructor(hubUrl: string) {
-    this._accessToken =
-      document.cookie
-        .split("; ")
-        .find((c) => c.startsWith("ACCESS_TOKEN="))
-        ?.split("=")
-        ?.at(1) ?? "";
+    this._accessToken = this._extractTokenFrom(document.cookie);
     this._hubConnection = new SignalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => this._accessToken,
@@ -39,6 +34,16 @@ export default class SpokeBase {
     this._hubConnection.onreconnected(() => {
       store.dispatch(setConnectionState(SignalR.HubConnectionState.Connected));
     });
+  }
+
+  private _extractTokenFrom(cookie: string) {
+    return (
+      cookie
+        .split("; ")
+        .find((c) => c.startsWith("ACCESS_TOKEN="))
+        ?.split("=")
+        ?.at(1) ?? ""
+    );
   }
 
   public onClose(cb: (err?: Error | undefined) => void) {

@@ -49,10 +49,6 @@ export function keystrokeHandler(
       try {
         await eventSpoke.keystroke(data);
       } catch (err) {
-        if (import.meta.env.DEV) {
-          console.error(err);
-        }
-
         if (err instanceof Error) {
           loggerInstance.log(LogLevel.Error, err.message);
         }
@@ -67,10 +63,6 @@ export function keystrokeHandler(
     try {
       await eventSpoke.keystroke(data);
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error(err);
-      }
-
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
       }

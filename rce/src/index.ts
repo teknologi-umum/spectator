@@ -31,10 +31,12 @@ server.bindAsync(HOST, grpc.ServerCredentials.createInsecure(), (err) => {
         console.error(err);
         return;
     }
+    console.log("Server started");
     server.start();
 });
 
 process.on("SIGINT", () => {
+    console.log("Server shutting down..");
     server.tryShutdown((err) => {
         if (err) {
             console.error(err);

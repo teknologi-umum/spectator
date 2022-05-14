@@ -12,6 +12,7 @@ format = "black ."
 [packages]
 influxdb-client = {extras = ["ciso"], version = "*"}
 python-dotenv = "*"
+numpy = "*"
 
 [dev-packages]
 black = "*"

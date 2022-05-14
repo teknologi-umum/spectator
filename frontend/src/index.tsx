@@ -16,7 +16,7 @@ import "@fontsource/mulish/600.css";
 import "@fontsource/mulish/700.css";
 import "@fontsource/mulish/800.css";
 import "@/index.css";
-import "./i18n";
+import "@/i18n";
 
 ReactDOM.render(
   <React.StrictMode>

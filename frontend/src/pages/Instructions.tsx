@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
-import { LocaleButton, ThemeButton } from "@/components/CodingTest";
+import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 

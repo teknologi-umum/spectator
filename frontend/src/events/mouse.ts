@@ -30,17 +30,12 @@ export function mouseUpHandler(
     try {
       await eventSpoke.mouseUp(data);
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error(err);
-      }
-
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
       }
     }
   };
 }
-
 
 export function mouseDownHandler(
   questionNumber: number | null,
@@ -61,10 +56,6 @@ export function mouseDownHandler(
     try {
       await eventSpoke.mouseDown(data);
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error(err);
-      }
-
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
       }
@@ -95,10 +86,6 @@ export function mouseMoveHandler(
     try {
       await eventSpoke.mouseMoved(data);
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error(err);
-      }
-
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
       }
@@ -113,7 +100,6 @@ export function mouseScrollHandler(
   return async (e: WheelEvent) => {
     if (questionNumber === null || accessToken === null) return;
 
-
     const data: MouseScrollInfo = {
       accessToken: accessToken,
       delta: e.deltaY,
@@ -126,7 +112,9 @@ export function mouseScrollHandler(
     try {
       await eventSpoke.mouseScrolled(data);
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error) {
+        await loggerInstance.log(LogLevel.Error, err.message);
+      }
     }
   };
 }

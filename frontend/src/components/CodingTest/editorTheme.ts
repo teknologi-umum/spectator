@@ -1,8 +1,12 @@
 import { EditorView } from "@codemirror/view";
-import { tags, HighlightStyle } from "@codemirror/highlight";
+import { tags } from "@lezer/highlight";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import theme from "@/styles/themes";
+import { Extension } from "@codemirror/state";
 
-export function getHighlightTheme(mode: "light" | "dimmed" | "dark") {
+export function getHighlightTheme(
+  mode: "light" | "dimmed" | "dark"
+): Extension {
   const c = {
     light: {
       blue: theme.colors.blue[700],
@@ -30,33 +34,46 @@ export function getHighlightTheme(mode: "light" | "dimmed" | "dark") {
     }
   };
 
-  return HighlightStyle.define([
-    { tag: tags.keyword, color: c[mode].red },
-    { tag: tags.number, color: c[mode].blue },
-    { tag: tags.bool, color: c[mode].blue },
-    { tag: tags.null, color: c[mode].blue },
-    { tag: tags.comment, color: c[mode].gray },
-    { tag: tags.function, color: theme.colors.pink[600] },
+  const style = HighlightStyle.define([
+    { tag: [tags.keyword, tags.operator], color: c[mode].red },
+    {
+      tag: [
+        tags.number,
+        tags.bool,
+        tags.null,
+        tags.propertyName,
+        tags.constant(tags.variableName)
+      ],
+      color: c[mode].blue
+    },
+    {
+      tag: [
+        tags.comment,
+        tags.punctuation,
+        tags.paren,
+        tags.brace,
+        tags.bracket
+      ],
+      color: c[mode].gray
+    },
+    { tag: tags.function(tags.variableName), color: theme.colors.pink[600] },
     { tag: tags.string, color: c[mode].lightBlue },
-    { tag: tags.propertyName, color: c[mode].blue },
-    { tag: tags.punctuation, color: c[mode].gray },
-    { tag: tags.paren, color: c[mode].gray },
-    { tag: tags.brace, color: c[mode].gray },
-    { tag: tags.bracket, color: c[mode].gray },
-    { tag: tags.operator, color: c[mode].red },
     { tag: tags.typeName, color: c[mode].orange },
-    { tag: tags.constant, color: c[mode].blue },
     { tag: tags.name, color: c[mode].normal }
-  ]).extension;
+  ]);
+
+  return syntaxHighlighting(style);
+}
+
+interface EditorThemeOption {
+  mode: "light" | "dimmed" | "dark";
+  fontSize: number;
 }
 
 export function getEditorTheme({
   mode,
   fontSize
-}: {
-  mode: "light" | "dimmed" | "dark";
-  fontSize: number;
-}) {
+}: EditorThemeOption): Extension {
   const c = {
     light: {
       gray: theme.colors.gray[600],
@@ -115,6 +132,7 @@ export function getEditorTheme({
       ".cm-line.cm-activeLine": {
         backgroundColor: c[mode].bgDarker
       }
-    }
+    },
+    { dark: mode === "dark" }
   );
 }
