@@ -18,7 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Roslynator.Analyzers" Version="4.0.2">
+    <PackageReference Update="RG.Annotations" Version="1.0.30" />
+    <PackageReference Update="RG.CodeAnalyzer" Version="1.0.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Roslynator.Analyzers" Version="4.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
