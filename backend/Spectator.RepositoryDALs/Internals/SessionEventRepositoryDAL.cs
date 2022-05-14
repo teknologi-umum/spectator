@@ -3,7 +3,7 @@ using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using Microsoft.Extensions.Options;
 using Spectator.DomainEvents.SessionDomain;
-using Spectator.DomainModels.ExamReportDoman;
+using Spectator.DomainModels.ExamReportDomain;
 using Spectator.Repositories;
 
 namespace Spectator.RepositoryDALs.Internals {

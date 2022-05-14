@@ -37,5 +37,27 @@ namespace Spectator.WorkerClient {
 			);
 			return reply.FilesList.ToImmutableList();
 		}
+
+		public async Task GenerateFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
+			await _workerClient.GenerateFilesAsync(
+				request: new Member {
+					RequestId = Guid.NewGuid().ToString(),
+					SessionId = sessionId.ToString()
+				},
+				cancellationToken: cancellationToken
+			);
+		}
+
+		public async Task<FunFactResponse> FunFactAsync(Guid sessionId, CancellationToken cancellationToken) {
+			var reply = await _workerClient.FunFactAsync(
+				request: new Member {
+					RequestId = Guid.NewGuid().ToString(),
+					SessionId = sessionId.ToString()
+				},
+				cancellationToken: cancellationToken
+			);
+
+			return reply;
+		}
 	}
 }

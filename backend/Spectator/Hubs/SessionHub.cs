@@ -232,6 +232,7 @@ namespace Spectator.Hubs {
 			// End exam
 			registeredSession = await _sessionServices.EndExamAsync(session.Id);
 
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
