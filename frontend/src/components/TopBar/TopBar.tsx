@@ -15,7 +15,6 @@ import {
   setSnapshot
 } from "@/store/slices/editorSlice";
 import type { EditorSnapshot } from "@/models/EditorSnapshot";
-import { Language as LanguageEnum } from "@/stub/enums";
 import { LANGUAGES, Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
@@ -26,6 +25,7 @@ import { sessionSpoke } from "@/spoke";
 import { Solution } from "@/models/Solution";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
+import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -41,15 +41,6 @@ interface MenuProps {
   bg: string;
   fg: string;
 }
-
-const LANGUAGE_TO_ENUM: Record<Language, LanguageEnum> = {
-  c: LanguageEnum.C,
-  cpp: LanguageEnum.CPP,
-  java: LanguageEnum.JAVA,
-  javascript: LanguageEnum.JAVASCRIPT,
-  php: LanguageEnum.PHP,
-  python: LanguageEnum.PYTHON
-};
 
 export default function TopBar({ bg, fg }: MenuProps) {
   const navigate = useNavigate();
@@ -98,6 +89,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
       ? currentSnapshot.submissionRefactored
       : false;
 
+  const [submitting, setSubmitting] = useState(false);
+
   async function handleSubmit() {
     if (
       currentQuestionNumber === null ||
@@ -107,20 +100,22 @@ export default function TopBar({ bg, fg }: MenuProps) {
       return;
     }
 
+    setSubmitting(true);
+
     const solution = new Solution(
       currentLanguage,
       currentSnapshot.solutionByLanguage[currentLanguage]
     );
 
     try {
-      // const submissionResult = await sessionSpoke.submitSolution({
-      //   accessToken,
-      //   language: solution.language,
-      //   directives: solution.getDirective(),
-      //   solution: solution.content,
-      //   scratchPad: currentSnapshot.scratchPad,
-      //   questionNumber: currentQuestionNumber
-      // });
+      const submissionResult = await sessionSpoke.submitSolution({
+        accessToken,
+        language: solution.language,
+        directives: solution.getDirective(),
+        solution: solution.content,
+        scratchPad: currentSnapshot.scratchPad,
+        questionNumber: currentQuestionNumber
+      });
 
       dispatch(
         setSnapshot({
@@ -128,14 +123,17 @@ export default function TopBar({ bg, fg }: MenuProps) {
           questionNumber: currentQuestionNumber,
           scratchPad: currentSnapshot.scratchPad,
           solutionByLanguage: currentSnapshot.solutionByLanguage,
-          // submissionAccepted: submissionResult.accepted,
-          submissionAccepted: true,
+          submissionAccepted: submissionResult.accepted,
           submissionRefactored: currentSnapshot.submissionSubmitted,
           submissionSubmitted: true,
-          // testResults: submissionResult.testResults
-          testResults: []
+          testResults: submissionResult.testResults
         })
       );
+
+      setSubmitting(false);
+
+      // move to the result tab
+      dispatch(setQuestionTabIndex("result"));
 
       const id = toast({
         position: "top-right",
@@ -145,8 +143,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             fg={toastFg}
             green={green}
             red={red}
-            // isCorrect={submissionResult.accepted}
-            isCorrect={true}
+            isCorrect={submissionResult.accepted}
             onClick={() => toast.close(id!)}
           />
         )
@@ -294,6 +291,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             colorScheme="blue"
             h="full"
             onClick={handleSubmit}
+            isLoading={submitting}
             data-tour="topbar-step-8"
           >
             {isSubmitted ? "Refactor" : "Submit"}

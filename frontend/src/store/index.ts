@@ -18,7 +18,7 @@ import {
   editorReducer,
   examResultReducer,
   themeReducer,
-  sideBarReducer,
+  codingTestReducer,
   signalRReducer
 } from "./slices";
 
@@ -39,7 +39,7 @@ const rootReducer = combineReducers({
   editor: editorReducer,
   examResult: examResultReducer,
   app: themeReducer,
-  sideBar: sideBarReducer,
+  codingTest: codingTestReducer,
   signalR: signalRReducer
 });
 
