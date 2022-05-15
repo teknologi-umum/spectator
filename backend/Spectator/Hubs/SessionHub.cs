@@ -15,7 +15,7 @@ using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
 
 namespace Spectator.Hubs {
-	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs)]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly PoormansAuthentication _poormansAuthentication;
 		private readonly SessionServices _sessionServices;

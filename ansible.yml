@@ -26,7 +26,7 @@
     # We check if there's a running docker container
     - name: check current running docker containers
       ansible.builtin.command:
-        cmd: docker-compose ps
+        cmd: docker compose ps
         chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
       when: directory_exists.stdout.find('docker-compose.yml') != -1
       register: docker_exists
@@ -34,7 +34,7 @@
     # See: https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html
     - name: stop current running docker container
       ansible.builtin.command:
-        cmd: docker-compose down
+        cmd: docker compose down
         chdir: /home/{{ lookup('env', 'SSH_USERNAME') }}/spectator
       when:
         - docker_exists is succeeded
@@ -59,11 +59,19 @@
     # Run the docker container
     - name: build the docker container
       ansible.builtin.command:
-        cmd: docker-compose up --no-start
+        cmd: docker compose up --no-start
         chdir: /home/{{ ssh_username }}/spectator
       changed_when: false
     - name: start the docker container
       ansible.builtin.command:
-        cmd: docker-compose start
+        cmd: docker compose start
         chdir: /home/{{ ssh_username }}/spectator
+      changed_when: false
+    - name: cleanup dangling images
+      ansible.builtin.command:
+        cmd: docker image prune -f
+      changed_when: false
+    - name: cleanup dangling build caches
+      ansible.builtin.command:
+        cmd: docker builder prune -f
       changed_when: false

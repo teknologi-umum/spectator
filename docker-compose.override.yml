@@ -8,11 +8,14 @@ services:
       - backend
       - frontend
     networks:
+      - default
       - host_pub
 
   backend:
     image: ${DOCKER_REGISTRY-}backend
-    build: ./backend/Spectator/
+    build:
+      context: .
+      dockerfile: ./backend/Spectator/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
@@ -35,6 +38,8 @@ services:
       - logger
       - influx
       - minio
+    networks:
+      - host_pub
 
   frontend:
     build: ./frontend/
@@ -44,12 +49,14 @@ services:
     depends_on:
       - backend
       - minio
+    networks:
+      - host_pub
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server /data --console-address ":9001"
     restart: always
-    hostname: minio_node
+    hostname: minio
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
@@ -57,10 +64,12 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
     volumes:
       - ./data/minio:/data
+    networks:
+      - host_pub
 
   influx:
     image: influxdb:2.1.1-alpine
-    hostname: influx_node
+    hostname: influx
     restart: always
     environment:
       DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
@@ -70,16 +79,20 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
     volumes:
       - ./data/influx:/var/lib/influxdb
+    networks:
+      - host_pub
 
   rce:
     image: ./rce/
     restart: on-failure:5
-    hostname: rce_node
+    hostname: rce
     environment:
       ENVIRONMENT: production
       PORT: 50051
       LOGGER_TOKEN: ${LOGGER_TOKEN}
       LOGGER_SERVER_ADDRESS: logger:3000
+    networks:
+      - host_pub
 
   worker:
     build: ./worker/
@@ -100,6 +113,8 @@ services:
       - logger
       - influx
       - minio
+    networks:
+      - host_pub
 
   logger:
     build: ./logger/
@@ -113,6 +128,8 @@ services:
       ACCESS_TOKEN: ${LOGGER_TOKEN}
     depends_on:
       - influx
+    networks:
+      - host_pub
 
 networks:
   host_pub:

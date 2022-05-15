@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RG.ProtobufConverters.Json;
 using Spectator.DomainServices;
-using Spectator.DomainServices.ExamReportDomain;
 using Spectator.Hubs;
 using Spectator.JwtAuthentication;
 using Spectator.LoggerClient;
@@ -36,7 +35,6 @@ builder.Services.Setup(services => {
 	services.Configure<PistonOptions>(builder.Configuration.GetSection("PistonOptions"));
 	services.Configure<LoggerOptions>(builder.Configuration.GetSection("LoggerOptions"));
 	services.Configure<WorkerOptions>(builder.Configuration.GetSection("WorkerOptions"));
-	services.Configure<ExamReportOptions>(builder.Configuration.GetSection("ExamReportOptions"));
 
 	// Add application layers 
 	services.AddHttpClient();
@@ -55,7 +53,6 @@ builder.Services.Setup(services => {
 	services.AddEndpointsApiExplorer();
 	services.AddSwaggerGen(options => {
 		options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Spectator SignalR API v1", Version = "v1" });
-		options.DocumentFilter<SignalRSwaggerGen.SignalRSwaggerGen>(new List<Assembly> { typeof(SessionHub).Assembly });
 	});
 
 	// Add SignalR

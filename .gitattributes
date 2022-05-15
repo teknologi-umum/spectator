@@ -1,0 +1,20 @@
+* text=auto
+* text eol=lf
+
+*.cs        diff=csharp
+
+# Visual Studio
+*.sln       text eol=crlf
+*.csproj    text eol=crlf
+
+# Web
+*.css       text
+*.htm       text diff=html
+*.html      text diff=html
+*.js        text
+*.cjs       text
+*.ts        text
+*.tsx       text
+*.json      text
+*.xml       text
+*.xhtml     text diff=html
