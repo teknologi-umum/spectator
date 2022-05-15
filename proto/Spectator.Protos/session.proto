@@ -65,8 +65,14 @@ message Exam {
 }
 
 message ExamResult {
+	message FunFact {
+		int64 words_per_minute = 1;
+		double deletion_rate = 2;
+		int64 submission_attempts = 3;
+	}
 	int64 duration = 1;
 	repeated int32 answered_question_numbers = 2;
+	FunFact fun_fact = 3;
 }
 
 message SubmissionRequest {

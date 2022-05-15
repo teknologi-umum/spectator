@@ -7,27 +7,32 @@ using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using Spectator.DomainModels.SessionDomain;
 using Spectator.DomainModels.SubmissionDomain;
+using Spectator.DomainServices.ExamResultDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
 using Spectator.PoormansAuth;
 using Spectator.Primitives;
 using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
+using Spectator.WorkerClient;
 
 namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly PoormansAuthentication _poormansAuthentication;
 		private readonly SessionServices _sessionServices;
+		private readonly ExamResultServices _examResultServices;
 		private readonly IServiceProvider _serviceProvider;
 
 		public SessionHub(
 			PoormansAuthentication poormansAuthentication,
 			SessionServices sessionServices,
+			ExamResultServices examResultServices,
 			IServiceProvider serviceProvider
 		) {
 			_poormansAuthentication = poormansAuthentication;
 			_sessionServices = sessionServices;
+			_examResultServices = examResultServices;
 			_serviceProvider = serviceProvider;
 		}
 
@@ -232,6 +237,9 @@ namespace Spectator.Hubs {
 			// End exam
 			registeredSession = await _sessionServices.EndExamAsync(session.Id);
 
+			// retrieve funfact from worker
+			var funFact = await _examResultServices.GenerateFunfactAsync(session.Id, Context.ConnectionAborted);
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
@@ -239,6 +247,11 @@ namespace Spectator.Hubs {
 					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
+				},
+				FunFact = new ExamResult.Types.FunFact {
+					DeletionRate = funFact.DeletionRate,
+					WordsPerMinute = funFact.WordsPerMinute,
+					SubmissionAttempts = funFact.SubmissionAttempts,
 				}
 			};
 		}
@@ -257,6 +270,9 @@ namespace Spectator.Hubs {
 			// Mark deadline passed
 			registeredSession = await _sessionServices.PassDeadlineAsync(session.Id);
 
+			// retrieve funfact from worker
+			var funFact = await _examResultServices.GenerateFunfactAsync(session.Id, Context.ConnectionAborted);
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
@@ -264,6 +280,11 @@ namespace Spectator.Hubs {
 					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
+				},
+				FunFact = new ExamResult.Types.FunFact {
+					DeletionRate = funFact.DeletionRate,
+					WordsPerMinute = funFact.WordsPerMinute,
+					SubmissionAttempts = funFact.SubmissionAttempts,
 				}
 			};
 		}
@@ -282,6 +303,9 @@ namespace Spectator.Hubs {
 			// Forfeit exam
 			registeredSession = await _sessionServices.ForfeitExamAsync(session.Id);
 
+			// retrieve funfact from worker
+			var funFact = await _examResultServices.GenerateFunfactAsync(session.Id, Context.ConnectionAborted);
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
@@ -289,6 +313,11 @@ namespace Spectator.Hubs {
 					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
+				},
+				FunFact = new ExamResult.Types.FunFact {
+					DeletionRate = funFact.DeletionRate,
+					WordsPerMinute = funFact.WordsPerMinute,
+					SubmissionAttempts = funFact.SubmissionAttempts,
 				}
 			};
 		}
