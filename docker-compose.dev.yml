@@ -1,13 +1,14 @@
 services:
   caddy:
     image: caddy:2.4.6-alpine
-    restart: always
+    restart: on-failure:10
     volumes:
       - ./data/caddy/Caddyfile.dev:/etc/caddy/Caddyfile
     depends_on:
       - backend
       - frontend
     networks:
+      - default
       - host_pub
 
   backend:
@@ -32,7 +33,8 @@ services:
       - logger
       - influx
       - minio
-
+    networks:
+      - host_pub
 
   frontend:
     build: ./frontend/
@@ -40,11 +42,16 @@ services:
     depends_on:
       - backend
       - minio
+    networks:
+      - host_pub
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server /data --console-address ":9001"
-    restart: always
+    restart: on-failure:10
+    ports:
+      - 29483:9001
+      - 29482:9000
     environment:
       MINIO_ROOT_USER: teknum
       MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
@@ -52,10 +59,12 @@ services:
       MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
     volumes:
       - ./data/minio:/data
+    networks:
+      - host_pub
 
   influx:
     image: influxdb:2.1.1-alpine
-    restart: always
+    restart: on-failure:10
     environment:
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
       DOCKER_INFLUXDB_INIT_PASSWORD: ESHVeXGynXR73942AmAkCNseenwcQVqKu
@@ -64,18 +73,25 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
     volumes:
       - ./data/influx:/var/lib/influxdb
+    networks:
+      - host_pub
 
   rce:
     build: ./rce/
     restart: on-failure:5
-    hostname: rce_node
+    ports:
+      - 47727:50051
     environment:
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
       LOGGER_SERVER_ADDRESS: logger:3000
+    networks:
+      - host_pub
 
   worker:
     build: ./worker/
-    restart: always
+    restart: on-failure:10
+    ports:
+      - 50909:3000
     environment:
       ENVIRONMENT: production
       PORT: 3000
@@ -92,6 +108,8 @@ services:
       - logger
       - influx
       - minio
+    networks:
+      - host_pub
 
   logger:
     build: ./logger/
@@ -105,9 +123,9 @@ services:
       ACCESS_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
     depends_on:
       - influx
-
+    networks:
+      - host_pub
 
 networks:
   host_pub:
     driver: "bridge"
-
