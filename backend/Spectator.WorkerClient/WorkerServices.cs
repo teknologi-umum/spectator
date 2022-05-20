@@ -38,26 +38,24 @@ namespace Spectator.WorkerClient {
 			return reply.FilesList.ToImmutableList();
 		}
 
-		public async Task GenerateFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
-			await _workerClient.GenerateFilesAsync(
+		public Task GenerateFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
+			return _workerClient.GenerateFilesAsync(
 				request: new Member {
 					RequestId = Guid.NewGuid().ToString(),
 					SessionId = sessionId.ToString()
 				},
 				cancellationToken: cancellationToken
-			);
+			).ResponseAsync;
 		}
 
-		public async Task<FunFactResponse> FunFactAsync(Guid sessionId, CancellationToken cancellationToken) {
-			var reply = await _workerClient.FunFactAsync(
+		public Task<FunFactResponse> FunFactAsync(Guid sessionId, CancellationToken cancellationToken) {
+			return _workerClient.FunFactAsync(
 				request: new Member {
 					RequestId = Guid.NewGuid().ToString(),
 					SessionId = sessionId.ToString()
 				},
 				cancellationToken: cancellationToken
-			);
-
-			return reply;
+			).ResponseAsync;
 		}
 	}
 }

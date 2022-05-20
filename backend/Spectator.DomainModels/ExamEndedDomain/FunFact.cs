@@ -1,8 +1,8 @@
 namespace Spectator.DomainModels.ExamEndedDomain {
-	public class Funfact {
-		public long WordsPerMinute { get; init; }
-		public double DeletionRate { get; init; }
-		public long SubmissionAttempts { get; init; }
+	public record Funfact {
+		public long WordsPerMinute { get; }
+		public double DeletionRate { get; }
+		public long SubmissionAttempts { get; }
 
 		public Funfact(long wordsPerMinute, double deletionRate, long submissionAttempts) {
 			WordsPerMinute = wordsPerMinute;

@@ -20,8 +20,8 @@ namespace Spectator.DomainServices.ExamResultDomain {
 			await _workerServices.GenerateFilesAsync(sessionID, cancellationToken);
 
 			return new Funfact(
-				wordsPerMinute: funfact.WordsPerMinute, 
-				deletionRate: funfact.DeletionRate, 
+				wordsPerMinute: funfact.WordsPerMinute,
+				deletionRate: funfact.DeletionRate,
 				submissionAttempts: funfact.SubmissionAttempts
 			);
 		}
