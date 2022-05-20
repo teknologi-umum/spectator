@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { ExamResult } from "@/models/ExamResult";
+import type { ExamResult } from "@/stub/session";
 
-interface State {
+export interface ExamResultState {
   examResult: ExamResult | null;
 }
 
-const initialState: State = {
+const initialState: ExamResultState = {
   examResult: null
 };
 
