@@ -31,6 +31,7 @@ import { parser as pythonParser } from "@lezer/python";
 import { Solution } from "@/models/Solution";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
+import { setExamResult } from "@/store/slices/examResultSlice";
 
 const languageParser = {
   [LanguageEnum.UNDEFINED]: undefined,
@@ -137,7 +138,9 @@ export default function TopBar({ bg, fg }: MenuProps) {
   useEffect(() => {
     const endTimer = setInterval(async () => {
       if (accessToken === null) return;
-      await sessionSpoke.endExam({ accessToken });
+
+      const result = await sessionSpoke.passDeadline({ accessToken });
+      dispatch(setExamResult(result));
       navigate("/sam-test");
     }, time);
 
@@ -220,7 +223,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
         // automatically end the exam when all of their submissions have been accepted
         // and this is the last submission that was accepted
         try {
-          await sessionSpoke.endExam({ accessToken });
+          const result = await sessionSpoke.endExam({ accessToken });
+          dispatch(setExamResult(result));
           navigate("/fun-fact");
         } catch (err) {
           if (err instanceof Error) {

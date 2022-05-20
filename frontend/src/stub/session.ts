@@ -158,6 +158,27 @@ export interface ExamResult {
      * @generated from protobuf field: repeated int32 answered_question_numbers = 2;
      */
     answeredQuestionNumbers: number[];
+    /**
+     * @generated from protobuf field: session.ExamResult.FunFact fun_fact = 3;
+     */
+    funFact?: ExamResult_FunFact;
+}
+/**
+ * @generated from protobuf message session.ExamResult.FunFact
+ */
+export interface ExamResult_FunFact {
+    /**
+     * @generated from protobuf field: int64 words_per_minute = 1;
+     */
+    wordsPerMinute: bigint;
+    /**
+     * @generated from protobuf field: double deletion_rate = 2;
+     */
+    deletionRate: number;
+    /**
+     * @generated from protobuf field: int64 submission_attempts = 3;
+     */
+    submissionAttempts: bigint;
 }
 /**
  * @generated from protobuf message session.SubmissionRequest
@@ -784,7 +805,8 @@ class ExamResult$Type extends MessageType<ExamResult> {
     constructor() {
         super("session.ExamResult", [
             { no: 1, name: "duration", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
-            { no: 2, name: "answered_question_numbers", kind: "scalar", repeat: 1 /*RepeatType.PACKED*/, T: 5 /*ScalarType.INT32*/ }
+            { no: 2, name: "answered_question_numbers", kind: "scalar", repeat: 1 /*RepeatType.PACKED*/, T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "fun_fact", kind: "message", T: () => ExamResult_FunFact }
         ]);
     }
     create(value?: PartialMessage<ExamResult>): ExamResult {
@@ -809,6 +831,9 @@ class ExamResult$Type extends MessageType<ExamResult> {
                     else
                         message.answeredQuestionNumbers.push(reader.int32());
                     break;
+                case /* session.ExamResult.FunFact fun_fact */ 3:
+                    message.funFact = ExamResult_FunFact.internalBinaryRead(reader, reader.uint32(), options, message.funFact);
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -831,6 +856,9 @@ class ExamResult$Type extends MessageType<ExamResult> {
                 writer.int32(message.answeredQuestionNumbers[i]);
             writer.join();
         }
+        /* session.ExamResult.FunFact fun_fact = 3; */
+        if (message.funFact)
+            ExamResult_FunFact.internalBinaryWrite(message.funFact, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -841,6 +869,67 @@ class ExamResult$Type extends MessageType<ExamResult> {
  * @generated MessageType for protobuf message session.ExamResult
  */
 export const ExamResult = new ExamResult$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ExamResult_FunFact$Type extends MessageType<ExamResult_FunFact> {
+    constructor() {
+        super("session.ExamResult.FunFact", [
+            { no: 1, name: "words_per_minute", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 2, name: "deletion_rate", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 3, name: "submission_attempts", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ExamResult_FunFact>): ExamResult_FunFact {
+        const message = { wordsPerMinute: 0n, deletionRate: 0, submissionAttempts: 0n };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<ExamResult_FunFact>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ExamResult_FunFact): ExamResult_FunFact {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int64 words_per_minute */ 1:
+                    message.wordsPerMinute = reader.int64().toBigInt();
+                    break;
+                case /* double deletion_rate */ 2:
+                    message.deletionRate = reader.double();
+                    break;
+                case /* int64 submission_attempts */ 3:
+                    message.submissionAttempts = reader.int64().toBigInt();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ExamResult_FunFact, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int64 words_per_minute = 1; */
+        if (message.wordsPerMinute !== 0n)
+            writer.tag(1, WireType.Varint).int64(message.wordsPerMinute);
+        /* double deletion_rate = 2; */
+        if (message.deletionRate !== 0)
+            writer.tag(2, WireType.Bit64).double(message.deletionRate);
+        /* int64 submission_attempts = 3; */
+        if (message.submissionAttempts !== 0n)
+            writer.tag(3, WireType.Varint).int64(message.submissionAttempts);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.ExamResult.FunFact
+ */
+export const ExamResult_FunFact = new ExamResult_FunFact$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class SubmissionRequest$Type extends MessageType<SubmissionRequest> {
     constructor() {
