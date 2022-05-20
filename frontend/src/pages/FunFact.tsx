@@ -54,7 +54,7 @@ function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
 }
 
 export default function FunFact() {
-  const { examResult } = useAppSelector((state) => state.session);
+  const { examResult } = useAppSelector((state) => state.examResult);
   const { t } = useTranslation();
 
   const gray = useColorModeValue("gray.500", "gray.800", "gray.900");
