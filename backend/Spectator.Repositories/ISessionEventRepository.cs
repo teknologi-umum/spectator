@@ -1,5 +1,5 @@
 ﻿using Spectator.DomainEvents.SessionDomain;
-using Spectator.DomainModels.ExamReportDoman;
+using Spectator.DomainModels.ExamReportDomain;
 
 namespace Spectator.Repositories {
 	public interface ISessionEventRepository {
