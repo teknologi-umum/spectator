@@ -115,7 +115,7 @@ function SAMTest() {
 
   return (
     <>
-      <Layout>
+      <Layout display="flex">
         <Flex gap={2} position="fixed" left={4} top={4}>
           <ThemeButton
             bg={bg}
@@ -132,6 +132,7 @@ function SAMTest() {
           rounded="md"
           shadow="lg"
           maxW="1300"
+          height="full"
           mx="auto"
           bg={bg}
         >

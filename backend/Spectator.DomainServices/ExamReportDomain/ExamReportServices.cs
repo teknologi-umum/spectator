@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Spectator.DomainEvents.ExamReportDomain;
-using Spectator.DomainModels.ExamReportDoman;
+using Spectator.DomainModels.ExamReportDomain;
 using Spectator.DomainServices.MemoryCache;
 using Spectator.Repositories;
 using Spectator.WorkerClient;
@@ -33,14 +33,9 @@ namespace Spectator.DomainServices.ExamReportDomain {
 			_workerServices = workerServices;
 		}
 
-		public AdministratorSession Login(string username, string password) {
-			if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) {
-				throw new ArgumentNullException("username and/or password should not be empty");
-			}
-
-			if (username != _examReportOptions.Username || password != _examReportOptions.Password) {
-				throw new AuthenticationException("username and/or password do not match");
-			}
+		public AdministratorSession Login(string password) {
+			if (string.IsNullOrEmpty(password)) throw new ArgumentNullException("password should not be empty");
+			if (password != _examReportOptions.Password) throw new AuthenticationException("password do not match");
 
 			var sessionId = Guid.NewGuid();
 

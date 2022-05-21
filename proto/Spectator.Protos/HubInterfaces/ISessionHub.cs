@@ -13,6 +13,7 @@ namespace Spectator.Protos.HubInterfaces {
 		Task<ExamResult> PassDeadlineAsync(EmptyRequest request);
 		Task<ExamResult> ForfeitExamAsync(EmptyRequest request);
 		Task<SubmissionResult> SubmitSolutionAsync(SubmissionRequest request);
+		Task<SubmissionResult> TestSolutionAsync(SubmissionRequest request);
 		Task SubmitAfterExamSAM(SubmitSAMRequest request);
 	}
 }

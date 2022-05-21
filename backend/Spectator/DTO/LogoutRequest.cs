@@ -1,7 +1,5 @@
-﻿using System;
-
-namespace Spectator.DTO {
+﻿namespace Spectator.DTO {
 	public class LogoutRequest {
-		public string? JWT { get; set; }
+		public string? SessionId { get; set; }
 	}
 }

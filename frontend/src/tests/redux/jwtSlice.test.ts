@@ -6,6 +6,7 @@ const FAKE_JWT =
 
 const initialState = {
   accessToken: null,
+  sessionId: null,
   firstSAMSubmitted: false,
   secondSAMSubmitted: false,
   tourCompleted: {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -7,27 +7,32 @@ using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using Spectator.DomainModels.SessionDomain;
 using Spectator.DomainModels.SubmissionDomain;
+using Spectator.DomainServices.ExamResultDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.JwtAuthentication;
 using Spectator.PoormansAuth;
 using Spectator.Primitives;
 using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
+using Spectator.WorkerClient;
 
 namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]
 	public class SessionHub : Hub<ISessionHub>, ISessionHub {
 		private readonly PoormansAuthentication _poormansAuthentication;
 		private readonly SessionServices _sessionServices;
+		private readonly ExamResultServices _examResultServices;
 		private readonly IServiceProvider _serviceProvider;
 
 		public SessionHub(
 			PoormansAuthentication poormansAuthentication,
 			SessionServices sessionServices,
+			ExamResultServices examResultServices,
 			IServiceProvider serviceProvider
 		) {
 			_poormansAuthentication = poormansAuthentication;
 			_sessionServices = sessionServices;
+			_examResultServices = examResultServices;
 			_serviceProvider = serviceProvider;
 		}
 
@@ -218,6 +223,63 @@ namespace Spectator.Hubs {
 			};
 		}
 
+		public async Task<SubmissionResult> TestSolutionAsync(SubmissionRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamStartedAt is null) throw new UnauthorizedAccessException("Exam not yet started");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam already ended");
+			if (registeredSession.ExamDeadline is null) throw new InvalidProgramException("Exam deadline not set");
+			if (registeredSession.ExamDeadline.Value < DateTimeOffset.UtcNow) throw new UnauthorizedAccessException("Exam deadline exceeded");
+
+			// Test solution
+			var submission = await _sessionServices.TestSolutionAsync(
+				sessionId: session.Id,
+				questionNumber: request.QuestionNumber,
+				language: (Language)request.Language,
+				directives: request.Directives,
+				solution: request.Solution,
+				scratchPad: request.ScratchPad,
+				cancellationToken: Context.ConnectionAborted
+			);
+
+			// Map results
+			return new SubmissionResult {
+				Accepted = submission.Accepted,
+				TestResults = {
+					from testResult in submission.TestResults
+					select testResult switch {
+						PassingTestResult passing => new TestResult {
+							TestNumber = passing.TestNumber,
+							PassingTest = new TestResult.Types.PassingTest()
+						},
+						FailingTestResult failing => new TestResult {
+							TestNumber = failing.TestNumber,
+							FailingTest = new TestResult.Types.FailingTest {
+								ExpectedStdout = failing.ExpectedStdout,
+								ActualStdout = failing.ActualStdout
+							}
+						},
+						CompileErrorResult compileError => new TestResult {
+							TestNumber = compileError.TestNumber,
+							CompileError = new TestResult.Types.CompileError {
+								Stderr = compileError.Stderr
+							}
+						},
+						RuntimeErrorResult runtimeError => new TestResult {
+							TestNumber = runtimeError.TestNumber,
+							RuntimeError = new TestResult.Types.RuntimeError {
+								Stderr = runtimeError.Stderr
+							}
+						},
+						_ => throw new InvalidProgramException("Unhandled TestResult type")
+					}
+				}
+			};
+		}
+
 		public async Task<ExamResult> EndExamAsync(EmptyRequest request) {
 			// Authenticate
 			var session = _poormansAuthentication.Authenticate(request.AccessToken);
@@ -232,6 +294,9 @@ namespace Spectator.Hubs {
 			// End exam
 			registeredSession = await _sessionServices.EndExamAsync(session.Id);
 
+			// retrieve funfact from worker
+			var funFact = await _examResultServices.GenerateFunfactAsync(session.Id, Context.ConnectionAborted);
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
@@ -239,6 +304,11 @@ namespace Spectator.Hubs {
 					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
+				},
+				FunFact = new ExamResult.Types.FunFact {
+					DeletionRate = funFact.DeletionRate,
+					WordsPerMinute = funFact.WordsPerMinute,
+					SubmissionAttempts = funFact.SubmissionAttempts,
 				}
 			};
 		}
@@ -257,6 +327,9 @@ namespace Spectator.Hubs {
 			// Mark deadline passed
 			registeredSession = await _sessionServices.PassDeadlineAsync(session.Id);
 
+			// retrieve funfact from worker
+			var funFact = await _examResultServices.GenerateFunfactAsync(session.Id, Context.ConnectionAborted);
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
@@ -264,6 +337,11 @@ namespace Spectator.Hubs {
 					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
+				},
+				FunFact = new ExamResult.Types.FunFact {
+					DeletionRate = funFact.DeletionRate,
+					WordsPerMinute = funFact.WordsPerMinute,
+					SubmissionAttempts = funFact.SubmissionAttempts,
 				}
 			};
 		}
@@ -282,6 +360,9 @@ namespace Spectator.Hubs {
 			// Forfeit exam
 			registeredSession = await _sessionServices.ForfeitExamAsync(session.Id);
 
+			// retrieve funfact from worker
+			var funFact = await _examResultServices.GenerateFunfactAsync(session.Id, Context.ConnectionAborted);
+
 			// Map results
 			return new ExamResult {
 				Duration = registeredSession.ExamEndedAt!.Value.ToUnixTimeMilliseconds() - registeredSession.ExamStartedAt!.Value.ToUnixTimeMilliseconds(),
@@ -289,6 +370,11 @@ namespace Spectator.Hubs {
 					from kvp in registeredSession.SubmissionByQuestionNumber
 					where kvp.Value.Accepted
 					select kvp.Key
+				},
+				FunFact = new ExamResult.Types.FunFact {
+					DeletionRate = funFact.DeletionRate,
+					WordsPerMinute = funFact.WordsPerMinute,
+					SubmissionAttempts = funFact.SubmissionAttempts,
 				}
 			};
 		}

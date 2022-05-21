@@ -1,9 +1,6 @@
 ﻿using System;
 
-namespace Spectator.DomainModels.ExamReportDoman {
-	// I'm going to create a POCO because to be honest,
-	// I don't know what I'm doing. This is all written
-	// as I think it's probably right.
+namespace Spectator.DomainModels.ExamReportDomain {
 	public class ReportFile {
 		public Guid SessionId { get; private init; }
 		public string StudentNumber { get; private init; }

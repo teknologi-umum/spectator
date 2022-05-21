@@ -48,6 +48,11 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("SubmitSolutionAsync", request);
   }
 
+  public async testSolution(request: SubmissionRequest): Promise<SubmissionResult> {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("TestSolutionAsync", request);
+  }
+
   public async endExam(request: EmptyRequest): Promise<ExamResult> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("EndExamAsync", request);

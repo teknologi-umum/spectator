@@ -6,3 +6,4 @@ export { default as examResultReducer } from "./examResultSlice";
 export { default as themeReducer } from "./themeSlice";
 export { default as codingTestReducer } from "./codingTestSlice";
 export { default as signalRReducer } from "./signalRSlice";
+export { default as loginReducer } from "./loginSlice";
