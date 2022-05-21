@@ -4,6 +4,7 @@ using Spectator.DomainServices.PistonDomain;
 using Spectator.DomainServices.QuestionDomain;
 using Spectator.DomainServices.SessionDomain;
 using Spectator.DomainServices.ExamReportDomain;
+using Spectator.DomainServices.ExamResultDomain;
 
 namespace Spectator.DomainServices {
 	public static class ServiceCollectionExtensions {
@@ -13,6 +14,7 @@ namespace Spectator.DomainServices {
 			services.AddTransient<InputServices>();
 			services.AddTransient<SubmissionServices>();
 			services.AddTransient<ExamReportServices>();
+			services.AddTransient<ExamResultServices>();
 			return services;
 		}
 	}
