@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Spectator.DomainEvents.ExamReportDomain;
-using Spectator.DomainModels.ExamReportDoman;
+using Spectator.DomainModels.ExamReportDomain;
 using Spectator.DomainServices.MemoryCache;
 using Spectator.Repositories;
 using Spectator.WorkerClient;
