@@ -74,7 +74,7 @@ export default class SpokeBase {
       console.log("SignalR connected.");
     } catch (err) {
       console.log(err);
-      setTimeout(this.start, 5000);
+      setTimeout(() => this.start(), 5000);
     }
   }
 }
