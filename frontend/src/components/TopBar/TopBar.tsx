@@ -31,6 +31,7 @@ import { parser as pythonParser } from "@lezer/python";
 import { Solution } from "@/models/Solution";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
+import { SubmissionResult } from "@/stub/session";
 
 const languageParser = {
   [LanguageEnum.UNDEFINED]: undefined,
@@ -153,7 +154,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       ? currentSnapshot.submissionRefactored
       : false;
 
-  async function handleSubmit() {
+  async function submitSolution(submissionType: "submit" | "test") {
     if (
       currentQuestionNumber === null ||
       accessToken === null ||
@@ -168,14 +169,28 @@ export default function TopBar({ bg, fg }: MenuProps) {
     );
 
     try {
-      const submissionResult = await sessionSpoke.submitSolution({
-        accessToken,
-        language: solution.language,
-        directives: solution.getDirective(),
-        solution: solution.content,
-        scratchPad: currentSnapshot.scratchPad,
-        questionNumber: currentQuestionNumber
-      });
+      let submissionResult: SubmissionResult;
+      if (submissionType === "submit") {
+        submissionResult = await sessionSpoke.submitSolution({
+          accessToken,
+          language: solution.language,
+          directives: solution.getDirective(),
+          solution: solution.content,
+          scratchPad: currentSnapshot.scratchPad,
+          questionNumber: currentQuestionNumber
+        });
+      } else if (submissionType === "test") {
+        submissionResult = await sessionSpoke.testSolution({
+          accessToken,
+          language: solution.language,
+          directives: solution.getDirective(),
+          solution: solution.content,
+          scratchPad: currentSnapshot.scratchPad,
+          questionNumber: currentQuestionNumber
+        });
+      } else {
+        throw new Error("Invalid type");
+      }
 
       dispatch(
         setSnapshot({
@@ -185,7 +200,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
           submissionRefactored: currentSnapshot.submissionSubmitted,
-          submissionSubmitted: true,
+          submissionSubmitted: submissionType === "submit",
           testResults: submissionResult.testResults
         })
       );
@@ -206,8 +221,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
       const allSnapshots = Object.values(snapshotByQuestionNumber);
       if (allSnapshots.length < 6) {
-        // if they haven't submit all of the submissions
-        // don't bother checking if they're all have been accepted or not
+        // if they haven't submitted all of their submissions
+        // just don't bother checking if they have been accepted or not
         return;
       }
 
@@ -333,9 +348,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
-          onClick={() => {
-            // TODO(elianiva): do we need this?
-          }}
+          onClick={() => submitSolution("test")}
           data-tour="topbar-step-7"
         >
           Test
@@ -345,7 +358,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             px="4"
             colorScheme="blue"
             h="full"
-            onClick={handleSubmit}
+            onClick={() => submitSolution("submit")}
             data-tour="topbar-step-8"
           >
             {isSubmitted ? "Refactor" : "Submit"}
