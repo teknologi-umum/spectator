@@ -97,7 +97,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 				} else if (parameterType == typeof(MouseButton)) {
 					arguments[i] = Enum.Parse<MouseButton>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
 				} else if (parameterType == typeof(Locale)) {
-					arguments[i] = Enum.Parse<Locale>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
+					arguments[i] = Enum.Parse<Locale>(fluxRecord.GetValueByKey(fluxProp.FluxFieldName).ToString()!, ignoreCase: true);
 				} else if (parameterType == typeof(Language)) {
 					arguments[i] = Enum.Parse<Language>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
 				} else if (parameterType == typeof(SelfAssessmentManikin)) {

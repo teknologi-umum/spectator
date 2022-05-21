@@ -10,7 +10,10 @@ import { setAccessToken } from "@/store/slices/sessionSlice";
 import { HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { loggerInstance } from "@/spoke/logger";
 
-const Layout: FC = ({ children }) => {
+interface LayoutProps {
+  display?: "flex" | "block";
+}
+const Layout: FC<LayoutProps> = ({ display = "block", children }) => {
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
 
   const dispatch = useAppDispatch();
@@ -65,7 +68,16 @@ const Layout: FC = ({ children }) => {
   return (
     <>
       <ToastOverlay />
-      <Box bg={bg} alignItems="center" w="full" minH="full" py="10" px="4">
+      <Box
+        bg={bg}
+        alignItems="center"
+        justifyContent="center"
+        w="full"
+        minH="full"
+        py="10"
+        px="4"
+        display={display}
+      >
         {children}
       </Box>
     </>
