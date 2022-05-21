@@ -1,7 +1,7 @@
 ﻿using System;
 using Spectator.DomainEvents.ExamReportDomain;
 
-namespace Spectator.DomainModels.ExamReportDoman {
+namespace Spectator.DomainModels.ExamReportDomain {
 	public record AdministratorSession {
 		public Guid SessionId { get; private init; }
 		public DateTimeOffset ExpiresAt { get; private init; }

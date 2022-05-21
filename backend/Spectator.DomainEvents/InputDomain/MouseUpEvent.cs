@@ -2,7 +2,7 @@
 using Spectator.Primitives;
 
 namespace Spectator.DomainEvents.InputDomain {
-	public record MouseUpEvent (
+	public record MouseUpEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,
 		int X,
