@@ -12,7 +12,7 @@ import FunFact from "@/pages/FunFact";
 import Login from "@/pages/secret/Login";
 import Download from "@/pages/secret/Download";
 import { CoercedRoute } from "@/hoc/CoercedRoute";
-import { SecretRoute } from "./hoc/SecretRoute";
+import { SecretRoute } from "@/hoc/SecretRoute";
 
 function App() {
   return (

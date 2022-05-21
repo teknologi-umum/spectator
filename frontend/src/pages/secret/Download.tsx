@@ -20,18 +20,6 @@ import { loggerInstance } from "@/spoke/logger";
 import { useNavigate } from "react-router-dom";
 import { removeSessionId } from "@/store/slices/sessionSlice";
 
-interface FakeData {
-  id: number;
-  studentNumber: string;
-}
-
-const FAKE_DATA: FakeData[] = [...Array(20).fill(0)].map((_, n) => ({
-  id: n + 1,
-  studentNumber: n.toString().padStart(8, "0"),
-  fileUrlJson: "https://fake.url.dont.go.here",
-  fileUrlCsv: "https://fake.url.dont.go.here"
-}));
-
 interface FileEntry {
   csvFileUrl: string;
   jsonFileUrl: string;
