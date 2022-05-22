@@ -18,6 +18,10 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("StartSessionAsync", request);
   }
 
+  public resumeSession(): Promise<void> {
+    return super._startIfDisconnected();
+  }
+
   public async setLocale(request: SetLocaleRequest): Promise<void> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SetLocaleAsync", request);
@@ -46,6 +50,11 @@ class SessionSpoke extends SpokeBase {
   public async submitSolution(request: SubmissionRequest): Promise<SubmissionResult> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SubmitSolutionAsync", request);
+  }
+
+  public async testSolution(request: SubmissionRequest): Promise<SubmissionResult> {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("TestSolutionAsync", request);
   }
 
   public async endExam(request: EmptyRequest): Promise<ExamResult> {

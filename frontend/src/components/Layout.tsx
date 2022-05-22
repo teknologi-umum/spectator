@@ -10,7 +10,10 @@ import { setAccessToken } from "@/store/slices/sessionSlice";
 import { HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { loggerInstance } from "@/spoke/logger";
 
-const Layout: FC = ({ children }) => {
+interface LayoutProps {
+  display?: "flex" | "block";
+}
+const Layout: FC<LayoutProps> = ({ display = "block", children }) => {
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
 
   const dispatch = useAppDispatch();
@@ -53,19 +56,35 @@ const Layout: FC = ({ children }) => {
           if (err instanceof Error) {
             loggerInstance.log(
               LogLevel.Error,
-              `Unable to resume session: ${err.message}`
+              `Unable to start session: ${err.message}`
             );
           }
         });
     } else if (!isTokenEmpty && isHubDisconnected) {
-      // TODO(elianiva): figure out how to reconnect before the exam started
+      sessionSpoke.resumeSession().catch((err) => {
+        if (err instanceof Error) {
+          loggerInstance.log(
+            LogLevel.Error,
+            `Unable to resume session: ${err.message}`
+          );
+        }
+      });
     }
   }, []);
 
   return (
     <>
       <ToastOverlay />
-      <Box bg={bg} alignItems="center" w="full" minH="full" py="10" px="4">
+      <Box
+        bg={bg}
+        alignItems="center"
+        justifyContent="center"
+        w="full"
+        minH="full"
+        py="10"
+        px="4"
+        display={display}
+      >
         {children}
       </Box>
     </>

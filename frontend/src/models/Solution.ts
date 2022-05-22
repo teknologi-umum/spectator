@@ -39,8 +39,8 @@ export class Solution {
 
   private readonly _content: string;
   private readonly _lang: LanguageEnum;
-  private readonly _parser: LRParser;
-  private readonly _directiveNodeType: string;
+  private readonly _parser: LRParser | undefined;
+  private readonly _directiveNodeType: string | undefined;
 
   constructor(lang: Language, content: string) {
     if (content === null || content === undefined) {
@@ -54,10 +54,6 @@ export class Solution {
     const languageEnum = this.LANGUAGE_TO_ENUM[lang];
     const parser = this._languageParser[languageEnum];
     const directiveNodeType = this._languageDirectiveType[languageEnum];
-
-    if (parser === undefined || directiveNodeType === undefined) {
-      throw new Error(`Language ${lang} is not supported`);
-    }
 
     this._content = content;
     this._lang = languageEnum;
@@ -74,6 +70,11 @@ export class Solution {
   }
 
   public getDirective() {
+    // language doesn't have directives
+    if (this._parser === undefined || this._directiveNodeType === undefined) {
+      return "";
+    }
+
     const tree = this._parser.parse(this._content);
     return tree.topNode
       .getChildren(this._directiveNodeType)

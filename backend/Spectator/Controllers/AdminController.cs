@@ -1,34 +1,67 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Security.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Spectator.DTO;
+using Spectator.DomainServices.ExamReportDomain;
 
 
 namespace Spectator.Controllers {
-	public class AdminController : Controller {
-		// POST /login
+	[ApiController]
+	public class AdminController : ControllerBase {
+		private ExamReportServices _examReportServices;
+
+		public AdminController(
+			ExamReportServices examReportServices
+		) {
+			_examReportServices = examReportServices;
+		}
+
 		[HttpPost]
-		[Route("/login")]
+		[Route("/admin/login")]
 		public IActionResult Login([FromBody] LoginRequest request) {
-			// TODO
-			return Ok();
+			if (request.Password == null) throw new ArgumentNullException(nameof(request.Password));
+
+			try {
+				var session = _examReportServices.Login(request.Password);
+				return Ok(session);
+			} catch (AuthenticationException e) {
+				return Unauthorized(new { Message = e.Message });
+			} catch (ArgumentNullException e) {
+				return BadRequest(new { Message = e.Message });
+			}
 		}
 
-		// POST /logout
 		[HttpPost]
-		[Route("/logout")]
+		[Route("/admin/logout")]
 		public IActionResult Logout([FromBody] LogoutRequest request) {
-			// TODO
+			if (request.SessionId == null) return BadRequest(new { Message = "SessionId is required" });
+
+			if (!Guid.TryParse(request.SessionId, out var sessionId)) {
+				return BadRequest(new { Message = "Invalid session id" });
+			}
+
+			_examReportServices.Logout(sessionId);
 			return Ok();
 		}
 
-		// GET /files
-		[HttpGet]
-		[Route("/files")]
-		public async Task<IActionResult> FilesAsync([FromHeader] string Authentication) {
-			// TODO: fetch session id list from influxdb direcly
-			// TODO: send a grpc client request to the worker service to fetch ListFile data per each session id
-			// TODO: profit. no, seriously, display the acquired results.
-			return Ok();
+		[HttpPost]
+		[Route("/admin/files")]
+		public async Task<IActionResult> FilesAsync([FromBody] FilesRequest request , CancellationToken cancellationToken) {
+			if (request.SessionId == null) return BadRequest(new { Message = "SessionId is required" });
+
+			if (!Guid.TryParse(request.SessionId, out var sessionId)) {
+				return BadRequest(new { Message = "Invalid session id" });
+			}
+
+			try {
+				var files = await _examReportServices.GetFilesAsync(sessionId, cancellationToken);
+				return Ok(files);
+			} catch (UnauthorizedAccessException) {
+				return Unauthorized();
+			}
 		}
 	}
 }

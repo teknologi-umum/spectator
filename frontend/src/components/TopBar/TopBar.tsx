@@ -15,7 +15,6 @@ import {
   setSnapshot
 } from "@/store/slices/editorSlice";
 import type { EditorSnapshot } from "@/models/EditorSnapshot";
-import { Language as LanguageEnum } from "@/stub/enums";
 import { LANGUAGES, Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
@@ -23,65 +22,12 @@ import { ClockIcon } from "@/icons";
 import CodingResultToast from "@/components/Toast/CodingResultToast";
 import { MenuDropdown, ThemeButton, LocaleButton } from "@/components/TopBar";
 import { sessionSpoke } from "@/spoke";
-import { parser as javascriptParser } from "@lezer/javascript";
-import { parser as phpParser } from "@lezer/php";
-import { parser as javaParser } from "@lezer/java";
-import { parser as cppParser } from "@lezer/cpp";
-import { parser as pythonParser } from "@lezer/python";
 import { Solution } from "@/models/Solution";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 import { setExamResult } from "@/store/slices/examResultSlice";
-
-const languageParser = {
-  [LanguageEnum.UNDEFINED]: undefined,
-  [LanguageEnum.C]: cppParser,
-  [LanguageEnum.CPP]: cppParser,
-  [LanguageEnum.PHP]: phpParser,
-  [LanguageEnum.JAVASCRIPT]: javascriptParser,
-  [LanguageEnum.JAVA]: javaParser,
-  [LanguageEnum.PYTHON]: pythonParser
-};
-
-const languageDirectiveType = {
-  [LanguageEnum.UNDEFINED]: undefined,
-  [LanguageEnum.C]: "PreprocDirective",
-  [LanguageEnum.CPP]: "PreprocDirective",
-  [LanguageEnum.PHP]: undefined,
-  [LanguageEnum.JAVASCRIPT]: "ImportDeclaration",
-  [LanguageEnum.JAVA]: "ImportDeclaration",
-  [LanguageEnum.PYTHON]: "ImportStatement"
-};
-
-function extractDirective(language: LanguageEnum, content: string) {
-  const parser = languageParser[language];
-  if (parser === undefined) {
-    throw new Error(`Language ${language} is not supported`);
-  }
-
-  const directiveNodeType = languageDirectiveType[language];
-  if (directiveNodeType === undefined) {
-    return "";
-  }
-
-  const tree = parser.parse(content);
-  return tree.topNode
-    .getChildren(directiveNodeType)
-    .map((b) => content.slice(b.from, b.to))
-    .filter((directive) => {
-      // C/C++ special case
-      // filter out any preproc directive that isn't being used to include a header file
-      if (
-        directiveNodeType === "PreprocDirective" &&
-        !directive.startsWith("#include")
-      ) {
-        return false;
-      }
-
-      return true;
-    })
-    .join("\n");
-}
+import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
+import { SubmissionResult } from "@/stub/session";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -97,15 +43,6 @@ interface MenuProps {
   bg: string;
   fg: string;
 }
-
-const LANGUAGE_TO_ENUM: Record<Language, LanguageEnum> = {
-  c: LanguageEnum.C,
-  cpp: LanguageEnum.CPP,
-  java: LanguageEnum.JAVA,
-  javascript: LanguageEnum.JAVASCRIPT,
-  php: LanguageEnum.PHP,
-  python: LanguageEnum.PYTHON
-};
 
 export default function TopBar({ bg, fg }: MenuProps) {
   const navigate = useNavigate();
@@ -156,7 +93,9 @@ export default function TopBar({ bg, fg }: MenuProps) {
       ? currentSnapshot.submissionRefactored
       : false;
 
-  async function handleSubmit() {
+  const [submitting, setSubmitting] = useState(false);
+
+  async function submitSolution(submissionType: "submit" | "test") {
     if (
       currentQuestionNumber === null ||
       accessToken === null ||
@@ -165,20 +104,36 @@ export default function TopBar({ bg, fg }: MenuProps) {
       return;
     }
 
+    setSubmitting(true);
+
     const solution = new Solution(
       currentLanguage,
       currentSnapshot.solutionByLanguage[currentLanguage]
     );
 
     try {
-      const submissionResult = await sessionSpoke.submitSolution({
-        accessToken,
-        language: solution.language,
-        directives: solution.getDirective(),
-        solution: solution.content,
-        scratchPad: currentSnapshot.scratchPad,
-        questionNumber: currentQuestionNumber
-      });
+      let submissionResult: SubmissionResult;
+      if (submissionType === "submit") {
+        submissionResult = await sessionSpoke.submitSolution({
+          accessToken,
+          language: solution.language,
+          directives: solution.getDirective(),
+          solution: solution.content,
+          scratchPad: currentSnapshot.scratchPad,
+          questionNumber: currentQuestionNumber
+        });
+      } else if (submissionType === "test") {
+        submissionResult = await sessionSpoke.testSolution({
+          accessToken,
+          language: solution.language,
+          directives: solution.getDirective(),
+          solution: solution.content,
+          scratchPad: currentSnapshot.scratchPad,
+          questionNumber: currentQuestionNumber
+        });
+      } else {
+        throw new Error("Invalid type");
+      }
 
       dispatch(
         setSnapshot({
@@ -188,10 +143,15 @@ export default function TopBar({ bg, fg }: MenuProps) {
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
           submissionRefactored: currentSnapshot.submissionSubmitted,
-          submissionSubmitted: true,
+          submissionSubmitted: submissionType === "submit",
           testResults: submissionResult.testResults
         })
       );
+
+      setSubmitting(false);
+
+      // move to the result tab
+      dispatch(setQuestionTabIndex("result"));
 
       const id = toast({
         position: "top-right",
@@ -209,8 +169,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
       const allSnapshots = Object.values(snapshotByQuestionNumber);
       if (allSnapshots.length < 6) {
-        // if they haven't submit all of the submissions
-        // don't bother checking if they're all have been accepted or not
+        // if they haven't submitted all of their submissions
+        // just don't bother checking if they have been accepted or not
         return;
       }
 
@@ -337,9 +297,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
-          onClick={() => {
-            // TODO(elianiva): do we need this?
-          }}
+          isLoading={submitting}
+          onClick={() => submitSolution("test")}
           data-tour="topbar-step-7"
         >
           Test
@@ -349,7 +308,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
             px="4"
             colorScheme="blue"
             h="full"
-            onClick={handleSubmit}
+            isLoading={submitting}
+            onClick={() => submitSolution("submit")}
             data-tour="topbar-step-8"
           >
             {isSubmitted ? "Refactor" : "Submit"}

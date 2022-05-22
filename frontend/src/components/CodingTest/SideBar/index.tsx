@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Divider, Flex, IconButton } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { toggleSideBar } from "@/store/slices/sideBarSlice";
+import { toggleSideBar } from "@/store/slices/codingTestSlice";
 import NavItem from "./NavItem";
 import {
   DiamondIcon,
@@ -31,7 +31,7 @@ const icons = [
 
 export default function SideBar({ bg, fg }: SideBarProps) {
   const dispatch = useAppDispatch();
-  const { isCollapsed } = useAppSelector((state) => state.sideBar);
+  const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { setIsOpen, setCurrentStep } = useTour();
   // TODO(elianiva): make this false only if the user hasn't done the
   //                 onboarding process

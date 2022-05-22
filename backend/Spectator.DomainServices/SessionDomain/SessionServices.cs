@@ -229,6 +229,33 @@ namespace Spectator.DomainServices.SessionDomain {
 			return submission;
 		}
 
+		// Test the solution without submitting it
+		public async Task<Submission> TestSolutionAsync(Guid sessionId, int questionNumber, Language language, string directives, string solution, string scratchPad, CancellationToken cancellationToken) {
+			// Get store
+			var sessionStore = await GetSessionStoreAsync(sessionId, cancellationToken);
+
+			// Get locale from state
+			var locale = sessionStore.State switch {
+				AnonymousSession a => a.Locale,
+				RegisteredSession r => r.Locale,
+				_ => throw new InvalidProgramException("Unhandled session type")
+			};
+
+			// Execute solution in piston
+			var submission = await _serviceProvider.GetRequiredService<SubmissionServices>().EvaluateSubmissionAsync(
+				questionNumber: questionNumber,
+				locale: locale,
+				language: language,
+				directives: directives,
+				solution: solution,
+				scratchPad: scratchPad,
+				cancellationToken: cancellationToken
+			);
+
+			// Return submission
+			return submission;
+		}
+
 		public async Task<RegisteredSession> EndExamAsync(Guid sessionId) {
 			// Get store
 			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);

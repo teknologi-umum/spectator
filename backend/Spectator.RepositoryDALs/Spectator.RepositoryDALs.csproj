@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\frontend\src\data\en\questions.json" Link="Imported\FrontendData\en\questions.json" />
-    <EmbeddedResource Include="..\..\frontend\src\data\en\translations.json" Link="Imported\FrontendData\en\translations.json" />
-    <EmbeddedResource Include="..\..\frontend\src\data\id\questions.json" Link="Imported\FrontendData\id\questions.json" />
-    <EmbeddedResource Include="..\..\frontend\src\data\id\translations.json" Link="Imported\FrontendData\id\translations.json" />
+    <EmbeddedResource Include="..\..\frontend\src\i18n\en\questions.json" Link="Imported\FrontendData\en\questions.json" />
+    <EmbeddedResource Include="..\..\frontend\src\i18n\en\translations.json" Link="Imported\FrontendData\en\translations.json" />
+    <EmbeddedResource Include="..\..\frontend\src\i18n\id\questions.json" Link="Imported\FrontendData\id\questions.json" />
+    <EmbeddedResource Include="..\..\frontend\src\i18n\id\translations.json" Link="Imported\FrontendData\id\translations.json" />
   </ItemGroup>
 
   <ItemGroup>

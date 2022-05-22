@@ -81,7 +81,7 @@ function PersonalInfoPage() {
   }, [errors]);
 
   return (
-    <Layout>
+    <Layout display="flex">
       <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
         <ThemeButton
           bg={bg}
@@ -91,136 +91,148 @@ function PersonalInfoPage() {
         <LocaleButton bg={bg} fg={fg} />
       </Flex>
       <Box
-        as="form"
-        onSubmit={handleSubmit(onSubmit)}
-        boxShadow="xl"
-        p="8"
-        rounded="md"
-        maxW="container.sm"
-        mx="auto"
-        bg={bg}
-        color={fg}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height="full"
       >
-        <Heading size="lg" textAlign="center" fontWeight="700">
-          Personal Basic Info
-        </Heading>
+        <Box
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+          boxShadow="xl"
+          p="8"
+          rounded="md"
+          maxW="container.sm"
+          mx="auto"
+          bg={bg}
+          color={fg}
+        >
+          <Heading size="lg" textAlign="center" fontWeight="700">
+            Personal Basic Info
+          </Heading>
 
-        <Box>
-          {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
-          <FormControl
-            id="email"
-            mt="6"
-            isInvalid={errors.studentNumber !== undefined}
-          >
-            <FormLabel>
-              {t("translation.translations.personal_info.student_number")}
-            </FormLabel>
-            <Input
-              type="text"
-              {...register("studentNumber")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.studentNumber?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            mt="6"
-            isInvalid={errors.yearsOfExperience !== undefined}
-          >
-            <FormLabel>
-              {t("translation.translations.personal_info.programming_years")}
-            </FormLabel>
-            <Input
-              type="number"
-              {...register("yearsOfExperience")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.yearsOfExperience?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl mt="6" isInvalid={errors.hoursOfPractice !== undefined}>
-            <FormLabel>
-              {t("translation.translations.personal_info.programming_practice")}
-            </FormLabel>
-            <Input
-              type="number"
-              {...register("hoursOfPractice")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.hoursOfPractice?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            mt="6"
-            isInvalid={errors.familiarLanguages !== undefined}
-          >
-            <FormLabel>
-              {t(
-                "translation.translations.personal_info.programming_experience"
-              )}
-            </FormLabel>
-            <Input
-              type="text"
-              {...register("familiarLanguages")}
-              autoComplete="off"
-            />
-            <FormErrorMessage>
-              {errors?.familiarLanguages?.message}!
-            </FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            mt="6"
-            isInvalid={errors.familiarLanguages !== undefined}
-          >
-            <FormLabel>
-              {t("translation.translations.personal_info.wallet_number")}
-            </FormLabel>
-            <InputGroup>
+          <Box>
+            {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
+            <FormControl
+              id="email"
+              mt="6"
+              isInvalid={errors.studentNumber !== undefined}
+            >
+              <FormLabel>
+                {t("translation.translations.personal_info.student_number")}
+              </FormLabel>
               <Input
                 type="text"
-                {...register("walletNumber")}
+                {...register("studentNumber")}
                 autoComplete="off"
-                pr="28"
               />
-              <InputRightElement width="28">
-                <Select
-                  {...register("walletType")}
-                  size="sm"
-                  variant="filled"
-                  mr="1"
-                  bg={darkerBg}
-                >
-                  <option value="grabpay" selected>
-                    GrabPay
-                  </option>
-                  <option value="grabpay">GoPay</option>
-                </Select>
-              </InputRightElement>
-            </InputGroup>
-            <FormErrorMessage>
-              {errors?.walletNumber?.message}!
-            </FormErrorMessage>
-          </FormControl>
-        </Box>
+              <FormErrorMessage>
+                {errors?.studentNumber?.message}!
+              </FormErrorMessage>
+            </FormControl>
 
-        <Button
-          colorScheme="blue"
-          mx="auto"
-          mt="6"
-          type="submit"
-          display="block"
-          data-tour="step-2"
-          isLoading={isSubmitting}
-        >
-          {t("translation.translations.ui.continue")}
-        </Button>
+            <FormControl
+              mt="6"
+              isInvalid={errors.yearsOfExperience !== undefined}
+            >
+              <FormLabel>
+                {t("translation.translations.personal_info.programming_years")}
+              </FormLabel>
+              <Input
+                type="number"
+                {...register("yearsOfExperience")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.yearsOfExperience?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              mt="6"
+              isInvalid={errors.hoursOfPractice !== undefined}
+            >
+              <FormLabel>
+                {t(
+                  "translation.translations.personal_info.programming_practice"
+                )}
+              </FormLabel>
+              <Input
+                type="number"
+                {...register("hoursOfPractice")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.hoursOfPractice?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              mt="6"
+              isInvalid={errors.familiarLanguages !== undefined}
+            >
+              <FormLabel>
+                {t(
+                  "translation.translations.personal_info.programming_experience"
+                )}
+              </FormLabel>
+              <Input
+                type="text"
+                {...register("familiarLanguages")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.familiarLanguages?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              mt="6"
+              isInvalid={errors.familiarLanguages !== undefined}
+            >
+              <FormLabel>
+                {t("translation.translations.personal_info.wallet_number")}
+              </FormLabel>
+              <InputGroup>
+                <Input
+                  type="text"
+                  {...register("walletNumber")}
+                  autoComplete="off"
+                  pr="28"
+                />
+                <InputRightElement width="28">
+                  <Select
+                    {...register("walletType")}
+                    size="sm"
+                    variant="filled"
+                    mr="1"
+                    bg={darkerBg}
+                  >
+                    <option value="grabpay" selected>
+                      GrabPay
+                    </option>
+                    <option value="grabpay">GoPay</option>
+                  </Select>
+                </InputRightElement>
+              </InputGroup>
+              <FormErrorMessage>
+                {errors?.walletNumber?.message}!
+              </FormErrorMessage>
+            </FormControl>
+          </Box>
+
+          <Button
+            colorScheme="blue"
+            mx="auto"
+            mt="6"
+            type="submit"
+            display="block"
+            data-tour="step-2"
+            isLoading={isSubmitting}
+          >
+            {t("translation.translations.ui.continue")}
+          </Button>
+        </Box>
       </Box>
     </Layout>
   );

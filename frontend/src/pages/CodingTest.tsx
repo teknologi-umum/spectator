@@ -32,7 +32,7 @@ import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 
 function CodingTest() {
-  const { isCollapsed } = useAppSelector((state) => state.sideBar);
+  const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const { tourCompleted } = useAppSelector((state) => state.session);
   const { accessToken } = useAppSelector((state) => state.session);

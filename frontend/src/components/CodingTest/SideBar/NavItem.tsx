@@ -25,7 +25,7 @@ interface NavItemProps {
 
 export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
   const dispatch = useAppDispatch();
-  const { isCollapsed } = useAppSelector((state) => state.sideBar);
+  const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const bg = useColorModeValue("teal.50", "teal.500");
   const fg = useColorModeValue("teal.700", "teal.200");

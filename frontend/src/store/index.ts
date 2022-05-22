@@ -18,8 +18,9 @@ import {
   editorReducer,
   examResultReducer,
   themeReducer,
-  sideBarReducer,
-  signalRReducer
+  codingTestReducer,
+  signalRReducer,
+  loginReducer
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
@@ -28,7 +29,7 @@ const isDev = import.meta.env.MODE === "development";
 const persistConfig = {
   key: "root",
   version: 1,
-  whitelist: ["app", "editor", "locale", "session", "personalInfo"],
+  whitelist: ["app", "editor", "locale", "session", "personalInfo", "login"],
   storage
 };
 
@@ -39,8 +40,9 @@ const rootReducer = combineReducers({
   editor: editorReducer,
   examResult: examResultReducer,
   app: themeReducer,
-  sideBar: sideBarReducer,
-  signalR: signalRReducer
+  codingTest: codingTestReducer,
+  signalR: signalRReducer,
+  login: loginReducer
 });
 
 const store = configureStore({

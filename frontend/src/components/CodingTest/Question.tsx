@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -14,9 +14,10 @@ import {
   UnorderedList
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import Result from "@/components/CodingTest/Result";
+import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
 
 interface QuestionProps {
   bg: string;
@@ -64,6 +65,7 @@ function buildPre(codeBg: string, fg: string) {
 }
 
 export default function Question({ bg, fg, fgDarker }: QuestionProps) {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
@@ -71,6 +73,7 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
   const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
+  const { questionTabIndex } = useAppSelector((state) => state.codingTest);
 
   const currentSnapshot = useMemo(
     () => snapshotByQuestionNumber[currentQuestionNumber],
@@ -84,17 +87,6 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
     [currentSnapshot?.testResults]
   );
 
-  const [tabIndex, setTabIndex] = useState(0);
-  const isMounted = useRef(false);
-  useEffect(() => {
-    if (isMounted.current) {
-      // move to the result tab whenever the current submission changes
-      setTabIndex(1);
-      return;
-    }
-    isMounted.current = true;
-  }, [currentSnapshot?.testResults]);
-
   return (
     <Flex
       direction="column"
@@ -107,8 +99,10 @@ export default function Question({ bg, fg, fgDarker }: QuestionProps) {
       shadow="md"
     >
       <Tabs
-        index={tabIndex}
-        onChange={(idx) => setTabIndex(idx)}
+        index={questionTabIndex}
+        onChange={(idx) => {
+          dispatch(setQuestionTabIndex(idx === 1 ? "result" : "question"));
+        }}
         isLazy
         h="calc(100% - 2.75rem)"
       >
