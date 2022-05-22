@@ -8,6 +8,7 @@ import reducer, {
 } from "@/store/slices/sessionSlice";
 
 const initialState: SessionState = {
+  sessionId: null,
   accessToken: null,
   firstSAMSubmitted: false,
   secondSAMSubmitted: false,
