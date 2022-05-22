@@ -19,3 +19,10 @@ docker build -t spectator/rce .
 
 docker run -p 50051:50051 spectator/rce
 ```
+
+# Required Environment Variables
+
+* `PORT` - Service TCP port
+* `LOGGER_SERVER_ADDRESS` - Logger service address
+* `LOGGER_TOKEN` - Token for the logger service
+* `ENVIRONMENT` - Service runtime environment

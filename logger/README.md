@@ -2,134 +2,46 @@
 
 Logger provides standard logging capabilities to log data into the InfluxDB database storage.
 
-## Sending a log
 
-`POST /`
+## Visual Studio Code development setup
 
-Send a log that will be written to the InfluxDB. It is very recommended to add the `data.level` to the log you're sending, that way we can track everything easier.
+- Install [Visual Studio Code](https://code.visualstudio.com/Download)
+- Install [Go version 1.17.6](https://go.dev/dl/) or newer
+- Install [Go extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=golang.Go)
+- Open this worker directory on your Visual Studio Code, don't open the whole Spectator monolith project.
+  Go server on Visual Studio Code doesn't do well with multiple modules being opened at the same time.
+- Set up secrets on `.env` file using `.env.example` as a template. Or use the default value provided
+  on the `main.go` file.
 
-You can send the request with either JSON or MessagePack by simply specifying the `Content-Type` header.
+## Vim development setup
 
-It will reject the request with a 418 Teapot if the `Content-Type` header is not specified.
+- Install [Vim](https://www.vim.org/download.php) or [Neovim](https://github.com/neovim/neovim/wiki/Installing-Neovim)
+- Install [Go version 1.17.6](https://go.dev/dl/) or newer
+- Install Go language server
+  - For Vim, install [vim-go](https://github.com/fatih/vim-go)
+  - For Neovim, install [lspconfig](https://github.com/neovim/nvim-lspconfig)
+- Open the worker directory.
+- Set up secrets on `.env` file using `.env.example` as a template. Or use the default value provided
+  on the `main.go` file.
 
-Request headers:
-```yaml
-Content-Type: ["application/json", "application/msgpack"]
+## Running the application
+
+For development purposes:
+
+```
+go run .
 ```
 
-Request body schema:
-```json5
-{
-    "access_token": "string (required)",
-    "data": {
-        "request_id": "string (required)",
-        "application": "string (required)",
-        "message": "string (required)",
-        "body": {}, // Any object, optional
-        "level": "string (optional)", // defaults to 'debug'
-        "environment": "string (optional)",
-        "language": "string (optional)",
-        "timestamp": "datetime unix number or iso8601 format or rfc3339 format (optional)" // defaults to current time
-    }
-}
+For testing purposes:
+
+```
+go run test -v -cover -covermode=atomic -race -timeout=120s
 ```
 
-Sample request:
+## Required Environment Variables
 
-Curl:
-```sh
-curl --request POST \
-  --url http://logger-endpoint/ \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "access_token": "string (required)",
-    "data": {
-        "request_id": "string (required)",
-        "application": "string (required)",
-        "message": "string (required)",
-        "body": {},
-        "level": "string (optional)",
-        "environment": "string (optional)",
-        "language": "string (optional)",
-        "timestamp": "datetime unix number or iso8601 format or rfc3339 format (optional)"
-    }
-}'
-```
-
-## Retrieving logs
-
-`GET /`
-
-Read logs that are in InfluxDB with specified filters from the request URL's query parameters.
-
-Available query parameters:
-- `level` - Show logs with the specified level
-- `request_id` - Show logs with the specified request_id
-- `application` - Show logs with the specified application
-- `from` - Unix second timestamp, show logs from the specified time
-- `to` - Unix second timestamp, show logs up to the specified time
-
-The response body defaults in JSON format, but you can receive a MessagePack format by specifying the `Accept` header. Either it is explicitly `application/json` or `application/msgpack`.
-
-## Healthchecks / Ping
-
-`GET /ping`
-
-Simple healthcheck endpoint to check if the service and database conenction is up and running.
-
-Curl:
-```sh
-curl --request GET \
-  --url http://logger-endpoint/ping
-```
-
-C#:
-```csharp
-var client = new HttpClient();
-var request = new HttpRequestMessage
-{
-    Method = HttpMethod.Get,
-    RequestUri = new Uri("http://logger-endpoint/ping"),
-};
-using (var response = await client.SendAsync(request))
-{
-    response.EnsureSuccessStatusCode();
-    var body = await response.Content.ReadAsStringAsync();
-    Console.WriteLine(body);
-}
-```
-
-Go:
-```go
-package main
-
-import (
-	"fmt"
-	"net/http"
-	"io/ioutil"
-)
-
-func main() {
-	url := "http://logger-endpoint/ping"
-
-	req, _ := http.NewRequest("GET", url, nil)
-
-	res, _ := http.DefaultClient.Do(req)
-
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	fmt.Println(res)
-	fmt.Println(string(body))
-}
-```
-
-Sample response:
-```
-HTTP/1.1 200 OK
-Content-Length: 2
-Content-Type: text/plain; charset=utf-8
-Body:
-
-pass
-```
+* `INFLUX_URL` - InfluxDB URL
+* `INFLUX_TOKEN` - InfluxDB token to enable read/write access to the database
+* `INFLUX_ORG` - InfluxDB organization name
+* `ACCESS_TOKEN` - Accesss token to send request to the logger service.
+* `PORT` - Application TCP port to listen to

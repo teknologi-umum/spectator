@@ -4,7 +4,7 @@ services:
     restart: on-failure:3
     hostname: caddy
     volumes:
-      -  ./data/caddy/data:/data
+      - ./data/caddy/data:/data
       - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
     ports:
       - 80:80

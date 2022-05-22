@@ -1,6 +1,6 @@
 services:
   minio:
-    image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z 
+    image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
     command: server /data --console-address ":9001"
     restart: unless-stopped
     ports:
@@ -13,4 +13,3 @@ services:
       MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
     volumes:
       - ./data/minio:/data
-
