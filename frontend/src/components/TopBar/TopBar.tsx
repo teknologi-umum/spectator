@@ -15,7 +15,6 @@ import {
   setSnapshot
 } from "@/store/slices/editorSlice";
 import type { EditorSnapshot } from "@/models/EditorSnapshot";
-import { Language as LanguageEnum } from "@/stub/enums";
 import { LANGUAGES, Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
@@ -23,65 +22,11 @@ import { ClockIcon } from "@/icons";
 import CodingResultToast from "@/components/Toast/CodingResultToast";
 import { MenuDropdown, ThemeButton, LocaleButton } from "@/components/TopBar";
 import { sessionSpoke } from "@/spoke";
-import { parser as javascriptParser } from "@lezer/javascript";
-import { parser as phpParser } from "@lezer/php";
-import { parser as javaParser } from "@lezer/java";
-import { parser as cppParser } from "@lezer/cpp";
-import { parser as pythonParser } from "@lezer/python";
 import { Solution } from "@/models/Solution";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
+import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
 import { SubmissionResult } from "@/stub/session";
-
-const languageParser = {
-  [LanguageEnum.UNDEFINED]: undefined,
-  [LanguageEnum.C]: cppParser,
-  [LanguageEnum.CPP]: cppParser,
-  [LanguageEnum.PHP]: phpParser,
-  [LanguageEnum.JAVASCRIPT]: javascriptParser,
-  [LanguageEnum.JAVA]: javaParser,
-  [LanguageEnum.PYTHON]: pythonParser
-};
-
-const languageDirectiveType = {
-  [LanguageEnum.UNDEFINED]: undefined,
-  [LanguageEnum.C]: "PreprocDirective",
-  [LanguageEnum.CPP]: "PreprocDirective",
-  [LanguageEnum.PHP]: undefined,
-  [LanguageEnum.JAVASCRIPT]: "ImportDeclaration",
-  [LanguageEnum.JAVA]: "ImportDeclaration",
-  [LanguageEnum.PYTHON]: "ImportStatement"
-};
-
-function extractDirective(language: LanguageEnum, content: string) {
-  const parser = languageParser[language];
-  if (parser === undefined) {
-    throw new Error(`Language ${language} is not supported`);
-  }
-
-  const directiveNodeType = languageDirectiveType[language];
-  if (directiveNodeType === undefined) {
-    return "";
-  }
-
-  const tree = parser.parse(content);
-  return tree.topNode
-    .getChildren(directiveNodeType)
-    .map((b) => content.slice(b.from, b.to))
-    .filter((directive) => {
-      // C/C++ special case
-      // filter out any preproc directive that isn't being used to include a header file
-      if (
-        directiveNodeType === "PreprocDirective" &&
-        !directive.startsWith("#include")
-      ) {
-        return false;
-      }
-
-      return true;
-    })
-    .join("\n");
-}
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -97,15 +42,6 @@ interface MenuProps {
   bg: string;
   fg: string;
 }
-
-const LANGUAGE_TO_ENUM: Record<Language, LanguageEnum> = {
-  c: LanguageEnum.C,
-  cpp: LanguageEnum.CPP,
-  java: LanguageEnum.JAVA,
-  javascript: LanguageEnum.JAVASCRIPT,
-  php: LanguageEnum.PHP,
-  python: LanguageEnum.PYTHON
-};
 
 export default function TopBar({ bg, fg }: MenuProps) {
   const navigate = useNavigate();
@@ -154,6 +90,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
       ? currentSnapshot.submissionRefactored
       : false;
 
+  const [submitting, setSubmitting] = useState(false);
+
   async function submitSolution(submissionType: "submit" | "test") {
     if (
       currentQuestionNumber === null ||
@@ -162,6 +100,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
     ) {
       return;
     }
+
+    setSubmitting(true);
 
     const solution = new Solution(
       currentLanguage,
@@ -204,6 +144,11 @@ export default function TopBar({ bg, fg }: MenuProps) {
           testResults: submissionResult.testResults
         })
       );
+
+      setSubmitting(false);
+
+      // move to the result tab
+      dispatch(setQuestionTabIndex("result"));
 
       const id = toast({
         position: "top-right",
@@ -348,6 +293,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
+          isLoading={submitting}
           onClick={() => submitSolution("test")}
           data-tour="topbar-step-7"
         >
@@ -358,6 +304,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             px="4"
             colorScheme="blue"
             h="full"
+            isLoading={submitting}
             onClick={() => submitSolution("submit")}
             data-tour="topbar-step-8"
           >
