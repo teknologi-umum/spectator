@@ -17,10 +17,6 @@ COPY ./scripts ./scripts
 
 COPY package*.json .
 
-# FIXME: this line below is to avoid npm's timeout.
-# Uncomment this out if the development phase is finished.
-COPY ./node_modules ./node_modules
-
 RUN npm install
 
 RUN node ./scripts/install.cjs

@@ -4,13 +4,16 @@ Brief explanation of the project. TBC.
 
 ## Structure
 
-| Codebase | Description | 
-| -------- | ----------- | 
-| frontend | React SPA frontend | 
-| backend | ASP.NET Core core backend API |
-| piston | Fork of [Piston](https://github.com/engineer-man/piston) for code execution |
-| logger | Go API for any logging |
-| worker | Go worker for post-data processing |
+| Codebase  | Description                                                                 |
+| --------- | --------------------------------------------------------------------------- |
+| frontend  | React SPA frontend                                                          |
+| backend   | ASP.NET Core core backend API                                               |
+| rce       | Node.js service for  code execution engine inspired by [Piston][piston-url] |
+| logger    | Go service for any logging                                                  |
+| worker    | Go service for post-data processing                                         |
+| dummy     | Python sample data generation for InfluxDB                                  |
+| assertion | Coding test assertion scripts                                               |
+| proto     | Shared protocol buffers contracts                                           |
 
 ## Development setup
 
@@ -19,7 +22,7 @@ For running each component, see the respective README for each directory.
 
 Prerequisites:
 - Docker
-- Docker-compose
+- Docker Compose
 
 To run just the InfluxDB:
 ```sh
@@ -53,3 +56,5 @@ Please read [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for details on our code o
 ## License
 
 TBD.
+
+[piston-url]: https://github.com/engineer-man/piston
