@@ -9,36 +9,64 @@ import {
   QuestionOutlineIcon
 } from "@/icons";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "@/store";
+import { ExamResult_FunFact } from "@/stub/session";
 
-const FAKE_DATA = [
-  {
-    title: "words_per_minute",
-    color: "blue",
-    icon: <SpeedIcon width="48px" height="48px" />,
-    value: 90
-  },
-  {
-    title: "deletion_rate",
-    color: "red",
-    icon: <BackspaceIcon width="48px" height="48px" />,
-    value: "4%"
-  },
-  {
-    title: "submission_attempts",
-    color: "green",
-    icon: <RetryIcon width="48px" height="48px" />,
-    value: 69
-  }
-];
+interface FunFactData {
+  title: string;
+  color: "blue" | "red" | "green";
+  icon: JSX.Element;
+  value: string;
+}
+
+function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
+  if (funfact === undefined) return [];
+
+  const result = Object.entries(funfact).reduce((prev, [key, value]) => {
+    switch (key) {
+    case "wordsPerMinute":
+      return prev.concat({
+        title: "words_per_minute",
+        color: "blue",
+        icon: <SpeedIcon width="48px" height="48px" />,
+        value: value
+      });
+    case "deletionRate":
+      return prev.concat({
+        title: "deletion_rate",
+        color: "red",
+        icon: <BackspaceIcon width="48px" height="48px" />,
+        value: `${value}%`
+      });
+    case "submissionAttempts":
+      return prev.concat({
+        title: "submission_attempts",
+        color: "green",
+        icon: <RetryIcon width="48px" height="48px" />,
+        value: value
+      });
+    default:
+      return prev;
+    }
+  }, [] as FunFactData[]);
+
+  return result;
+}
 
 export default function FunFact() {
-  const [isLoading, setLoading] = useState(true);
+  const { examResult } = useAppSelector((state) => state.examResult);
   const { t } = useTranslation();
+
   const gray = useColorModeValue("gray.500", "gray.800", "gray.900");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
+  const [funfactData, setFunfactData] = useState<FunFactData[]>([]);
+  const [isLoading, setLoading] = useState(true);
+
   useEffect(() => {
     const id = setTimeout(() => {
+      if (examResult === null) throw new Error("examResult is null");
+      setFunfactData(mapFunFactToList(examResult.funFact));
       setLoading(false);
     }, 2500);
     return () => clearTimeout(id);
@@ -75,7 +103,7 @@ export default function FunFact() {
             Yay, you did it!
           </Heading>
           <Flex gap="4rem" direction="column" flex="1">
-            {FAKE_DATA.map(({ title, color, icon, value }, idx) => (
+            {funfactData.map(({ title, color, icon, value }, idx) => (
               <Flex gap="6" align="center" key={idx}>
                 <Box
                   p="2"

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface State {
+export interface SessionState {
   sessionId: string | null;
   accessToken: string | null;
   firstSAMSubmitted: boolean;
@@ -12,7 +12,7 @@ interface State {
   };
 }
 
-const initialState: State = {
+const initialState: SessionState = {
   accessToken: null,
   sessionId: null,
   firstSAMSubmitted: false,
