@@ -26,6 +26,7 @@ import { Solution } from "@/models/Solution";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
+import { SubmissionResult } from "@/stub/session";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -88,6 +89,8 @@ export default function TopBar({ bg, fg }: MenuProps) {
     currentSnapshot !== undefined
       ? currentSnapshot.submissionRefactored
       : false;
+
+  const [submitting, setSubmitting] = useState(false);
 
   async function submitSolution(submissionType: "submit" | "test") {
     if (
