@@ -18,6 +18,10 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("StartSessionAsync", request);
   }
 
+  public resumeSession(): Promise<void> {
+    return super._startIfDisconnected();
+  }
+
   public async setLocale(request: SetLocaleRequest): Promise<void> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SetLocaleAsync", request);

@@ -56,12 +56,19 @@ const Layout: FC<LayoutProps> = ({ display = "block", children }) => {
           if (err instanceof Error) {
             loggerInstance.log(
               LogLevel.Error,
-              `Unable to resume session: ${err.message}`
+              `Unable to start session: ${err.message}`
             );
           }
         });
     } else if (!isTokenEmpty && isHubDisconnected) {
-      // TODO(elianiva): figure out how to reconnect before the exam started
+      sessionSpoke.resumeSession().catch((err) => {
+        if (err instanceof Error) {
+          loggerInstance.log(
+            LogLevel.Error,
+            `Unable to resume session: ${err.message}`
+          );
+        }
+      });
     }
   }, []);
 
