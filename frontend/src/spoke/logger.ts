@@ -1,3 +1,4 @@
+import { LOGGER_URL } from "@/constants";
 import { ILogger, LogLevel } from "@microsoft/signalr";
 
 export class Logger implements ILogger {
@@ -55,4 +56,4 @@ export class Logger implements ILogger {
   }
 }
 
-export const loggerInstance = new Logger(import.meta.env.VITE_LOGGER_URL);
+export const loggerInstance = new Logger(LOGGER_URL);

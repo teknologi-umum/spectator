@@ -11,6 +11,7 @@ import {
   ExamResult
 } from "@/stub/session";
 import SpokeBase from "@/spoke/spokeBase";
+import { SESSION_HUB_URL } from "@/constants";
 
 class SessionSpoke extends SpokeBase {
   public async startSession(request: StartSessionRequest): Promise<SessionReply> {
@@ -78,4 +79,4 @@ class SessionSpoke extends SpokeBase {
   }
 }
 
-export default new SessionSpoke(import.meta.env.VITE_SESSION_HUB_URL);
+export default new SessionSpoke(SESSION_HUB_URL);
