@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\frontend\Frontend.csproj" />
     <ProjectReference Include="..\..\proto\Spectator.Protos\Spectator.Protos.csproj" />
     <ProjectReference Include="..\Spectator.DomainServices\Spectator.DomainServices.csproj" />
     <ProjectReference Include="..\Spectator.JwtAuthentication\Spectator.JwtAuthentication.csproj" />
