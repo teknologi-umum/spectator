@@ -24,7 +24,7 @@ import {
 } from "./slices";
 
 // see: https://vitejs.dev/guide/env-and-mode.html#modes
-const isDev = import.meta.env.MODE === "development";
+const isDev = import.meta.env.DEV;
 
 const persistConfig = {
   key: "root",

@@ -19,6 +19,7 @@ import { LogLevel } from "@microsoft/signalr";
 import { loggerInstance } from "@/spoke/logger";
 import { useNavigate } from "react-router-dom";
 import { removeSessionId } from "@/store/slices/sessionSlice";
+import { ADMIN_BASE_URL } from "@/constants";
 
 interface FileEntry {
   csvFileUrl: string;
@@ -79,16 +80,13 @@ export default function Download() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(
-          import.meta.env.VITE_ADMIN_URL + "/files",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ sessionId })
-          }
-        );
+        const response = await fetch(ADMIN_BASE_URL + "/files", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ sessionId })
+        });
 
         // token has expired
         if (response.status === 401) {

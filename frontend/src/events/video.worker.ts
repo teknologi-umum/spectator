@@ -1,3 +1,4 @@
+import { VIDEO_STREAM_URL } from "@/constants";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 
@@ -41,7 +42,7 @@ worker.onmessage = (e: MessageEvent<UploadRequest>) => {
     formData.append("file", e.data.blob);
 
     try {
-      await fetch(import.meta.env.VITE_VIDEO_STREAM_URL, {
+      await fetch(VIDEO_STREAM_URL, {
         method: "POST",
         headers: {
           "Content-Length": e.data.size,

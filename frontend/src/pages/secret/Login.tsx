@@ -20,6 +20,7 @@ import { useAppDispatch } from "@/store";
 import { setSessionId } from "@/store/slices/sessionSlice";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
+import { ADMIN_BASE_URL } from "@/constants";
 
 interface FormValues {
   password: string;
@@ -46,7 +47,7 @@ export default function Login() {
 
   const onSubmit: SubmitHandler<FormValues> = async ({ password }) => {
     try {
-      const response = await fetch(import.meta.env.VITE_ADMIN_URL + "/login", {
+      const response = await fetch(ADMIN_BASE_URL + "/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

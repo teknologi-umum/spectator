@@ -1,3 +1,4 @@
+import { LOGGER_URL } from "@/constants";
 import { store } from "@/store";
 import { setConnectionState } from "@/store/slices/signalRSlice";
 import * as SignalR from "@microsoft/signalr";
@@ -15,7 +16,7 @@ export default class SpokeBase {
         withCredentials: true
       })
       .withHubProtocol(new SignalR.JsonHubProtocol())
-      .configureLogging(new Logger(import.meta.env.VITE_LOGGER_URL))
+      .configureLogging(new Logger(LOGGER_URL))
       .build();
 
     this._hubConnection.onclose(async () => {

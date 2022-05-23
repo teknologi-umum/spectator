@@ -1,3 +1,4 @@
+import { EVENT_HUB_URL } from "@/constants";
 import SpokeBase from "@/spoke/spokeBase";
 import {
   KeystrokeInfo,
@@ -39,4 +40,4 @@ class EventSpoke extends SpokeBase {
   }
 }
 
-export default new EventSpoke(import.meta.env.VITE_EVENT_HUB_URL);
+export default new EventSpoke(EVENT_HUB_URL);
