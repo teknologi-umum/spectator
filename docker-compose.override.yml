@@ -1,21 +1,22 @@
 services:
-  caddy:
-    image: caddy:2.4.6-alpine
-    restart: always
-    volumes:
-      - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - default
-      - host_pub
+  # caddy:
+  #   image: caddy:2.4.6-alpine
+  #   restart: always
+  #   volumes:
+  #     - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   networks:
+  #     - default
+  #     - host_pub
 
   backend:
-    image: ${DOCKER_REGISTRY-}backend
+    image: backend
     build:
       context: .
       dockerfile: ./backend/Spectator/Dockerfile
+    restart: on-failure:5
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
@@ -41,21 +42,23 @@ services:
     networks:
       - host_pub
 
-  frontend:
-    build: ./frontend/
-    restart: always
-    ports:
-      - 3000:3000
-    depends_on:
-      - backend
-      - minio
-    networks:
-      - host_pub
+  # frontend:
+  #   build: ./frontend/
+  #   restart: always
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - backend
+  #     - minio
+  #   networks:
+  #     - host_pub
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
     command: server /data --console-address ":9001"
-    restart: always
+    restart: on-failure:10
+    ports:
+      - 7777:9000
     hostname: minio
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -68,9 +71,9 @@ services:
       - host_pub
 
   influx:
-    image: influxdb:2.1.1-alpine
+    image: influxdb:2.1.1
     hostname: influx
-    restart: always
+    restart: on-failure:10
     environment:
       DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
       DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
@@ -96,7 +99,7 @@ services:
 
   worker:
     build: ./worker/
-    restart: always
+    restart: on-failure:5
     environment:
       ENVIRONMENT: production
       PORT: 3000
@@ -118,7 +121,7 @@ services:
 
   logger:
     build: ./logger/
-    restart: always
+    restart: on-failure:5
     environment:
       ENVIRONMENT: production
       PORT: 3000
