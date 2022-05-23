@@ -16,6 +16,7 @@ COPY ["backend/Spectator.Primitives/Spectator.Primitives.csproj", "backend/Spect
 COPY ["backend/Spectator.Repositories/Spectator.Repositories.csproj", "backend/Spectator.Repositories/"]
 COPY ["backend/Spectator.RepositoryDALs/Spectator.RepositoryDALs.csproj", "backend/Spectator.RepositoryDALs/"]
 COPY ["proto/Spectator.Protos/Spectator.Protos.csproj", "proto/Spectator.Protos/"]
+COPY ["frontend/Frontend/Frontend.csproj", "frontend/Frontend/"]
 RUN dotnet restore "backend/Spectator/Spectator.csproj"
 COPY . .
 WORKDIR "/src/backend/Spectator"

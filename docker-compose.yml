@@ -6,7 +6,7 @@ services:
       - ./data/caddy/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
       - backend
-      - frontend
+      #- frontend
     networks:
       - default
       - host_pub
@@ -39,14 +39,14 @@ services:
     networks:
       - host_pub
 
-  frontend:
-    build: ./frontend/
-    restart: always
-    ports:
-      - 3000:3000
-    depends_on:
-      - backend
-      - minio
+  #frontend:
+  #  build: ./frontend/
+  #  restart: always
+  #  ports:
+  #    - 3000:3000
+  #  depends_on:
+  #    - backend
+  #    - minio
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
