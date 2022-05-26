@@ -26,12 +26,16 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
-          codemirror_cpp: ["@codemirror/lang-cpp"],
-          codemirror_java: ["@codemirror/lang-java"],
-          codemirror_javascript: ["@codemirror/lang-javascript"],
-          codemirror_python: ["@codemirror/lang-python"],
-          codemirror_php: ["@codemirror/lang-php"],
-          codemirror: ["@codemirror/state", "@codemirror/view", "@uiw/react-codemirror"],
+          codemirror: [
+            "@codemirror/state",
+            "@codemirror/view",
+            "@uiw/react-codemirror",
+            "@codemirror/lang-cpp",
+            "@codemirror/lang-java",
+            "@codemirror/lang-javascript",
+            "@codemirror/lang-python",
+            "@codemirror/lang-php"
+          ],
           chakra: [
             "@chakra-ui/react",
             "@emotion/react",
