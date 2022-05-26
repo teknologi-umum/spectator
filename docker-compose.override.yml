@@ -12,7 +12,6 @@ services:
   #     - host_pub
 
   backend:
-    image: backend
     build:
       context: .
       dockerfile: ./backend/Spectator/Dockerfile
@@ -35,23 +34,14 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
-      - worker
-      - logger
-      - influx
-      - minio
-    networks:
-      - host_pub
-
-  # frontend:
-  #   build: ./frontend/
-  #   restart: always
-  #   ports:
-  #     - 3000:3000
-  #   depends_on:
-  #     - backend
-  #     - minio
-  #   networks:
-  #     - host_pub
+      worker:
+        condition: service_started
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
@@ -65,28 +55,37 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+    healthcheck:
+      test: "curl -f http://localhost:9000/minio/health/live"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/minio:/data
-    networks:
-      - host_pub
 
   influx:
     image: influxdb:2.1.1
     hostname: influx
     restart: on-failure:10
     environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
       DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
       DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+    healthcheck:
+      test: "curl -f http://localhost:8086/ping"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/influx:/var/lib/influxdb
-    networks:
-      - host_pub
 
   rce:
-    image: ./rce/
+    build: ./rce/
     restart: on-failure:5
     hostname: rce
     environment:
@@ -94,8 +93,9 @@ services:
       PORT: 50051
       LOGGER_TOKEN: ${LOGGER_TOKEN}
       LOGGER_SERVER_ADDRESS: logger:3000
-    networks:
-      - host_pub
+    depends_on:
+      logger:
+        condition: service_started
 
   worker:
     build: ./worker/
@@ -113,11 +113,12 @@ services:
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: ${LOGGER_TOKEN}
     depends_on:
-      - logger
-      - influx
-      - minio
-    networks:
-      - host_pub
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   logger:
     build: ./logger/
@@ -130,9 +131,8 @@ services:
       INFLUX_ORG: ${INFLUXDB_ORG}
       ACCESS_TOKEN: ${LOGGER_TOKEN}
     depends_on:
-      - influx
-    networks:
-      - host_pub
+      influx:
+        condition: service_healthy
 
 networks:
   host_pub:

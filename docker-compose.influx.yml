@@ -11,5 +11,11 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+    healthcheck:
+      test: "curl -f http://localhost:8086/ping"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/influx:/var/lib/influxdb

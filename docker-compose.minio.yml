@@ -11,5 +11,11 @@ services:
       MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
       MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
       MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+    healthcheck:
+      test: "curl -f http://localhost:9000/minio/health/live"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/minio:/data

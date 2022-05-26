@@ -12,7 +12,6 @@ services:
   #     - host_pub
 
   backend:
-    image: backend
     build:
       context: .
       dockerfile: ./backend/Spectator/Dockerfile
@@ -33,21 +32,14 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
-      - worker
-      - logger
-      - influx
-      - minio
-    networks:
-      - host_pub
-
-  #frontend:
-  #  build: ./frontend/
-  #  restart: always
-  #  ports:
-  #    - 3000:3000
-  #  depends_on:
-  #    - backend
-  #    - minio
+      worker:
+        condition: service_started
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   minio:
     image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
@@ -61,25 +53,34 @@ services:
       MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
       MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
       MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+    healthcheck:
+      test: "curl -f http://localhost:9000/minio/health/live"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/minio:/data
-    networks:
-      - host_pub
 
   influx:
     image: influxdb:2.1.1-alpine
     hostname: influx
     restart: on-failure:10
     environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
       DOCKER_INFLUXDB_INIT_PASSWORD: ESHVeXGynXR73942AmAkCNseenwcQVqKu
       DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+    healthcheck:
+      test: "curl -f http://localhost:8086/ping"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/influx:/var/lib/influxdb
-    networks:
-      - host_pub
 
   rce:
     image: ./rce/
@@ -91,9 +92,8 @@ services:
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
       LOGGER_SERVER_ADDRESS: logger:3000
     depends_on:
-      - logger
-    networks:
-      - host_pub
+      logger:
+        condition: service_started
 
   worker:
     build: ./worker/
@@ -111,11 +111,12 @@ services:
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
     depends_on:
-      - logger
-      - influx
-      - minio
-    networks:
-      - host_pub
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   logger:
     build: ./logger/
@@ -128,10 +129,5 @@ services:
       INFLUX_ORG: teknum_spectator
       ACCESS_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
     depends_on:
-      - influx
-    networks:
-      - host_pub
-
-networks:
-  host_pub:
-    driver: "bridge"
+      influx:
+        condition: service_healthy
