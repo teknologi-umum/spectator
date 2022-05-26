@@ -8,15 +8,12 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /node
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl tar
 RUN curl -LO https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz && \
-    tar -zxf node-v16.15.0-linux-x64.tar.gz && \
-    cd node-v16.15.0-linux-x64 && \
-    mkdir --parents --verbose /usr/bin /usr/include /usr/lib /usr/share/doc /usr/share/man && \
-    mv -v bin/* /usr/bin/ && \
-    mv -v include/* /usr/include/ && \
-    mv -v lib/* /usr/lib/ && \
-    mv -v share/doc/* /usr/share/doc/ && \
-    mv -v share/man/* /usr/share/man/  && \
-    mv -v share/* /usr/share/
+  tar -zxf node-v16.15.0-linux-x64.tar.gz && \
+  cd node-v16.15.0-linux-x64 && \
+  mkdir --parents --verbose /usr/bin /usr/include /usr/lib && \
+  mv -v bin/* /usr/bin/ && \
+  mv -v include/* /usr/include/ && \
+  mv -v lib/* /usr/lib/
 
 WORKDIR /src
 COPY ["backend/Spectator/Spectator.csproj", "backend/Spectator/"]
