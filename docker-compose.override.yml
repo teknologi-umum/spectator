@@ -28,6 +28,9 @@ services:
       - ASPNETCORE_LoggerOptions__Address=logger:3000
       - ASPNETCORE_RceOptions__BaseUrl=rce:50051
       - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
+      - ASPNETCORE_MinioOptions__Url=minio:9000
+      - ASPNETCORE_MinioOptions__AccessKey=${MINIO_ACCESS_KEY}
+      - ASPNETCORE_MinioOptions__SecretKey=${MINIO_SECRET_KEY}
     ports:
       - 5000:80
     volumes:
@@ -107,7 +110,7 @@ services:
       INFLUX_HOST: http://influx:8086
       INFLUX_ORG: ${INFLUXDB_ORG}
       MINIO_HOST: minio:9000
-      MINIO_ACCESS_ID: teknum
+      MINIO_ACCESS_ID: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_TOKEN: ''
       LOGGER_SERVER_ADDRESS: logger:3000
