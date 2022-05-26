@@ -25,12 +25,20 @@ services:
       - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
       - ASPNETCORE_InfluxDbOptions__Org=${INFLUXDB_ORG}
       - ASPNETCORE_LoggerOptions__AccessToken=${LOGGER_TOKEN}
-      - ASPNETCORE_LoggerOptions__Address=logger:3000
-      - ASPNETCORE_RceOptions__BaseUrl=rce:50051
-      - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
+      - ASPNETCORE_LoggerOptions__Address=http://logger:3000
+      - ASPNETCORE_RceOptions__BaseUrl=http://rce:50051
+      - ASPNETCORE_JwtAuthentication__Secret=q6r+MfCs2qAjFe6z2vfrIXtDrTc7uNwPzZwE1RNFFM2IQ6n84zOMUFbwmPtguZwAP5kgCZ803iJgmXkbRzGCbQ==
+      - ASPNETCORE_JwtAuthentication__Issuer=https://teknologiumum.com
+      - ASPNETCORE_JwtAuthentication__Audience=https://teknologiumum.com
+      - ASPNETCORE_JwtAuthentication__Lifetime=31536000
       - ASPNETCORE_MinioOptions__Url=minio:9000
       - ASPNETCORE_MinioOptions__AccessKey=${MINIO_ACCESS_KEY}
       - ASPNETCORE_MinioOptions__SecretKey=${MINIO_SECRET_KEY}
+      - VITE_SESSION_HUB_URL=${VITE_SESSION_HUB_URL}
+      - VITE_EVENT_HUB_URL=${VITE_EVENT_HUB_URL}
+      - VITE_LOGGER_URL=${VITE_LOGGER_URL}
+      - VITE_VIDEO_STREAM_URL=${VITE_VIDEO_STREAM_URL}
+      - VITE_ADMIN_URL=${VITE_ADMIN_URL}
     ports:
       - 5000:80
     volumes:
