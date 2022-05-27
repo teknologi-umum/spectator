@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
+import type { SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -82,19 +82,20 @@ function PersonalInfoPage() {
     }
   };
 
+  const onError: SubmitErrorHandler<PersonalInfo> = () => {
+    // only log errors on development
+    // this will be noop in production
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line
+      console.log("errors", errors);
+    }
+  };
+
   useEffect(() => {
     document.title = "Personal Info | Spectator";
     if (tourCompleted.personalInfo) return;
     setIsOpen(true);
   }, []);
-
-  useEffect(() => {
-    // debug react-hook-form errors on development
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line
-      console.log("errors", errors);
-    }
-  }, [errors]);
 
   return (
     <Layout display="flex">
@@ -114,7 +115,7 @@ function PersonalInfoPage() {
       >
         <Box
           as="form"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit, onError)}
           boxShadow="xl"
           p="8"
           rounded="md"
