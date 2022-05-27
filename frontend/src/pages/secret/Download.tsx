@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LocaleButton, ThemeButton } from "@/components/TopBar";
+import { ThemeButton } from "@/components/TopBar";
 import {
   Accordion,
   AccordionButton,
@@ -119,7 +119,6 @@ export default function Download() {
           fg={fg}
           title={t("translation.translations.ui.theme")}
         />
-        <LocaleButton bg={boxBg} fg={fg} />
       </Flex>
       <Box display="flex" flexDirection="column" alignItems="center">
         <Heading mb="8" size="lg" textAlign="center" fontWeight="700">
