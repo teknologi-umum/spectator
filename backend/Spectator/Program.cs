@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -73,6 +71,11 @@ builder.Services.Setup(services => {
 		// TODO(elianiva): replace this with proper CORS policy, ATM this is being used to make it *just works*
 		builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
 	}));
+
+	// Add SPA static files
+	services.AddSpaStaticFiles(options => {
+		options.RootPath = "wwwroot";
+	});
 });
 
 // Build app
@@ -88,8 +91,10 @@ if (app.Environment.IsDevelopment()) {
 	app.UseHsts();
 }
 
-// Redirect HTTP traffic
-// app.UseHttpsRedirection();
+// Redirect HTTP traffic on production to HTTPS
+if (app.Environment.IsProduction()) {
+	app.UseHttpsRedirection();
+}
 
 // Middlewares
 app.UseRouting();
@@ -100,6 +105,7 @@ app.UseCors("AllowAll");
 // Map Frontend static files
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseSpaStaticFiles();
 
 // Map Controllers
 app.UseEndpoints(endpoints => {
@@ -107,6 +113,18 @@ app.UseEndpoints(endpoints => {
 		name: "default",
 		pattern: "{controller}/{action=Index}/{id?}"
 	);
+});
+
+// Host SPA application
+app.UseSpa(spa => {
+	spa.Options.SourcePath = "../../frontend";
+
+	if (app.Environment.IsDevelopment()) {
+		// use proxy instead of react development server since we're not using create-react-app
+		// this requires running `npm run dev` manually from the frontend folder
+		// see: https://github.com/dotnet/aspnetcore/issues/33466#issuecomment-859487783
+		spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+	}
 });
 
 // Map SignalR Hubs
