@@ -28,6 +28,8 @@ import { personalInfoTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
 import { sessionSpoke } from "@/spoke";
+import { loggerInstance } from "@/spoke/logger";
+import { LogLevel } from "@microsoft/signalr";
 
 function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -54,9 +56,13 @@ function PersonalInfoPage() {
 
   const onSubmit: SubmitHandler<PersonalInfo> = async (data) => {
     if (accessToken === null) {
-      console.error("accessToken is null");
+      loggerInstance.log(
+        LogLevel.Error,
+        "Access token was empty in Personal Info Page. This should never happen"
+      );
       return;
     }
+
     try {
       await sessionSpoke.submitPersonalInfo({
         ...data,
@@ -65,7 +71,14 @@ function PersonalInfoPage() {
       dispatch(setPersonalInfo(data));
       navigate("/instructions");
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      } else {
+        loggerInstance.log(
+          LogLevel.Error,
+          "Unkown error occured in Personal Info Page"
+        );
+      }
     }
   };
 
@@ -76,8 +89,11 @@ function PersonalInfoPage() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line
-    console.log("errors", errors);
+    // debug react-hook-form errors on development
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line
+      console.log("errors", errors);
+    }
   }, [errors]);
 
   return (
@@ -112,7 +128,6 @@ function PersonalInfoPage() {
           </Heading>
 
           <Box>
-            {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
             <FormControl
               id="email"
               mt="6"
