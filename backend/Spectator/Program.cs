@@ -87,14 +87,15 @@ await app.Services.MigrateDatabaseAsync();
 if (app.Environment.IsDevelopment()) {
 	app.UseSwagger();
 	app.UseSwaggerUI();
-} else {
-	app.UseHsts();
 }
+// else {
+// 	app.UseHsts();
+// }
 
-// Redirect HTTP traffic on production to HTTPS
-if (app.Environment.IsProduction()) {
-	app.UseHttpsRedirection();
-}
+// // Redirect HTTP traffic on production to HTTPS
+// if (app.Environment.IsProduction()) {
+// 	app.UseHttpsRedirection();
+// }
 
 // Middlewares
 app.UseRouting();
