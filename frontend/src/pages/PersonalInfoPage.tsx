@@ -82,7 +82,7 @@ function PersonalInfoPage() {
 
   return (
     <Layout display="flex">
-      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
+      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1" zIndex={10}>
         <ThemeButton
           bg={bg}
           fg={fg}
