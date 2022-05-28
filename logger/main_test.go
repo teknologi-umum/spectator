@@ -92,7 +92,7 @@ func TestMain(m *testing.M) {
 			log.Fatalf("Server exited with error: %v", err)
 		}
 	}()
-	
+
 	code := m.Run()
 	cleanup()
 	db.Close()
