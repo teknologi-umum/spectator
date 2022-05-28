@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Spectator.DomainModels.SubmissionDomain;
@@ -31,11 +32,19 @@ namespace Spectator.DomainServices.PistonDomain {
 				.Replace("_REPLACE_ME_WITH_SOLUTION_", solution);
 
 			// execute tests
-			var testResults = await _pistonClient.ExecuteTestsAsync(
-				language: language,
-				testCode: testCode,
-				cancellationToken: cancellationToken
-			);
+			var testResults = questionNumber switch {
+				// HACK: Hard coded check for first question
+				1 => await _pistonClient.ExecuteTwinkleTwinkleLittleStarTestAsync(
+					language: language,
+					testCode: testCode,
+					cancellationToken: cancellationToken
+				),
+				_ => await _pistonClient.ExecuteTestsAsync(
+					language: language,
+					testCode: testCode,
+					cancellationToken: cancellationToken
+				)
+			};
 
 			return new Submission(
 				QuestionNumber: questionNumber,

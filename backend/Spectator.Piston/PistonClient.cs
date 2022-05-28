@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -81,6 +81,62 @@ namespace Spectator.Piston {
 			return ResultParser.ParseTestResults(executeResult.Runtime.Stdout);
 		}
 
+		// HACK: Hard coded check for first question
+		public async Task<ImmutableArray<TestResultBase>> ExecuteTwinkleTwinkleLittleStarTestAsync(Language language, string testCode, CancellationToken cancellationToken) {
+			var executeResult = await ExecuteAsync(
+				language: language switch {
+					Language.C => "C",
+					Language.CPP => "C++",
+					Language.PHP => "PHP",
+					Language.Javascript => "Javascript",
+					Language.Java => "Java",
+					Language.Python => "Python",
+					_ => throw new InvalidProgramException("Unhandled language")
+				},
+				version: language switch {
+					Language.C => "9.3.0",
+					Language.CPP => "9.3.0",
+					Language.PHP => "8.1",
+					Language.Javascript => "16.15.0",
+					Language.Java => "11",
+					Language.Python => "3.10.2",
+					_ => throw new InvalidProgramException("Unhandled language")
+
+				},
+				code: testCode,
+				cancellationToken: cancellationToken
+			);
+
+			if (executeResult.Compile.ExitCode != 0) {
+				return ImmutableArray.Create<TestResultBase>(
+					new CompileErrorResult(executeResult.Compile.Stderr)
+				);
+			}
+
+			// TODO: report runtime error together with passing and failing tests
+			if (executeResult.Runtime.ExitCode != 0) {
+				return ImmutableArray.Create<TestResultBase>(
+					new RuntimeErrorResult(executeResult.Compile.Stderr)
+				);
+			}
+
+			if (!IsTwinkleTwinkleLittleStarLyrics(executeResult.Compile.Stdout)) {
+				return ImmutableArray.Create<TestResultBase>(
+					new FailingTestResult(
+						TestNumber: 1,
+						ExpectedStdout: "Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are",
+						ActualStdout: executeResult.Compile.Stdout
+					)
+				);
+			}
+
+			return ImmutableArray.Create<TestResultBase>(
+				new PassingTestResult(
+					TestNumber: 1
+				)
+			);
+		}
+
 		internal async Task<CodeResponse> ExecuteAsync(string language, string version, string code, CancellationToken cancellationToken) {
 			await _semaphore!.WaitAsync(cancellationToken);
 			try {
@@ -99,6 +155,19 @@ namespace Spectator.Piston {
 			} finally {
 				_semaphore!.Release();
 			}
+		}
+
+		// HACK: Hard coded check for first question
+		private static bool IsTwinkleTwinkleLittleStarLyrics(string text) {
+			var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			if (lines.Length != 6) return false;
+			if (lines[0] != "Twinkle twinkle little star") return false;
+			if (lines[1] != "How I wonder what you are") return false;
+			if (lines[2] != "Up above the world so high") return false;
+			if (lines[3] != "Like a diamond in the sky") return false;
+			if (lines[4] != "Twinkle twinkle little star") return false;
+			if (lines[5] != "How I wonder what you are") return false;
+			return true;
 		}
 	}
 }

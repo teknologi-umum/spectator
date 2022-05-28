@@ -229,6 +229,63 @@ namespace Spectator.DomainServices.Tests {
 			submission.TestResults.Length.Should().Be(1);
 			submission.TestResults[0].Should().BeOfType<RuntimeErrorResult>().Which.Stderr.Should().Contain("basic_string::_M_construct null not valid");
 		}
+
+		[Fact]
+		public async Task CanCheckFirstQuestionUsingHardcodedCheckAsync() {
+			const string correctCode = @"
+# printLyrics is a function that accepts no argument and returns nothing.
+def printLyrics():
+    print(""Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are"")
+";
+
+			const string incorrectCode = @"
+# printLyrics is a function that accepts no argument and returns nothing.
+def printLyrics():
+    print(""Twinkle twinkle little star\nHow I wonder what you are\nUp  above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are"")
+";
+
+			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
+
+			// Only wait piston API for 5 seconds to save github CI quota
+			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
+			var submission = await submissionServices.EvaluateSubmissionAsync(
+				questionNumber: 1,
+				locale: Locale.EN,
+				language: Language.Python,
+				directives: "",
+				solution: correctCode,
+				scratchPad: "wkwkwkk",
+				cancellationToken: timeoutSource.Token
+			);
+
+			submission.Accepted.Should().BeTrue();
+			submission.Language.Should().Be(Language.Python);
+			submission.Solution.Should().Be(correctCode);
+			submission.ScratchPad.Should().Be("wkwkwkk");
+			submission.TestResults.Length.Should().Be(1);
+			submission.TestResults[0].Should().BeOfType<PassingTestResult>();
+
+			submission = await submissionServices.EvaluateSubmissionAsync(
+				questionNumber: 1,
+				locale: Locale.EN,
+				language: Language.Python,
+				directives: "",
+				solution: incorrectCode,
+				scratchPad: "hahaha",
+				cancellationToken: timeoutSource.Token
+			);
+
+			submission.Accepted.Should().BeFalse();
+			submission.Language.Should().Be(Language.Python);
+			submission.Solution.Should().Be(incorrectCode);
+			submission.ScratchPad.Should().Be("hahaha");
+			submission.TestResults.Length.Should().Be(1);
+			submission.TestResults[0].Should().BeOfType<FailingTestResult>();
+		}
 	}
 }
 #endif
