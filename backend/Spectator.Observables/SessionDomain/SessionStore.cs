@@ -12,6 +12,7 @@ namespace Spectator.Observables.SessionDomain {
 			},
 			AnonymousSession s => @event switch {
 				PersonalInfoSubmittedEvent e => s.Apply(e),
+				LocaleSetEvent e => s.Apply(e),
 				_ => throw new InvalidOperationException("Personal info hasn't been submitted")
 			},
 			RegisteredSession s => @event switch {
