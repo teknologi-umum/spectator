@@ -96,6 +96,8 @@ namespace Spectator.RepositoryDALs.Mapper {
 					arguments[i] = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(fluxRecord.GetValueByKey(fluxProp.FluxFieldName)) / 1_000_000);
 				} else if (parameterType == typeof(MouseButton)) {
 					arguments[i] = Enum.Parse<MouseButton>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
+				} else if (parameterType == typeof(MouseDirection)) {
+					arguments[i] = Enum.Parse<MouseDirection>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
 				} else if (parameterType == typeof(Locale)) {
 					arguments[i] = Enum.Parse<Locale>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
 				} else if (parameterType == typeof(Language)) {
@@ -142,6 +144,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 					bool b => pointData.Field(fluxProperty.FluxFieldName, b),
 					DateTimeOffset dto => pointData.Field(fluxProperty.FluxFieldName, dto.ToUnixTimeMilliseconds() * 1_000_000),
 					MouseButton mb => pointData.Field(fluxProperty.FluxFieldName, mb.ToString()),
+					MouseDirection md => pointData.Field(fluxProperty.FluxFieldName, md.ToString()),
 					Locale l => pointData.Field(fluxProperty.FluxFieldName, l.ToString().ToUpperInvariant()),
 					Language l => pointData.Field(fluxProperty.FluxFieldName, l.ToString().ToLowerInvariant()),
 					SelfAssessmentManikin sam => pointData
