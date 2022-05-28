@@ -88,6 +88,10 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 		return fmt.Errorf("m3arshalling json: %v", err)
 	}
 
+	if payload.Level == "CRITICAL" || payload.Level == "ERROR" || payload.Level == "WARNING" {
+		log.Println(string(bodyBytes))
+	}
+
 	point := influxdb2.NewPoint(
 		payload.Level,
 		map[string]string{
@@ -107,5 +111,6 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 	if err != nil {
 		return fmt.Errorf("writing point: %v", err)
 	}
+
 	return nil
 }

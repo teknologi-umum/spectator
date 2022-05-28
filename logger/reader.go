@@ -80,15 +80,15 @@ func buildQuery(q queries) string {
 	}
 
 	if q.Level != "" {
-		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "`+q.Level+`")`+"\n")
+		str.WriteString(`|> filter(fn: (r) => r["_measurement"] == "` + q.Level + `")` + "\n")
 	}
 
 	if q.Application != "" {
-		str.WriteString(`|> filter(fn: (r) => r["application"] == "`+q.Application+`")`+"\n")
+		str.WriteString(`|> filter(fn: (r) => r["application"] == "` + q.Application + `")` + "\n")
 	}
 
 	if q.RequestID != "" {
-		str.WriteString(`|> filter(fn: (r) => r["request_id"] == "`+q.RequestID+`")`+"\n")
+		str.WriteString(`|> filter(fn: (r) => r["request_id"] == "` + q.RequestID + `")` + "\n")
 	}
 
 	str.WriteString("|> yield()\n")
@@ -109,7 +109,7 @@ func (d *Dependency) fetchLog(ctx context.Context, query queries) ([]LogData, er
 		return []LogData{}, fmt.Errorf("querying data: %v", err)
 	}
 	defer rows.Close()
-	
+
 	var output []LogData
 	var temp LogData
 	var tablePosition int64

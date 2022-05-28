@@ -18,7 +18,7 @@ import (
 
 type Dependency struct {
 	DB          influxdb2.Client
-	Debug bool
+	Debug       bool
 	Org         string
 	AccessToken string
 	pb.UnimplementedLoggerServer
@@ -73,7 +73,7 @@ func main() {
 		DB:          db,
 		Org:         influxOrganization,
 		AccessToken: accessToken,
-		Debug: os.Getenv("ENVIRONMENT") == "development",
+		Debug:       os.Getenv("ENVIRONMENT") == "development",
 	}
 
 	// Prepare the log bucket
@@ -105,7 +105,7 @@ func main() {
 		}
 	}()
 
-	log.Println("gRPC server: Listening on port", port)
+	log.Println("gRPC server: Listening on ", listener.Addr().String())
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
