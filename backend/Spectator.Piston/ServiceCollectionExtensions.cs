@@ -3,7 +3,7 @@
 namespace Spectator.Piston {
 	public static class ServiceCollectionExtensions {
 		public static IServiceCollection AddPistonClient(this IServiceCollection services) {
-			services.AddTransient<PistonClient>();
+			services.AddSingleton<PistonClient>();
 			return services;
 		}
 	}
