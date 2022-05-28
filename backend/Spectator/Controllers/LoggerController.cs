@@ -23,11 +23,11 @@ public class Logger : Controller {
 
 	[HttpPost]
 	public async Task<IActionResult> LogAsync([FromBody] LoggerRequest request, CancellationToken cancellationToken) {
-		if (request == null) throw new ArgumentNullException(nameof(request));
+		if (request == null) return Ok();
 		if (request.Timestamp == null) throw new ArgumentNullException(nameof(request.Timestamp));
+
 		var logData = new LogData {
 			RequestId = Guid.NewGuid().ToString(),
-			// TODO: implement correct way of injecting environment variable to reflect the enum provided in the GRPC stub
 			Environment = Environment.Unset,
 			Application = "frontend",
 			Language = "Javascript",
