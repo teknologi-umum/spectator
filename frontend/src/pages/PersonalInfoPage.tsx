@@ -82,12 +82,12 @@ function PersonalInfoPage() {
     }
   };
 
-  const onError: SubmitErrorHandler<PersonalInfo> = () => {
+  const onError: SubmitErrorHandler<PersonalInfo> = (err) => {
     // only log errors on development
     // this will be noop in production
     if (import.meta.env.DEV) {
       // eslint-disable-next-line
-      console.log("errors", errors);
+      console.log("errors", err);
     }
   };
 
