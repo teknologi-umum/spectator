@@ -6,7 +6,13 @@ import { markTourCompleted } from "@/store/slices/sessionSlice";
 export const codingTestTour: StepType[] = [
   {
     selector: "[data-tour=\"sidebar-step-1\"]",
-    content: <p>You can press this button to toggle the sidebar.</p>,
+    content: (
+      <>
+        <p>You can press this button to toggle the sidebar.</p>
+        <br />
+        <p>Try pressing this button to continue with the tour.</p>
+      </>
+    ),
     disableActions: true
   },
   {

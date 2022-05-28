@@ -27,15 +27,20 @@ COPY ["backend/Spectator.DomainEvents/Spectator.DomainEvents.csproj", "backend/S
 COPY ["backend/Spectator.DomainModels/Spectator.DomainModels.csproj", "backend/Spectator.DomainModels/"]
 COPY ["backend/Spectator.DomainServices/Spectator.DomainServices.csproj", "backend/Spectator.DomainServices/"]
 COPY ["backend/Spectator.JwtAuthentication/Spectator.JwtAuthentication.csproj", "backend/Spectator.JwtAuthentication/"]
+COPY ["backend/Spectator.LoggerClient/Spectator.LoggerClient.csproj", "backend/Spectator.LoggerClient/"]
 COPY ["backend/Spectator.Observables/Spectator.Observables.csproj", "backend/Spectator.Observables/"]
 COPY ["backend/Spectator.Piston/Spectator.Piston.csproj", "backend/Spectator.Piston/"]
 COPY ["backend/Spectator.Primitives/Spectator.Primitives.csproj", "backend/Spectator.Primitives/"]
 COPY ["backend/Spectator.Repositories/Spectator.Repositories.csproj", "backend/Spectator.Repositories/"]
 COPY ["backend/Spectator.RepositoryDALs/Spectator.RepositoryDALs.csproj", "backend/Spectator.RepositoryDALs/"]
+COPY ["backend/Spectator.WorkerClient/Spectator.WorkerClient.csproj", "backend/Spectator.WorkerClient/"]
 COPY ["proto/Spectator.Protos/Spectator.Protos.csproj", "proto/Spectator.Protos/"]
 COPY ["frontend/Frontend.csproj", "frontend/"]
+
 RUN dotnet restore "backend/Spectator/Spectator.csproj"
+
 COPY . .
+
 WORKDIR "/src/backend/Spectator"
 RUN dotnet build "Spectator.csproj" -c Release -o /app/build
 

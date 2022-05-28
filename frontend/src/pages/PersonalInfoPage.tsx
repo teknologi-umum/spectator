@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
+import type { SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PersonalInfoSchema } from "@/schema";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -28,6 +28,8 @@ import { personalInfoTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
 import { sessionSpoke } from "@/spoke";
+import { loggerInstance } from "@/spoke/logger";
+import { LogLevel } from "@microsoft/signalr";
 
 function PersonalInfoPage() {
   const { t } = useTranslation();
@@ -54,9 +56,13 @@ function PersonalInfoPage() {
 
   const onSubmit: SubmitHandler<PersonalInfo> = async (data) => {
     if (accessToken === null) {
-      console.error("accessToken is null");
+      loggerInstance.log(
+        LogLevel.Error,
+        "Access token was empty in Personal Info Page. This should never happen"
+      );
       return;
     }
+
     try {
       await sessionSpoke.submitPersonalInfo({
         ...data,
@@ -65,7 +71,23 @@ function PersonalInfoPage() {
       dispatch(setPersonalInfo(data));
       navigate("/instructions");
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error) {
+        loggerInstance.log(LogLevel.Error, err.message);
+      } else {
+        loggerInstance.log(
+          LogLevel.Error,
+          "Unkown error occured in Personal Info Page"
+        );
+      }
+    }
+  };
+
+  const onError: SubmitErrorHandler<PersonalInfo> = (err) => {
+    // only log errors on development
+    // this will be noop in production
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line
+      console.log("errors", err);
     }
   };
 
@@ -75,14 +97,9 @@ function PersonalInfoPage() {
     setIsOpen(true);
   }, []);
 
-  useEffect(() => {
-    // eslint-disable-next-line
-    console.log("errors", errors);
-  }, [errors]);
-
   return (
     <Layout display="flex">
-      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
+      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1" zIndex={10}>
         <ThemeButton
           bg={bg}
           fg={fg}
@@ -98,7 +115,7 @@ function PersonalInfoPage() {
       >
         <Box
           as="form"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit, onError)}
           boxShadow="xl"
           p="8"
           rounded="md"
@@ -112,7 +129,6 @@ function PersonalInfoPage() {
           </Heading>
 
           <Box>
-            {/* `eslint` is not happy with `!!foo`, need to use `Boolean` instead */}
             <FormControl
               id="email"
               mt="6"

@@ -85,7 +85,11 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 	// convert body into json as influxdb doesnt accept map
 	bodyBytes, err := json.Marshal(payload.Body)
 	if err != nil {
-		return fmt.Errorf("m3arshalling json: %v", err)
+		return fmt.Errorf("marshalling json: %v", err)
+	}
+
+	if payload.Level == "CRITICAL" || payload.Level == "ERROR" || payload.Level == "WARNING" {
+		log.Println(payload.Message)
 	}
 
 	point := influxdb2.NewPoint(
@@ -107,5 +111,6 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 	if err != nil {
 		return fmt.Errorf("writing point: %v", err)
 	}
+
 	return nil
 }
