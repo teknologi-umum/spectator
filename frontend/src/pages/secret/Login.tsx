@@ -1,5 +1,5 @@
 import React from "react";
-import { LocaleButton, ThemeButton } from "@/components/TopBar";
+import { ThemeButton } from "@/components/TopBar";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useColorModeValue } from "@/hooks";
 import {
@@ -107,7 +107,6 @@ export default function Login() {
           fg={fg}
           title={t("translation.translations.ui.theme")}
         />
-        <LocaleButton bg={boxBg} fg={fg} />
       </Flex>
       <Box
         height="full"
