@@ -38,6 +38,7 @@ services:
       - ASPNETCORE_PistonOptions__CompileTimeout=5000
       - ASPNETCORE_PistonOptions__RunTimeout=10000
       - ASPNETCORE_PistonOptions__MemoryLimit=2000000000
+      - ASPNETCORE_WorkerOptions__Address=http://worker:5002
       - VITE_SESSION_HUB_URL=${VITE_SESSION_HUB_URL}
       - VITE_EVENT_HUB_URL=${VITE_EVENT_HUB_URL}
       - VITE_LOGGER_URL=${VITE_LOGGER_URL}
