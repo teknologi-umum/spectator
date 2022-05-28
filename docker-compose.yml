@@ -24,7 +24,6 @@ services:
       - ASPNETCORE_InfluxDbOptions__SessionEventsBucket=session_events
       - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
       - ASPNETCORE_InfluxDbOptions__Org=teknum_spectator
-      - ASPNETCORE_RceOptions__BaseUrl=http://rce/
       - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
     ports:
       - 5000:80
