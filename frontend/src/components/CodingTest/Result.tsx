@@ -14,6 +14,7 @@ import {
   Text
 } from "@chakra-ui/react";
 import { CheckmarkIcon, CrossIcon, WarningIcon } from "@/icons";
+import { ResultCase } from "@/models/TestResult";
 
 interface OutputBoxProps {
   expected: string;
@@ -51,110 +52,98 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   const yellow = useColorModeValue("yellow.500", "yellow.400", "yellow.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
 
-  const badgeColours = useMemo(
-    () => ({
-      passingTest: "green",
-      runtimeError: "orange",
-      compileError: "yellow",
-      failingTest: "red"
-    }),
-    []
-  );
+  const badgeColours = {
+    [ResultCase.Passing]: "green",
+    [ResultCase.Failing]: "red",
+    [ResultCase.RuntimeError]: "orange",
+    [ResultCase.CompileError]: "yellow"
+  };
 
-  const resultIcons = useMemo(
-    () => ({
-      passingTest: (
-        <Box color={green}>
-          <CheckmarkIcon />
-        </Box>
-      ),
-      runtimeError: (
-        <Box color={orange}>
-          <WarningIcon />
-        </Box>
-      ),
-      compileError: (
-        <Box color={yellow}>
-          <WarningIcon />
-        </Box>
-      ),
-      failingTest: (
-        <Box color={red}>
-          <CrossIcon />
-        </Box>
-      )
-    }),
-    []
-  );
+  const resultIcons = {
+    [ResultCase.Passing]: (
+      <Box color={green}>
+        <CheckmarkIcon />
+      </Box>
+    ),
+    [ResultCase.Failing]: (
+      <Box color={red}>
+        <CrossIcon />
+      </Box>
+    ),
+    [ResultCase.RuntimeError]: (
+      <Box color={orange}>
+        <WarningIcon />
+      </Box>
+    ),
+    [ResultCase.CompileError]: (
+      <Box color={yellow}>
+        <WarningIcon />
+      </Box>
+    )
+  };
 
-  function humanizeResultStatus(status: string) {
-    return status.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1");
-  }
+  const humanisedResultCase = {
+    [ResultCase.Passing]: "Passing",
+    [ResultCase.Failing]: "Failing",
+    [ResultCase.RuntimeError]: "Runtime Error",
+    [ResultCase.CompileError]: "Compile Error"
+  };
 
   return (
     <Box overflowY="auto" p="4" h="full">
       <Accordion allowToggle allowMultiple>
         {currentSnapshot?.testResults &&
-          currentSnapshot.testResults
-            .filter((testResult) => testResult.result.oneofKind !== undefined)
-            .map((testResult, index) => {
-              // the compiler isn't smart enough to know that we already
-              // filtered out `oneOfKind`s that are undefined so we still have to 
-              // do a non-null assertion
-              const status = testResult.result.oneofKind!;
+          currentSnapshot.testResults.map((testResult, index) => {
+            const itemBadgeColour = badgeColours[testResult.resultCase];
+            const itemResultIcon = resultIcons[testResult.resultCase];
+            const status = humanisedResultCase[testResult.resultCase];
 
-              const humanizedStatus = humanizeResultStatus(status);
-              const itemBadgeColour = badgeColours[status];
-              const itemResultIcon = resultIcons[status];
-
-              return (
-                <AccordionItem
-                  key={index}
-                  border="none"
-                  background={resultBg}
-                  mb="3"
+            return (
+              <AccordionItem
+                key={index}
+                border="none"
+                background={resultBg}
+                mb="3"
+                rounded="sm"
+                _expanded={{ borderRadius: "sm" }}
+              >
+                <AccordionButton
+                  color={fg}
+                  _hover={{ borderRadius: "sm" }}
                   rounded="sm"
-                  _expanded={{ borderRadius: "sm" }}
                 >
-                  <AccordionButton
-                    color={fg}
-                    _hover={{ borderRadius: "sm" }}
-                    rounded="sm"
-                  >
-                    <Flex gap="2" align="center" flex="1" textAlign="left">
-                      {itemResultIcon}
-                      <Text fontWeight="bold" color={fgDarker}>
-                        Test Result #{testResult.testNumber}
-                      </Text>
-                      <Badge colorScheme={itemBadgeColour}>
-                        {humanizedStatus}
-                      </Badge>
-                    </Flex>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4} color={fgDarker}>
-                    {testResult.result.oneofKind === "passingTest" && (
-                      <Text>Passed!</Text>
-                    )}
+                  <Flex gap="2" align="center" flex="1" textAlign="left">
+                    {itemResultIcon}
+                    <Text fontWeight="bold" color={fgDarker}>
+                      Test Result #{testResult.testNumber}
+                    </Text>
+                    <Badge colorScheme={itemBadgeColour}>{status}</Badge>
+                  </Flex>
+                  <AccordionIcon />
+                </AccordionButton>
+                <AccordionPanel pb={4} color={fgDarker}>
+                  {testResult.resultCase === ResultCase.Passing && (
+                    <Text>Passed!</Text>
+                  )}
 
-                    {testResult.result.oneofKind === "runtimeError" && (
-                      <Text>{testResult.result.runtimeError.stderr}</Text>
-                    )}
+                  {testResult.resultCase === ResultCase.RuntimeError && (
+                    <Text>{testResult.runtimeError.stderr}</Text>
+                  )}
 
-                    {testResult.result.oneofKind === "compileError" && (
-                      <Text>{testResult.result.compileError.stderr}</Text>
-                    )}
+                  {testResult.resultCase === ResultCase.CompileError && (
+                    <Text>{testResult.compileError.stderr}</Text>
+                  )}
 
-                    {testResult.result.oneofKind === "failingTest" && (
-                      <OutputBox
-                        expected={testResult.result.failingTest.expectedStdout}
-                        actual={testResult.result.failingTest.actualStdout}
-                      />
-                    )}
-                  </AccordionPanel>
-                </AccordionItem>
-              );
-            })}
+                  {testResult.resultCase === ResultCase.Failing && (
+                    <OutputBox
+                      expected={testResult.failingTest.expectedStdout}
+                      actual={testResult.failingTest.actualStdout}
+                    />
+                  )}
+                </AccordionPanel>
+              </AccordionItem>
+            );
+          })}
       </Accordion>
     </Box>
   );
