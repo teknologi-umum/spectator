@@ -20,10 +20,12 @@ export const codingTestSlice = createSlice({
     setQuestionTabIndex: (state, action: PayloadAction<"question" | "result">) => {
       if (action.payload === "question") {
         state.questionTabIndex = 0;
+        return;
       }
 
       if (action.payload === "result") {
         state.questionTabIndex = 1;
+        return;
       }
 
       console.error("KOK BISA SAMPE SINI????");
