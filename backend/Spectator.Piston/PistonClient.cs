@@ -74,7 +74,7 @@ namespace Spectator.Piston {
 			// TODO: report runtime error together with passing and failing tests
 			if (executeResult.Runtime.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new RuntimeErrorResult(executeResult.Compile.Stderr)
+					new RuntimeErrorResult(executeResult.Runtime.Stderr)
 				);
 			}
 
@@ -116,7 +116,7 @@ namespace Spectator.Piston {
 			// TODO: report runtime error together with passing and failing tests
 			if (executeResult.Runtime.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new RuntimeErrorResult(executeResult.Compile.Stderr)
+					new RuntimeErrorResult(executeResult.Runtime.Stderr)
 				);
 			}
 
