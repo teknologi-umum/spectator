@@ -27,7 +27,7 @@ import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 import { setExamResult } from "@/store/slices/examResultSlice";
 import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
-import { SubmissionResult } from "@/stub/session";
+import { SubmissionResult } from "@/models/SubmissionResult";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;

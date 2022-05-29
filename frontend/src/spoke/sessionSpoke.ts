@@ -7,11 +7,11 @@ import {
   EmptyRequest,
   SubmissionRequest,
   Exam,
-  SubmissionResult,
   ExamResult
 } from "@/stub/session";
 import SpokeBase from "@/spoke/spokeBase";
 import { SESSION_HUB_URL } from "@/constants";
+import { SubmissionResult } from "@/models/SubmissionResult";
 
 class SessionSpoke extends SpokeBase {
   public async startSession(request: StartSessionRequest): Promise<SessionReply> {
