@@ -112,25 +112,20 @@ export default function TopBar({ bg, fg }: MenuProps) {
     );
 
     try {
+      const submissionData = {
+        accessToken,
+        language: solution.language,
+        directives: solution.getDirective(),
+        solution: solution.content,
+        scratchPad: currentSnapshot.scratchPad,
+        questionNumber: currentQuestionNumber
+      };
+      
       let submissionResult: SubmissionResult;
       if (submissionType === "submit") {
-        submissionResult = await sessionSpoke.submitSolution({
-          accessToken,
-          language: solution.language,
-          directives: solution.getDirective(),
-          solution: solution.content,
-          scratchPad: currentSnapshot.scratchPad,
-          questionNumber: currentQuestionNumber
-        });
+        submissionResult = await sessionSpoke.submitSolution(submissionData);
       } else if (submissionType === "test") {
-        submissionResult = await sessionSpoke.testSolution({
-          accessToken,
-          language: solution.language,
-          directives: solution.getDirective(),
-          solution: solution.content,
-          scratchPad: currentSnapshot.scratchPad,
-          questionNumber: currentQuestionNumber
-        });
+        submissionResult = await sessionSpoke.testSolution(submissionData);
       } else {
         throw new Error("Invalid type");
       }
