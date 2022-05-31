@@ -94,6 +94,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       : false;
 
   const [submitting, setSubmitting] = useState(false);
+  const [testing, setTesting] = useState(false);
 
   async function submitSolution(submissionType: "submit" | "test") {
     if (
@@ -104,8 +105,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       return;
     }
 
-    setSubmitting(true);
-
+    
     const solution = new Solution(
       currentLanguage,
       currentSnapshot.solutionByLanguage[currentLanguage]
@@ -123,8 +123,10 @@ export default function TopBar({ bg, fg }: MenuProps) {
       
       let submissionResult: SubmissionResult;
       if (submissionType === "submit") {
+        setSubmitting(true);
         submissionResult = await sessionSpoke.submitSolution(submissionData);
       } else if (submissionType === "test") {
+        setTesting(true);
         submissionResult = await sessionSpoke.testSolution(submissionData);
       } else {
         throw new Error("Invalid type");
@@ -144,6 +146,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       );
 
       setSubmitting(false);
+      setTesting(false);
 
       // move to the result tab
       dispatch(setQuestionTabIndex("result"));
@@ -292,7 +295,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           colorScheme="blue"
           variant="outline"
           h="full"
-          isLoading={submitting}
+          isLoading={testing}
           onClick={() => submitSolution("test")}
           data-tour="topbar-step-7"
         >
