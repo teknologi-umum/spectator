@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Text.Json;
 using FluentAssertions;
 using Spectator.DomainEvents.SessionDomain;
 using Spectator.DomainModels.SessionDomain;
+using Spectator.DomainModels.SubmissionDomain;
 using Spectator.Primitives;
 using Xunit;
 
@@ -320,7 +322,45 @@ namespace Spectator.DomainModels.Tests {
 		// TODO: CannotForfeitExamWithoutQuestionNumbers (corrupt session manually to test)
 		// TODO: CannotForfeitExamWithoutSubmissionDictionary (corrupt session manually to test)
 		// TODO: CannotForfeitExamAfterAllSubmissionsAccepted
-		// TODO: CanAcceptSolution
+
+		[Fact]
+		public void CanAcceptSolution() {
+			var timestamp = DateTimeOffset.UtcNow.AddSeconds(4);
+			var examSession = CanStartExam();
+			var testResults = ImmutableArray.Create<TestResultBase>(
+				new PassingTestResult(1)
+			);
+			var serializedTestResults = JsonSerializer.Serialize(testResults, TestResultBase.JSON_SERIALIZER_OPTIONS);
+			var solutionAcceptedEvent = new SolutionAcceptedEvent(
+				SessionId: examSession.Id,
+				Timestamp: timestamp,
+				QuestionNumber: 1,
+				Language: Language.Python,
+				Solution: @"
+def printLyrics():
+    print(""Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are"")
+",
+				ScratchPad: "hmm...",
+				SerializedTestResults: serializedTestResults
+			);
+			var newExamSession = examSession.Apply(solutionAcceptedEvent);
+			newExamSession.Id.Should().Be(examSession.Id);
+			newExamSession.CreatedAt.Should().Be(examSession.CreatedAt);
+			newExamSession.UpdatedAt.Should().Be(timestamp);
+			newExamSession.SubmissionByQuestionNumber.Should().NotBeNull();
+			newExamSession.SubmissionByQuestionNumber!.Count.Should().Be(1);
+			newExamSession.SubmissionByQuestionNumber.Should().ContainKey(1);
+			newExamSession.SubmissionByQuestionNumber[1].Accepted.Should().BeTrue();
+			newExamSession.SubmissionByQuestionNumber[1].Language.Should().Be(Language.Python);
+			newExamSession.SubmissionByQuestionNumber[1].Solution.Should().Be(@"
+def printLyrics():
+    print(""Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are"")
+");
+			newExamSession.SubmissionByQuestionNumber[1].ScratchPad.Should().Be("hmm...");
+			newExamSession.SubmissionByQuestionNumber[1].TestResults.Length.Should().Be(1);
+			newExamSession.SubmissionByQuestionNumber[1].TestResults[0].Should().BeOfType<PassingTestResult>();
+		}
+
 		// TODO: CannotAcceptSolutionBeforeExamStarted
 		// TODO: CannotAcceptSolutionAfterExamEnded
 		// TODO: CannotAcceptSolutionWithoutDeadline (corrupt session manually to test)
