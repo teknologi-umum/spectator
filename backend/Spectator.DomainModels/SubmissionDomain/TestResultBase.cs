@@ -20,11 +20,11 @@ namespace Spectator.DomainModels.SubmissionDomain {
 				// It has to start with a {
 				if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException("Expected start of object");
 
-				// First property has to be "TestStatus"
+				// First property has to be "status"
 				if (!reader.Read()
 					|| reader.TokenType != JsonTokenType.PropertyName
-					|| reader.GetString() != "TestStatus") {
-					throw new JsonException("Expected first property to be 'TestStatus'");
+					|| reader.GetString() != "status") {
+					throw new JsonException("Expected first property to be 'status'");
 				}
 
 				// Read test status
@@ -34,11 +34,11 @@ namespace Spectator.DomainModels.SubmissionDomain {
 					throw new JsonException("Expected test status");
 				}
 
-				// Second property has to be "TestResult"
+				// Second property has to be "result"
 				if (!reader.Read()
 					|| reader.TokenType != JsonTokenType.PropertyName
-					|| reader.GetString() != "TestResult") {
-					throw new JsonException("Expected second property to be 'TestResult'");
+					|| reader.GetString() != "result") {
+					throw new JsonException("Expected second property to be 'result'");
 				}
 
 				// Read test result
@@ -63,8 +63,8 @@ namespace Spectator.DomainModels.SubmissionDomain {
 				// Write {
 				writer.WriteStartObject();
 
-				// Write TestStatus property
-				writer.WritePropertyName("TestStatus");
+				// Write status property
+				writer.WritePropertyName("status");
 				writer.WriteStringValue(value switch {
 					PassingTestResult => "Passing",
 					FailingTestResult => "Failing",
@@ -73,8 +73,8 @@ namespace Spectator.DomainModels.SubmissionDomain {
 					_ => throw new JsonException($"Unsupported type {value.GetType().Name}")
 				});
 
-				// Write TestResult property
-				writer.WritePropertyName("TestResult");
+				// Write result property
+				writer.WritePropertyName("result");
 				JsonSerializer.Serialize(writer, value);
 
 				// Write }
