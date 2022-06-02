@@ -6,6 +6,7 @@ export interface EditorState {
   deadlineUtc: number | null;
   questions: Question[] | null;
   currentQuestionNumber: number;
+  lockedToCurrentQuestion: boolean;
   currentLanguage: Language;
   fontSize: number;
   snapshotByQuestionNumber: Record<number, EditorSnapshot>;

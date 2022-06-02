@@ -12,7 +12,7 @@ import {
 import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
 import { codingTestTour } from "@/tours";
-import { Editor, Question, ScratchPad, SideBar } from "@/components/CodingTest";
+import { Editor, Problem, ScratchPad, SideBar } from "@/components/CodingTest";
 import ToastBase from "@/components/Toast/ToastBase";
 import ToastOverlay from "@/components/Toast/ToastOverlay";
 import { TopBar } from "@/components/TopBar";
@@ -159,7 +159,7 @@ function CodingTest() {
           <Box h="calc(100% - 3.5rem)">
             <ReflexContainer orientation="vertical">
               <ReflexElement minSize={400} style={{ overflow: "hidden" }}>
-                <Question bg={bg} fg={fg} fgDarker={fgDarker} />
+                <Problem bg={bg} fg={fg} fgDarker={fgDarker} />
               </ReflexElement>
 
               <ReflexSplitter

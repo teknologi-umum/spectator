@@ -26,7 +26,7 @@ interface NavItemProps {
 export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
-  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, lockedToCurrentQuestion } = useAppSelector((state) => state.editor);
   const bg = useColorModeValue("teal.50", "teal.500");
   const fg = useColorModeValue("teal.700", "teal.200");
   const { t } = useTranslation();
@@ -54,10 +54,16 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
           py="2"
           borderRadius="md"
           w="full"
+          css={{
+            opacity: lockedToCurrentQuestion ? 0.5 : 1
+          }}
           _hover={{ textDecoration: "none" }}
-          onClick={() =>
-            dispatch(setCurrentQuestionNumber(questionNumber))
-          }
+          onClick={() => {
+            // don't allow the user to navigate to other question
+            // when they're submitting/testing their submission for the current question
+            if (lockedToCurrentQuestion) return;
+            dispatch(setCurrentQuestionNumber(questionNumber));
+          }}
         >
           <MenuButton w="full">
             <Flex gap="5" alignItems="center" whiteSpace="nowrap">

@@ -33,8 +33,6 @@ export default function SideBar({ bg, fg }: SideBarProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { setIsOpen, setCurrentStep } = useTour();
-  // TODO(elianiva): make this false only if the user hasn't done the
-  //                 onboarding process
   const [isBoarded, setBoarded] = useState(false);
 
   return (

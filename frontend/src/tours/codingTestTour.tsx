@@ -110,8 +110,7 @@ export const codingTestTour: StepType[] = [
     selector: "[data-tour=\"question-step-2\"]",
     content: (
       <p>
-        This is the Result tab. Grayed out means that you haven&apos;t run your
-        code. The result of your submission can be seen here.
+        This is the Result tab. The result of your submission can be seen here.
       </p>
     )
   },
