@@ -1,44 +1,37 @@
-// these are not arbitrary numbers, refer to protos/Spectator.Protos/session.proto#L102-L105
-// this enum is used to map the result of `oneofKind` from the protobuf file
-export enum ResultCase {
-  Passing = 2,
-  Failing = 3,
-  CompileError = 4,
-  RuntimeError = 5,
-}
-
 interface PassingTest {
-  resultCase: ResultCase.Passing;
-  passingTest: Record<string, unknown>;
+  status: "Passing";
+  result: {
+    testNumber: number;
+  };
 }
 
 interface FailingTest {
-  resultCase: ResultCase.Failing;
-  failingTest: {
+  status: "Failing";
+  result: {
+    testNumber: number;
     expectedStdout: string;
     actualStdout: string;
   };
 }
 
 interface CompileError {
-  resultCase: ResultCase.CompileError;
-  compileError: {
+  status: "CompileError";
+  result: {
+    testNumber: number;
     stderr: string;
   };
 }
 
 interface RuntimeError {
-  resultCase: ResultCase.RuntimeError;
-  runtimeError: {
+  status: "RuntimeError";
+  result: {
+    testNumber: number;
     stderr: string;
   };
 }
 
-export type TestResult = {
-  testNumber: number;
-} & (
+export type TestResult =
   | PassingTest
   | FailingTest
   | CompileError
-  | RuntimeError
-);
+  | RuntimeError;
