@@ -14,7 +14,6 @@ import {
   Text
 } from "@chakra-ui/react";
 import { CheckmarkIcon, CrossIcon, WarningIcon } from "@/icons";
-import { ResultCase } from "@/models/TestResult";
 import { EditorSnapshot } from "@/models/EditorSnapshot";
 
 interface OutputBoxProps {
@@ -63,29 +62,29 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   }, [currentSnapshot]);
 
   const badgeColours = {
-    [ResultCase.Passing]: "green",
-    [ResultCase.Failing]: "red",
-    [ResultCase.RuntimeError]: "orange",
-    [ResultCase.CompileError]: "yellow"
+    Passing: "green",
+    Failing: "red",
+    RuntimeError: "orange",
+    CompileError: "yellow"
   };
 
   const resultIcons = {
-    [ResultCase.Passing]: (
+    Passing: (
       <Box color={green}>
         <CheckmarkIcon />
       </Box>
     ),
-    [ResultCase.Failing]: (
+    Failing: (
       <Box color={red}>
         <CrossIcon />
       </Box>
     ),
-    [ResultCase.RuntimeError]: (
+    RuntimeError: (
       <Box color={orange}>
         <WarningIcon />
       </Box>
     ),
-    [ResultCase.CompileError]: (
+    CompileError: (
       <Box color={yellow}>
         <WarningIcon />
       </Box>
@@ -93,19 +92,19 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   };
 
   const humanisedResultCase = {
-    [ResultCase.Passing]: "Passing",
-    [ResultCase.Failing]: "Failing",
-    [ResultCase.RuntimeError]: "Runtime Error",
-    [ResultCase.CompileError]: "Compile Error"
+    Passing: "Passing",
+    Failing: "Failing",
+    RuntimeError: "Runtime Error",
+    CompileError: "Compile Error"
   };
 
   return (
     <Box overflowY="auto" p="4" h="full">
       <Accordion allowToggle allowMultiple>
         {testResults?.map((testResult, index) => {
-          const itemBadgeColour = badgeColours[testResult.resultCase];
-          const itemResultIcon = resultIcons[testResult.resultCase];
-          const status = humanisedResultCase[testResult.resultCase];
+          const itemBadgeColour = badgeColours[testResult.status];
+          const itemResultIcon = resultIcons[testResult.status];
+          const status = humanisedResultCase[testResult.status];
 
           return (
             <AccordionItem
@@ -124,29 +123,27 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                 <Flex gap="2" align="center" flex="1" textAlign="left">
                   {itemResultIcon}
                   <Text fontWeight="bold" color={fgDarker}>
-                    Test Result #{testResult.testNumber}
+                    Test Result #{testResult.result.testNumber}
                   </Text>
                   <Badge colorScheme={itemBadgeColour}>{status}</Badge>
                 </Flex>
                 <AccordionIcon />
               </AccordionButton>
               <AccordionPanel pb={4} color={fgDarker}>
-                {testResult.resultCase === ResultCase.Passing && (
-                  <Text>Passed!</Text>
+                {testResult.status === "Passing" && <Text>Passed!</Text>}
+
+                {testResult.status === "RuntimeError" && (
+                  <Text>{testResult.result.stderr}</Text>
                 )}
 
-                {testResult.resultCase === ResultCase.RuntimeError && (
-                  <Text>{testResult.runtimeError.stderr}</Text>
+                {testResult.status === "CompileError" && (
+                  <Text>{testResult.result.stderr}</Text>
                 )}
 
-                {testResult.resultCase === ResultCase.CompileError && (
-                  <Text>{testResult.compileError.stderr}</Text>
-                )}
-
-                {testResult.resultCase === ResultCase.Failing && (
+                {testResult.status === "Failing" && (
                   <OutputBox
-                    expected={testResult.failingTest.expectedStdout}
-                    actual={testResult.failingTest.actualStdout}
+                    expected={testResult.result.expectedStdout}
+                    actual={testResult.result.actualStdout}
                   />
                 )}
               </AccordionPanel>
