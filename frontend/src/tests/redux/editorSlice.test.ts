@@ -1,11 +1,16 @@
 import { describe, expect } from "vitest";
-import reducer, { setFontSize, setLanguage } from "@/store/slices/editorSlice";
+import reducer, {
+  setFontSize,
+  setLanguage,
+  setLockedToCurrentQuestion
+} from "@/store/slices/editorSlice";
 import type { EditorState } from "@/models/EditorState";
 
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
   currentQuestionNumber: 1,
+  lockedToCurrentQuestion: false,
   currentLanguage: "javascript",
   fontSize: 14,
   snapshotByQuestionNumber: {}
@@ -46,6 +51,13 @@ describe("Editor related state", (it) => {
     expect(reducer(initialState, setFontSize(18))).toEqual({
       ...initialState,
       fontSize: 18
+    });
+  });
+
+  it("should be able to lock to the current question", () => {
+    expect(reducer(initialState, setLockedToCurrentQuestion(true))).toEqual({
+      ...initialState,
+      lockedToCurrentQuestion: true
     });
   });
 });

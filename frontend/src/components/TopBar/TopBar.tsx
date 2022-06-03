@@ -12,6 +12,7 @@ import {
 import {
   setFontSize,
   setLanguage,
+  setLockedToCurrentQuestion,
   setSnapshot
 } from "@/store/slices/editorSlice";
 import type { EditorSnapshot } from "@/models/EditorSnapshot";
@@ -122,6 +123,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       };
       
       let submissionResult: SubmissionResult;
+      dispatch(setLockedToCurrentQuestion(true));
       if (submissionType === "submit") {
         setSubmitting(true);
         submissionResult = await sessionSpoke.submitSolution(submissionData);
@@ -145,6 +147,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         })
       );
 
+      dispatch(setLockedToCurrentQuestion(false));
       setSubmitting(false);
       setTesting(false);
 

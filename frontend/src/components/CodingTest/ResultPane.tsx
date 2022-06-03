@@ -101,55 +101,59 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   return (
     <Box overflowY="auto" p="4" h="full">
       <Accordion allowToggle allowMultiple>
-        {testResults?.map((testResult, index) => {
-          const itemBadgeColour = badgeColours[testResult.status];
-          const itemResultIcon = resultIcons[testResult.status];
-          const status = humanisedResultCase[testResult.status];
+        {testResults === null ? (
+          <Text>No tests have been run.</Text>
+        ) : (
+          testResults.map((testResult, index) => {
+            const itemBadgeColour = badgeColours[testResult.status];
+            const itemResultIcon = resultIcons[testResult.status];
+            const status = humanisedResultCase[testResult.status];
 
-          return (
-            <AccordionItem
-              key={index}
-              border="none"
-              background={resultBg}
-              mb="3"
-              rounded="sm"
-              _expanded={{ borderRadius: "sm" }}
-            >
-              <AccordionButton
-                color={fg}
-                _hover={{ borderRadius: "sm" }}
+            return (
+              <AccordionItem
+                key={index}
+                border="none"
+                background={resultBg}
+                mb="3"
                 rounded="sm"
+                _expanded={{ borderRadius: "sm" }}
               >
-                <Flex gap="2" align="center" flex="1" textAlign="left">
-                  {itemResultIcon}
-                  <Text fontWeight="bold" color={fgDarker}>
-                    Test Result #{testResult.result.testNumber}
-                  </Text>
-                  <Badge colorScheme={itemBadgeColour}>{status}</Badge>
-                </Flex>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4} color={fgDarker}>
-                {testResult.status === "Passing" && <Text>Passed!</Text>}
+                <AccordionButton
+                  color={fg}
+                  _hover={{ borderRadius: "sm" }}
+                  rounded="sm"
+                >
+                  <Flex gap="2" align="center" flex="1" textAlign="left">
+                    {itemResultIcon}
+                    <Text fontWeight="bold" color={fgDarker}>
+                      Test Result #{index + 1}
+                    </Text>
+                    <Badge colorScheme={itemBadgeColour}>{status}</Badge>
+                  </Flex>
+                  <AccordionIcon />
+                </AccordionButton>
+                <AccordionPanel pb={4} color={fgDarker}>
+                  {testResult.status === "Passing" && <Text>Passed!</Text>}
 
-                {testResult.status === "RuntimeError" && (
-                  <Text>{testResult.result.stderr}</Text>
-                )}
+                  {testResult.status === "RuntimeError" && (
+                    <Text>{testResult.result.stderr}</Text>
+                  )}
 
-                {testResult.status === "CompileError" && (
-                  <Text>{testResult.result.stderr}</Text>
-                )}
+                  {testResult.status === "CompileError" && (
+                    <Text>{testResult.result.stderr}</Text>
+                  )}
 
-                {testResult.status === "Failing" && (
-                  <OutputBox
-                    expected={testResult.result.expectedStdout}
-                    actual={testResult.result.actualStdout}
-                  />
-                )}
-              </AccordionPanel>
-            </AccordionItem>
-          );
-        })}
+                  {testResult.status === "Failing" && (
+                    <OutputBox
+                      expected={testResult.result.expectedStdout}
+                      actual={testResult.result.actualStdout}
+                    />
+                  )}
+                </AccordionPanel>
+              </AccordionItem>
+            );
+          })
+        )}
       </Accordion>
     </Box>
   );

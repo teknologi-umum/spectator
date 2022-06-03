@@ -9,6 +9,7 @@ const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
   currentQuestionNumber: 1,
+  lockedToCurrentQuestion: false,
   currentLanguage: "javascript",
   fontSize: 14,
   snapshotByQuestionNumber: {}
@@ -30,6 +31,12 @@ export const editorSlice = createSlice({
       action: PayloadAction<number>
     ) => {
       state.currentQuestionNumber = action.payload;
+    },
+    setLockedToCurrentQuestion: (
+      status: EditorState,
+      action: PayloadAction<boolean>
+    ) => {
+      status.lockedToCurrentQuestion = action.payload;
     },
     setCurrentQuestion: (
       state: EditorState,
@@ -93,6 +100,7 @@ export const editorSlice = createSlice({
 export const {
   setCurrentQuestionNumber,
   setCurrentQuestion,
+  setLockedToCurrentQuestion,
   setLanguage,
   setFontSize,
   setSolution,
