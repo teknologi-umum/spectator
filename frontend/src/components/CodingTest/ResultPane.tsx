@@ -14,6 +14,7 @@ import {
   Text
 } from "@chakra-ui/react";
 import { CheckmarkIcon, CrossIcon, WarningIcon } from "@/icons";
+import { ResultCase } from "@/models/TestResult";
 import { EditorSnapshot } from "@/models/EditorSnapshot";
 
 interface OutputBoxProps {
@@ -62,29 +63,29 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   }, [currentSnapshot]);
 
   const badgeColours = {
-    Passing: "green",
-    Failing: "red",
-    RuntimeError: "orange",
-    CompileError: "yellow"
+    [ResultCase.Passing]: "green",
+    [ResultCase.Failing]: "red",
+    [ResultCase.RuntimeError]: "orange",
+    [ResultCase.CompileError]: "yellow"
   };
 
   const resultIcons = {
-    Passing: (
+    [ResultCase.Passing]: (
       <Box color={green}>
         <CheckmarkIcon />
       </Box>
     ),
-    Failing: (
+    [ResultCase.Failing]: (
       <Box color={red}>
         <CrossIcon />
       </Box>
     ),
-    RuntimeError: (
+    [ResultCase.RuntimeError]: (
       <Box color={orange}>
         <WarningIcon />
       </Box>
     ),
-    CompileError: (
+    [ResultCase.CompileError]: (
       <Box color={yellow}>
         <WarningIcon />
       </Box>
@@ -92,10 +93,10 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   };
 
   const humanisedResultCase = {
-    Passing: "Passing",
-    Failing: "Failing",
-    RuntimeError: "Runtime Error",
-    CompileError: "Compile Error"
+    [ResultCase.Passing]: "Passing",
+    [ResultCase.Failing]: "Failing",
+    [ResultCase.RuntimeError]: "Runtime Error",
+    [ResultCase.CompileError]: "Compile Error"
   };
 
   return (
@@ -105,9 +106,9 @@ export default function Result({ fg, fgDarker }: ResultProps) {
           <Text>No tests have been run.</Text>
         ) : (
           testResults.map((testResult, index) => {
-            const itemBadgeColour = badgeColours[testResult.status];
-            const itemResultIcon = resultIcons[testResult.status];
-            const status = humanisedResultCase[testResult.status];
+            const itemBadgeColour = badgeColours[testResult.resultCase];
+            const itemResultIcon = resultIcons[testResult.resultCase];
+            const status = humanisedResultCase[testResult.resultCase];
 
             return (
               <AccordionItem
@@ -133,20 +134,22 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel pb={4} color={fgDarker}>
-                  {testResult.status === "Passing" && <Text>Passed!</Text>}
-
-                  {testResult.status === "RuntimeError" && (
-                    <Text>{testResult.result.stderr}</Text>
+                  {testResult.resultCase === ResultCase.Passing && (
+                    <Text>Passed!</Text>
                   )}
 
-                  {testResult.status === "CompileError" && (
-                    <Text>{testResult.result.stderr}</Text>
+                  {testResult.resultCase === ResultCase.RuntimeError && (
+                    <Text>{testResult.runtimeError.stderr}</Text>
                   )}
 
-                  {testResult.status === "Failing" && (
+                  {testResult.resultCase === ResultCase.CompileError && (
+                    <Text>{testResult.compileError.stderr}</Text>
+                  )}
+
+                  {testResult.resultCase === ResultCase.Failing && (
                     <OutputBox
-                      expected={testResult.result.expectedStdout}
-                      actual={testResult.result.actualStdout}
+                      expected={testResult.failingTest.expectedStdout}
+                      actual={testResult.failingTest.actualStdout}
                     />
                   )}
                 </AccordionPanel>
