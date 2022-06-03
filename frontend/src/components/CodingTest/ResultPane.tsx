@@ -49,10 +49,8 @@ export default function Result({ fg, fgDarker }: ResultProps) {
   const { snapshotByQuestionNumber, currentQuestionNumber } = useAppSelector(
     (state) => state.editor
   );
-  const currentSnapshot = useMemo<EditorSnapshot | undefined>(
-    () => snapshotByQuestionNumber[currentQuestionNumber],
-    [currentQuestionNumber]
-  );
+  const currentSnapshot: EditorSnapshot | undefined =
+    snapshotByQuestionNumber[currentQuestionNumber];
   // normalise the output to either an array of result or null
   // instead of dealing with undefined/null/empty array
   const testResults = useMemo(() => {
