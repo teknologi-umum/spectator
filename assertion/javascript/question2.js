@@ -65,7 +65,7 @@ function main() {
         } else {
             console.log(`# ${i+1} FAILED`);
             console.log(`> EXPECTED ${test.expected.toFixed(2)}`);
-            console.log(`> GOT ${text.got.toFixed(2)}`);
+            console.log(`> GOT ${test.got.toFixed(2)}`);
         }
     }
 }

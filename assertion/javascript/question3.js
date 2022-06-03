@@ -41,7 +41,7 @@ function main() {
         } else {
             console.log(`# ${i+1} FAILED`);
             console.log(`> EXPECTED ${test.expected}`);
-            console.log(`> GOT ${text.got}`);
+            console.log(`> GOT ${test.got}`);
         }
     }
 }
