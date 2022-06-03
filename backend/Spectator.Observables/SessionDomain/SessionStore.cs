@@ -25,6 +25,7 @@ namespace Spectator.Observables.SessionDomain {
 				ExamForfeitedEvent e => s.Apply(e),
 				SolutionAcceptedEvent e => s.Apply(e),
 				SolutionRejectedEvent e => s.Apply(e),
+				LocaleSetEvent e => s.Apply(e),
 				_ => throw new InvalidProgramException("Unhandled event")
 			},
 			_ => throw new InvalidProgramException("Unhandled event")
