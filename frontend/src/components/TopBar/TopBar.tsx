@@ -106,7 +106,6 @@ export default function TopBar({ bg, fg }: MenuProps) {
       return;
     }
 
-    
     const solution = new Solution(
       currentLanguage,
       currentSnapshot.solutionByLanguage[currentLanguage]
@@ -121,7 +120,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         scratchPad: currentSnapshot.scratchPad,
         questionNumber: currentQuestionNumber
       };
-      
+
       let submissionResult: SubmissionResult;
       dispatch(setLockedToCurrentQuestion(true));
       if (submissionType === "submit") {
@@ -141,8 +140,10 @@ export default function TopBar({ bg, fg }: MenuProps) {
           scratchPad: currentSnapshot.scratchPad,
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
-          submissionRefactored: currentSnapshot.submissionSubmitted,
-          submissionSubmitted: submissionType === "submit",
+          submissionRefactored: currentSnapshot.submissionSubmitted ? true : false,
+          submissionSubmitted: currentSnapshot.submissionSubmitted
+            ? true // don't change the value if it's already set to true
+            : submissionType === "submit",
           testResults: submissionResult.testResults
         })
       );
