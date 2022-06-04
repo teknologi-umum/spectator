@@ -59,8 +59,8 @@
     "error_type": {
       "passing": "Passing means that you have submitted the correct answer.",
       "failing": "Failing means that you have submitted the wrong answer.",
-      "runtime_error": "Runtime Error means that you have submitted the answer but the program throws an error when we try to run it.",
-      "compile_error": "Compile Error means that you have submitted the answer but the program throws an error when we try to compile it."
+      "runtime_error": "Runtime Error means that you have submitted the answer but the program throws an error when we try to run it. This usually happens when you have used a variable that is not declared or something like that. Please check your code and try again.",
+      "compile_error": "Compile Error means that you have submitted the answer but the program throws an error when we try to compile it. This usually happens when you have a syntax error in your code. Please check your code and try again."
     }
   }
 }

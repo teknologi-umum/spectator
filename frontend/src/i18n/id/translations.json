@@ -59,8 +59,8 @@
     "error_type": {
       "passing": "Passing berarti kamu telah menjawab dengan benar.",
       "failing": "Failing berarti kamu telah menjawab dengan salah.",
-      "runtime_error": "Runtime Error berarti kamu telah mengumpulkan jawabanmu tetapi saat dijalankan terdapat kesalahan.",
-      "compile_error": "Compile Error berarti kamu telah mengumpulkan jawabanmu tetapi saat di-compile terdapat kesalahan."
+      "runtime_error": "Runtime Error berarti kamu telah mengumpulkan jawabanmu tetapi saat dijalankan terdapat kesalahan. Hal ini mungkin terjadi apabila kamu menggunakan variable yang tidak tersedia atau semacamnya. Yuk cek dan perbaiki kodemu.",
+      "compile_error": "Compile Error berarti kamu telah mengumpulkan jawabanmu tetapi saat di-compile terdapat kesalahan. Hal ini mungkin terjadi apabila kamu memiliki syntax yang salah atau semacamnya. Yuk cek dan perbaiki kodemu."
     }
   }
 }
