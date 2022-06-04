@@ -6,6 +6,6 @@ build_command = [
     "javac",
     "{file}"
 ]
-run_command = [ "java", "-XX:-UseCompressedClassPointers", "-Xmx512m", "{file}" ]
+run_command = [ "java", "-Xms128m", "-Xmx512m", "{file}" ]
 test_file = "HelloWorld.java"
 aliases = ["java"]

@@ -67,14 +67,14 @@ namespace Spectator.Piston {
 
 			if (executeResult.Compile.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new CompileErrorResult(executeResult.Compile.Stderr)
+					new CompileErrorResult(executeResult.Compile.Output_)
 				);
 			}
 
 			// TODO: report runtime error together with passing and failing tests
 			if (executeResult.Runtime.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new RuntimeErrorResult(executeResult.Runtime.Stderr)
+					new RuntimeErrorResult(executeResult.Runtime.Output_)
 				);
 			}
 
@@ -109,14 +109,14 @@ namespace Spectator.Piston {
 
 			if (executeResult.Compile.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new CompileErrorResult(executeResult.Compile.Stderr)
+					new CompileErrorResult(executeResult.Compile.Output_)
 				);
 			}
 
 			// TODO: report runtime error together with passing and failing tests
 			if (executeResult.Runtime.ExitCode != 0) {
 				return ImmutableArray.Create<TestResultBase>(
-					new RuntimeErrorResult(executeResult.Runtime.Stderr)
+					new RuntimeErrorResult(executeResult.Runtime.Output_)
 				);
 			}
 
@@ -141,7 +141,11 @@ namespace Spectator.Piston {
 			await _semaphore!.WaitAsync(cancellationToken);
 			try {
 				// HACK: java is expensive, they need more RAM than anything else
-				var memoryLimit = (language.ToLower() == "java") ? 536_870_912 : _pistonOptions.MemoryLimit;
+				var memoryLimit = language.ToLower() switch {
+					"java" => 512 * 1024 * 1024,
+					"javascript" => 512 * 1024 * 1024,
+					_ => _pistonOptions.MemoryLimit,
+				};
 
 				var runtime = await GetRuntimeAsync(language, cancellationToken) ?? throw new KeyNotFoundException($"Runtime for {language} not found.");
 				return await _rceClient.ExecuteAsync(
