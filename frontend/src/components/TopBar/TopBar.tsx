@@ -88,7 +88,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
   const currentSnapshot: EditorSnapshot | undefined =
     snapshotByQuestionNumber[currentQuestionNumber];
   const isSubmitted =
-    currentSnapshot !== undefined ? currentSnapshot.submissionAccepted : false;
+    currentSnapshot !== undefined ? currentSnapshot.submissionSubmitted : false;
   const isRefactored =
     currentSnapshot !== undefined
       ? currentSnapshot.submissionRefactored
@@ -140,7 +140,9 @@ export default function TopBar({ bg, fg }: MenuProps) {
           scratchPad: currentSnapshot.scratchPad,
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
-          submissionRefactored: currentSnapshot.submissionSubmitted ? true : false,
+          submissionRefactored: currentSnapshot.submissionSubmitted
+            ? true // mark as refactored only if it has been submitted before
+            : false,
           submissionSubmitted: currentSnapshot.submissionSubmitted
             ? true // don't change the value if it's already set to true
             : submissionType === "submit",
@@ -171,20 +173,46 @@ export default function TopBar({ bg, fg }: MenuProps) {
 
       const allSnapshots = Object.values(snapshotByQuestionNumber);
       if (allSnapshots.length < 6) {
-        // if they haven't submitted all of their submissions
+        // if they haven't tried all of the questions
         // just don't bother checking if they have been accepted or not
         return;
       }
 
-      // this will only be true when every submissions have been accepted
-      const isLastSolution = allSnapshots.reduce((acc, curr) => {
-        return curr.submissionAccepted && acc;
+      const isSessionFinished = allSnapshots.reduce((prev, curr) => {
+        // rules on how to determine the "finished" question:
+        // - if the question has been submitted and it's a correct one, we'll consider that as `true`
+        if (curr.submissionSubmitted && curr.submissionAccepted) {
+          return prev && true;
+        }
+
+        // - if the question has been submitted and it's an incorrect one, we'll see if it has been refactored or not
+        //   if it has been refactored, we'll consider that as done no matter if it's correct or not because they can
+        //   no longer submit another solution
+        if (curr.submissionAccepted && curr.submissionRefactored) {
+          return prev && true;
+        }
+
+        // - we'll consider any questions that don't belong to those categories as "not finished"
+        return curr.submissionAccepted && false;
       }, false);
 
-      if (isLastSolution) {
+      if (isSessionFinished) {
         // automatically end the exam when all of their submissions have been accepted
         // and this is the last submission that was accepted
         try {
+          const id = toast({
+            position: "top-right",
+            render: () => (
+              <CodingResultToast
+                bg={toastBg}
+                fg={toastFg}
+                green={green}
+                red={red}
+                isCorrect={submissionResult.accepted}
+                onClick={() => toast.close(id!)}
+              />
+            )
+          });
           const result = await sessionSpoke.endExam({ accessToken });
           dispatch(setExamResult(result));
           navigate("/fun-fact");
