@@ -55,6 +55,12 @@
         "title": "Submission Attempts",
         "description": "Submission Attemps is the total number of times you have attempted to submit the test whether it be correct answer or not."
       }
+    },
+    "error_type": {
+      "passing": "Passing means that you have submitted the correct answer.",
+      "failing": "Failing means that you have submitted the wrong answer.",
+      "runtime_error": "Runtime Error means that you have submitted the answer but the program throws an error when we try to run it.",
+      "compile_error": "Compile Error means that you have submitted the answer but the program throws an error when we try to compile it."
     }
   }
 }

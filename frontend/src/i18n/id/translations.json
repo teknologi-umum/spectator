@@ -55,6 +55,12 @@
         "title": "Percobaan Pengiriman",
         "description": "Percobaan Pengiriman adalah jumlah dari seberapa banyak kamu telah mencoba untuk menjawab terlepas dari jawaban tersebut benar atau salah."
       }
+    },
+    "error_type": {
+      "passing": "Passing berarti kamu telah menjawab dengan benar.",
+      "failing": "Failing berarti kamu telah menjawab dengan salah.",
+      "runtime_error": "Runtime Error berarti kamu telah mengumpulkan jawabanmu tetapi saat dijalankan terdapat kesalahan.",
+      "compile_error": "Compile Error berarti kamu telah mengumpulkan jawabanmu tetapi saat di-compile terdapat kesalahan."
     }
   }
 }
