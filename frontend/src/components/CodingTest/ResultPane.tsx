@@ -11,11 +11,18 @@ import {
   Box,
   Code,
   Flex,
-  Text
+  Text,
+  Tooltip
 } from "@chakra-ui/react";
-import { CheckmarkIcon, CrossIcon, WarningIcon } from "@/icons";
+import {
+  CheckmarkIcon,
+  CrossIcon,
+  WarningIcon,
+  QuestionOutlineIcon
+} from "@/icons";
 import { ResultCase } from "@/models/TestResult";
 import { EditorSnapshot } from "@/models/EditorSnapshot";
+import { useTranslation } from "react-i18next";
 
 interface OutputBoxProps {
   expected: string;
@@ -40,6 +47,8 @@ interface ResultProps {
 }
 
 export default function Result({ fg, fgDarker }: ResultProps) {
+  const { t } = useTranslation();
+
   const resultBg = useColorModeValue("gray.50", "gray.600", "gray.900");
   const green = useColorModeValue("green.500", "green.400", "green.300");
   const orange = useColorModeValue("orange.500", "orange.400", "orange.300");
@@ -128,6 +137,19 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                       Test Result #{index + 1}
                     </Text>
                     <Badge colorScheme={itemBadgeColour}>{status}</Badge>
+                    <Tooltip
+                      hasArrow
+                      label={t(
+                        `translation.translations.error_type.${status
+                          .toLowerCase()
+                          .split(" ")
+                          .join("_")}`
+                      )}
+                    >
+                      <span>
+                        <QuestionOutlineIcon />
+                      </span>
+                    </Tooltip>
                   </Flex>
                   <AccordionIcon />
                 </AccordionButton>
