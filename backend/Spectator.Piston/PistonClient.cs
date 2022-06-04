@@ -140,6 +140,9 @@ namespace Spectator.Piston {
 		internal async Task<CodeResponse> ExecuteAsync(string language, string version, string code, CancellationToken cancellationToken) {
 			await _semaphore!.WaitAsync(cancellationToken);
 			try {
+				// HACK: java is expensive, they need more RAM than anything else
+				var memoryLimit = (language.ToLower() == "java") ? 536_870_912 : _pistonOptions.MemoryLimit;
+
 				var runtime = await GetRuntimeAsync(language, cancellationToken) ?? throw new KeyNotFoundException($"Runtime for {language} not found.");
 				return await _rceClient.ExecuteAsync(
 					new CodeRequest {
@@ -148,7 +151,7 @@ namespace Spectator.Piston {
 						Language = language,
 						CompileTimeout = _pistonOptions.CompileTimeout,
 						RunTimeout = _pistonOptions.RunTimeout,
-						MemoryLimit = _pistonOptions.MemoryLimit,
+						MemoryLimit = memoryLimit,
 					},
 					cancellationToken: cancellationToken
 				);
