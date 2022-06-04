@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from "@chakra-ui/react";
 import CodeMirror, { keymap } from "@uiw/react-codemirror";
 import { defaultKeymap } from "@codemirror/commands";
+import { indentUnit } from "@codemirror/language";
 import { lineNumbers } from "@codemirror/view";
 import { javascript } from "@codemirror/lang-javascript";
 import { php } from "@codemirror/lang-php";
@@ -54,7 +55,7 @@ export default function Editor({ bg }: EditorProps) {
     if (currentQuestionNumber === null) {
       return null;
     }
-    
+
     const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
     return currentSnapshot?.solutionByLanguage[currentLanguage];
   }, [currentQuestionNumber, currentLanguage]);
@@ -108,6 +109,7 @@ export default function Editor({ bg }: EditorProps) {
               extensions={[
                 highlightTheme,
                 lineNumbers(),
+                indentUnit.of(" ".repeat(4)), // 4 spaces indentation
                 LANGUAGES[currentLanguage],
                 keymap.of([
                   ...defaultKeymap,
