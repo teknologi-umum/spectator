@@ -3,7 +3,7 @@ import { Flex } from "@chakra-ui/react";
 import { Box } from "@chakra-ui/react";
 import { CheckmarkIcon, CrossIcon } from "@/icons";
 
-interface FeedbackToastProps {
+interface CodingResultToastProps {
   isCorrect: boolean;
   onClick: () => void;
   bg: string;
@@ -12,7 +12,14 @@ interface FeedbackToastProps {
   red: string;
 }
 
-export default function FeedbackToast({ isCorrect, onClick, bg, fg, green, red } : FeedbackToastProps) {
+export default function CodingResultToast({
+  isCorrect,
+  onClick,
+  bg,
+  fg,
+  green,
+  red
+}: CodingResultToastProps) {
   return (
     <Box
       bg={bg}
