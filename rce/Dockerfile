@@ -17,8 +17,6 @@ COPY ./scripts ./scripts
 
 COPY package*.json .
 
-COPY ./node_modules ./node_modules
-
 RUN npm install
 
 RUN node ./scripts/install.cjs
