@@ -1,17 +1,19 @@
 import React from "react";
 import { TourProvider } from "@reactour/tour";
-import type { StepType } from "@reactour/tour";
 import type { FunctionComponent } from "react";
 import theme from "@/styles/themes";
 import { useColorModeValue } from "@/hooks";
+import { TourStepsBuilder } from "@/tours/types";
+import { useTranslation } from "react-i18next";
 
 export default function WithTour(
   Component: FunctionComponent,
-  steps: StepType[]
+  steps: TourStepsBuilder
 ) {
   const c = theme.colors;
 
   return function WrappedComponent() {
+    const { t } = useTranslation();
     const blue = useColorModeValue(c.blue[400], c.blue[300], c.blue[400]);
     const bg = useColorModeValue(c.white, c.gray[700], c.gray[800]);
     const arrowColor = useColorModeValue(c.gray[800], c.gray[400], c.gray[500]);
@@ -19,7 +21,7 @@ export default function WithTour(
 
     return (
       <TourProvider
-        steps={steps}
+        steps={steps(t)}
         styles={{
           popover: (base) => ({
             ...base,

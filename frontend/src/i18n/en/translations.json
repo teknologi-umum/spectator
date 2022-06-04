@@ -17,6 +17,51 @@
       "language": "Language",
       "theme": "Theme"
     },
+    "tour": {
+      "sam_test": {
+        "first": "You can click on one of these option. Your current choice is highlighted with a bright blue outline.",
+        "second": [
+          "When you're satisfied with your choice, you can press this button to continue to the next question.",
+          "There will be a <kbd>Previous</kbd> on the next page which you can press to go to the previous question.",
+          "You can press the <kbd>Finish</kbd> button to finish the SAM test session and go to the Coding Test page."
+        ]
+      },
+      "personal_info": {
+        "first": "You can change the theme and the language of the application here.",
+        "second": "When you're done, you can press this button to continue."
+      },
+      "coding_test": {
+        "sidebar": {
+          "first": [
+            "You can press this button to toggle the sidebar.",
+            "Try pressing this button to continue with the tour."
+          ],
+          "second": "You can switch between questions by pressing one of these buttons."
+        },
+        "topbar": [
+          "This is how much time you have left for the Coding Test. When it goes to zero, you will automatically get redirected to the next page.",
+          "You can change the theme by selecting one of the options in this dropdown.",
+          "You can select which programming language you want to use to solve the question by selecting one of the options in this dropdown.",
+          "If the font size is too small or too big, you can change it by selecting one of the options in this dropdown.",
+          "You can change the language of the User Interface by selecting one of the options in this dropdown.",
+          "If you dont think you can solve the question anymore, you can press this button. Please don't use it unless you're really sure.",
+          "You can press this button to test your answer. This won't submit your answer so you can press it multiple times to check the correctness of your answer.",
+          "You can press this button to submit your answer. I'd recommend testing your answer multiple times using the Test button previously before trying to submit it."
+        ],
+        "question": {
+          "first": "This is the Prompt tab. Every detail you need to solve the question is laid out in this tab.",
+          "second": "This is the Result tab. The result of your submission can be seen here."
+        },
+        "editor": {
+          "first": "This is your code editor. You can write your code here. Please don't change the boilerplate function, otherwise your submission won't be accepted.",
+          "second": "Your code will be persisted in the browser's local storage. You can switch between questions, refresh the page, restart the browser, and your code will still be here."
+        },
+        "scratchpad": {
+          "first": "This is your scratchpad. You can write anything on it. It's just there to help you, it won't be submitted.",
+          "second": "The content of the scratchpad will be persisted in the browser's local storage as well so don't worry about losing it."
+        }
+      }
+    },
     "personal_info": {
       "student_number": "Student Number",
       "programming_years": "How many years have you been programming?",
