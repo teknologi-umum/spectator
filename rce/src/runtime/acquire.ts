@@ -28,7 +28,8 @@ export async function acquireRuntime() {
                 configObject.compiled,
                 configObject.build_command,
                 configObject.run_command,
-                configObject.aliases
+                configObject.aliases,
+                Object.fromEntries(configObject.environment.map((o: string) => o.split("=")))
             );
             runtimes.push(runtime);
         }

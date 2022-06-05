@@ -4,7 +4,7 @@ import { Runtime } from "../src/runtime/runtime.js";
 // import { SystemUsers, User } from "../src/user/user.js";
 
 test("should throw error on invalid job parameters", (t) => {
-    const runtime = new Runtime("Javascript", "16.14.0", "js", false, [], ["node", "{file}"], ["node", "js"]);
+    const runtime = new Runtime("Javascript", "16.14.0", "js", false, [], ["node", "{file}"], ["node", "js"], {});
 
     t.throws(
         () => {
@@ -18,7 +18,7 @@ test("should throw error on invalid job parameters", (t) => {
 });
 
 test("should give a default value for timeout and memoryLimit", (t) => {
-    const runtime = new Runtime("Javascript", "16.14.0", "js", false, [], ["node", "{file}"], ["node", "js"]);
+    const runtime = new Runtime("Javascript", "16.14.0", "js", false, [], ["node", "{file}"], ["node", "js"], {});
     const job = new Job({ uid: 1, gid: 1, free: false, username: "code_executor_1" }, runtime, "console.log(\"Hello world~\");");
 
     if (job.timeout === 5_000) {
@@ -31,7 +31,7 @@ test("should give a default value for timeout and memoryLimit", (t) => {
 });
 
 test("should not use default value for timeout and memoryLimit", (t) => {
-    const runtime = new Runtime("Javascript", "16.14.0", "js", false, [], ["node", "{file}"], ["node", "js"]);
+    const runtime = new Runtime("Javascript", "16.14.0", "js", false, [], ["node", "{file}"], ["node", "js"], {});
     const job = new Job({ uid: 1, gid: 1, free: false, username: "code_executor_1" }, runtime, "console.log(\"Hello world~\");", 10_000, 256 * 1024 * 1024);
 
     if (job.timeout === 10_000) {
