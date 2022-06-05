@@ -14,14 +14,14 @@ export const samTestTour: TourStepsBuilder = (t) => [
       <>
         <p> {t("translation.translations.tour.sam_test.second.0")} </p>
         <p
-          dangerouslySetInnerHTML={t(
-            "translations.translation.tour.sam_test.second.1"
-          )}
+          dangerouslySetInnerHTML={{
+            __html: t("translation.translations.tour.sam_test.second.1")
+          }}
         ></p>
         <p
-          dangerouslySetInnerHTML={t(
-            "translations.translation.tour.sam_test.second.2"
-          )}
+          dangerouslySetInnerHTML={{
+            __html: t("translation.translations.tour.sam_test.second.2")
+          }}
         ></p>
       </>
     ),
