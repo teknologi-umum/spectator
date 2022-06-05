@@ -11,7 +11,9 @@ interface ScratchPadProps {
   bg: string;
 }
 export default function ScratchPad({ bg }: ScratchPadProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.ui"
+  });
   const dispatch = useAppDispatch();
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
@@ -50,7 +52,7 @@ export default function ScratchPad({ bg }: ScratchPadProps) {
     >
       <Tabs isLazy h="full">
         <TabList borderColor={borderBg} color={fgDarker}>
-          <Tab>{t("translation.translations.ui.scratchpad")}</Tab>
+          <Tab>{t("scratchpad")}</Tab>
         </TabList>
         <TabPanels h="full">
           <TabPanel p="2" h="full" tabIndex={-1}>

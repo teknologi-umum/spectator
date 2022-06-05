@@ -13,7 +13,7 @@ import { useAppSelector } from "@/store";
 import { ExamResult_FunFact } from "@/stub/session";
 
 interface FunFactData {
-  title: string;
+  name: string;
   color: "blue" | "red" | "green";
   icon: JSX.Element;
   value: string;
@@ -26,21 +26,21 @@ function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
     switch (key) {
     case "wordsPerMinute":
       return prev.concat({
-        title: "words_per_minute",
+        name: "words_per_minute",
         color: "blue",
         icon: <SpeedIcon width="48px" height="48px" />,
         value: value
       });
     case "deletionRate":
       return prev.concat({
-        title: "deletion_rate",
+        name: "deletion_rate",
         color: "red",
         icon: <BackspaceIcon width="48px" height="48px" />,
         value: `${value}%`
       });
     case "submissionAttempts":
       return prev.concat({
-        title: "submission_attempts",
+        name: "submission_attempts",
         color: "green",
         icon: <RetryIcon width="48px" height="48px" />,
         value: value
@@ -55,7 +55,9 @@ function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
 
 export default function FunFact() {
   const { examResult } = useAppSelector((state) => state.examResult);
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.funfact"
+  });
 
   const gray = useColorModeValue("gray.500", "gray.800", "gray.900");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
@@ -103,7 +105,7 @@ export default function FunFact() {
             Yay, you did it!
           </Heading>
           <Flex gap="4rem" direction="column" flex="1">
-            {funfactData.map(({ title, color, icon, value }, idx) => (
+            {funfactData.map(({ name: title, color, icon, value }, idx) => (
               <Flex gap="6" align="center" key={idx}>
                 <Box
                   p="2"
@@ -116,12 +118,10 @@ export default function FunFact() {
                 <Box>
                   <Flex align="center" gap="2">
                     <Heading fontSize="2xl" color={gray}>
-                      {t(`translation.translations.funfact.${title}.title`)}
+                      {t(`${title}.title`)}
                     </Heading>
                     <Tooltip
-                      label={t(
-                        `translation.translations.funfact.${title}.description`
-                      )}
+                      label={t(`${title}.description`)}
                       placement="auto-start"
                       padding="3"
                       fontSize="md"

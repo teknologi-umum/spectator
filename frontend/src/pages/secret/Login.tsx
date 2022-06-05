@@ -27,7 +27,9 @@ interface FormValues {
 }
 
 export default function Login() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.ui"
+  });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const boxBg = useColorModeValue("white", "gray.700", "gray.800");
@@ -102,11 +104,7 @@ export default function Login() {
       px="4"
     >
       <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
-        <ThemeButton
-          bg={boxBg}
-          fg={fg}
-          title={t("translation.translations.ui.theme")}
-        />
+        <ThemeButton bg={boxBg} fg={fg} title={t("theme")} />
       </Flex>
       <Box
         height="full"

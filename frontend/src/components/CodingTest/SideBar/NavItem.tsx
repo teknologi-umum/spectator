@@ -26,21 +26,23 @@ interface NavItemProps {
 export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
-  const { currentQuestionNumber, lockedToCurrentQuestion } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, lockedToCurrentQuestion } = useAppSelector(
+    (state) => state.editor
+  );
   const bg = useColorModeValue("teal.50", "teal.500");
   const fg = useColorModeValue("teal.700", "teal.200");
-  const { t } = useTranslation();
+  const { t } = useTranslation("question", {
+    keyPrefix: "questions"
+  });
 
   const isActive = currentQuestionNumber === questionNumber;
 
   useEffect(() => {
     setCurrentQuestion({
       questionNumber: currentQuestionNumber,
-      title: t(`question.questions.${currentQuestionNumber - 1}.title`),
-      instruction: t(`question.questions.${currentQuestionNumber - 1}.title`),
-      templateByLanguage: t(
-        `question.questions.${currentQuestionNumber - 1}.templates`
-      )
+      title: t(`${currentQuestionNumber - 1}.title`),
+      instruction: t(`${currentQuestionNumber - 1}.title`),
+      templateByLanguage: t(`${currentQuestionNumber - 1}.templates`)
     });
   }, [currentQuestionNumber]);
 

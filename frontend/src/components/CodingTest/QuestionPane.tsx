@@ -57,7 +57,9 @@ function buildPre(codeBg: string, fg: string) {
 }
 
 export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("question", {
+    keyPrefix: "questions"
+  });
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
 
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
@@ -65,7 +67,7 @@ export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
   return (
     <Box p="4" overflowY="auto" flex="1" h="full">
       <Heading size="lg" color={fg}>
-        {t(`question.questions.${currentQuestionNumber - 1}.title`)}
+        {t(`${currentQuestionNumber - 1}.title`)}
       </Heading>
       <ReactMarkdown
         components={{
@@ -75,7 +77,7 @@ export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
           pre: buildPre(codeBg, fg)
         }}
       >
-        {t(`question.questions.${currentQuestionNumber - 1}.question`)}
+        {t(`${currentQuestionNumber - 1}.question`)}
       </ReactMarkdown>
     </Box>
   );

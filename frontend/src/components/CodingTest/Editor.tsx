@@ -31,7 +31,9 @@ interface EditorProps {
 
 export default function Editor({ bg }: EditorProps) {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
+  const { t } = useTranslation("question", {
+    keyPrefix: "questions"
+  });
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
 
@@ -42,12 +44,7 @@ export default function Editor({ bg }: EditorProps) {
     useAppSelector((state) => state.editor);
 
   const boilerplate = useMemo(
-    () =>
-      t(
-        `question.questions.${
-          currentQuestionNumber - 1
-        }.templates.${currentLanguage}`
-      ),
+    () => t(`${currentQuestionNumber - 1}.templates.${currentLanguage}`),
     [currentQuestionNumber, currentLanguage]
   );
 
