@@ -6,9 +6,10 @@ export class Runtime {
         public compiled: boolean,
         public buildCommand: string[],
         public runCommand: string[],
-        public aliases: string[]
+        public aliases: string[],
+        public environment: Record<string, string>
     ) {
-        if (language === "" || version === "" || extension === "" || runCommand.length === 0 || aliases.length === 0) {
+        if (language === "" || version === "" || extension === "" || runCommand.length === 0 || aliases.length === 0 || typeof environment !== "object") {
             throw new TypeError("Invalid runtime parameters");
         }
 

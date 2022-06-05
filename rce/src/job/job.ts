@@ -88,6 +88,9 @@ export class Job implements JobPrerequisites {
             };
         }
 
+        // HACK: skip memory limit if it's Java, because... you know.
+        const memoryLimit: string = this.runtime.language === "Java" ? "" : "--as=" + this.memoryLimit.toString();
+
         try {
             const fileName = path.basename(this._sourceFilePath);
             const buildCommand: string[] = [
@@ -97,7 +100,7 @@ export class Job implements JobPrerequisites {
                 "--nofile=2048",
                 "--fsize=10000000", // 10MB
                 "--rttime=" + this.timeout.toString(),
-                "--as=" + this.memoryLimit.toString(),
+                memoryLimit,
                 "nosocket",
                 ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
             ];
@@ -127,9 +130,9 @@ export class Job implements JobPrerequisites {
             const runCommand: string[] = [
                 "/usr/bin/nice",
                 "prlimit",
-                "--nproc=64",
+                "--nproc=128",
                 "--nofile=2048",
-                "--fsize=10000000", // 10MB
+                "--fsize=30000000", // 30MB
                 "--rttime=" + this.timeout.toString(),
                 "--as=" + this.memoryLimit.toString(),
                 "nosocket",
@@ -177,7 +180,8 @@ export class Job implements JobPrerequisites {
                     PATH: process.env?.PATH ?? "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
                     LOGGER_TOKEN: "",
                     LOGGER_SERVER_ADDRESS: "",
-                    ENVIRONMENT: ""
+                    ENVIRONMENT: "",
+                    ...this.runtime.environment
                 },
                 cwd: "/code/" + username,
                 gid: gid,
