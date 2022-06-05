@@ -35,8 +35,9 @@ builder.Services.Setup(services => {
 	services.Configure<LoggerOptions>(builder.Configuration.GetSection("LoggerOptions"));
 	services.Configure<WorkerOptions>(builder.Configuration.GetSection("WorkerOptions"));
 	services.Configure<ExamReportOptions>(builder.Configuration.GetSection("ExamReportOptions"));
+	services.Configure<MinioOptions>(builder.Configuration.GetSection("MinioOptions"));
 
-	// Add application layers 
+	// Add application layers
 	services.AddHttpClient();
 	services.AddMemoryCache();
 	services.AddRepositoryDALs();
