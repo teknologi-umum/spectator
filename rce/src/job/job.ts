@@ -88,9 +88,6 @@ export class Job implements JobPrerequisites {
             };
         }
 
-        // HACK: skip memory limit if it's Java, because... you know.
-        const memoryLimit: string = this.runtime.language === "Java" ? "" : "--as=" + this.memoryLimit.toString();
-
         try {
             const fileName = path.basename(this._sourceFilePath);
             const buildCommand: string[] = [
@@ -100,7 +97,7 @@ export class Job implements JobPrerequisites {
                 "--nofile=2048",
                 "--fsize=10000000", // 10MB
                 "--rttime=" + this.timeout.toString(),
-                memoryLimit,
+                "--as=" + this.memoryLimit.toString(),
                 "nosocket",
                 ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
             ];
@@ -136,13 +133,19 @@ export class Job implements JobPrerequisites {
                 "--nproc=128",
                 "--nofile=2048",
                 "--fsize=30000000", // 30MB
-                "--rttime=" + this.timeout.toString(),
-                memoryLimit,
+                "--rttime=" + this.timeout.toString()
+            ];
+
+            if (memoryLimit !== "") {
+                runCommand.push(memoryLimit);
+            }
+
+            runCommand.push(
                 "nosocket",
                 ...this.runtime.runCommand.map((arg) =>
                     arg.replace("{file}", finalFileName)
                 )
-            ];
+            );
 
             const result = await this.executeCommand(runCommand);
             await this.cleanup();
