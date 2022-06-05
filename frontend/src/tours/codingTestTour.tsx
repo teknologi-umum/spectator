@@ -8,16 +8,16 @@ export const codingTestTour: TourStepsBuilder = (t) => [
     selector: "[data-tour=\"sidebar-step-1\"]",
     content: (
       <>
-        <p>{t("translation.translations.tour.coding_test.first.0")}</p>
+        <p>{t("translation.translations.tour.coding_test.sidebar.first.0")}</p>
         <br />
-        <p>{t("translation.translations.tour.coding_test.first.1")}</p>
+        <p>{t("translation.translations.tour.coding_test.sidebar.first.1")}</p>
       </>
     ),
     disableActions: true
   },
   {
     selector: "[data-tour=\"sidebar-step-2\"]",
-    content: <p>{t("translation.translations.tour.coding_test.second")}</p>,
+    content: <p>{t("translation.translations.tour.coding_test.sidebar.second")}</p>,
     disableActions: false
   },
   {
