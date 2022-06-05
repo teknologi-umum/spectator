@@ -1,20 +1,16 @@
 import React from "react";
-import type { StepType } from "@reactour/tour";
 import { store } from "@/store";
 import { markTourCompleted } from "@/store/slices/sessionSlice";
+import { TourStepsBuilder } from "./types";
 
-export const personalInfoTour: StepType[] = [
+export const personalInfoTour: TourStepsBuilder = (t) => [
   {
     selector: "[data-tour=\"step-1\"]",
-    content: (
-      <p>You can change the theme and the language of the application here.</p>
-    )
+    content: <p>{t("translation.translations.tour.personal_info.first")}</p>
   },
   {
     selector: "[data-tour=\"step-2\"]",
-    content: (
-      <p>When you&apos;re done, you can press this button to continue.</p>
-    ),
+    content: <p>{t("translation.translations.tour.personal_info.second")}</p>,
     action: () => {
       store.dispatch(markTourCompleted("personalInfo"));
     }

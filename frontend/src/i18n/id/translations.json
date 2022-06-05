@@ -17,6 +17,51 @@
       "language": "Bahasa",
       "theme": "Tema"
     },
+    "tour": {
+      "sam_test": {
+        "first": "Kamu bisa mengklik salah satu opsi ini. Pilihan kamu saat ini ditandai dengan garis biru terang.",
+        "second": [
+          "Apabila kamu puas dengan pilihanmu, kamu bisa tekan tombol ini untuk melanjutkan ke pertanyaan berikutnya.",
+          "Di halaman berikutnya akan ada tombol <kbd>Sebelumnya</kbd> yang bisa kamu tekan untuk kembali ke pertanyaan sebelumnya.",
+          "Kamu bisa tekan tombol <kbd>Selesai</kbd> untuk mengakhiri sesi SAM dan menuju halaman Coding Test."
+        ]
+      },
+      "personal_info": {
+        "first": "Kamu bisa mengubah tema dan bahasa aplikasi di sini.",
+        "second": "Ketika kamu sudah selesai, kamu bisa tekan tombol ini untuk melanjutkan."
+      },
+      "coding_test": {
+        "sidebar": {
+          "first": [
+            "Kamu bisa tekan tombol ini untuk menampilkan sidebar.",
+            "Kamu bisa tekan tombol ini untuk melanjutkan tournya."
+          ],
+          "second": "Kamu bisa berpindah antara pertanyaan dengan mengklik salah satu tombol ini."
+        },
+        "topbar": [
+          "Ini adalah waktu yang tersisa untuk Coding Test. Jika waktu telah menjadi nol, kamu akan otomatis dialihkan ke halaman berikutnya.",
+          "Kamu bisa mengubah tema dengan memilih salah satu opsi ini.",
+          "Kamu bisa memilih bahasa pemrograman yang ingin kamu gunakan untuk menyelesaikan pertanyaan dengan memilih salah satu opsi ini.",
+          "Jika ukuran font terlalu kecil atau terlalu besar, kamu bisa mengubahnya dengan memilih salah satu opsi ini.",
+          "Kamu bisa mengubah bahasa pada User Interface dengan memilih salah satu opsi ini.",
+          "Jika kamu tidak mengingatkan kamu bisa menekan tombol ini. Mohon jangan menekannya kecuali kamu yakin.",
+          "Kamu bisa menekan tombol ini untuk menguji jawabanmu. Ini tidak akan mengirimkan jawabanmu, jadi kamu bisa menekan tombol ini sebanyak mungkin untuk menguji jawabanmu.",
+          "Kamu bisa menekan tombol ini untuk mengirimkan jawabanmu. Harap uji jawabanmu beberapa kali dengan menekan tombol Test sebelum mengirimkan jawabanmu."
+        ],
+        "question": {
+          "first": "Ini adalah tab Pertanyaan. Setiap detail yang kamu perlukan untuk menyelesaikan pertanyaan terletak di tab ini.",
+          "second": "Ini adalah tab Hasil. Hasil dari kamu dapat dilihat di sini."
+        },
+        "editor": {
+          "first": "Ini adalah editor kode. Kamu bisa menulis kode di sini. Jangan mengubah fungsi boilerplate karena jawabanmu tidak akan bisa diterima.",
+          "second": "Kode kamu akan tersimpan di browser kamu. Kamu bisa berpindah antara pertanyaan, refresh halaman, restart browser, dan kode kamu akan tetap ada disini."
+        },
+        "scratchpad": {
+          "first": "Ini adalah scratchpad. Kamu bisa menulis sesuatu di sini. Ini hanya untuk membantu kamu berpikir dan tidak akan ikut dikirimkan.",
+          "second": "Isi dari scratchpad akan tersimpan di browser kamu juga jadi kamu tidak perlu khawatir kehilangan isi dari scratchpad kamu."
+        }
+      }
+    },
     "personal_info": {
       "student_number": "Nomor Mahasiswa",
       "programming_years": "Sudah berapa tahun kamu melalukan pemrograman?",
