@@ -188,7 +188,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
         // - if the question has been submitted and it's an incorrect one, we'll see if it has been refactored or not
         //   if it has been refactored, we'll consider that as done no matter if it's correct or not because they can
         //   no longer submit another solution
-        if (curr.submissionAccepted && curr.submissionRefactored) {
+        if (curr.submissionSubmitted && curr.submissionRefactored) {
           return prev && true;
         }
 
