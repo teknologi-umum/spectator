@@ -74,7 +74,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
   }, []);
 
   useEffect(() => {
-    const endTimer = setInterval(async () => {
+    const endTimer = setTimeout(async () => {
       if (accessToken === null) return;
 
       const result = await sessionSpoke.passDeadline({ accessToken });
@@ -82,7 +82,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
       navigate("/sam-test");
     }, time);
 
-    return () => clearInterval(endTimer);
+    return () => clearTimeout(endTimer);
   });
 
   const currentSnapshot: EditorSnapshot | undefined =
