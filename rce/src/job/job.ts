@@ -127,6 +127,9 @@ export class Job implements JobPrerequisites {
                 finalFileName = this._builtFilePath.replace(`.${this.runtime.extension}`, "");
             }
 
+            // HACK: skip memory limit if it's Java, because... you know.
+            const memoryLimit: string = this.runtime.language === "Java" ? "" : "--as=" + this.memoryLimit.toString();
+
             const runCommand: string[] = [
                 "/usr/bin/nice",
                 "prlimit",
@@ -134,7 +137,7 @@ export class Job implements JobPrerequisites {
                 "--nofile=2048",
                 "--fsize=30000000", // 30MB
                 "--rttime=" + this.timeout.toString(),
-                "--as=" + this.memoryLimit.toString(),
+                memoryLimit,
                 "nosocket",
                 ...this.runtime.runCommand.map((arg) =>
                     arg.replace("{file}", finalFileName)
