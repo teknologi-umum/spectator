@@ -142,8 +142,7 @@ namespace Spectator.Piston {
 			try {
 				// HACK: java is expensive, they need more RAM than anything else
 				var memoryLimit = language.ToLower() switch {
-					"java" => 512 * 1024 * 1024,
-					"javascript" => 512 * 1024 * 1024,
+					"java" or "javascript" => 512 * 1024 * 1024,
 					_ => _pistonOptions.MemoryLimit,
 				};
 
