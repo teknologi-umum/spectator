@@ -12,13 +12,11 @@ export const codingTestTour: TourStepsBuilder = (t) => [
         <br />
         <p>{t("sidebar.first.1")}</p>
       </>
-    ),
-    disableActions: true
+    )
   },
   {
     selector: "[data-tour=\"sidebar-step-2\"]",
-    content: <p>{t("sidebar.second")}</p>,
-    disableActions: false
+    content: <p>{t("sidebar.second")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-1\"]",
