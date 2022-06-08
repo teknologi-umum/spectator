@@ -6,6 +6,7 @@ import (
 	pb "worker/worker_proto"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -48,6 +49,12 @@ func (d *Dependency) FunFact(ctx context.Context, in *pb.Member) (*pb.FunFactRes
 	if !exists {
 		return &pb.FunFactResponse{}, status.Error(codes.NotFound, "session not found")
 	}
+
+	// Log to terminal
+	log.Info().
+		Str("session_id", in.GetSessionId()).
+		Str("request_id", in.GetRequestId()).
+		Msg("received funfact request")
 
 	// Read about buffered channel vs non-buffered channels
 	wpm := make(chan int64, 1)

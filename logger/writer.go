@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"log"
 	"strings"
@@ -89,7 +90,8 @@ func (d *Dependency) writeIntoLog(ctx context.Context, payload LogData) error {
 	}
 
 	if payload.Level == "CRITICAL" || payload.Level == "ERROR" || payload.Level == "WARNING" {
-		log.Println(payload.Message)
+		_ = json.NewEncoder(os.Stdout).Encode(payload)
+		fmt.Printf("\n")
 	}
 
 	point := influxdb2.NewPoint(
