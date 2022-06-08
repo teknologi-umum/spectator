@@ -2,13 +2,13 @@ package file
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"worker/common"
 	loggerpb "worker/logger_proto"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -19,25 +19,29 @@ import (
 func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	// Defer a func that will recover from panic.
 	defer func() {
-		r := recover()
-		if r == nil {
-			return
-		}
+		if r, ok := recover().(error); ok {
+			log.Error().
+				Str("request_id", requestID).
+				Str("session_id", sessionID.String()).
+				Err(r).
+				Msg("recovered from panic on CreateFile")
 
-		log.Println(r.(error))
-		d.Logger.Log(
-			r.(error).Error(),
-			loggerpb.Level_ERROR.Enum(),
-			requestID,
-			map[string]string{
-				"session_id": sessionID.String(),
-				"function":   "CreateFile",
-				"info":       "recovering from panic",
-			},
-		)
+			d.Logger.Log(
+				r.Error(),
+				loggerpb.Level_ERROR.Enum(),
+				requestID,
+				map[string]string{
+					"session_id": sessionID.String(),
+					"function":   "CreateFile",
+					"info":       "recovering from panic",
+				},
+			)
+		}
 	}()
 
-	log.Printf("[%s] Got request to create file for session %s", requestID, sessionID.String())
+	log.Info().
+		Str("request_id", requestID).
+		Str("session_id", sessionID.String()).Msg("received create file request")
 
 	// Let's create a new context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
@@ -220,7 +224,10 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
-	log.Printf("[%s] Successfully converted and uploaded all events for session: %s", requestID, sessionID.String())
+	log.Info().
+		Str("request_id", requestID).
+		Str("session_id", sessionID.String()).
+		Msg("Successfully converted and uploaded all events")
 }
 
 // createFile is a struct that implements sendErrorLog method.

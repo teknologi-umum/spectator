@@ -2,7 +2,6 @@ package funfact
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"worker/common"
@@ -10,32 +9,39 @@ import (
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts int64, deletionRate float64, requestID string) {
 	// Defer func to avoid panic
 	defer func() {
-		r := recover()
-		if r == nil {
-			return
+		if r, ok := recover().(error); ok {
+			log.Error().
+				Str("request_id", requestID).
+				Str("session_id", sessionID.String()).
+				Err(r).
+				Msg("recovered from panic on CreateProjection")
+
+			d.Logger.Log(
+				r.(error).Error(),
+				loggerpb.Level_CRITICAL.Enum(),
+				requestID,
+				map[string]string{
+					"session_id": sessionID.String(),
+					"function":   "CreateProjection",
+					"info":       "recovering from panic",
+				},
+			)
 		}
-
-		log.Println(r.(error))
-
-		d.Logger.Log(
-			r.(error).Error(),
-			loggerpb.Level_CRITICAL.Enum(),
-			requestID,
-			map[string]string{
-				"session_id": sessionID.String(),
-				"function":   "CreateProjection",
-				"info":       "recovering from panic",
-			},
-		)
 	}()
 
+	log.Info().
+		Str("request_id", requestID).
+		Str("session_id", sessionID.String()).
+		Msg("received create projection request")
+
 	// Create a new context
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
 	// We shall find the student number
@@ -101,4 +107,9 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 		)
 		return
 	}
+
+	log.Info().
+		Str("session_id", sessionID.String()).
+		Str("request_id", requestID).
+		Msg("successfully created projection")
 }
