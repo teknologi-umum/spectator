@@ -17,21 +17,17 @@ i18n
     returnObjects: true,
     resources: {
       en: {
-        translation: {
-          translation: enTranslation,
-          question: enQuestion
-        }
+        translation: enTranslation,
+        question: enQuestion
       },
       id: {
-        translation: {
-          translation: idTranslation,
-          question: idQuestion
-        }
+        translation: idTranslation,
+        question: idQuestion
       }
     },
     interpolation: {
       escapeValue: false
     }
   });
-  
+
 export default i18n;

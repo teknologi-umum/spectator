@@ -6,21 +6,21 @@ import { TourStepsBuilder } from "./types";
 export const samTestTour: TourStepsBuilder = (t) => [
   {
     selector: "[data-tour=\"step-1\"]",
-    content: <p>{t("translation.translations.tour.sam_test.first")}</p>
+    content: <p>{t("sam_test.first")}</p>
   },
   {
     selector: "[data-tour=\"step-2\"]",
     content: (
       <>
-        <p> {t("translation.translations.tour.sam_test.second.0")} </p>
+        <p> {t("sam_test.second.0")} </p>
         <p
           dangerouslySetInnerHTML={{
-            __html: t("translation.translations.tour.sam_test.second.1")
+            __html: t("sam_test.second.1")
           }}
         ></p>
         <p
           dangerouslySetInnerHTML={{
-            __html: t("translation.translations.tour.sam_test.second.2")
+            __html: t("sam_test.second.2")
           }}
         ></p>
       </>

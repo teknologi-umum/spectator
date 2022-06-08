@@ -32,7 +32,9 @@ import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 
 function PersonalInfoPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations"
+  });
   const dispatch = useAppDispatch();
   const { accessToken, tourCompleted } = useAppSelector(
     (state) => state.session
@@ -99,11 +101,18 @@ function PersonalInfoPage() {
 
   return (
     <Layout display="flex">
-      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1" zIndex={10}>
+      <Flex
+        gap={2}
+        position="fixed"
+        left={4}
+        top={4}
+        data-tour="step-1"
+        zIndex={10}
+      >
         <ThemeButton
           bg={bg}
           fg={fg}
-          title={t("translation.translations.ui.theme")}
+          title={t("ui.theme")}
         />
         <LocaleButton bg={bg} fg={fg} />
       </Flex>
@@ -135,7 +144,7 @@ function PersonalInfoPage() {
               isInvalid={errors.studentNumber !== undefined}
             >
               <FormLabel>
-                {t("translation.translations.personal_info.student_number")}
+                {t("personal_info.student_number")}
               </FormLabel>
               <Input
                 type="text"
@@ -152,7 +161,7 @@ function PersonalInfoPage() {
               isInvalid={errors.yearsOfExperience !== undefined}
             >
               <FormLabel>
-                {t("translation.translations.personal_info.programming_years")}
+                {t("personal_info.programming_years")}
               </FormLabel>
               <Input
                 type="number"
@@ -170,7 +179,7 @@ function PersonalInfoPage() {
             >
               <FormLabel>
                 {t(
-                  "translation.translations.personal_info.programming_practice"
+                  "personal_info.programming_practice"
                 )}
               </FormLabel>
               <Input
@@ -189,7 +198,7 @@ function PersonalInfoPage() {
             >
               <FormLabel>
                 {t(
-                  "translation.translations.personal_info.programming_experience"
+                  "personal_info.programming_experience"
                 )}
               </FormLabel>
               <Input
@@ -207,7 +216,7 @@ function PersonalInfoPage() {
               isInvalid={errors.familiarLanguages !== undefined}
             >
               <FormLabel>
-                {t("translation.translations.personal_info.wallet_number")}
+                {t("personal_info.wallet_number")}
               </FormLabel>
               <InputGroup>
                 <Input
@@ -246,7 +255,7 @@ function PersonalInfoPage() {
             data-tour="step-2"
             isLoading={isSubmitting}
           >
-            {t("translation.translations.ui.continue")}
+            {t("ui.continue")}
           </Button>
         </Box>
       </Box>

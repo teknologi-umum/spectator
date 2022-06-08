@@ -6,11 +6,11 @@ import { TourStepsBuilder } from "./types";
 export const personalInfoTour: TourStepsBuilder = (t) => [
   {
     selector: "[data-tour=\"step-1\"]",
-    content: <p>{t("translation.translations.tour.personal_info.first")}</p>
+    content: <p>{t("personal_info.first")}</p>
   },
   {
     selector: "[data-tour=\"step-2\"]",
-    content: <p>{t("translation.translations.tour.personal_info.second")}</p>,
+    content: <p>{t("personal_info.second")}</p>,
     action: () => {
       store.dispatch(markTourCompleted("personalInfo"));
     }

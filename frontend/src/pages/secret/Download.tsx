@@ -69,7 +69,9 @@ function parseFileName(url: string) {
 export default function Download() {
   const [files, setFiles] = useState<GroupedFileEntry>({});
   const { sessionId } = useAppSelector((state) => state.session);
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.ui"
+  });
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -114,11 +116,7 @@ export default function Download() {
   return (
     <Flex bg={bg} justifyContent="center" w="full" minH="full" py="10" px="4">
       <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
-        <ThemeButton
-          bg={boxBg}
-          fg={fg}
-          title={t("translation.translations.ui.theme")}
-        />
+        <ThemeButton bg={boxBg} fg={fg} title={t("theme")} />
       </Flex>
       <Box display="flex" flexDirection="column" alignItems="center">
         <Heading mb="8" size="lg" textAlign="center" fontWeight="700">

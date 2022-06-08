@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Divider, Flex, IconButton } from "@chakra-ui/react";
 import type { ComponentWithAs, IconProps } from "@chakra-ui/react";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -13,7 +13,6 @@ import {
   SumIcon,
   TemperatureIcon
 } from "@/icons";
-import { useTour } from "@reactour/tour";
 
 interface SideBarProps {
   bg: string;
@@ -32,8 +31,6 @@ const icons = [
 export default function SideBar({ bg, fg }: SideBarProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
-  const { setIsOpen, setCurrentStep } = useTour();
-  const [isBoarded, setBoarded] = useState(false);
 
   return (
     <Flex
@@ -60,13 +57,6 @@ export default function SideBar({ bg, fg }: SideBarProps) {
           icon={<HamburgerIcon />}
           onClick={() => {
             dispatch(toggleSideBar());
-            if (!isBoarded) {
-              setTimeout(() => {
-                setCurrentStep(1);
-                setIsOpen(true);
-                setBoarded(true);
-              }, 300); // wait for the animation to finish so we'll get the correct width
-            }
           }}
           data-tour="sidebar-step-1"
         />

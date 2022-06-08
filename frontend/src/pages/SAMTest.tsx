@@ -52,7 +52,9 @@ enum Page {
 function SAMTest() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations"
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { setIsOpen, setCurrentStep } = useTour();
 
@@ -120,7 +122,7 @@ function SAMTest() {
           <ThemeButton
             bg={bg}
             fg={fg}
-            title={t("translation.translations.ui.theme")}
+            title={t("ui.theme")}
           />
           <LocaleButton bg={bg} fg={fg} />
         </Flex>
@@ -145,10 +147,10 @@ function SAMTest() {
               <Fade in={currentPage === 0}>
                 <Box data-tour="step-1">
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    {t("translation.translations.sam_test.aroused_title")}
+                    {t("sam_test.aroused_title")}
                   </Text>
                   <Text color={fgDarker} fontSize="lg" mb="4">
-                    {t("translation.translations.sam_test.aroused_body")}
+                    {t("sam_test.aroused_body")}
                   </Text>
                   <SAMRadioGroup
                     value={arousal}
@@ -164,10 +166,10 @@ function SAMTest() {
               <Fade in={currentPage === Page.LAST}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    {t("translation.translations.sam_test.pleasure_title")}
+                    {t("sam_test.pleasure_title")}
                   </Text>
                   <Text color={fgDarker} fontSize="lg">
-                    {t("translation.translations.sam_test.pleasure_body")}
+                    {t("sam_test.pleasure_body")}
                   </Text>
                   <SAMRadioGroup
                     value={pleasure}
@@ -187,10 +189,10 @@ function SAMTest() {
                     variant="outline"
                     onClick={() => goto("prev")}
                   >
-                    {t("translation.translations.ui.previous")}
+                    {t("ui.previous")}
                   </Button>
                   <Button colorScheme="blue" variant="solid" onClick={onOpen}>
-                    {t("translation.translations.ui.finish")}
+                    {t("ui.finish")}
                   </Button>
                 </>
               ) : (
@@ -204,7 +206,7 @@ function SAMTest() {
                   }}
                   data-tour="step-2"
                 >
-                  {t("translation.translations.ui.next")}
+                  {t("ui.next")}
                 </Button>
               )}
             </Flex>
@@ -215,12 +217,12 @@ function SAMTest() {
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
           <ModalHeader fontSize="2xl">
-            {t("translation.translations.confirmation.title")}
+            {t("confirmation.title")}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
-              {t("translation.translations.confirmation.body")}
+              {t("confirmation.body")}
             </Text>
           </ModalBody>
 
@@ -231,14 +233,14 @@ function SAMTest() {
               mr={3}
               onClick={onClose}
             >
-              {t("translation.translations.ui.cancel")}
+              {t("ui.cancel")}
             </Button>
             <Button
               colorScheme="blue"
               onClick={finishSAMTest}
               data-tour="step-2"
             >
-              {t("translation.translations.ui.confirm")}
+              {t("ui.confirm")}
             </Button>
           </ModalFooter>
         </ModalContent>

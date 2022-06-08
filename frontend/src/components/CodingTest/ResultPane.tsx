@@ -47,7 +47,9 @@ interface ResultProps {
 }
 
 export default function Result({ fg, fgDarker }: ResultProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations"
+  });
 
   const resultBg = useColorModeValue("gray.50", "gray.600", "gray.900");
   const green = useColorModeValue("green.500", "green.400", "green.300");
@@ -140,7 +142,7 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                     <Tooltip
                       hasArrow
                       label={t(
-                        `translation.translations.error_type.${status
+                        `error_type.${status
                           .toLowerCase()
                           .split(" ")
                           .join("_")}`

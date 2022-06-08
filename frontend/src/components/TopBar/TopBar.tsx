@@ -49,7 +49,9 @@ export default function TopBar({ bg, fg }: MenuProps) {
   const navigate = useNavigate();
   const toast = useToast();
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.ui"
+  });
   const {
     currentQuestionNumber,
     fontSize,
@@ -320,7 +322,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
           }}
           data-tour="topbar-step-6"
         >
-          {t("translation.translations.ui.surrender")}
+          {t("surrender")}
         </Button>
         <Button
           px="4"

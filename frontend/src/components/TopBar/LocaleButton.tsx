@@ -13,7 +13,9 @@ interface LocaleButtonProps {
 }
 
 export default function LocaleButton({ bg, fg, ...rest }: LocaleButtonProps) {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation("translation", {
+    keyPrefix: "translations.ui"
+  });
   const { accessToken } = useAppSelector((state) => state.session);
 
   return (
@@ -21,7 +23,7 @@ export default function LocaleButton({ bg, fg, ...rest }: LocaleButtonProps) {
       dropdownWidth="10rem"
       bg={bg}
       fg={fg}
-      title={t("translation.translations.ui.language")}
+      title={t("language")}
       {...rest}
     >
       <MenuItem

@@ -13,7 +13,9 @@ export default function WithTour(
   const c = theme.colors;
 
   return function WrappedComponent() {
-    const { t } = useTranslation();
+    const { t } = useTranslation("translation", {
+      keyPrefix: "translations.tour"
+    });
     const blue = useColorModeValue(c.blue[400], c.blue[300], c.blue[400]);
     const bg = useColorModeValue(c.white, c.gray[700], c.gray[800]);
     const arrowColor = useColorModeValue(c.gray[800], c.gray[400], c.gray[500]);

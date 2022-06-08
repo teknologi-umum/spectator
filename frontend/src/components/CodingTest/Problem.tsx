@@ -22,7 +22,9 @@ interface ProblemProps {
 
 export default function Problem({ bg, fg, fgDarker }: ProblemProps) {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.ui"
+  });
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
 
   const { questionTabIndex } = useAppSelector((state) => state.codingTest);
@@ -48,10 +50,10 @@ export default function Problem({ bg, fg, fgDarker }: ProblemProps) {
       >
         <TabList borderColor={borderBg}>
           <Tab color={fgDarker} data-tour="question-step-1">
-            {t("translation.translations.ui.prompt")}
+            {t("prompt")}
           </Tab>
           <Tab color={fgDarker} data-tour="question-step-2">
-            {t("translation.translations.ui.your_result")}
+            {t("your_result")}
           </Tab>
         </TabList>
 
