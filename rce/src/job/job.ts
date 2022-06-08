@@ -110,6 +110,9 @@ export class Job implements JobPrerequisites {
 
             this._builtFilePath = this._sourceFilePath.replace(`code.${this.runtime.extension}`, "code");
 
+            // Log the builtFilePath just because.
+            console.log(`Built file path: ${this._builtFilePath}`);
+
             return buildCommandOutput;
         } catch (error) {
             await this.cleanup();
@@ -157,17 +160,17 @@ export class Job implements JobPrerequisites {
     }
 
     private async cleanup(): Promise<void> {
-        await fs.rm(this._sourceFilePath, { force: true });
-        if (process.env.ENVIRONMENT === "development") {
-            console.log(`Cleaned up: ${this._sourceFilePath}`);
-        }
+        // Crawl the directory and delete all files.
+        const pwd = "/code/" + this.user.username;
 
-        if (this.runtime.compiled) {
-            await fs.rm(this._builtFilePath, { force: true });
-            if (process.env.ENVIRONMENT === "development") {
-                console.log(`Cleaned up: ${this._builtFilePath}`);
-            }
-        }
+        const files = await fs.readdir(pwd, { withFileTypes: false });
+
+        const promises = files.map((file) => {
+            return fs.rm(path.join(pwd, file), { force: true, recursive: true, maxRetries: 3, retryDelay: 100 });
+        });
+
+        await Promise.allSettled(promises);
+        console.log(`Cleaned files: ${files.join(", ")}`);
     }
 
     private executeCommand(command: string[]): Promise<CommandOutput> {
