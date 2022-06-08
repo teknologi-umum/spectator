@@ -8,67 +8,67 @@ export const codingTestTour: TourStepsBuilder = (t) => [
     selector: "[data-tour=\"sidebar-step-1\"]",
     content: (
       <>
-        <p>{t("sidebar.first.0")}</p>
+        <p>{t("coding_test.sidebar.first.0")}</p>
         <br />
-        <p>{t("sidebar.first.1")}</p>
+        <p>{t("coding_test.sidebar.first.1")}</p>
       </>
     )
   },
   {
     selector: "[data-tour=\"sidebar-step-2\"]",
-    content: <p>{t("sidebar.second")}</p>
+    content: <p>{t("coding_test.sidebar.second")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-1\"]",
-    content: <p>{t("topbar.0")}</p>
+    content: <p>{t("coding_test.topbar.0")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-2\"]",
-    content: <p>{t("topbar.1")}</p>
+    content: <p>{t("coding_test.topbar.1")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-3\"]",
-    content: <p>{t("topbar.2")}</p>
+    content: <p>{t("coding_test.topbar.2")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-4\"]",
-    content: <p>{t("topbar.3")}</p>
+    content: <p>{t("coding_test.topbar.3")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-5\"]",
-    content: <p>{t("topbar.4")}</p>
+    content: <p>{t("coding_test.topbar.4")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-6\"]",
-    content: <p>{t("topbar.5")}</p>
+    content: <p>{t("coding_test.topbar.5")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-7\"]",
-    content: <p>{t("topbar.6")}</p>
+    content: <p>{t("coding_test.topbar.6")}</p>
   },
   {
     selector: "[data-tour=\"topbar-step-8\"]",
-    content: <p>{t("topbar.7")}</p>
+    content: <p>{t("coding_test.topbar.7")}</p>
   },
   {
     selector: "[data-tour=\"question-step-1\"]",
     content: (
-      <p>{t("question.first")}</p>
+      <p>{t("coding_test.question.first")}</p>
     )
   },
   {
     selector: "[data-tour=\"question-step-2\"]",
     content: (
-      <p>{t("question.second")}</p>
+      <p>{t("coding_test.question.second")}</p>
     )
   },
   {
     selector: "[data-tour=\"editor-step-1\"]",
     content: (
       <>
-        <p>{t("editor.first")}</p>
+        <p>{t("coding_test.editor.first")}</p>
         <br />
-        <p>{t("editor.second")}</p>
+        <p>{t("coding_test.editor.second")}</p>
       </>
     )
   },
@@ -76,9 +76,9 @@ export const codingTestTour: TourStepsBuilder = (t) => [
     selector: "[data-tour=\"scratchpad-step-1\"]",
     content: (
       <>
-        <p>{t("scratchpad.first")}</p>
+        <p>{t("coding_test.scratchpad.first")}</p>
         <br />
-        <p>{t("scratchpad.second")}</p>
+        <p>{t("coding_test.scratchpad.second")}</p>
       </>
     ),
     action: () => {
