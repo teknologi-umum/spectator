@@ -87,6 +87,10 @@
       "title": "Confirmation",
       "body": "In this programming test, ALL of your mouse and keyboard activities will be recorded for data collecting purpose. We will also ask for the camera permission to record your movement. By pressing the confirm button, you fully agree with these conditions and give us your permissions."
     },
+    "surrender": {
+      "title": "Surrender",
+      "body": "Are you sure you want to surrender? Make sure you've think this through because you will no longer be able to continue the test once you surrender."
+    },
     "funfact": {
       "words_per_minute": {
         "title": "Words Per Minute",

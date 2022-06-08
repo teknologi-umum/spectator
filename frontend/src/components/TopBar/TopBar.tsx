@@ -40,12 +40,13 @@ function toReadableTime(ms: number): string {
   );
 }
 
-interface MenuProps {
+interface TopBarProps {
   bg: string;
   fg: string;
+  forfeitExam: () => void;
 }
 
-export default function TopBar({ bg, fg }: MenuProps) {
+export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
   const navigate = useNavigate();
   const toast = useToast();
   const dispatch = useAppDispatch();
@@ -316,10 +317,7 @@ export default function TopBar({ bg, fg }: MenuProps) {
             opacity: "100%"
           }}
           h="full"
-          onClick={async () => {
-            if (accessToken === null) return;
-            await sessionSpoke.forfeitExam({ accessToken });
-          }}
+          onClick={forfeitExam}
           data-tour="topbar-step-6"
         >
           {t("surrender")}
