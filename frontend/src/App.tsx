@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PersonalInfo from "@/pages/PersonalInfoPage";
 import Instructions from "@/pages/Instructions";
 import SAMTest from "@/pages/SAMTest";
