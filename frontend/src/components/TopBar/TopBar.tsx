@@ -29,6 +29,7 @@ import { LogLevel } from "@microsoft/signalr";
 import { setExamResult } from "@/store/slices/examResultSlice";
 import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
 import { SubmissionResult } from "@/models/SubmissionResult";
+import { FinishedModal } from "@/components/CodingTest";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -68,6 +69,10 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
   const green = useColorModeValue("green.500", "green.400", "green.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
 
+  const [isModalOpen, setModalOpen] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [testing, setTesting] = useState(false);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTime((prev: number) => prev - 1000);
@@ -80,6 +85,7 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
     const endTimer = setTimeout(async () => {
       if (accessToken === null) return;
 
+      setModalOpen(true);
       const result = await sessionSpoke.passDeadline({ accessToken });
       dispatch(setExamResult(result));
       navigate("/sam-test");
@@ -97,8 +103,49 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
       ? currentSnapshot.submissionRefactored
       : false;
 
-  const [submitting, setSubmitting] = useState(false);
-  const [testing, setTesting] = useState(false);
+  useEffect(() => {
+    if (accessToken === null) return;
+    (async () => {
+      const allSnapshots = Object.values(snapshotByQuestionNumber);
+      if (allSnapshots.length < 6) {
+        // if they haven't tried all of the questions
+        // just don't bother checking if they have been accepted or not
+        return;
+      }
+
+      const isSessionFinished = allSnapshots.reduce((prev, curr) => {
+        // rules on how to determine the "finished" question:
+        // - if the question has been submitted and it's a correct one, we'll consider that as `true`
+        // - if the question has been submitted and it's an incorrect one, we'll see if it has been refactored or not
+        //   if it has been refactored, we'll consider that as done no matter if it's correct or not because they can
+        //   no longer submit another solution
+        if (
+          (curr.submissionSubmitted && curr.submissionAccepted) ||
+          (curr.submissionSubmitted && curr.submissionRefactored)
+        ) {
+          return prev && true;
+        }
+
+        // we'll consider any questions that don't belong to those categories as "not finished"
+        return prev && false;
+      }, true);
+
+      if (isSessionFinished) {
+        setModalOpen(true);
+        // automatically end the exam when all of their submissions have been accepted
+        // and this is the last submission that was accepted
+        try {
+          const result = await sessionSpoke.endExam({ accessToken });
+          dispatch(setExamResult(result));
+          navigate("/sam-test");
+        } catch (err) {
+          if (err instanceof Error) {
+            loggerInstance.log(LogLevel.Error, err.message);
+          }
+        }
+      }
+    })();
+  }, [snapshotByQuestionNumber]);
 
   async function submitSolution(submissionType: "submit" | "test") {
     if (
@@ -173,58 +220,6 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           />
         )
       });
-
-      const allSnapshots = Object.values(snapshotByQuestionNumber);
-      if (allSnapshots.length < 6) {
-        // if they haven't tried all of the questions
-        // just don't bother checking if they have been accepted or not
-        return;
-      }
-
-      const isSessionFinished = allSnapshots.reduce((prev, curr) => {
-        // rules on how to determine the "finished" question:
-        // - if the question has been submitted and it's a correct one, we'll consider that as `true`
-        if (curr.submissionSubmitted && curr.submissionAccepted) {
-          return prev && true;
-        }
-
-        // - if the question has been submitted and it's an incorrect one, we'll see if it has been refactored or not
-        //   if it has been refactored, we'll consider that as done no matter if it's correct or not because they can
-        //   no longer submit another solution
-        if (curr.submissionSubmitted && curr.submissionRefactored) {
-          return prev && true;
-        }
-
-        // - we'll consider any questions that don't belong to those categories as "not finished"
-        return curr.submissionAccepted && false;
-      }, false);
-
-      if (isSessionFinished) {
-        // automatically end the exam when all of their submissions have been accepted
-        // and this is the last submission that was accepted
-        try {
-          const id = toast({
-            position: "top-right",
-            render: () => (
-              <CodingResultToast
-                bg={toastBg}
-                fg={toastFg}
-                green={green}
-                red={red}
-                isCorrect={submissionResult.accepted}
-                onClick={() => toast.close(id!)}
-              />
-            )
-          });
-          const result = await sessionSpoke.endExam({ accessToken });
-          dispatch(setExamResult(result));
-          navigate("/fun-fact");
-        } catch (err) {
-          if (err instanceof Error) {
-            loggerInstance.log(LogLevel.Error, err.message);
-          }
-        }
-      }
     } catch (err) {
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
@@ -233,119 +228,122 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
   }
 
   return (
-    <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
-      <Flex
-        bg={bg}
-        color={fg}
-        justifyContent="center"
-        alignItems="center"
-        h="full"
-        px="4"
-        gap="2"
-        rounded="md"
-        data-tour="topbar-step-1"
-      >
-        <ClockIcon />
-        <Text fontWeight="medium" fontSize="lg">
-          {toReadableTime(time)}
-        </Text>
-      </Flex>
-      <Flex alignItems="center" gap="3" w="32rem">
-        <ThemeButton bg={bg} fg={fg} data-tour="topbar-step-2" />
-        <MenuDropdown
-          dropdownWidth="10rem"
+    <>
+      <FinishedModal isOpen={isModalOpen} />
+      <Flex display="flex" justifyContent="stretch" gap="3" h="2.5rem" mb="3">
+        <Flex
           bg={bg}
-          fg={fg}
-          title={currentLanguage}
-          data-tour="topbar-step-3"
-          data-testid="editor-language-select"
+          color={fg}
+          justifyContent="center"
+          alignItems="center"
+          h="full"
+          px="4"
+          gap="2"
+          rounded="md"
+          data-tour="topbar-step-1"
         >
-          <MenuOptionGroup
-            type="radio"
-            value={isSubmitted ? currentSnapshot.language : currentLanguage}
-            onChange={(value) => dispatch(setLanguage(value as Language))}
+          <ClockIcon />
+          <Text fontWeight="medium" fontSize="lg">
+            {toReadableTime(time)}
+          </Text>
+        </Flex>
+        <Flex alignItems="center" gap="3" w="32rem">
+          <ThemeButton bg={bg} fg={fg} data-tour="topbar-step-2" />
+          <MenuDropdown
+            dropdownWidth="10rem"
+            bg={bg}
+            fg={fg}
+            title={currentLanguage}
+            data-tour="topbar-step-3"
+            data-testid="editor-language-select"
           >
-            {LANGUAGES.map((lang, idx) => (
-              <MenuItemOption
-                textTransform="capitalize"
-                key={idx}
-                value={lang}
-                isDisabled={
-                  isSubmitted ? lang !== currentSnapshot?.language : false
-                }
-              >
-                <span>{lang === "cpp" ? "C++" : lang}</span>
-              </MenuItemOption>
-            ))}
-          </MenuOptionGroup>
-        </MenuDropdown>
-        <MenuDropdown
-          dropdownWidth="10rem"
-          bg={bg}
-          fg={fg}
-          title={fontSize + "px"}
-          data-tour="topbar-step-4"
-          data-testid="editor-fontsize-select"
-        >
-          <MenuOptionGroup
-            type="radio"
-            value={String(fontSize)}
-            onChange={(value) => {
-              dispatch(setFontSize(parseInt(value as string)));
+            <MenuOptionGroup
+              type="radio"
+              value={isSubmitted ? currentSnapshot.language : currentLanguage}
+              onChange={(value) => dispatch(setLanguage(value as Language))}
+            >
+              {LANGUAGES.map((lang, idx) => (
+                <MenuItemOption
+                  textTransform="capitalize"
+                  key={idx}
+                  value={lang}
+                  isDisabled={
+                    isSubmitted ? lang !== currentSnapshot?.language : false
+                  }
+                >
+                  <span>{lang === "cpp" ? "C++" : lang}</span>
+                </MenuItemOption>
+              ))}
+            </MenuOptionGroup>
+          </MenuDropdown>
+          <MenuDropdown
+            dropdownWidth="10rem"
+            bg={bg}
+            fg={fg}
+            title={fontSize + "px"}
+            data-tour="topbar-step-4"
+            data-testid="editor-fontsize-select"
+          >
+            <MenuOptionGroup
+              type="radio"
+              value={String(fontSize)}
+              onChange={(value) => {
+                dispatch(setFontSize(parseInt(value as string)));
+              }}
+            >
+              {Array(9)
+                .fill(0)
+                .map((_, idx: number) => {
+                  const fontSize = idx + 12;
+                  return (
+                    <MenuItemOption key={idx} value={String(fontSize)}>
+                      <span>{fontSize}px</span>
+                    </MenuItemOption>
+                  );
+                })}
+            </MenuOptionGroup>
+          </MenuDropdown>
+          <LocaleButton bg={bg} fg={fg} data-tour="topbar-step-5" />
+        </Flex>
+        <Flex alignItems="center" gap="3" ml="auto">
+          <Button
+            px="4"
+            colorScheme="red"
+            opacity="75%"
+            _hover={{
+              opacity: "100%"
             }}
+            h="full"
+            onClick={forfeitExam}
+            data-tour="topbar-step-6"
           >
-            {Array(9)
-              .fill(0)
-              .map((_, idx: number) => {
-                const fontSize = idx + 12;
-                return (
-                  <MenuItemOption key={idx} value={String(fontSize)}>
-                    <span>{fontSize}px</span>
-                  </MenuItemOption>
-                );
-              })}
-          </MenuOptionGroup>
-        </MenuDropdown>
-        <LocaleButton bg={bg} fg={fg} data-tour="topbar-step-5" />
-      </Flex>
-      <Flex alignItems="center" gap="3" ml="auto">
-        <Button
-          px="4"
-          colorScheme="red"
-          opacity="75%"
-          _hover={{
-            opacity: "100%"
-          }}
-          h="full"
-          onClick={forfeitExam}
-          data-tour="topbar-step-6"
-        >
-          {t("surrender")}
-        </Button>
-        <Button
-          px="4"
-          colorScheme="blue"
-          variant="outline"
-          h="full"
-          isLoading={testing}
-          onClick={() => submitSolution("test")}
-          data-tour="topbar-step-7"
-        >
-          Test
-        </Button>
-        {!isRefactored && (
+            {t("surrender")}
+          </Button>
           <Button
             px="4"
             colorScheme="blue"
+            variant="outline"
             h="full"
-            isLoading={submitting}
-            onClick={() => submitSolution("submit")}
-            data-tour="topbar-step-8"
+            isLoading={testing}
+            onClick={() => submitSolution("test")}
+            data-tour="topbar-step-7"
           >
-            {isSubmitted ? "Refactor" : "Submit"}
+            Test
           </Button>
-        )}
+          {!isRefactored && (
+            <Button
+              px="4"
+              colorScheme="blue"
+              h="full"
+              isLoading={submitting}
+              onClick={() => submitSolution("submit")}
+              data-tour="topbar-step-8"
+            >
+              {isSubmitted ? "Refactor" : "Submit"}
+            </Button>
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 }
