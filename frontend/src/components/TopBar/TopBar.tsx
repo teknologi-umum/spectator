@@ -69,7 +69,7 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
   const green = useColorModeValue("green.500", "green.400", "green.300");
   const red = useColorModeValue("red.500", "red.400", "red.300");
 
-  const [isModalOpen, setModalOpen] = useState(true);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [testing, setTesting] = useState(false);
 
