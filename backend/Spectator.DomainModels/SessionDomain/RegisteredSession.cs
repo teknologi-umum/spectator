@@ -73,7 +73,6 @@ namespace Spectator.DomainModels.SessionDomain {
 			if (@event.Timestamp >= ExamDeadline) throw new InvalidOperationException("Deadline passed");
 			if (QuestionNumbers == null) throw new InvalidProgramException("Invalid state");
 			if (SubmissionByQuestionNumber == null) throw new InvalidProgramException("Invalid state");
-			if (SubmissionByQuestionNumber.Count(kvp => kvp.Value.Accepted) < QuestionNumbers.Value.Length) throw new InvalidProgramException("Some solutions haven't been accepted");
 
 			return this with {
 				UpdatedAt = @event.Timestamp,
