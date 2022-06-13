@@ -84,6 +84,8 @@ services:
     image: influxdb:2.1.1
     hostname: influx
     restart: on-failure:10
+    ports:
+      - 8086:8086
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
