@@ -98,10 +98,6 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
     snapshotByQuestionNumber[currentQuestionNumber];
   const isSubmitted =
     currentSnapshot !== undefined ? currentSnapshot.submissionSubmitted : false;
-  const isRefactored =
-    currentSnapshot !== undefined
-      ? currentSnapshot.submissionRefactored
-      : false;
 
   useEffect(() => {
     if (accessToken === null) return;
@@ -114,20 +110,8 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
       }
 
       const isSessionFinished = allSnapshots.reduce((prev, curr) => {
-        // rules on how to determine the "finished" question:
-        // - if the question has been submitted and it's a correct one, we'll consider that as `true`
-        // - if the question has been submitted and it's an incorrect one, we'll see if it has been refactored or not
-        //   if it has been refactored, we'll consider that as done no matter if it's correct or not because they can
-        //   no longer submit another solution
-        if (
-          (curr.submissionSubmitted && curr.submissionAccepted) ||
-          (curr.submissionSubmitted && curr.submissionRefactored)
-        ) {
-          return prev && true;
-        }
-
-        // we'll consider any questions that don't belong to those categories as "not finished"
-        return prev && false;
+        // only count correct answers
+        return prev && (curr.submissionSubmitted && curr.submissionAccepted);
       }, true);
 
       if (isSessionFinished) {
@@ -330,18 +314,16 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           >
             Test
           </Button>
-          {!isRefactored && (
-            <Button
-              px="4"
-              colorScheme="blue"
-              h="full"
-              isLoading={submitting}
-              onClick={() => submitSolution("submit")}
-              data-tour="topbar-step-8"
-            >
-              {isSubmitted ? "Refactor" : "Submit"}
-            </Button>
-          )}
+          <Button
+            px="4"
+            colorScheme="blue"
+            h="full"
+            isLoading={submitting}
+            onClick={() => submitSolution("submit")}
+            data-tour="topbar-step-8"
+          >
+            {isSubmitted ? "Refactor" : "Submit"}
+          </Button>
         </Flex>
       </Flex>
     </>
