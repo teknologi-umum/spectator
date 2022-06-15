@@ -43,7 +43,9 @@ import { LogLevel } from "@microsoft/signalr";
 import { useTranslation } from "react-i18next";
 
 function CodingTest() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations"
+  });
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const { tourCompleted } = useAppSelector((state) => state.session);
@@ -217,12 +219,12 @@ function CodingTest() {
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
           <ModalHeader fontSize="2xl">
-            {t("translation.translations.surrender.title")}
+            {t("surrender.title")}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
-              {t("translation.translations.surrender.body")}
+              {t("surrender.body")}
             </Text>
           </ModalBody>
 
@@ -233,10 +235,10 @@ function CodingTest() {
               mr={3}
               onClick={onClose}
             >
-              {t("translation.translations.ui.cancel")}
+              {t("ui.cancel")}
             </Button>
             <Button colorScheme="red" onClick={forfeitExam} data-tour="step-2">
-              {t("translation.translations.ui.surrender")}
+              {t("ui.surrender")}
             </Button>
           </ModalFooter>
         </ModalContent>
