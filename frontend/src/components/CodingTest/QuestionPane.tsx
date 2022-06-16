@@ -6,7 +6,8 @@ import {
   Heading,
   ListItem,
   Text,
-  UnorderedList
+  UnorderedList,
+  Badge
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import { useAppSelector } from "@/store";
@@ -62,12 +63,31 @@ export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
   });
   const codeBg = useColorModeValue("gray.200", "gray.800", "gray.900");
 
-  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
+  const { currentQuestionNumber, snapshotByQuestionNumber } = useAppSelector(
+    (state) => state.editor
+  );
+
+  const snapshot = snapshotByQuestionNumber[currentQuestionNumber];
 
   return (
     <Box p="4" overflowY="auto" flex="1" h="full">
       <Heading size="lg" color={fg}>
-        {t(`${currentQuestionNumber - 1}.title`)}
+        {t(`${currentQuestionNumber - 1}.title`)} {"  "}
+        {!snapshot?.submissionSubmitted && (
+          <Badge fontSize="1rem" variant="outline">
+            NO ATTEMPT
+          </Badge>
+        )}
+        {snapshot?.submissionSubmitted && snapshot?.submissionAccepted && (
+          <Badge fontSize="1rem" variant="subtle" colorScheme='green'>
+            ACCEPTED
+          </Badge>
+        )}
+        {snapshot?.submissionSubmitted && !snapshot?.submissionAccepted && (
+          <Badge fontSize="1rem" variant="subtle" colorScheme='red'>
+            REJECTED
+          </Badge>
+        )}
       </Heading>
       <ReactMarkdown
         components={{
