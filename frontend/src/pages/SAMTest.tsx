@@ -46,7 +46,7 @@ function getResponseOptions(
 
 enum Page {
   FIRST,
-  LAST
+  LAST,
 }
 
 function SAMTest() {
@@ -89,6 +89,7 @@ function SAMTest() {
         pleasedLevel: pleasure
       });
       dispatch(markSecondSAMSubmitted());
+      navigate("/fun-fact");
     } else {
       await sessionSpoke.submitBeforeExamSAM({
         accessToken,
@@ -105,8 +106,8 @@ function SAMTest() {
         })
       );
       dispatch(markFirstSAMSubmitted());
+      navigate("/coding-test");
     }
-    navigate("/coding-test");
   }
 
   useEffect(() => {
@@ -119,11 +120,7 @@ function SAMTest() {
     <>
       <Layout display="flex">
         <Flex gap={2} position="fixed" left={4} top={4}>
-          <ThemeButton
-            bg={bg}
-            fg={fg}
-            title={t("ui.theme")}
-          />
+          <ThemeButton bg={bg} fg={fg} title={t("ui.theme")} />
           <LocaleButton bg={bg} fg={fg} />
         </Flex>
         <Box
@@ -216,13 +213,15 @@ function SAMTest() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
-          <ModalHeader fontSize="2xl">
-            {t("confirmation.title")}
-          </ModalHeader>
+          <ModalHeader fontSize="2xl">{t("confirmation.title")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
-              {t("confirmation.body")}
+              {t(
+                firstSAMSubmitted
+                  ? "confirmation.body-alt"
+                  : "confirmation.body"
+              )}
             </Text>
           </ModalBody>
 
