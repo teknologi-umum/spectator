@@ -115,11 +115,10 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		currentFrame = append(currentFrame, record.Time().UnixMilli())
 	}
 
-	// Check the wordsPerMinute length, if it's zero, we return an error
-	// because it shouldn't be zero.
 	if len(totalKeystrokes) == 0 {
-		// TODO(elianiva): figure out what to do with this
-		return fmt.Errorf("no keystroke events found")
+		// just send 0 which means the user didn't type enough
+		result <- 0
+		return nil
 	}
 
 	var totalWpm int64

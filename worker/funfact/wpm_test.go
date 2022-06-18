@@ -46,11 +46,12 @@ func TestCalculateWordsPerMinute_NotFound(t *testing.T) {
 	defer close(res)
 
 	err := deps.CalculateWordsPerMinute(ctx, uuid.New(), res)
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
+	if err != nil {
+		t.Fatalf("an error was thrown: %v", err)
 	}
 
-	if err.Error() != "no keystroke events found" {
-		t.Fatalf("expected an error of %s, got %s instead", "no keystroke events found", err.Error())
+	out := <-res
+	if out != 0 {
+		t.Fatalf("expected 0, got %v", out)
 	}
 }
