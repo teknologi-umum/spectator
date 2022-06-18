@@ -12,6 +12,7 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
+	"github.com/rs/zerolog/log"
 )
 
 // convertAndUpload converts the data into both JSON and CSV format,
@@ -27,6 +28,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 
 	dataJSON, err := json.MarshalIndent(&data, "", " ")
 	if err != nil {
+		log.Debug().Interface("data", data).Msgf("marshaling json of %s", fileName)
 		return fmt.Errorf("failed to marshal json %s data: %w", fileName, err)
 	}
 
