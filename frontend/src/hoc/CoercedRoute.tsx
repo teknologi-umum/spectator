@@ -22,7 +22,7 @@ export const CoercedRoute = () => {
     }
 
     if (examResult === null) return "/coding-test";
-    if (secondSAMSubmitted === null) return "/sam-test";
+    if (!secondSAMSubmitted) return "/sam-test";
     return "/fun-fact";
   }, [
     accessToken,
