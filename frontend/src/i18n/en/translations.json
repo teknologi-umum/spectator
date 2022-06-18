@@ -85,7 +85,8 @@
     },
     "confirmation": {
       "title": "Confirmation",
-      "body": "In this programming test, ALL of your mouse and keyboard activities will be recorded for data collecting purpose. We will also ask for the camera permission to record your movement. By pressing the confirm button, you fully agree with these conditions and give us your permissions."
+      "body": "In this programming test, ALL of your mouse and keyboard activities will be recorded for data collecting purpose. We will also ask for the camera permission to record your movement. By pressing the confirm button, you fully agree with these conditions and give us your permissions.",
+      "body-alt": "Are you sure you want to submit your answer?"
     },
     "surrender": {
       "title": "Surrender",
