@@ -379,7 +379,7 @@ namespace Spectator.Hubs {
 			};
 		}
 
-		public Task SubmitAfterExamSAM(SubmitSAMRequest request) {
+		public Task SubmitAfterExamSAMAsync(SubmitSAMRequest request) {
 			// Authenticate
 			var session = _poormansAuthentication.Authenticate(request.AccessToken);
 
