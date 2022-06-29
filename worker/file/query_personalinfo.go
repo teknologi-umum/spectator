@@ -3,6 +3,8 @@ package file
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
 	"time"
 	"worker/common"
 	"worker/logger_proto"
@@ -43,15 +45,18 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 	for rows.Next() {
 		record := rows.Record()
 
-		d.Logger.Log(
-			record.Time().String(),
-			logger_proto.Level_DEBUG.Enum(),
-			sessionID.String(),
-			map[string]string{
-				"session_id": sessionID.String(),
-				"function":   "QueryPersonalInfo",
-			},
-		)
+		if record.Time().Year() != 2022 {
+			d.Logger.Log(
+				record.Time().String(),
+				logger_proto.Level_DEBUG.Enum(),
+				sessionID.String(),
+				map[string]string{
+					"session_id": sessionID.String(),
+					"function":   "QueryPersonalInfo",
+				},
+			)
+			log.Printf("current time from record.Time() is not 2022, it's " + strconv.Itoa(record.Time().Year()))
+		}
 
 		sessionId, ok := record.ValueByKey("session_id").(string)
 		if !ok {
