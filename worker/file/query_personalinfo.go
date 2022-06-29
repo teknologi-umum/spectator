@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"worker/common"
+	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -41,6 +42,16 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 
 	for rows.Next() {
 		record := rows.Record()
+
+		d.Logger.Log(
+			record.Time().String(),
+			logger_proto.Level_DEBUG.Enum(),
+			sessionID.String(),
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "QueryPersonalInfo",
+			},
+		)
 
 		sessionId, ok := record.ValueByKey("session_id").(string)
 		if !ok {

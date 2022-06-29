@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"worker/common"
+	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -34,6 +35,16 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 
 	for mouseClickRows.Next() {
 		record := mouseClickRows.Record()
+
+		d.Logger.Log(
+			record.Time().String(),
+			logger_proto.Level_DEBUG.Enum(),
+			sessionID.String(),
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "QueryMouseScrolled",
+			},
+		)
 
 		x, ok := record.ValueByKey("x").(int64)
 		if !ok {

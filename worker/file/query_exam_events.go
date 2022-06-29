@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"worker/common"
+	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -61,6 +62,16 @@ func (d *Dependency) queryExamEvents(ctx context.Context, queryAPI api.QueryAPI,
 
 	for afterExamSamRows.Next() {
 		record := afterExamSamRows.Record()
+
+		d.Logger.Log(
+			record.Time().String(),
+			logger_proto.Level_DEBUG.Enum(),
+			sessionID.String(),
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "queryExamEvents",
+			},
+		)
 
 		outputExamEvents = append(outputExamEvents, ExamEvent{
 			Measurement: measurement,

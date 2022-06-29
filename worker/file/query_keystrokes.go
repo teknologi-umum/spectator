@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"worker/common"
+	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
@@ -40,6 +41,16 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 
 	for keystrokeMouseRows.Next() {
 		record := keystrokeMouseRows.Record()
+
+		d.Logger.Log(
+			record.Time().String(),
+			logger_proto.Level_DEBUG.Enum(),
+			sessionID.String(),
+			map[string]string{
+				"session_id": sessionID.String(),
+				"function":   "QueryKeystrokes",
+			},
+		)
 
 		keyChar, ok := record.ValueByKey("key_char").(string)
 		if !ok {
