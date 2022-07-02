@@ -23,7 +23,7 @@
         "java": "static class Temperature {\n    // `calculateTemperature` is a function that accepts 3 arguments as its input:\n    // `temp` as integer, `from` as string, `to` as string. It returns an integer\n    // as its output.\n    public static int calculateTemperature(int temp, String from, String to) {\n        // write your code here\n    }\n}",
         "javascript": "// `calculateTemperature` is a function that accepts 3 arguments as its input:\n// `temp` as integer, `from` as string, `to` as string. It returns an integer\n// as its output.\nfunction calculateTemperature(temp, from, to) {\n    // write your code here\n}",
         "php": "// `calculateTemperature` is a function that accepts 3 arguments as its input:\n// `temp` as integer, `from` as string, `to` as string. It returns an integer\n// as its output.\nfunction calculateTemperature($temp, $from, $to) {\n    // write your code here\n}",
-        "python": "# `calculateTemperature` is a function that accepts 3 arguments as its input:\n# `temp` as integer, `from` as string, `to` as string. It returns an integer as\n# its output.\ndef calculateTemperature(temp, from, to):\n    # write your code here"
+        "python": "# `calculateTemperature` is a function that accepts 3 arguments as its input:\n# `temp` as integer, `from` as string, `to` as string. It returns an integer as\n# its output.\ndef calculateTemperature(temp, From, To):\n    # write your code here"
       }
     },
     {
@@ -49,7 +49,7 @@
         "java": "static class Heater {\n    // `findHeaterPower` is function that accepts an argument as long and\n    // returns an integer as its output.\n    public static int findHeaterPower(long input) {\n        // write your code here\n    }\n}",
         "javascript": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower(input) {\n    // write your code here\n}",
         "php": "// `findHeaterPower` is function that accepts an argument as long and\n// returns an integer as its output.\nfunction findHeaterPower($input) {\n    // write your code here\n}",
-        "python": "# `findHeaterPower` is function that accepts an argument as long and returns\n# an integer as its output.\ndef findHeaterPower(input):\n    # write your code here"
+        "python": "# `findHeaterPower` is function that accepts an argument as long and returns\n# an integer as its output.\ndef findHeaterPower(Input):\n    # write your code here"
       }
     },
     {
@@ -62,7 +62,7 @@
         "java": "static class Mumble {\n    // `mumble` is a function that accepts an argument as string and returns a\n    // string as its output.\n    public static String mumble(String input) {\n        // write your code here\n    }\n}",
         "javascript": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble(input) {\n    // write your code here\n}\n",
         "php": "// `mumble` is a function that accepts an argument as string and returns a\n// string as its output.\nfunction mumble($input) {\n    // write your code here\n}",
-        "python": "# `mumble` is a function that accepts an argument as string and returns a\n# string as its output.\ndef mumble(input: str) -> str:\n    # write your code here"
+        "python": "# `mumble` is a function that accepts an argument as string and returns a\n# string as its output.\ndef mumble(Input):\n    # write your code here"
       }
     },
     {
