@@ -3,14 +3,13 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 	"worker/common"
-	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/rs/zerolog/log"
 )
 
 type MouseScrolled struct {
@@ -39,16 +38,9 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 		record := mouseClickRows.Record()
 
 		if record.Time().Year() != 2022 {
-			d.Logger.Log(
-				record.Time().String(),
-				logger_proto.Level_DEBUG.Enum(),
-				sessionID.String(),
-				map[string]string{
-					"session_id": sessionID.String(),
-					"function":   "QueryMouseScrolled",
-				},
-			)
-			log.Printf("current time from record.Time() is not 2022, it's " + strconv.Itoa(record.Time().Year()))
+			log.Info().
+				Str("current time from record.Time() is not 2022, it's ", strconv.Itoa(record.Time().Year())).
+				Msg("invalid date on QueryMouseScrolled")
 		}
 
 		x, ok := record.ValueByKey("x").(int64)
