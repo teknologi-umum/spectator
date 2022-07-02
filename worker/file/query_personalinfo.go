@@ -3,14 +3,13 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 	"worker/common"
-	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/rs/zerolog/log"
 )
 
 type PersonalInfo struct {
@@ -46,16 +45,9 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		record := rows.Record()
 
 		if record.Time().Year() != 2022 {
-			d.Logger.Log(
-				record.Time().String(),
-				logger_proto.Level_DEBUG.Enum(),
-				sessionID.String(),
-				map[string]string{
-					"session_id": sessionID.String(),
-					"function":   "QueryPersonalInfo",
-				},
-			)
-			log.Printf("current time from record.Time() is not 2022, it's " + strconv.Itoa(record.Time().Year()))
+			log.Warn().
+				Str("current time from record.Time() is not 2022, it's ", strconv.Itoa(record.Time().Year())).
+				Msg("invalid date on QueryPersonalInfo")
 		}
 
 		sessionId, ok := record.ValueByKey("session_id").(string)

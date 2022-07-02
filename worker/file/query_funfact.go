@@ -3,14 +3,13 @@ package file
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 	"worker/common"
-	"worker/logger_proto"
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/rs/zerolog/log"
 )
 
 type Funfact struct {
@@ -41,16 +40,9 @@ func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, se
 		record := funfactRows.Record()
 
 		if record.Time().Year() != 2022 {
-			d.Logger.Log(
-				record.Time().String(),
-				logger_proto.Level_DEBUG.Enum(),
-				sessionID.String(),
-				map[string]string{
-					"session_id": sessionID.String(),
-					"function":   "QueryFunfact",
-				},
-			)
-			log.Printf("current time from record.Time() is not 2022, it's " + strconv.Itoa(record.Time().Year()))
+			log.Warn().
+				Str("current time from record.Time() is not 2022, it's ", strconv.Itoa(record.Time().Year())).
+				Msg("invalid date on QueryFunfact")
 		}
 
 		wordsPerMinute, ok := record.ValueByKey("words_per_minute").(int64)
