@@ -75,7 +75,7 @@
         "java": "static class Grade {\n    // `calculateGrade` merupakan sebuah function yang menerima sebuah argumen\n    // bertipe ArrayList of integer. Function ini akan mengembalikan sebuah\n    // nilai bertipe ArrayList of integer.\n    public static ArrayList<Integer> calculateGrade(ArrayList<Integer> input) {\n        // tulis kode kamu disini\n    }\n}",
         "javascript": "// `calculateGrade` merupakan sebuah function yang menerima sebuah argumen\n// bertipe array of integer. Function ini akan mengembalikan sebuah\n// nilai bertipe array of integer.\nfunction calculateGrade(grade) {\n    // tulis kode kamu disini\n}",
         "php": "// `calculateGrade` merupakan sebuah function yang menerima sebuah argumen\n// bertipe array of integer. Function ini akan mengembalikan sebuah\n// nilai bertipe array of integer.\nfunction calculateGrade($grade) {\n    // tulis kode kamu disini\n}",
-        "python": "// `calculateGrade` merupakan sebuah function yang menerima sebuah argumen\n// bertipe array of integer. Function ini akan mengembalikan sebuah\n// nilai bertipe array of integer.\ndef calculateGrade(grade):\n    // tulis kode kamu disini"
+        "python": "// `calculateGrade` merupakan sebuah function yang menerima sebuah argumen\n// bertipe array of integer. Function ini akan mengembalikan sebuah\n// nilai bertipe array of integer.\ndef calculateGrade(Input):\n    // tulis kode kamu disini"
       }
     }
   ]

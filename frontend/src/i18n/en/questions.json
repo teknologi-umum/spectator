@@ -75,7 +75,7 @@
         "java": "static class Grade {\n    // `calculateGrade` is a function that accepts an ArrayList of integer as\n    // its input and returns an ArrayList of integer as its output\n    public static ArrayList<Integer> calculateGrade(ArrayList<Integer> input) {\n        // write your code here\n    }\n}",
         "javascript": "// calculateGrade is a function that accepts an array of integer as its input\n// and returns an array of integer as its output\nfunction calculateGrade(grade) {\n    // write your code here\n}",
         "php": "// `calculateGrade` is a function that accepts an array of integer as its input and\n// returns an array of integer as its output\nfunction calculateGrade($grade) {\n    // write your code here\n}",
-        "python": "# `calculateGrade` is a function that accepts a list of integer as its input and\n# returns a list of integer as its output\ndef calculateGrade(grade):\n    # write your code here"
+        "python": "# `calculateGrade` is a function that accepts a list of integer as its input and\n# returns a list of integer as its output\ndef calculateGrade(Input):\n    # write your code here"
       }
     }
   ]
