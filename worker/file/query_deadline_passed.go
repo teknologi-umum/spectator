@@ -36,7 +36,7 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 		record := afterExamSamRows.Record()
 
 		if record.Time().Year() != 2022 {
-			log.Info().
+			log.Warn().
 				Str("current time from record.Time() is not 2022, it's ", strconv.Itoa(record.Time().Year())).
 				Msg("invalid date on QueryDeadlinePassed")
 		}

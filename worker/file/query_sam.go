@@ -48,7 +48,7 @@ func (d *Dependency) querySelfAssessmentManekin(ctx context.Context, queryAPI ap
 		record := afterExamSamRows.Record()
 
 		if record.Time().Year() != 2022 {
-			log.Info().
+			log.Warn().
 				Str("current time from record.Time() is not 2022, it's ", strconv.Itoa(record.Time().Year())).
 				Msg("invalid date on querySelfAssessmentManekin")
 		}

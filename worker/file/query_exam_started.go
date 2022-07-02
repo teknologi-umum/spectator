@@ -41,7 +41,7 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 		record := examStartedRows.Record()
 
 		if record.Time().Year() != 2022 {
-			log.Info().
+			log.Warn().
 				Str("current time from record.Time() is not 2022, it's ", strconv.Itoa(record.Time().Year())).
 				Msg("invalid date on QueryExamStarted")
 		}
