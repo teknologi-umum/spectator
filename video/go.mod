@@ -6,6 +6,7 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.9.1
 	github.com/minio/minio-go/v7 v7.0.30
 	google.golang.org/grpc v1.47.0
+	google.golang.org/protobuf v1.27.1
 )
 
 require (
@@ -32,7 +33,6 @@ require (
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
