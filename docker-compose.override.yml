@@ -44,6 +44,7 @@ services:
       - VITE_LOGGER_URL=${VITE_LOGGER_URL}
       - VITE_VIDEO_STREAM_URL=${VITE_VIDEO_STREAM_URL}
       - VITE_ADMIN_URL=${VITE_ADMIN_URL}
+      - VITE_MINIO_URL=${VITE_MINIO_URL}
     ports:
       - 5000:80
     volumes:
