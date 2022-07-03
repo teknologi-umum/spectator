@@ -24,7 +24,6 @@ jobs:
         ports:
           - 8086:8086
         options: >-
-          --entrypoint 'server /data --console-address ":9001"'
           --health-cmd "influx ping"
           --health-interval 30s
           --health-timeout 10s
@@ -40,6 +39,7 @@ jobs:
         ports:
           - 9000:9000
         options: >-
+          --entrypoint 'server /data --console-address ":9001"'
           --health-cmd "curl -f http://bucket:9000/minio/health/live"
           --health-interval 30s
           --health-timeout 10s
