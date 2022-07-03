@@ -56,7 +56,12 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 			deadlineUnix = 0
 		}
 
-		deadline := time.UnixMilli(deadlineUnix)
+		var deadline time.Time
+		if deadlineUnix > 1e7 {
+			deadline = time.Unix(0, deadlineUnix)
+		} else {
+			deadline = time.UnixMilli(deadlineUnix)
+		}
 
 		outputExamStarted = ExamStarted{
 			Measurement:     common.MeasurementExamStarted,
