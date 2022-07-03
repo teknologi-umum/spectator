@@ -81,7 +81,7 @@ services:
       - ./data/minio:/data
 
   influx:
-    image: influxdb:2.1.1
+    image: influxdb:2.3.0
     hostname: influx
     restart: on-failure:10
     ports:
@@ -94,7 +94,7 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
     healthcheck:
-      test: "curl -f http://localhost:8086/ping"
+      test: "influx ping"
       interval: 30s
       timeout: 10s
       retries: 5

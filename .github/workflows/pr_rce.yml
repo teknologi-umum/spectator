@@ -3,13 +3,13 @@ name: Check
 on:
   pull_request:
     paths:
-      - 'rce/**'
+      - "rce/**"
 
 jobs:
   rce:
     name: RCE
     runs-on: ubuntu-latest
-    container: node:16.14.0-bullseye
+    container: node:16.15-bullseye
     timeout-minutes: 5
     defaults:
       run:

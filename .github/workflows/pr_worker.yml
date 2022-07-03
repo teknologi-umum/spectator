@@ -3,17 +3,17 @@ name: Check
 on:
   pull_request:
     paths:
-      - 'worker/**'
+      - "worker/**"
 
 jobs:
   worker:
     name: Worker
     runs-on: ubuntu-latest
-    container: golang:1.17
-    timeout-minutes: 5
+    container: golang:1.18
+    timeout-minutes: 10
     services:
       db:
-        image: influxdb:2.1
+        image: influxdb:2.3.0
         env:
           DOCKER_INFLUXDB_INIT_MODE: setup
           DOCKER_INFLUXDB_INIT_USERNAME: root
@@ -23,6 +23,27 @@ jobs:
           DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
         ports:
           - 8086:8086
+        options: >-
+          --health-cmd "influx ping"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+          --health-start-period 30s
+      bucket:
+        image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
+        env:
+          MINIO_ROOT_USER: teknum
+          MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+          MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+        ports:
+          - 9000:9000
+        options: >-
+          --health-cmd "curl -f http://localhost:9000/minio/health/live"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 60s
     defaults:
       run:
         working-directory: ./worker
@@ -34,14 +55,13 @@ jobs:
       - name: Run test
         run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
         env:
-          ENVIRONMENT: github-actions
+          ENVIRONMENT: ""
           INFLUX_HOST: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: iKPpruHfaXygrwSV
           MINIO_HOST: bucket:9000
           MINIO_ACCESS_ID: teknum
           MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_TOKEN: ""
           LOGGER_SERVER_ADDRESS: http://logger:9000/
           LOGGER_SERVER_TOKEN: testing
-          MINIO_TOKEN: ''
-
