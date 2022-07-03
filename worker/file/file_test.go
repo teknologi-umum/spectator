@@ -14,7 +14,6 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -94,6 +93,37 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to seed data: %v", err)
 	}
 
+	// Setup minio
+	bucketFound, err := bucket.BucketExists(prepareCtx, "public")
+	if err != nil {
+		log.Fatalf("Error checking MinIO bucket: %s\n", err)
+	}
+
+	if !bucketFound {
+		err = bucket.MakeBucket(prepareCtx, "public", minio.MakeBucketOptions{})
+		if err != nil {
+			log.Fatalf("Error creating MinIO bucket: %s\n", err)
+		}
+
+		policy := `{
+			"Version":"2012-10-17",
+			"Statement":[
+			  {
+				"Sid": "AddPerm",
+				"Effect": "Allow",
+				"Principal": "*",
+				"Action":["s3:GetObject"],
+				"Resource":["arn:aws:s3:::public/*"]
+			  }
+			]
+		  }`
+
+		err = bucket.SetBucketPolicy(prepareCtx, "public", policy)
+		if err != nil {
+			log.Fatalf("Error setting bucket policy: %s\n", err)
+		}
+	}
+
 	code := m.Run()
 
 	prepareCancel()
@@ -125,35 +155,30 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 		common.BucketSessionEvents,
 		common.BucketFileEvents,
 		common.BucketInputStatisticEvents,
+		common.BucketWorkerStatus,
 	}
-
-	g, gctx := errgroup.WithContext(ctx)
 
 	for _, bucket := range bucketNames {
 		var b = bucket
-		g.Go(func() error {
-			_, err := bucketsAPI.FindBucketByName(gctx, b)
-			if err != nil && err.Error() != "bucket '"+b+"' not found" {
-				return fmt.Errorf("finding bucket: %w", err)
+		_, err := bucketsAPI.FindBucketByName(ctx, b)
+		if err != nil && err.Error() != "bucket '"+b+"' not found" {
+			return fmt.Errorf("finding bucket: %w", err)
+		}
+
+		if err != nil && err.Error() == "bucket '"+b+"' not found" {
+			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+			if err != nil {
+				return fmt.Errorf("finding organization: %w", err)
 			}
 
-			if err != nil && err.Error() == "bucket '"+b+"' not found" {
-				orgDomain, err := organizationAPI.FindOrganizationByName(gctx, org)
-				if err != nil {
-					return fmt.Errorf("finding organization: %w", err)
-				}
-
-				_, err = bucketsAPI.CreateBucketWithName(gctx, orgDomain, b)
-				if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
-					return fmt.Errorf("creating bucket: %w", err)
-				}
+			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, b)
+			if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
+				return fmt.Errorf("creating bucket: %w", err)
 			}
-
-			return nil
-		})
+		}
 	}
 
-	return g.Wait()
+	return nil
 }
 
 // cleanup deletes the buckets' data
@@ -164,7 +189,15 @@ func cleanup(ctx context.Context) error {
 		return fmt.Errorf("finding organization: %w", err)
 	}
 
-	for _, bucket := range []string{common.BucketFileEvents, common.BucketInputEvents, common.BucketInputStatisticEvents, common.BucketSessionEvents} {
+	bucketNames := []string{
+		common.BucketInputEvents,
+		common.BucketSessionEvents,
+		common.BucketFileEvents,
+		common.BucketInputStatisticEvents,
+		common.BucketWorkerStatus,
+	}
+
+	for _, bucket := range bucketNames {
 		acquiredBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, bucket)
 		if err != nil {
 			return fmt.Errorf("finding bucket: %w", err)

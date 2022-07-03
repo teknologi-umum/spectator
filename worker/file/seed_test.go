@@ -35,7 +35,7 @@ func seedData(ctx context.Context) error {
 	globalID = id
 	globalID2 = id2
 
-	eventStart := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
+	eventStart := time.Date(2022, 1, 2, 12, 0, 0, 0, time.UTC)
 	// eventEnd := time.Date(2020, 1, 2, 13, 0, 0, 0, time.UTC)
 
 	var wg sync.WaitGroup
@@ -92,7 +92,7 @@ func seedData(ctx context.Context) error {
 				},
 				map[string]interface{}{
 					"question_numbers": "1,2,3,4,5",
-					"deadline":         eventStart.Add(time.Minute * 180).Unix(),
+					"deadline":         eventStart.Add(time.Minute * 180).UnixNano(),
 				},
 				eventStart.Add(time.Minute*4),
 			)
@@ -201,7 +201,7 @@ func seedData(ctx context.Context) error {
 
 		err := sessionWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			log.Fatalf("Error writing solution accepted point: %v", err)
 		}
 		wg.Done()
 	}()
@@ -233,7 +233,7 @@ func seedData(ctx context.Context) error {
 
 		err := sessionWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			log.Fatalf("Error writing solution rejected point: %v", err)
 		}
 		wg.Done()
 	}()
@@ -259,7 +259,7 @@ func seedData(ctx context.Context) error {
 
 		err := sessionWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			log.Fatalf("Error writing deadline passed point: %v", err)
 		}
 		wg.Done()
 	}()
@@ -300,7 +300,7 @@ func seedData(ctx context.Context) error {
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
+				log.Fatalf("Error writing keystroke events point for %s: %v", sessionID, err)
 			}
 		}
 
@@ -338,7 +338,7 @@ func seedData(ctx context.Context) error {
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
+				log.Fatalf("Error writing mouse move point for %s: %v", sessionID, err)
 			}
 		}
 
@@ -376,7 +376,7 @@ func seedData(ctx context.Context) error {
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
+				log.Fatalf("Error writing mouse down point for %s: %v", sessionID, err)
 			}
 		}
 
@@ -414,7 +414,7 @@ func seedData(ctx context.Context) error {
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
+				log.Fatalf("Error writing mouse up point for %s: %v", sessionID, err)
 			}
 		}
 
@@ -451,7 +451,7 @@ func seedData(ctx context.Context) error {
 
 			err := inputWriteAPI.WritePoint(ctx, points...)
 			if err != nil {
-				log.Fatalf("Error writing point: %v", err)
+				log.Fatalf("Error writing mouse scrolled point for %s: %v", sessionID, err)
 			}
 		}
 
@@ -482,7 +482,7 @@ func seedData(ctx context.Context) error {
 
 		err := inputWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			log.Fatalf("Error writing window resize point: %v", err)
 		}
 		wg.Done()
 	}()
@@ -510,7 +510,7 @@ func seedData(ctx context.Context) error {
 
 		err := statisticWriteAPI.WritePoint(ctx, points...)
 		if err != nil {
-			log.Fatalf("Error writing point: %v", err)
+			log.Fatalf("Error writing funfact point: %v", err)
 		}
 		wg.Done()
 	}()
