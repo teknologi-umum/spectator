@@ -5,6 +5,7 @@ package file
 
 import (
 	"worker/logger"
+	"worker/status"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -19,4 +20,5 @@ type Dependency struct {
 	DBOrganization string
 	Logger         *logger.Logger
 	LoggerToken    string
+	Status         *status.Dependency
 }
