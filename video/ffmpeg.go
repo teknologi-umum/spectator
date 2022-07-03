@@ -62,7 +62,7 @@ func (f *Ffmpeg) Convert(ctx context.Context, src string, dst string) ([]byte, e
 		return []byte{}, ErrFfmpegInvalid
 	}
 
-	cmd := exec.CommandContext(ctx, "ffmpeg", "-i", src, "-c", "copy", dst)
+	cmd := exec.CommandContext(ctx, "ffmpeg", "-i", src, "-crf", "3", "-c", "copy", dst)
 	stdout, err := cmd.Output()
 	if err != nil {
 		var exitErr *exec.ExitError
