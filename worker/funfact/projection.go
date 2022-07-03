@@ -6,6 +6,7 @@ import (
 
 	"worker/common"
 	loggerpb "worker/logger_proto"
+	"worker/status"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -44,6 +45,8 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
+	d.Status.AppendState(ctx, sessionID, "create_projection", status.StatePending)
+
 	// We shall find the student number
 	personalInfoRows, err := d.DB.QueryAPI(d.DBOrganization).Query(
 		ctx,
@@ -64,6 +67,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 				"info":       "cannot proceed student number",
 			},
 		)
+		d.Status.AppendState(ctx, sessionID, "create_projection", status.StateFailed)
 		return
 	}
 	defer personalInfoRows.Close()
@@ -105,6 +109,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 				"info":       "cannot storing results",
 			},
 		)
+		d.Status.AppendState(ctx, sessionID, "create_projection", status.StateFailed)
 		return
 	}
 
@@ -112,4 +117,6 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 		Str("session_id", sessionID.String()).
 		Str("request_id", requestID).
 		Msg("successfully created projection")
+
+	d.Status.AppendState(ctx, sessionID, "create_projection", status.StateSuccess)
 }

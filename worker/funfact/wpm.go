@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"strings"
 	"worker/common"
+	"worker/status"
 
 	"github.com/google/uuid"
 )
 
 func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan int64) error {
+	d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StatePending)
+
 	// The formula to calculate words per minute is as follows:
 	// SELECT all KeystrokeEvent, group by TIME, each TIME is windowed by 1 minute
 	// for every 1 minute, calculate the total keystroke event and divide by 5.
@@ -34,6 +37,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 			                  r["session_id"] == "`+sessionID.String()+`"))`,
 	)
 	if err != nil {
+		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateFailed)
 		return fmt.Errorf("failed to query session start time: %w", err)
 	}
 	defer examStartedRow.Close()
@@ -74,6 +78,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 			|> elapsed(unit: 1ms, timeColumn: "_time", columnName: "elapsed")`,
 	)
 	if err != nil {
+		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateFailed)
 		return fmt.Errorf("failed to query keystroke events: %w", err)
 	}
 	defer rows.Close()
@@ -118,6 +123,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	if len(totalKeystrokes) == 0 {
 		// just send 0 which means the user didn't type enough
 		result <- 0
+		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateSuccess)
 		return nil
 	}
 
@@ -131,10 +137,13 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	// and the final result will became a weird number like -9223372036854775808
 	if totalWpm == 0 {
 		result <- 0
+		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateSuccess)
 		return nil
 	}
 
 	// Return the result here
 	result <- totalWpm
+
+	d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateSuccess)
 	return nil
 }

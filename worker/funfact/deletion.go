@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	"worker/common"
+	"worker/status"
 
 	"github.com/google/uuid"
 )
 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float64) error {
+	d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StatePending)
+
 	// Formula to calculate deletion rate:
 	//
 	// SELECT all KeystrokeEvent WHERE value = delete OR value = backspace
@@ -29,6 +32,7 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> filter(fn: (r) => r["key_char"] == "Backspace" or r["key_char"] == "Delete")`,
 	)
 	if err != nil {
+		d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StateFailed)
 		return fmt.Errorf("failed to query deletion rate: %w", err)
 	}
 	defer deletionRows.Close()
@@ -46,6 +50,7 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
+		d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StateFailed)
 		return fmt.Errorf("failed to query keystroke total: %w", err)
 	}
 	defer keystrokeTotalRows.Close()
@@ -57,10 +62,12 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 	// Avoiding NaN output
 	if totalDeletion == 0 {
 		result <- 0
+		d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StateSuccess)
 		return nil
 	}
 
 	result <- totalDeletion / totalKeystrokes
 
+	d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StateSuccess)
 	return nil
 }
