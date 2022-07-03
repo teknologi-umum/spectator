@@ -18,3 +18,14 @@
 *.json      text
 *.xml       text
 *.xhtml     text diff=html
+
+# Images
+*.png       binary
+*.jpg       binary
+*.gif       binary
+*.bmp       binary
+*.ico       binary
+
+# Videos
+*.webm      binary
+*.mp4       binary

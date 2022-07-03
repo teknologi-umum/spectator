@@ -10,7 +10,6 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	loggerpb "video/logger_proto"
 	pb "video/video_proto"
@@ -71,15 +70,15 @@ func main() {
 		minioToken = ""
 	}
 
-	loggerServerAddr, ok := os.LookupEnv("LOGGER_SERVER_ADDRESS")
-	if !ok {
-		log.Fatalln("LOGGER_SERVER_ADDRESS environment variable missing")
-	}
+	// loggerServerAddr, ok := os.LookupEnv("LOGGER_SERVER_ADDRESS")
+	// if !ok {
+	// 	log.Fatalln("LOGGER_SERVER_ADDRESS environment variable missing")
+	// }
 
-	loggerToken, ok := os.LookupEnv("LOGGER_TOKEN")
-	if !ok {
-		log.Fatalln("LOGGER_TOKEN environment variable missing")
-	}
+	// loggerToken, ok := os.LookupEnv("LOGGER_TOKEN")
+	// if !ok {
+	// 	log.Fatalln("LOGGER_TOKEN environment variable missing")
+	// }
 
 	environment, ok := os.LookupEnv("ENVIRONMENT")
 	if !ok {
@@ -108,17 +107,17 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// Dial the logger service
-	loggerConn, err := grpc.Dial(
-		loggerServerAddr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer loggerConn.Close()
+	// // Dial the logger service
+	// loggerConn, err := grpc.Dial(
+	// 	loggerServerAddr,
+	// 	grpc.WithTransportCredentials(insecure.NewCredentials()),
+	// )
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// defer loggerConn.Close()
 
-	loggerClient := loggerpb.NewLoggerClient(loggerConn)
+	// loggerClient := loggerpb.NewLoggerClient(loggerConn)
 
 	dependencies := &Dependency{
 		Environment:    environment,
@@ -126,8 +125,8 @@ func main() {
 		Bucket:         minioConn,
 		DB:             influxConn,
 		DBOrganization: influxOrg,
-		LoggerClient:   loggerClient,
-		LoggerToken:    loggerToken,
+		// LoggerClient:   loggerClient,
+		// LoggerToken:    loggerToken,
 	}
 
 	// gRPC uses TCP connection.

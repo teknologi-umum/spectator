@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const BaseDirectory = "/data"
+const BaseDirectory = "/home/reinaldy/tmp/data"
 
 func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.VideoResponse, error) {
 	// Check if bucket exists
@@ -79,6 +79,12 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 }
 
 func (d *Dependency) acquireListOfFiles(ctx context.Context, sessionID string) ([]string, error) {
+	defer func() {
+		if e := recover(); e != nil {
+			log.Print(e)
+		}
+	}()
+
 	var files []string
 	for f := range d.Bucket.ListObjects(ctx, sessionID, minio.ListObjectsOptions{}) {
 		files = append(files, f.Key)
