@@ -286,7 +286,7 @@ func seedData(ctx context.Context) error {
 						"meta":            false,
 						"unrelated_key":   false,
 					},
-					eventStart.Add(time.Minute*13+time.Second*time.Duration(i)),
+					eventStart.Add((time.Minute*13)+(time.Second*time.Duration(i))),
 				)
 
 				points = append(points, point)
@@ -324,7 +324,7 @@ func seedData(ctx context.Context) error {
 						"x":               rand.Intn(1920),
 						"y":               rand.Intn(1080),
 					},
-					eventStart.Add(time.Minute*14+time.Second*time.Duration(i)),
+					eventStart.Add((time.Minute*14)+(time.Second*time.Duration(i))),
 				)
 
 				points = append(points, point)
@@ -362,7 +362,7 @@ func seedData(ctx context.Context) error {
 						"y":               rand.Intn(1080),
 						"button":          int64(common.MouseButtonRight),
 					},
-					eventStart.Add(time.Minute*15+time.Second*time.Duration(i)),
+					eventStart.Add((time.Minute*15)+(time.Second*time.Duration(i))),
 				)
 
 				points = append(points, point)
@@ -400,7 +400,7 @@ func seedData(ctx context.Context) error {
 						"y":               rand.Intn(1080),
 						"button":          int64(common.MouseButtonMiddle),
 					},
-					eventStart.Add(time.Minute*16+time.Second*time.Duration(i)),
+					eventStart.Add((time.Minute*16)+(time.Second*time.Duration(i))),
 				)
 
 				points = append(points, point)
@@ -437,7 +437,7 @@ func seedData(ctx context.Context) error {
 						"x":               rand.Intn(1920),
 						"y":               rand.Intn(1080),
 					},
-					eventStart.Add(time.Minute*17+time.Second*time.Duration(i)),
+					eventStart.Add((time.Minute*17)+(time.Second*time.Duration(i))),
 				)
 
 				points = append(points, point)
@@ -473,7 +473,7 @@ func seedData(ctx context.Context) error {
 						"width":           i,
 						"height":          i,
 					},
-					eventStart.Add(time.Minute*18+time.Second*time.Duration(i)),
+					eventStart.Add((time.Minute*18)+(time.Second*time.Duration(i))),
 				)
 
 				points = append(points, point)
