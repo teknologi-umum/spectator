@@ -1,18 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net"
 	"os"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	loggerpb "video/logger_proto"
+	pb "video/video_proto"
 )
 
 // Dependency contains the dependency injection
 // to be used on this package.
 type Dependency struct {
-	Environment string
+	Ffmpeg         *Ffmpeg
+	DB             influxdb2.Client
+	Bucket         *minio.Client
+	LoggerClient   loggerpb.LoggerClient
+	LoggerToken    string
+	Environment    string
+	DBOrganization string
+	pb.UnimplementedVideoServiceServer
 }
 
 func main() {
@@ -77,6 +91,11 @@ func main() {
 		portNumber = "3000"
 	}
 
+	ffmpegClient, err := NewFfmpeg()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// Create InfluxDB instance
 	influxConn := influxdb2.NewClient(influxHost, influxToken)
 	defer influxConn.Close()
@@ -87,5 +106,45 @@ func main() {
 	})
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	// Dial the logger service
+	loggerConn, err := grpc.Dial(
+		loggerServerAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer loggerConn.Close()
+
+	loggerClient := loggerpb.NewLoggerClient(loggerConn)
+
+	dependencies := &Dependency{
+		Environment:    environment,
+		Ffmpeg:         ffmpegClient,
+		Bucket:         minioConn,
+		DB:             influxConn,
+		DBOrganization: influxOrg,
+		LoggerClient:   loggerClient,
+		LoggerToken:    loggerToken,
+	}
+
+	// gRPC uses TCP connection.
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "0.0.0.0", portNumber))
+	if err != nil {
+		log.Fatalln("Failed to listen:", err)
+	}
+	defer listener.Close()
+
+	// Initialize gRPC server
+	server := grpc.NewServer()
+
+	// Register the service with the server, including injecting service dependencies.
+	pb.RegisterVideoServiceServer(server, dependencies)
+	log.Printf("Server listening at %s", listener.Addr().String())
+
+	if err := server.Serve(listener); err != nil {
+		log.Fatalln("Failed to serve:", err)
 	}
 }
