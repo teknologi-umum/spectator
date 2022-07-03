@@ -27,6 +27,12 @@ def main():
         testCases.append({ "got": got, "expected": expected })
 
     for i, test in enumerate(testCases):
+        if type(test["got"]) != int and type(test["got"]) != float:
+            print(f"# {i+1} FAILED")
+            print(f"> EXPECTED {test['expected']}")
+            print(f"> GOT {test['got']}")
+            continue
+
         if test["got"] == test["expected"]:
             print(f"# {i+1} PASSING")
         else:

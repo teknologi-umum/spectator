@@ -55,7 +55,16 @@ def main():
         testCases.append({ "expected": expected, "got": got })
 
     for i, test in enumerate(testCases):
-        if round(float(test["got"]), 2) == round(float(test["expected"]), 2):
+        got = test["got"]
+        expected = test["expected"]
+
+        if type(got) != float:
+            print(f"# {i+1} FAILED")
+            print(f"> EXPECTED { round(float(test['expected']), 2) }")
+            print(f"> GOT { test['got'] }")
+            continue
+
+        if round(float(got), 2) == round(float(expected), 2):
             print(f'# {i+1} PASSING')
         else:
             print(f"# {i+1} FAILED")
