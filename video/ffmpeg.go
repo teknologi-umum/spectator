@@ -56,3 +56,22 @@ func (f *Ffmpeg) Concat(ctx context.Context, src string, dst string) ([]byte, er
 
 	return stdout, nil
 }
+
+func (f *Ffmpeg) Convert(ctx context.Context, src string, dst string) ([]byte, error) {
+	if !f.valid {
+		return []byte{}, ErrFfmpegInvalid
+	}
+
+	cmd := exec.CommandContext(ctx, "ffmpeg", "-i", src, "-c", "copy", dst)
+	stdout, err := cmd.Output()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			return []byte{}, fmt.Errorf("%w: %s", ErrFfmpegError, string(exitErr.Stderr))
+		}
+
+		return []byte{}, fmt.Errorf("executing concat: %w", err)
+	}
+
+	return stdout, nil
+}
