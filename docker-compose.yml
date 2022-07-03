@@ -119,6 +119,29 @@ services:
       minio:
         condition: service_healthy
 
+  video:
+    build: ./video/
+    restart: on-failure:5
+    environment:
+      ENVIRONMENT: production
+      PORT: 3000
+      INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+      INFLUX_HOST: http://influx:8086
+      INFLUX_ORG: teknum_spectator
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_ID: teknum
+      MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_TOKEN: ''
+      LOGGER_SERVER_ADDRESS: logger:3000
+      LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    depends_on:
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
   logger:
     build: ./logger/
     restart: on-failure:5

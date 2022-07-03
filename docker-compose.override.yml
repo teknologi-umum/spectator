@@ -39,6 +39,7 @@ services:
       - ASPNETCORE_PistonOptions__RunTimeout=10000
       - ASPNETCORE_PistonOptions__MemoryLimit=2000000000
       - ASPNETCORE_WorkerOptions__Address=http://worker:3000
+      - ASPNETCORE_VideoOptions__Address=http://video:3000
       - VITE_SESSION_HUB_URL=${VITE_SESSION_HUB_URL}
       - VITE_EVENT_HUB_URL=${VITE_EVENT_HUB_URL}
       - VITE_LOGGER_URL=${VITE_LOGGER_URL}
@@ -120,6 +121,29 @@ services:
 
   worker:
     build: ./worker/
+    restart: on-failure:5
+    environment:
+      ENVIRONMENT: production
+      PORT: 3000
+      INFLUX_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUX_HOST: http://influx:8086
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_ID: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_TOKEN: ''
+      LOGGER_SERVER_ADDRESS: logger:3000
+      LOGGER_TOKEN: ${LOGGER_TOKEN}
+    depends_on:
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  video:
+    build: ./video/
     restart: on-failure:5
     environment:
       ENVIRONMENT: production
