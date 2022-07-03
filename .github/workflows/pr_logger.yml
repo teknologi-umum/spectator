@@ -3,7 +3,7 @@ name: Check
 on:
   pull_request:
     paths:
-      - 'logger/**'
+      - "logger/**"
 
 jobs:
   logger:
@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 5
     services:
       db:
-        image: influxdb:2.1
+        image: influxdb:2.3.0
         env:
           DOCKER_INFLUXDB_INIT_MODE: setup
           DOCKER_INFLUXDB_INIT_USERNAME: root
@@ -23,6 +23,12 @@ jobs:
           DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
         ports:
           - 8086:8086
+        options: >-
+          --health-cmd "influx ping"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+          --health-start-period 30s
     defaults:
       run:
         working-directory: ./logger

@@ -12,6 +12,7 @@ import (
 	"time"
 	"worker/common"
 	"worker/funfact"
+	"worker/status"
 
 	"github.com/google/uuid"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -47,6 +48,10 @@ func TestMain(m *testing.M) {
 		DB:             db,
 		DBOrganization: influxOrg,
 		Environment:    "testing",
+		Status: &status.Dependency{
+			DB:             db,
+			DBOrganization: influxOrg,
+		},
 	}
 
 	rand.Seed(time.Now().Unix())

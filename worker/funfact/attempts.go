@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"worker/common"
+	"worker/status"
 
 	"github.com/google/uuid"
 )
@@ -22,6 +23,8 @@ type Solution struct {
 }
 
 func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID uuid.UUID, result chan int64) error {
+	d.Status.AppendState(ctx, sessionID, "calculate_submission_attempts", status.StatePending)
+
 	queryAPI := d.DB.QueryAPI(d.DBOrganization)
 
 	// NOTE(2022-01-30): code_test_attempt has been changed into 2 measurements:
@@ -44,6 +47,7 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 			|> yield()`,
 	)
 	if err != nil {
+		d.Status.AppendState(ctx, sessionID, "calculate_submission_attempts", status.StateFailed)
 		return fmt.Errorf("failed to query solution_accepted measurement: %w", err)
 	}
 	defer solutionSubmittedRows.Close()
@@ -53,6 +57,8 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 	}
 
 	result <- output
+
+	d.Status.AppendState(ctx, sessionID, "calculate_submission_attempts", status.StateSuccess)
 
 	return nil
 }

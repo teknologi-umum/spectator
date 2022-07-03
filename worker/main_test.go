@@ -115,39 +115,33 @@ func TestMain(m *testing.M) {
 
 func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error {
 	bucketsAPI := db.BucketsAPI()
-	_, err := bucketsAPI.FindBucketByName(ctx, common.BucketInputEvents)
-	if err != nil && err.Error() != "bucket '"+common.BucketInputEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %w", err)
+	organizationAPI := db.OrganizationsAPI()
+
+	bucketNames := []string{
+		common.BucketInputEvents,
+		common.BucketSessionEvents,
+		common.BucketFileEvents,
+		common.BucketInputStatisticEvents,
+		common.BucketWorkerStatus,
 	}
 
-	if err != nil && err.Error() == "bucket '"+common.BucketInputEvents+"' not found" {
-		organizationAPI := db.OrganizationsAPI()
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %w", err)
+	for _, bucket := range bucketNames {
+		var b = bucket
+		_, err := bucketsAPI.FindBucketByName(ctx, b)
+		if err != nil && err.Error() != "bucket '"+b+"' not found" {
+			return fmt.Errorf("finding bucket: %w", err)
 		}
 
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, common.BucketInputEvents)
-		if err != nil && err.Error() != "conflict: bucket with name "+common.BucketInputEvents+" already exists" {
-			return fmt.Errorf("creating bucket: %w", err)
-		}
-	}
+		if err != nil && err.Error() == "bucket '"+b+"' not found" {
+			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
+			if err != nil {
+				return fmt.Errorf("finding organization: %w", err)
+			}
 
-	_, err = bucketsAPI.FindBucketByName(ctx, common.BucketSessionEvents)
-	if err != nil && err.Error() != "bucket '"+common.BucketSessionEvents+"' not found" {
-		return fmt.Errorf("finding bucket: %w", err)
-	}
-
-	if err != nil && err.Error() == "bucket '"+common.BucketSessionEvents+"' not found" {
-		organizationAPI := db.OrganizationsAPI()
-		orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
-		if err != nil {
-			return fmt.Errorf("finding organization: %w", err)
-		}
-
-		_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, common.BucketSessionEvents)
-		if err != nil && err.Error() != "conflict: bucket with name "+common.BucketSessionEvents+" already exists" {
-			return fmt.Errorf("creating bucket: %w", err)
+			_, err = bucketsAPI.CreateBucketWithName(ctx, orgDomain, b)
+			if err != nil && err.Error() != "conflict: bucket with name "+b+" already exists" {
+				return fmt.Errorf("creating bucket: %w", err)
+			}
 		}
 	}
 

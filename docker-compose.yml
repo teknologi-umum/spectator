@@ -62,7 +62,7 @@ services:
       - ./data/minio:/data
 
   influx:
-    image: influxdb:2.1.1-alpine
+    image: influxdb:2.3.0-alpine
     hostname: influx
     restart: on-failure:10
     environment:
@@ -73,7 +73,7 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
     healthcheck:
-      test: "curl -f http://localhost:8086/ping"
+      test: "influx ping"
       interval: 30s
       timeout: 10s
       retries: 5

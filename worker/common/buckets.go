@@ -13,4 +13,8 @@ const (
 	// BucketInputStatistics is the bucket name for storing
 	// the input statistics, including their personal information.
 	BucketInputStatisticEvents = "input_statistics"
+	// BucketWorkerStatus provides a bucket for storing status of a
+	// certain user that is being processed by the worker.
+	// Whether it's failed, success, or pending.
+	BucketWorkerStatus = "worker_status"
 )

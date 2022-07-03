@@ -2,6 +2,7 @@ package funfact
 
 import (
 	logger "worker/logger"
+	"worker/status"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
@@ -14,6 +15,7 @@ type Dependency struct {
 	DBOrganization string
 	Logger         *logger.Logger
 	LoggerToken    string
+	Status         *status.Dependency
 }
 
 // KeystrokeInput contains the data of

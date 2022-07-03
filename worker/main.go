@@ -10,6 +10,7 @@ import (
 	"worker/file"
 	"worker/funfact"
 	"worker/logger"
+	"worker/status"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/minio/minio-go/v7"
@@ -125,6 +126,11 @@ func main() {
 		environment,
 	)
 
+	statusDependency := &status.Dependency{
+		DB:             influxConn,
+		DBOrganization: influxOrg,
+	}
+
 	// Initialize dependency injection struct
 	dependencies := &Dependency{
 		DB:             influxConn,
@@ -139,6 +145,7 @@ func main() {
 			DBOrganization: influxOrg,
 			Logger:         loggerClient,
 			LoggerToken:    loggerToken,
+			Status:         statusDependency,
 		},
 		File: &file.Dependency{
 			Environment:    environment,
@@ -147,6 +154,7 @@ func main() {
 			DBOrganization: influxOrg,
 			Logger:         loggerClient,
 			LoggerToken:    loggerToken,
+			Status:         statusDependency,
 		},
 	}
 
