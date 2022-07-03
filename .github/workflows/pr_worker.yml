@@ -30,7 +30,7 @@ jobs:
           --health-retries 5
           --health-start-period 30s
       bucket:
-        image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
+        image: minio/minio:edge-cicd
         env:
           MINIO_ROOT_USER: teknum
           MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
@@ -39,7 +39,6 @@ jobs:
         ports:
           - 9000:9000
         options: >-
-          --entrypoint "minio server /data"
           --health-cmd "curl -f http://bucket:9000/minio/health/live"
           --health-interval 45s
           --health-timeout 30s
