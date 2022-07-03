@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_LOGGER_URL: string
   readonly VITE_ADMIN_URL: string
   readonly VITE_VIDEO_STREAM_URL: string;
+  readonly VITE_MINIO_URL: string;
 }
 
 interface ImportMeta {

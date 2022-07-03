@@ -19,7 +19,7 @@ import { LogLevel } from "@microsoft/signalr";
 import { loggerInstance } from "@/spoke/logger";
 import { useNavigate } from "react-router-dom";
 import { removeSessionId } from "@/store/slices/sessionSlice";
-import { ADMIN_BASE_URL } from "@/constants";
+import { ADMIN_BASE_URL, MINIO_URL } from "@/constants";
 
 interface FileEntry {
   csvFileUrl: string;
@@ -162,7 +162,7 @@ export default function Download() {
                           <Button
                             as="a"
                             colorScheme="blue"
-                            href={entry.jsonFileUrl}
+                            href={MINIO_URL + entry.jsonFileUrl}
                             target="_blank"
                             size="sm"
                           >
@@ -173,7 +173,7 @@ export default function Download() {
                           <Button
                             as="a"
                             colorScheme="green"
-                            href={entry.csvFileUrl}
+                            href={MINIO_URL + entry.csvFileUrl}
                             target="_blank"
                             size="sm"
                           >

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
@@ -35,17 +35,22 @@ import {
   windowResizeHandler
 } from "@/events";
 import { useColorModeValue, useVideoRecorder, RecordingStatus } from "@/hooks";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { setExamResult } from "@/store/slices/examResultSlice";
 import { sessionSpoke } from "@/spoke";
 import { CrossIcon, VideoIcon } from "@/icons";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 function CodingTest() {
+  const navigate = useNavigate();
   const { t } = useTranslation("translation", {
     keyPrefix: "translations"
   });
+
+  const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
   const { tourCompleted } = useAppSelector((state) => state.session);
@@ -68,6 +73,7 @@ function CodingTest() {
   const { setIsOpen } = useTour();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isForfeiting, setForfeiting] = useState(false);
 
   const recordingStatus = useVideoRecorder(accessToken);
 
@@ -162,7 +168,11 @@ function CodingTest() {
 
   async function forfeitExam() {
     if (accessToken === null) return;
-    await sessionSpoke.forfeitExam({ accessToken });
+    setForfeiting(true);
+    const result = await sessionSpoke.forfeitExam({ accessToken });
+    setForfeiting(false);
+    dispatch(setExamResult(result));
+    navigate("/sam-test");
   }
 
   return (
@@ -218,9 +228,7 @@ function CodingTest() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bg} color={fg}>
-          <ModalHeader fontSize="2xl">
-            {t("surrender.title")}
-          </ModalHeader>
+          <ModalHeader fontSize="2xl">{t("surrender.title")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" lineHeight="7">
@@ -237,7 +245,12 @@ function CodingTest() {
             >
               {t("ui.cancel")}
             </Button>
-            <Button colorScheme="red" onClick={forfeitExam} data-tour="step-2">
+            <Button
+              isLoading={isForfeiting}
+              colorScheme="red"
+              onClick={forfeitExam}
+              data-tour="step-2"
+            >
               {t("ui.surrender")}
             </Button>
           </ModalFooter>
