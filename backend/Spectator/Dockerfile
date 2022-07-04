@@ -34,6 +34,7 @@ COPY ["backend/Spectator.Primitives/Spectator.Primitives.csproj", "backend/Spect
 COPY ["backend/Spectator.Repositories/Spectator.Repositories.csproj", "backend/Spectator.Repositories/"]
 COPY ["backend/Spectator.RepositoryDALs/Spectator.RepositoryDALs.csproj", "backend/Spectator.RepositoryDALs/"]
 COPY ["backend/Spectator.WorkerClient/Spectator.WorkerClient.csproj", "backend/Spectator.WorkerClient/"]
+COPY ["backend/Spectator.VideoClient/Spectator.VideoClient.csproj", "backend/Spectator.VideoClient/"]
 COPY ["proto/Spectator.Protos/Spectator.Protos.csproj", "proto/Spectator.Protos/"]
 COPY ["frontend/Frontend.csproj", "frontend/"]
 
