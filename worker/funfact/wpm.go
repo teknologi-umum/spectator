@@ -90,6 +90,9 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		record := rows.Record()
 		// elapsed is the time delta between current keypress and previous keypress
 		elapsed := record.ValueByKey("elapsed").(int64)
+		if elapsed > 1e7 {
+			elapsed = elapsed / 1e5 // convert to ms
+		}
 
 		// go to the next timeframe if the distance between keypress is more than 330ms
 		if elapsed >= 330 && len(currentFrame) != 0 {
@@ -109,7 +112,6 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 				}
 
 				words := characters / 5
-
 				totalKeystrokes = append(totalKeystrokes, (words/duration)*60)
 			}
 			// reset current frame when the distance between 2 keystrokes is too long
