@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Spectator.Protos.Video;
 
 namespace Spectator.VideoClient {
-	public class VideoServices {
+	public class VideoServices : IDisposable {
 		private readonly GrpcChannel _grpcChannel;
 		private readonly VideoService.VideoServiceClient _videoClient;
 
@@ -22,12 +22,25 @@ namespace Spectator.VideoClient {
 		}
 
 
-		public Task GetVideoAsync(Guid sessionId, CancellationToken cancellationToken) {
-			return _videoClient.GetVideoAsync(
-				new VideoRequest {
+		public async Task GetVideoAsync(Guid sessionId, CancellationToken cancellationToken) {
+			await _videoClient.GetVideoAsync(
+				request: new VideoRequest {
 					SessionId = sessionId.ToString()
-				}
-			).ResponseAsync;
+				},
+				cancellationToken: cancellationToken
+			);
+		}
+
+		public void Dispose(bool disposing) {
+			if (disposing) {
+				_grpcChannel.Dispose();
+			}
+		}
+
+		public void Dispose() {
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }
