@@ -24,7 +24,7 @@ namespace Spectator.DomainServices.ExamResultDomain {
 
 			// concat video chunks but just forget about them so we don't force the user to wait
 			// for ~60 seconds before seeing their funfact
-			_videoService.GetVideoAsync(sessionID, CancellationToken.None).Ignore();
+			_ = _videoService.GetVideoAsync(sessionID, CancellationToken.None);
 
 			return new Funfact(
 				wordsPerMinute: funfact.WordsPerMinute,
