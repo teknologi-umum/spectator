@@ -39,7 +39,7 @@ namespace Spectator.WorkerClient {
 		}
 
 		public async Task GenerateFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
-			return await _workerClient.GenerateFilesAsync(
+			await _workerClient.GenerateFilesAsync(
 				request: new Member {
 					RequestId = Guid.NewGuid().ToString(),
 					SessionId = sessionId.ToString()
