@@ -142,6 +142,26 @@ export default function Download() {
                 <AccordionIcon />
               </AccordionButton>
               <AccordionPanel pb={4}>
+                <Flex
+                  key={index}
+                  justify="space-between"
+                  py="4"
+                  borderTopWidth={1}
+                  borderTopColor={bg}
+                >
+                  <span>Video</span>
+                  <Flex>
+                    <Button
+                      as="a"
+                      colorScheme="blue"
+                      href={`${MINIO_URL}/public/${studentNumber}_video.mp4`}
+                      target="_blank"
+                      size="sm"
+                    >
+                      Download Video
+                    </Button>
+                  </Flex>
+                </Flex>
                 {data.map((entry, index) => {
                   const url =
                     entry.jsonFileUrl !== ""

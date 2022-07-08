@@ -1,17 +1,15 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Spectator.DTO;
 using Spectator.DomainServices.ExamReportDomain;
 
-
 namespace Spectator.Controllers {
 	[ApiController]
 	public class AdminController : ControllerBase {
-		private ExamReportServices _examReportServices;
+		private readonly ExamReportServices _examReportServices;
 
 		public AdminController(
 			ExamReportServices examReportServices
@@ -49,7 +47,7 @@ namespace Spectator.Controllers {
 
 		[HttpPost]
 		[Route("/admin/files")]
-		public async Task<IActionResult> FilesAsync([FromBody] FilesRequest request , CancellationToken cancellationToken) {
+		public async Task<IActionResult> FilesAsync([FromBody] FilesRequest request, CancellationToken cancellationToken) {
 			if (request.SessionId == null) return BadRequest(new { Message = "SessionId is required" });
 
 			if (!Guid.TryParse(request.SessionId, out var sessionId)) {

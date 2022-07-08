@@ -35,7 +35,7 @@ public class VideoController : ControllerBase {
 	// TODO: Refactor this method so it doesn't get fat
 	[HttpPost]
 	[Route("/video")]
-	public async Task<IActionResult> LoginAsync([FromForm] VideoRequest request, [FromHeader(Name = "Authorization")] string accessToken) {
+	public async Task<IActionResult> RecordVideoASync([FromForm] VideoRequest request, [FromHeader(Name = "Authorization")] string accessToken) {
 		if (request.File == null) throw new ArgumentNullException(nameof(request.File));
 		if (request.StartedAt == null) throw new ArgumentNullException(nameof(request.StartedAt));
 		if (request.StoppedAt == null) throw new ArgumentNullException(nameof(request.StoppedAt));

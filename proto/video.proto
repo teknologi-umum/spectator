@@ -3,6 +3,7 @@ syntax = "proto3";
 package video;
 
 option go_package = "video_proto";
+option csharp_namespace = "Spectator.Protos.Video";
 
 service VideoService {
     rpc Ping(EmptyRequest) returns (PingResponse);

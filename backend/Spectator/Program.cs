@@ -16,6 +16,7 @@ using Spectator.Piston;
 using Spectator.PoormansAuth;
 using Spectator.RepositoryDALs;
 using Spectator.WorkerClient;
+using Spectator.VideoClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ builder.Services.Setup(services => {
 	services.Configure<PistonOptions>(builder.Configuration.GetSection("PistonOptions"));
 	services.Configure<LoggerOptions>(builder.Configuration.GetSection("LoggerOptions"));
 	services.Configure<WorkerOptions>(builder.Configuration.GetSection("WorkerOptions"));
+	services.Configure<VideoOptions>(builder.Configuration.GetSection("VideoOptions"));
 	services.Configure<ExamReportOptions>(builder.Configuration.GetSection("ExamReportOptions"));
 	services.Configure<MinioOptions>(builder.Configuration.GetSection("MinioOptions"));
 
@@ -44,6 +46,7 @@ builder.Services.Setup(services => {
 	services.AddPistonClient();
 	services.AddLoggerClient();
 	services.AddWorkerClient();
+	services.AddVideoClient();
 	services.AddDomainServices();
 	services.AddObservables();
 

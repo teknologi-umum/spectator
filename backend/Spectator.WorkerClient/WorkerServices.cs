@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Spectator.Protos.Worker;
 
 namespace Spectator.WorkerClient {
-	public class WorkerServices {
+	public class WorkerServices : IDisposable {
 		private readonly GrpcChannel _grpcChannel;
 		private readonly Worker.WorkerClient _workerClient;
 
@@ -38,24 +38,36 @@ namespace Spectator.WorkerClient {
 			return reply.FilesList.ToImmutableList();
 		}
 
-		public Task GenerateFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
-			return _workerClient.GenerateFilesAsync(
+		public async Task GenerateFilesAsync(Guid sessionId, CancellationToken cancellationToken) {
+			await _workerClient.GenerateFilesAsync(
 				request: new Member {
 					RequestId = Guid.NewGuid().ToString(),
 					SessionId = sessionId.ToString()
 				},
 				cancellationToken: cancellationToken
-			).ResponseAsync;
+			);
 		}
 
-		public Task<FunFactResponse> FunFactAsync(Guid sessionId, CancellationToken cancellationToken) {
-			return _workerClient.FunFactAsync(
+		public async Task<FunFactResponse> FunFactAsync(Guid sessionId, CancellationToken cancellationToken) {
+			return await _workerClient.FunFactAsync(
 				request: new Member {
 					RequestId = Guid.NewGuid().ToString(),
 					SessionId = sessionId.ToString()
 				},
 				cancellationToken: cancellationToken
-			).ResponseAsync;
+			);
+		}
+
+		public void Dispose(bool disposing) {
+			if (disposing) {
+				_grpcChannel.Dispose();
+			}
+		}
+
+		public void Dispose() {
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }
