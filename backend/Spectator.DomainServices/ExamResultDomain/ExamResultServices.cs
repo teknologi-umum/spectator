@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Spectator.WorkerClient;
 using Spectator.DomainModels.ExamEndedDomain;
 using Spectator.VideoClient;
+using Spectator.DomainServices.Utilities;
 
 namespace Spectator.DomainServices.ExamResultDomain {
 	public class ExamResultServices {
@@ -24,7 +25,7 @@ namespace Spectator.DomainServices.ExamResultDomain {
 
 			// concat video chunks but just forget about them so we don't force the user to wait
 			// for ~60 seconds before seeing their funfact
-			_ = _videoService.GetVideoAsync(sessionID, CancellationToken.None);
+			_videoService.GetVideoAsync(sessionID, CancellationToken.None).Ignore();
 
 			return new Funfact(
 				wordsPerMinute: funfact.WordsPerMinute,

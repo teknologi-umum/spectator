@@ -71,12 +71,12 @@ namespace Spectator.DomainServices.SessionDomain {
 		}
 
 		public async Task SubmitPersonalInfoAsync(
-			Guid sessionId, 
-			string studentNumber, 
-			int yearsOfExperience, 
-			int hoursOfPractice, 
-			string familiarLanguages, 
-			string walletNumber, 
+			Guid sessionId,
+			string studentNumber,
+			int yearsOfExperience,
+			int hoursOfPractice,
+			string familiarLanguages,
+			string walletNumber,
 			string walletType
 		) {
 			// Get store

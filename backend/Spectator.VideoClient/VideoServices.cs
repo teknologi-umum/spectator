@@ -21,7 +21,6 @@ namespace Spectator.VideoClient {
 			await _videoClient.PingAsync(new EmptyRequest(), cancellationToken: cancellationToken);
 		}
 
-
 		public async Task GetVideoAsync(Guid sessionId, CancellationToken cancellationToken) {
 			await _videoClient.GetVideoAsync(
 				request: new VideoRequest {
