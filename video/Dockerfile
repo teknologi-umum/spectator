@@ -2,6 +2,8 @@ FROM golang:1.18.3-bullseye AS builder
 
 WORKDIR /app
 
+COPY . .
+
 RUN go build -o video .
 
 FROM debian:bullseye
