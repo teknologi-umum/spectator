@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 
+	"video/logger_proto"
 	pb "video/video_proto"
 
 	"github.com/minio/minio-go/v7"
@@ -21,6 +22,15 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 	// Check if bucket exists
 	exists, err := d.Bucket.BucketExists(ctx, in.SessionId)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("checking bucket existance: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "checking bucket existance: %v", err)
 	}
 
@@ -31,23 +41,59 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 	// Create the directory for current session ID
 	err = os.MkdirAll(BaseDirectory+"/"+in.SessionId, 0755)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("creating directory: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "creating a directory: %v", err)
 	}
 
 	files, err := d.acquireListOfFiles(ctx, in.SessionId)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("acquiring list of files: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "acquiring list of files: %v", err)
 	}
 
 	for _, file := range files {
 		err = d.downloadFile(ctx, in.SessionId, file)
 		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("downloading file: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
 			return &pb.VideoResponse{}, status.Errorf(codes.Internal, "downloading file: %v", err)
 		}
 	}
 
 	listFilePath, err := d.putListOfFilesToFile(in.SessionId, files)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("generating file lists: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "generating file lists: %v", err)
 	}
 
@@ -55,6 +101,15 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 
 	_, err = d.Ffmpeg.Concat(ctx, listFilePath, outputCombinedWebmFile)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("combining files with ffmpeg: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "combining files with ffmpeg: %v", err)
 	}
 
@@ -62,16 +117,43 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 
 	_, err = d.Ffmpeg.Convert(ctx, outputCombinedWebmFile, outputMp4File)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("converting webm file to mp4: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "converting webm to mp4: %v", err)
 	}
 
 	uploadedFilePath, err := d.uploadCombinedFile(ctx, in.SessionId, outputMp4File)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("uploading combined files to minio: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "uploading combined files to minio %v", err)
 	}
 
 	err = os.RemoveAll(BaseDirectory + "/" + in.SessionId)
 	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("removing directory: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": in.GetSessionId(),
+				"function":   "GetVideo",
+			},
+		)
 		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "removing directory: %v", err)
 	}
 
