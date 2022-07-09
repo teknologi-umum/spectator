@@ -1,0 +1,71 @@
+name: Check
+
+on:
+  pull_request:
+    paths:
+      - "video/**"
+
+jobs:
+  video:
+    name: Video
+    runs-on: ubuntu-latest
+    container: golang:1.18
+    timeout-minutes: 10
+    services:
+      db:
+        image: influxdb:2.3.0
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+        options: >-
+          --health-cmd "influx ping"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+          --health-start-period 30s
+      bucket:
+        image: minio/minio:edge-cicd
+        env:
+          MINIO_ROOT_USER: teknum
+          MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+          MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+        ports:
+          - 9000:9000
+        options: >-
+          --health-cmd "curl -f http://bucket:9000/minio/health/live"
+          --health-interval 45s
+          --health-timeout 30s
+          --health-retries 10
+          --health-start-period 120s
+        volumes:
+          - minio-data:/data
+    defaults:
+      run:
+        working-directory: ./video
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: apt-get update && apt-get upgrade -y && apt-get install -y curl build-essential ffmpeg
+      - name: Build test
+        run: go build .
+      - name: Run test
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        env:
+          ENVIRONMENT: ""
+          INFLUX_HOST: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: iKPpruHfaXygrwSV
+          MINIO_HOST: bucket:9000
+          MINIO_ACCESS_ID: teknum
+          MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_TOKEN: ""
+          LOGGER_SERVER_ADDRESS: http://logger:9000/
+          LOGGER_SERVER_TOKEN: testing

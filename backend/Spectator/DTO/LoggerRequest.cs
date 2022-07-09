@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Spectator.DTO; 
+namespace Spectator.DTO;
 
 public class LoggerRequest {
 	public string? Message { get; set; }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -14,7 +14,6 @@ using Spectator.PoormansAuth;
 using Spectator.Primitives;
 using Spectator.Protos.HubInterfaces;
 using Spectator.Protos.Session;
-using Spectator.WorkerClient;
 
 namespace Spectator.Hubs {
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]

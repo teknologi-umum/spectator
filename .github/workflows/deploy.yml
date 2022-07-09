@@ -60,6 +60,52 @@ jobs:
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+  video:
+    name: Video
+    runs-on: ubuntu-latest
+    container: golang:1.18
+    timeout-minutes: 10
+    services:
+      db:
+        image: influxdb:2.3.0
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+        options: >-
+          --health-cmd "influx ping"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+          --health-start-period 30s
+    defaults:
+      run:
+        working-directory: ./video
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: apt-get update && apt-get upgrade -y && apt-get install -y curl build-essential ffmpeg
+      - name: Build test
+        run: go build .
+      - name: Run test
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        env:
+          ENVIRONMENT: github-actions
+          INFLUX_HOST: http://db:8086/
+          INFLUX_ORG: teknologi
+          INFLUX_TOKEN: iKPpruHfaXygrwSV
+          MINIO_HOST: bucket:9000
+          MINIO_ACCESS_ID: teknum
+          MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+          MINIO_TOKEN: ""
+          LOGGER_SERVER_ADDRESS: http://logger:9000/
+          LOGGER_SERVER_TOKEN: testing
   worker:
     name: Worker
     runs-on: ubuntu-latest
@@ -151,31 +197,34 @@ jobs:
         run: npm run build
       - name: Test & coverage
         run: npm run test
-  # configs:
-  #   name: Verify config
-  #   runs-on: ubuntu-latest
-  #   container: python:3.10
-  #   timeout-minutes: 5
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-  #     - name: Install docker-compose
-  #       run: >
-  #         curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  #         && chmod +x /usr/local/bin/docker-compose
-  #         && docker-compose --version
-  #     - name: Install ansible-lint
-  #       run: >
-  #         pip install ansible
-  #         && pip3 install "ansible-lint[core,yamllint]"
-  #         && ansible-lint --version
-  #     - name: Lint docker-compose
-  #       run: >
-  #         docker-compose --file docker-compose.yml config
-  #         && docker-compose --file docker-compose.dev.yml config
-  #         && docker-compose --file docker-compose.influx.yml config
-  #     - name: Lint ansible
-  #       run: ansible-lint -v -f rich ansible.yml
+  configs:
+    name: Verify config
+    runs-on: ubuntu-latest
+    container: python:3.10
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install docker-compose
+        run: >
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          && chmod +x /usr/local/bin/docker-compose
+          && docker-compose --version
+      - name: Install ansible-lint
+        run: >
+          pip install ansible
+          && pip3 install "ansible-lint[core,yamllint]"
+          && ansible-lint --version
+      - name: Lint docker-compose
+        run: >
+          docker-compose --file docker-compose.yml config
+          && docker-compose --file docker-compose.dev.yml config
+          && docker-compose --file docker-compose.influx.yml config
+          && docker-compose --file docker-compose.caddy.yml config
+          && docker-compose --file docker-compose.minio.yml config
+          && docker-compose --file docker-compose.override.yml config
+      - name: Lint ansible
+        run: ansible-lint -v -f rich ansible.yml
   # deploy:
   #   name: Deploy
   #   needs: [configs, frontend, logger, backend, worker]
