@@ -28,7 +28,7 @@ export function keystrokeHandler(
     const data: KeystrokeInfo = {
       accessToken: accessToken,
       questionNumber: questionNumber,
-      keyChar: e.key,
+      keyChar: e.code,
       shift: e.shiftKey,
       alt: e.altKey,
       control: e.ctrlKey,
