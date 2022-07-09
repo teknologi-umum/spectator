@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const BaseDirectory = "/home/reinaldy/tmp/data"
+const BaseDirectory = "/data"
 
 func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.VideoResponse, error) {
 	// Check if bucket exists
