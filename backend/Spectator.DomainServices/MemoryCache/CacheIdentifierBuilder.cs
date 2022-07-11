@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,6 +12,7 @@ namespace Spectator.DomainServices.MemoryCache {
 		private readonly MD5 _md5;
 		private readonly byte[] _buffer;
 
+		[SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "Not for security purpose")]
 		private CacheIdentifierBuilder(Type tValue) {
 			_md5 = MD5.Create();
 			_buffer = new byte[32];
@@ -28,6 +30,7 @@ namespace Spectator.DomainServices.MemoryCache {
 		/// Guid,
 		/// Tuple (which only contains int, string, Enum, HashSet`int, or HashSet`string)
 		/// </summary>
+		[SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "Not for security purpose")]
 		private CacheIdentifierBuilder(Type tKey, Type tValue) {
 			if (typeof(ITuple).IsAssignableFrom(tKey)) {
 				foreach (var tTupleValue in tKey.GetGenericArguments()) {

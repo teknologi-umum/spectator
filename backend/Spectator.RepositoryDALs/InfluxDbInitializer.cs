@@ -21,7 +21,7 @@ public class InfluxDbInitializer {
 			.FindOrganizationsAsync(limit: 1, org: _influxDbOptions.Org);
 
 		if (organizations.Count == 0) {
-			throw new Exception("Organization was not found");
+			throw new NotFoundException("Organization was not found");
 		}
 
 		try {

@@ -20,7 +20,7 @@ namespace Spectator.Controllers {
 		[HttpPost]
 		[Route("/admin/login")]
 		public IActionResult Login([FromBody] LoginRequest request) {
-			if (request.Password == null) throw new ArgumentNullException(nameof(request.Password));
+			if (request.Password == null) return BadRequest(new { Message = "Password is required" });
 
 			try {
 				var session = _examReportServices.Login(request.Password);

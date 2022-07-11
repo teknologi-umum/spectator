@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Globalization;
 using System.Reflection;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Core.Flux.Domain;
@@ -14,21 +15,17 @@ namespace Spectator.RepositoryDALs.Mapper {
 		ConstructorInfo Constructor,
 		ImmutableList<FluxPropertyInfo> FluxProperties
 	) {
-		private static readonly ImmutableDictionary<string, Type> EVENT_TYPE_BY_MEASUREMENT;
-
-		static SessionEventMapper() {
-			EVENT_TYPE_BY_MEASUREMENT = (
-				from eventType in Assembly.GetAssembly(typeof(SessionEventBase))!.GetTypes()
-				where eventType.FullName!.StartsWith(typeof(SessionEventBase).Namespace!)
-				select new {
-					Measurement = ToSnakeCase(eventType.Name.EndsWith("Event", out var pascalCaseName) ? pascalCaseName : eventType.Name),
-					EventType = eventType
-				}
-			).ToImmutableDictionary(
-				keySelector: e => e.Measurement,
-				elementSelector: e => e.EventType
-			);
-		}
+		private static readonly ImmutableDictionary<string, Type> EVENT_TYPE_BY_MEASUREMENT = (
+			from eventType in Assembly.GetAssembly(typeof(SessionEventBase))!.GetTypes()
+			where eventType.FullName!.StartsWith(typeof(SessionEventBase).Namespace!, StringComparison.Ordinal)
+			select new {
+				Measurement = ToSnakeCase(eventType.Name.EndsWith("Event", out var pascalCaseName) ? pascalCaseName : eventType.Name),
+				EventType = eventType
+			}
+		).ToImmutableDictionary(
+			keySelector: e => e.Measurement,
+			elementSelector: e => e.EventType
+		);
 
 		public static SessionEventMapper For(Type eventType) {
 			if (eventType is { IsClass: false } or { IsAbstract: true }) {
@@ -89,11 +86,11 @@ namespace Spectator.RepositoryDALs.Mapper {
 				if (parameterType == typeof(string)) {
 					arguments[i] = (string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName);
 				} else if (parameterType == typeof(int)) {
-					arguments[i] = Convert.ToInt32(fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
+					arguments[i] = Convert.ToInt32(fluxRecord.GetValueByKey(fluxProp.FluxFieldName), CultureInfo.InvariantCulture);
 				} else if (parameterType == typeof(bool)) {
-					arguments[i] = Convert.ToBoolean(fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
+					arguments[i] = Convert.ToBoolean(fluxRecord.GetValueByKey(fluxProp.FluxFieldName), CultureInfo.InvariantCulture);
 				} else if (parameterType == typeof(DateTimeOffset)) {
-					arguments[i] = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(fluxRecord.GetValueByKey(fluxProp.FluxFieldName)) / 1_000_000);
+					arguments[i] = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(fluxRecord.GetValueByKey(fluxProp.FluxFieldName), CultureInfo.InvariantCulture) / 1_000_000);
 				} else if (parameterType == typeof(MouseButton)) {
 					arguments[i] = Enum.Parse<MouseButton>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName));
 				} else if (parameterType == typeof(Locale)) {
@@ -102,8 +99,8 @@ namespace Spectator.RepositoryDALs.Mapper {
 					arguments[i] = Enum.Parse<Language>((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName), ignoreCase: true);
 				} else if (parameterType == typeof(SelfAssessmentManikin)) {
 					arguments[i] = new SelfAssessmentManikin(
-						ArousedLevel: Convert.ToInt32(fluxRecord.GetValueByKey("aroused_level")),
-						PleasedLevel: Convert.ToInt32(fluxRecord.GetValueByKey("pleased_level"))
+						ArousedLevel: Convert.ToInt32(fluxRecord.GetValueByKey("aroused_level"), CultureInfo.InvariantCulture),
+						PleasedLevel: Convert.ToInt32(fluxRecord.GetValueByKey("pleased_level"), CultureInfo.InvariantCulture)
 					);
 				} else if (parameterType == typeof(ConsoleKeyInfo)) {
 					arguments[i] = new ConsoleKeyInfo(
@@ -114,7 +111,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 						control: (bool)fluxRecord.GetValueByKey("ctrl")
 					);
 				} else if (parameterType == typeof(ImmutableArray<int>)) {
-					arguments[i] = ((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName)).Split(',').Select(s => int.Parse(s)).ToImmutableArray();
+					arguments[i] = ((string)fluxRecord.GetValueByKey(fluxProp.FluxFieldName)).Split(',').Select(s => int.Parse(s, CultureInfo.InvariantCulture)).ToImmutableArray();
 				} else {
 					throw new InvalidProgramException($"Unhandled parameter type {parameterType}");
 				}
@@ -153,7 +150,7 @@ namespace Spectator.RepositoryDALs.Mapper {
 						.Field("shift", cki.Modifiers.HasFlag(ConsoleModifiers.Shift))
 						.Field("alt", cki.Modifiers.HasFlag(ConsoleModifiers.Alt))
 						.Field("ctrl", cki.Modifiers.HasFlag(ConsoleModifiers.Control)),
-					ImmutableArray<int> a => pointData.Field(fluxProperty.FluxFieldName, string.Join(',', a.Select(i => i.ToString()))),
+					ImmutableArray<int> a => pointData.Field(fluxProperty.FluxFieldName, string.Join(',', a.Select(i => i.ToString(CultureInfo.InvariantCulture)))),
 					_ => throw new InvalidProgramException($"Unhandled property type {value.GetType()}")
 				};
 			}
@@ -173,15 +170,15 @@ namespace Spectator.RepositoryDALs.Mapper {
 			}
 
 			// Known abbreviations
-			pascalCaseName = pascalCaseName.Replace("SAM", "Sam");
-			pascalCaseName = pascalCaseName.Replace("IDE", "Ide");
+			pascalCaseName = pascalCaseName.Replace("SAM", "Sam", StringComparison.Ordinal);
+			pascalCaseName = pascalCaseName.Replace("IDE", "Ide", StringComparison.Ordinal);
 
 			return string.Concat(
 				pascalCaseName
 					.Select((c, i) => char.IsUpper(c)
 						? i > 0
-							? $"_{char.ToLower(c)}"
-							: char.ToLower(c).ToString()
+							? $"_{char.ToLowerInvariant(c)}"
+							: char.ToLowerInvariant(c).ToString()
 						: c.ToString()
 					)
 			);

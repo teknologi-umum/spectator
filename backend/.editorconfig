@@ -246,7 +246,7 @@ dotnet_diagnostic.RG0021.severity = error
 dotnet_diagnostic.RG0022.severity = error
 
 # IDE0055: Fix formatting
-dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.IDE0055.severity = none
 
 # CA1822: Mark members as static
 dotnet_diagnostic.CA1822.severity = warning
@@ -259,6 +259,27 @@ dotnet_diagnostic.IDE0007.severity = warning
 
 # RG0018: 'SelfAssessmentManikin' is class type and should not be used in a record
 dotnet_diagnostic.RG0018.severity = silent
+
+# CA1014: Mark assemblies with CLSCompliant
+dotnet_diagnostic.CA1014.severity = none
+
+# CA1062: In externally visible method 'LoggerServices.LoggerServices(IOptions<LoggerOptions> optionsAccessor)', validate parameter 'optionsAccessor' is non-null before using it. If appropriate, throw an ArgumentNullException when the argument is null or add a Code Contract precondition asserting non-null argument.
+dotnet_diagnostic.CA1062.severity = none
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+
+# CA1716: Identifiers should not match keywords
+dotnet_diagnostic.CA1716.severity = none
+
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = none
+
+# CA1308: Normalize strings to uppercase
+dotnet_diagnostic.CA1308.severity = none
+
+# CA1812: InputEventRepositoryDAL is an internal class that is apparently never instantiated. If so, remove the code from the assembly. If this class is intended to contain only static members, make it static (Shared in Visual Basic).
+dotnet_diagnostic.CA1812.severity = none
 
 [*.vb]
 # Modifier preferences

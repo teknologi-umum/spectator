@@ -141,7 +141,7 @@ namespace Spectator.Piston {
 			await _semaphore!.WaitAsync(cancellationToken);
 			try {
 				// HACK: java is expensive, they need more RAM than anything else
-				var memoryLimit = language.ToLower() switch {
+				var memoryLimit = language.ToLowerInvariant() switch {
 					"java" or "javascript" => 512 * 1024 * 1024,
 					_ => _pistonOptions.MemoryLimit,
 				};

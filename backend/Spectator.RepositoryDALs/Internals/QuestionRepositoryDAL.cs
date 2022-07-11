@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using Spectator.DomainModels.QuestionDomain;
@@ -17,10 +18,10 @@ namespace Spectator.RepositoryDALs.Internals {
 			var builder = ImmutableDictionary<int, ImmutableDictionary<Language, string>>.Empty.ToBuilder();
 			foreach (var g in
 				from resourceName in ASSEMBLY.GetManifestResourceNames()
-				where resourceName.StartsWith("Spectator.RepositoryDALs.Imported.AssertionData.")
+				where resourceName.StartsWith("Spectator.RepositoryDALs.Imported.AssertionData.", StringComparison.Ordinal)
 				let names = resourceName.Split('.')
 				let language = Enum.Parse<Language>(names[4], ignoreCase: true)
-				let questionNumber = int.Parse(names[5][8..])
+				let questionNumber = int.Parse(names[5][8..], CultureInfo.InvariantCulture)
 				group (resourceName, language) by questionNumber into g
 				select g
 			) {
@@ -41,7 +42,7 @@ namespace Spectator.RepositoryDALs.Internals {
 			var questionsByLocale = new Dictionary<Locale, ImmutableDictionary<int, JsonModels.Question>>();
 			foreach ((var resourceName, var locale) in
 				from resourceName in ASSEMBLY.GetManifestResourceNames()
-				where resourceName.StartsWith("Spectator.RepositoryDALs.Imported.FrontendData.")
+				where resourceName.StartsWith("Spectator.RepositoryDALs.Imported.FrontendData.", StringComparison.Ordinal)
 				let names = resourceName.Split('.')
 				where names[5] == "questions"
 				let locale = Enum.Parse<Locale>(names[4], ignoreCase: true)

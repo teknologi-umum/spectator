@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Core.Flux.Domain;
@@ -43,6 +44,7 @@ namespace Spectator.RepositoryDALs.Tests {
 		}
 
 		[Fact]
+		[SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "This is a test")]
 		public void CannotSerializeNonEventClasses() {
 			var exc = new Exception();
 			var mapper = new DomainObjectMapper();
