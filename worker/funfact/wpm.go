@@ -132,6 +132,8 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		totalWpm += wpm
 	}
 
+	totalWpm = totalWpm / int64(len(totalKeystrokes))
+
 	// if the wordsSum is 0, just send it back.
 	// the reason why is when we divide 0 with 0, it became NaN for some reason
 	// and the final result will became a weird number like -9223372036854775808
