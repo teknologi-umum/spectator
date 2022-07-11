@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Spectator.DomainModels.SubmissionDomain;
@@ -27,8 +28,8 @@ namespace Spectator.DomainServices.PistonDomain {
 
 			// insert directives and solution into the placeholder in assertion template
 			var testCode = assertion
-				.Replace("_REPLACE_ME_WITH_DIRECTIVES_", directives)
-				.Replace("_REPLACE_ME_WITH_SOLUTION_", solution);
+				.Replace("_REPLACE_ME_WITH_DIRECTIVES_", directives, StringComparison.Ordinal)
+				.Replace("_REPLACE_ME_WITH_SOLUTION_", solution, StringComparison.Ordinal);
 
 			// execute tests
 			var testResults = questionNumber switch {

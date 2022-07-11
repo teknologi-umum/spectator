@@ -17,6 +17,7 @@ using Spectator.PoormansAuth;
 using Spectator.RepositoryDALs;
 using Spectator.WorkerClient;
 using Spectator.VideoClient;
+using Spectator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -139,10 +140,12 @@ app.MapHub<SessionHub>("/hubs/session");
 app.MapHub<EventHub>("/hubs/event");
 
 // Run app
-app.Run();
+await app.RunAsync();
 
-public static class Application {
-	public static Task MigrateDatabaseAsync(this IServiceProvider services) {
-		return services.GetRequiredService<InfluxDbInitializer>().InitializeAsync();
+namespace Spectator {
+	public static class Application {
+		public static Task MigrateDatabaseAsync(this IServiceProvider services) {
+			return services.GetRequiredService<InfluxDbInitializer>().InitializeAsync();
+		}
 	}
 }

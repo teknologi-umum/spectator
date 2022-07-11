@@ -1,18 +1,19 @@
-﻿<Project>
+<Project>
 
   <PropertyGroup>
     <Deterministic>true</Deterministic>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
+    <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RG.CodeAnalyzer" Version="1.0.29">
+    <PackageReference Include="RG.CodeAnalyzer" Version="1.0.30">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="RG.Annotations" Version="1.0.27" />
-    <PackageReference Include="Roslynator.Analyzers" Version="3.3.0">
+    <PackageReference Include="RG.Annotations" Version="1.0.30" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

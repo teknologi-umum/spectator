@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Spectator.DomainModels.SessionDomain;
@@ -15,6 +16,7 @@ namespace Spectator.JwtAuthentication.RequirementHandlers {
 			_sessionSilo = sessionSilo;
 		}
 
+		[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Authorization handler")]
 		protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ExamRequirement requirement) {
 			try {
 				var tokenPayload = TokenPayload.FromClaimsPrincipal(context.User);

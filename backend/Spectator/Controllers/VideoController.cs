@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -35,10 +35,10 @@ public class VideoController : ControllerBase {
 	// TODO: Refactor this method so it doesn't get fat
 	[HttpPost]
 	[Route("/video")]
-	public async Task<IActionResult> RecordVideoASync([FromForm] VideoRequest request, [FromHeader(Name = "Authorization")] string accessToken) {
-		if (request.File == null) throw new ArgumentNullException(nameof(request.File));
-		if (request.StartedAt == null) throw new ArgumentNullException(nameof(request.StartedAt));
-		if (request.StoppedAt == null) throw new ArgumentNullException(nameof(request.StoppedAt));
+	public async Task<IActionResult> RecordVideoAsync([FromForm] VideoRequest request, [FromHeader(Name = "Authorization")] string accessToken) {
+		if (request.File == null) return BadRequest(new { Message = "File is required" });
+		if (request.StartedAt == null) return BadRequest(new { Message = "StartedAt is required" });
+		if (request.StoppedAt == null) return BadRequest(new { Message = "StoppedAt is required" });
 
 		// Only registered users can upload videos
 		if (string.IsNullOrEmpty(accessToken)) return Unauthorized();
@@ -62,7 +62,7 @@ public class VideoController : ControllerBase {
 				);
 			}
 
-			var filestream = request.File.OpenReadStream();
+			using var filestream = request.File.OpenReadStream();
 			await _minioClient.PutObjectAsync(
 				new PutObjectArgs().WithBucket(registeredSession.Id.ToString())
 								   .WithObject($"{request.StartedAt}_{request.StoppedAt}.webm")

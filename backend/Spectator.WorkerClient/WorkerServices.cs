@@ -58,7 +58,7 @@ namespace Spectator.WorkerClient {
 			);
 		}
 
-		public void Dispose(bool disposing) {
+		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
 				_grpcChannel.Dispose();
 			}

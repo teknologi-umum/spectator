@@ -11,11 +11,11 @@ using Environment = Spectator.Protos.Logger.Environment;
 namespace Spectator.Controllers;
 
 [Route("log")]
-public class Logger : Controller {
+public class LoggerController : Controller {
 	private readonly LoggerServices _loggerClient;
 	private readonly string _loggerAccessToken;
 
-	public Logger(LoggerServices loggerClient, IOptions<LoggerOptions> loggerOptionsAssessor) {
+	public LoggerController(LoggerServices loggerClient, IOptions<LoggerOptions> loggerOptionsAssessor) {
 		_loggerClient = loggerClient;
 		_loggerAccessToken = loggerOptionsAssessor.Value.AccessToken ??
 							 throw new InvalidOperationException("LoggerOptions:AccessToken is required");
@@ -24,7 +24,7 @@ public class Logger : Controller {
 	[HttpPost]
 	public async Task<IActionResult> LogAsync([FromBody] LoggerRequest request, CancellationToken cancellationToken) {
 		if (request == null) return Ok();
-		if (request.Timestamp == null) throw new ArgumentNullException(nameof(request.Timestamp));
+		if (request.Timestamp == null) return BadRequest(new { Message = "Timestamp is required" });
 
 		var logData = new LogData {
 			RequestId = Guid.NewGuid().ToString(),

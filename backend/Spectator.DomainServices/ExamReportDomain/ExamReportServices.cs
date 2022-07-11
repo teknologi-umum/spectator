@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -34,7 +34,7 @@ namespace Spectator.DomainServices.ExamReportDomain {
 		}
 
 		public AdministratorSession Login(string password) {
-			if (string.IsNullOrEmpty(password)) throw new ArgumentNullException("password should not be empty");
+			if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password), "password should not be empty");
 			if (password != _examReportOptions.Password) throw new AuthenticationException("password do not match");
 
 			var sessionId = Guid.NewGuid();
@@ -84,8 +84,8 @@ namespace Spectator.DomainServices.ExamReportDomain {
 				.SelectMany(filesList => filesList.Files.Select(file => new ReportFile(
 					sessionId: Guid.Parse(filesList.SessionId),
 					studentNumber: file.StudentNumber,
-					jsonFileUrl: file.FileUrlJson,
-					csvFileUrl: file.FileUrlCsv
+					jsonFileUrl: new Uri(file.FileUrlJson),
+					csvFileUrl: new Uri(file.FileUrlCsv)
 				)))
 				.ToImmutableList();
 		}

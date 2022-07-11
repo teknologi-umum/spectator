@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,7 @@ namespace Spectator.JwtAuthentication {
 			_jwtAuthenticationSettings = jwtAuthenticationSettings;
 		}
 
+		[SuppressMessage("Security", "CA5404:Do not disable token validation checks", Justification = "Biarin lah. Linter bawel.")]
 		public void PostConfigure(string name, JwtBearerOptions options) {
 			options.SaveToken = false;
 			options.IncludeErrorDetails = true;
