@@ -7,71 +7,28 @@ import (
 	"log"
 	"os"
 	"path"
+	"time"
 
 	"video/logger_proto"
 	pb "video/video_proto"
 
 	"github.com/minio/minio-go/v7"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const BaseDirectory = "/data"
 
 func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.VideoResponse, error) {
-	// Check if bucket exists
-	exists, err := d.Bucket.BucketExists(ctx, in.SessionId)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("checking bucket existance: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "checking bucket existance: %v", err)
-	}
+	log.Printf("Received video request: Session ID: %s", in.GetSessionId())
 
-	if !exists {
-		return &pb.VideoResponse{}, status.Errorf(codes.NotFound, "video data not found for session id: %s", in.SessionId)
-	}
+	go func(sessionId string) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute*3)
+		defer cancel()
 
-	// Create the directory for current session ID
-	err = os.MkdirAll(BaseDirectory+"/"+in.SessionId, 0755)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("creating directory: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "creating a directory: %v", err)
-	}
-
-	files, err := d.acquireListOfFiles(ctx, in.SessionId)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("acquiring list of files: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "acquiring list of files: %v", err)
-	}
-
-	for _, file := range files {
-		err = d.downloadFile(ctx, in.SessionId, file)
+		// Check if bucket exists
+		exists, err := d.Bucket.BucketExists(ctx, in.SessionId)
 		if err != nil {
 			defer d.Logger.Log(
-				fmt.Errorf("downloading file: %v", err).Error(),
+				fmt.Errorf("checking bucket existance: %v", err).Error(),
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
@@ -79,85 +36,146 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 					"function":   "GetVideo",
 				},
 			)
-			return &pb.VideoResponse{}, status.Errorf(codes.Internal, "downloading file: %v", err)
+			log.Printf("error: checking bucket existance: %v", err)
+			return
 		}
-	}
 
-	listFilePath, err := d.putListOfFilesToFile(in.SessionId, files)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("generating file lists: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "generating file lists: %v", err)
-	}
+		if !exists {
+			log.Printf("error: video data not found for session id: %s", in.SessionId)
+			return
+		}
 
-	outputCombinedWebmFile := path.Join(BaseDirectory, in.SessionId, "combined.webm")
+		// Create the directory for current session ID
+		err = os.MkdirAll(BaseDirectory+"/"+in.SessionId, 0755)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("creating directory: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: creating a directory: %v", err)
+			return
+		}
 
-	_, err = d.Ffmpeg.Concat(ctx, listFilePath, outputCombinedWebmFile)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("combining files with ffmpeg: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "combining files with ffmpeg: %v", err)
-	}
+		files, err := d.acquireListOfFiles(ctx, in.SessionId)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("acquiring list of files: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("acquiring list of files: %v", err)
+			return
+		}
 
-	outputMp4File := path.Join(BaseDirectory, in.SessionId, "combined.mp4")
+		for _, file := range files {
+			err = d.downloadFile(ctx, in.SessionId, file)
+			if err != nil {
+				defer d.Logger.Log(
+					fmt.Errorf("downloading file: %v", err).Error(),
+					logger_proto.Level_ERROR.Enum(),
+					"",
+					map[string]string{
+						"session_id": in.GetSessionId(),
+						"function":   "GetVideo",
+					},
+				)
+				log.Printf("error: downloading file: %v", err)
+				return
+			}
+		}
 
-	_, err = d.Ffmpeg.Convert(ctx, outputCombinedWebmFile, outputMp4File)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("converting webm file to mp4: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "converting webm to mp4: %v", err)
-	}
+		listFilePath, err := d.putListOfFilesToFile(in.SessionId, files)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("generating file lists: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: generating file lists: %v", err)
+			return
+		}
 
-	uploadedFilePath, err := d.uploadCombinedFile(ctx, in.SessionId, outputMp4File)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("uploading combined files to minio: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "uploading combined files to minio %v", err)
-	}
+		outputCombinedWebmFile := path.Join(BaseDirectory, in.SessionId, "combined.webm")
 
-	err = os.RemoveAll(BaseDirectory + "/" + in.SessionId)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("removing directory: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": in.GetSessionId(),
-				"function":   "GetVideo",
-			},
-		)
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "removing directory: %v", err)
-	}
+		_, err = d.Ffmpeg.Concat(ctx, listFilePath, outputCombinedWebmFile)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("combining files with ffmpeg: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: combining files with ffmpeg: %v", err)
+			return
+		}
 
-	return &pb.VideoResponse{VideoUrl: uploadedFilePath}, nil
+		outputMp4File := path.Join(BaseDirectory, in.SessionId, "combined.mp4")
+
+		_, err = d.Ffmpeg.Convert(ctx, outputCombinedWebmFile, outputMp4File)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("converting webm file to mp4: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: converting webm to mp4: %v", err)
+			return
+		}
+
+		uploadedFilePath, err := d.uploadCombinedFile(ctx, in.SessionId, outputMp4File)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("uploading combined files to minio: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: uploading combined files to minio %v", err)
+			return
+		}
+
+		err = os.RemoveAll(BaseDirectory + "/" + in.SessionId)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("removing directory: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": in.GetSessionId(),
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: removing directory: %v", err)
+			return
+		}
+
+		log.Printf("done: uploaded file for %s to %s", sessionId, uploadedFilePath)
+	}(in.GetSessionId())
+
+	return &pb.VideoResponse{VideoUrl: ""}, nil
 }
 
 func (d *Dependency) acquireListOfFiles(ctx context.Context, sessionID string) ([]string, error) {
