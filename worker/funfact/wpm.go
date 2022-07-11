@@ -145,7 +145,9 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		return nil
 	}
 
-	totalWpm = totalWpm / wpmDivisor
+	if wpmDivisor > 0 {
+		totalWpm = totalWpm / wpmDivisor
+	}
 
 	// Return the result here
 	result <- totalWpm
