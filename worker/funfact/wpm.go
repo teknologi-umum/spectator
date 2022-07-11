@@ -128,11 +128,13 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	}
 
 	var totalWpm int64
+	var wpmDivisor int64
 	for _, wpm := range totalKeystrokes {
-		totalWpm += wpm
+		if wpm >= 20 {
+			totalWpm += wpm
+			wpmDivisor++
+		}
 	}
-
-	totalWpm = totalWpm / int64(len(totalKeystrokes))
 
 	// if the wordsSum is 0, just send it back.
 	// the reason why is when we divide 0 with 0, it became NaN for some reason
@@ -142,6 +144,8 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateSuccess)
 		return nil
 	}
+
+	totalWpm = totalWpm / wpmDivisor
 
 	// Return the result here
 	result <- totalWpm
