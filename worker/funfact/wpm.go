@@ -128,8 +128,12 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 	}
 
 	var totalWpm int64
+	var wpmDivisor int64
 	for _, wpm := range totalKeystrokes {
-		totalWpm += wpm
+		if wpm >= 20 {
+			totalWpm += wpm
+			wpmDivisor++
+		}
 	}
 
 	// if the wordsSum is 0, just send it back.
@@ -139,6 +143,10 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		result <- 0
 		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateSuccess)
 		return nil
+	}
+
+	if wpmDivisor > 0 {
+		totalWpm = totalWpm / wpmDivisor
 	}
 
 	// Return the result here
