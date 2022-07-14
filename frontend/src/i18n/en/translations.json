@@ -77,11 +77,17 @@
       "sam_test_label_2": "P.S: This test will not affect your mark",
       "programming_test": "In this part there will be six programming questions to which you are required to answer within 90 minutes using one of six programming languages. You are not allowed to search the answer somewhere else or get help from other people. You are allowed to leave the page empty and proceed to the next question. You are allowed to go back to previous questions while there is still time."
     },
-    "sam_test": {
+    "sam_test_before": {
       "aroused_title": "How aroused are you right now?",
       "aroused_body": "Arousal refers to how aroused are you generally in the meantime.",
       "pleasure_title": "How pleased are you right now?",
       "pleasure_body": "Pleasure refers to how aroused are you generally in the meantime."
+    },
+    "sam_test_after": {
+      "aroused_title": "How aroused are you when doing programming task?",
+      "aroused_body": "Arousal refers to how aroused are you generally when doing programming task.",
+      "pleasure_title": "How pleased are you when doing programming task?",
+      "pleasure_body": "Pleasure refers to how aroused are you generally when doing programming task."
     },
     "confirmation": {
       "title": "Confirmation",
