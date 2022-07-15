@@ -79,26 +79,28 @@ export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
           </Badge>
         )}
         {snapshot?.submissionSubmitted && snapshot?.submissionAccepted && (
-          <Badge fontSize="1rem" variant="subtle" colorScheme='green'>
+          <Badge fontSize="1rem" variant="subtle" colorScheme="green">
             ACCEPTED
           </Badge>
         )}
         {snapshot?.submissionSubmitted && !snapshot?.submissionAccepted && (
-          <Badge fontSize="1rem" variant="subtle" colorScheme='red'>
+          <Badge fontSize="1rem" variant="subtle" colorScheme="red">
             REJECTED
           </Badge>
         )}
       </Heading>
-      <ReactMarkdown
-        components={{
-          p: buildParagraph(fgDarker),
-          ul: buildUnorderedList(),
-          li: buildListItem(),
-          pre: buildPre(codeBg, fg)
-        }}
-      >
-        {t(`${currentQuestionNumber - 1}.question`)}
-      </ReactMarkdown>
+      <Box userSelect="none">
+        <ReactMarkdown
+          components={{
+            p: buildParagraph(fgDarker),
+            ul: buildUnorderedList(),
+            li: buildListItem(),
+            pre: buildPre(codeBg, fg)
+          }}
+        >
+          {t(`${currentQuestionNumber - 1}.question`)}
+        </ReactMarkdown>
+      </Box>
     </Box>
   );
 }
