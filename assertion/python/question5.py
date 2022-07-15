@@ -34,15 +34,15 @@ def main():
         if type(test["got"]) != str:
             print(f"# {i+1} FAILED")
             print(f"> EXPECTED {test['expected']}")
-            print(f"> GOT {test['got']}")
+            print(f"> GOT \"{test['got']}\"")
             continue
 
         if test["expected"] == test["got"]:
             print(f"# {i+1} PASSING")
         else:
             print(f"# {i+1} FAILED")
-            print(f"> EXPECTED {test['expected']}")
-            print(f"> GOT {test['got']}")
+            print(f"> EXPECTED \"{test['expected']}\"")
+            print(f"> GOT \"{test['got']}\"")
 
 if __name__ == "__main__":
     main()

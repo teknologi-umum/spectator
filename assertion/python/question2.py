@@ -52,11 +52,17 @@ def main():
         n = __random.randint(-500, 500)
         expected = workingAnswer(n, fromTemperature, toTemperature)
         got = calculateTemperature(n, fromTemperature, toTemperature)
-        testCases.append({ "expected": float(expected), "got": float(got) })
+        testCases.append({ "expected": expected, "got": got })
 
     for i, test in enumerate(testCases):
         got = test["got"]
         expected = test["expected"]
+
+        if type(got) == None:
+            print(f"# {i+1} FAILED")
+            print(f"> EXPECTED {expected}")
+            print(f"> GOT {got}")
+            continue
 
         if type(got) != float:
             print(f"# {i+1} FAILED")
