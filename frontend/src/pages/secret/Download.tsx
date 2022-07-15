@@ -10,6 +10,7 @@ import {
   Button,
   Flex,
   Heading,
+  Spinner,
   Text as ChakraText
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@/hooks";
@@ -67,6 +68,7 @@ function parseFileName(url: string) {
 }
 
 export default function Download() {
+  const [isLoading, setLoading] = useState(false);
   const [files, setFiles] = useState<GroupedFileEntry>({});
   const { sessionId } = useAppSelector((state) => state.session);
   const { t } = useTranslation("translation", {
@@ -81,6 +83,7 @@ export default function Download() {
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const response = await fetch(ADMIN_BASE_URL + "/files", {
           method: "POST",
@@ -110,6 +113,7 @@ export default function Download() {
           loggerInstance.log(LogLevel.Error, err.message);
         }
       }
+      setLoading(false);
     })();
   }, []);
 
@@ -122,92 +126,96 @@ export default function Download() {
         <Heading mb="8" size="lg" textAlign="center" fontWeight="700">
           List of Students Data
         </Heading>
-        <Accordion
-          allowMultiple
-          width={"container.md"}
-          backgroundColor="white"
-          rounded="lg"
-        >
-          {Object.entries(files).map(([studentNumber, data], index) => (
-            <AccordionItem key={index}>
-              <AccordionButton
-                _hover={{ backgroundColor: "white" }}
-                rounded="lg"
-              >
-                <Box flex="1" textAlign="left" my="2">
-                  <ChakraText fontWeight="bold" fontSize="lg">
-                    {studentNumber}
-                  </ChakraText>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <Flex
-                  key={index}
-                  justify="space-between"
-                  py="4"
-                  borderTopWidth={1}
-                  borderTopColor={bg}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <Accordion
+            allowMultiple
+            width="container.md"
+            backgroundColor="white"
+            rounded="lg"
+          >
+            {Object.entries(files).map(([studentNumber, data], index) => (
+              <AccordionItem key={index}>
+                <AccordionButton
+                  _hover={{ backgroundColor: "white" }}
+                  rounded="lg"
                 >
-                  <span>Video</span>
-                  <Flex>
-                    <Button
-                      as="a"
-                      colorScheme="blue"
-                      href={`${MINIO_URL}/public/${studentNumber}_video.mp4`}
-                      target="_blank"
-                      size="sm"
-                    >
-                      Download Video
-                    </Button>
-                  </Flex>
-                </Flex>
-                {data.map((entry, index) => {
-                  const url =
-                    entry.jsonFileUrl !== ""
-                      ? entry.jsonFileUrl
-                      : entry.csvFileUrl;
-                  const entryName = parseFileName(url);
-                  return (
-                    <Flex
-                      key={index}
-                      justify="space-between"
-                      py="4"
-                      borderTopWidth={1}
-                      borderTopColor={bg}
-                    >
-                      <span>{entryName}</span>
-                      <Flex>
-                        {entry.jsonFileUrl !== "" ? (
-                          <Button
-                            as="a"
-                            colorScheme="blue"
-                            href={MINIO_URL + entry.jsonFileUrl}
-                            target="_blank"
-                            size="sm"
-                          >
-                            Download JSON
-                          </Button>
-                        ) : null}
-                        {entry.csvFileUrl !== "" ? (
-                          <Button
-                            as="a"
-                            colorScheme="green"
-                            href={MINIO_URL + entry.csvFileUrl}
-                            target="_blank"
-                            size="sm"
-                          >
-                            Download CSV
-                          </Button>
-                        ) : null}
-                      </Flex>
+                  <Box flex="1" textAlign="left" my="2">
+                    <ChakraText fontWeight="bold" fontSize="lg">
+                      {studentNumber}
+                    </ChakraText>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+                <AccordionPanel pb={4}>
+                  <Flex
+                    key={index}
+                    justify="space-between"
+                    py="4"
+                    borderTopWidth={1}
+                    borderTopColor={bg}
+                  >
+                    <span>Video</span>
+                    <Flex>
+                      <Button
+                        as="a"
+                        colorScheme="blue"
+                        href={`${MINIO_URL}/public/${studentNumber}_video.mp4`}
+                        target="_blank"
+                        size="sm"
+                      >
+                        Download Video
+                      </Button>
                     </Flex>
-                  );
-                })}
-              </AccordionPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
+                  </Flex>
+                  {data.map((entry, index) => {
+                    const url =
+                      entry.jsonFileUrl !== ""
+                        ? entry.jsonFileUrl
+                        : entry.csvFileUrl;
+                    const entryName = parseFileName(url);
+                    return (
+                      <Flex
+                        key={index}
+                        justify="space-between"
+                        py="4"
+                        borderTopWidth={1}
+                        borderTopColor={bg}
+                      >
+                        <span>{entryName}</span>
+                        <Flex>
+                          {entry.jsonFileUrl !== "" ? (
+                            <Button
+                              as="a"
+                              colorScheme="blue"
+                              href={MINIO_URL + entry.jsonFileUrl}
+                              target="_blank"
+                              size="sm"
+                            >
+                              Download JSON
+                            </Button>
+                          ) : null}
+                          {entry.csvFileUrl !== "" ? (
+                            <Button
+                              as="a"
+                              colorScheme="green"
+                              href={MINIO_URL + entry.csvFileUrl}
+                              target="_blank"
+                              size="sm"
+                            >
+                              Download CSV
+                            </Button>
+                          ) : null}
+                        </Flex>
+                      </Flex>
+                    );
+                  })}
+                </AccordionPanel>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
       </Box>
     </Flex>
   );
