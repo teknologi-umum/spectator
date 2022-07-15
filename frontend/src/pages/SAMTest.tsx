@@ -69,6 +69,9 @@ function SAMTest() {
   const { accessToken, firstSAMSubmitted, tourCompleted } = useAppSelector(
     (state) => state.session
   );
+  const samTranslationKey = firstSAMSubmitted
+    ? "sam_test_after"
+    : "sam_test_before";
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -144,10 +147,10 @@ function SAMTest() {
               <Fade in={currentPage === 0}>
                 <Box data-tour="step-1">
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    {t("sam_test.aroused_title")}
+                    {t(`${samTranslationKey}.aroused_title`)}
                   </Text>
                   <Text color={fgDarker} fontSize="lg" mb="4">
-                    {t("sam_test.aroused_body")}
+                    {t(`${samTranslationKey}.aroused_body`)}
                   </Text>
                   <SAMRadioGroup
                     value={arousal}
@@ -163,10 +166,10 @@ function SAMTest() {
               <Fade in={currentPage === Page.LAST}>
                 <Box>
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
-                    {t("sam_test.pleasure_title")}
+                    {t(`${samTranslationKey}.pleasure_title`)}
                   </Text>
                   <Text color={fgDarker} fontSize="lg">
-                    {t("sam_test.pleasure_body")}
+                    {t(`${samTranslationKey}.pleasure_body`)}
                   </Text>
                   <SAMRadioGroup
                     value={pleasure}

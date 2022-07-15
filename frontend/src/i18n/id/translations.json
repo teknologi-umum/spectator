@@ -77,11 +77,17 @@
       "sam_test_label_2": "N.B: Tes ini tidak akan mempengaruhi nilai akhirmu",
       "programming_test": "Dalam bagian ini akan ada 6 pertanyaan tentang pemrograman yang harus kamu jawab dalam waktu 90 menit menggunakan salah satu dari 6 bahasa pemrograman. Kamu dilarang mencari jawaban dari manapun atau bantuan dari orang lain. Apabila kamu merasa tidak mampu untuk menjawab, kamu diperbolehkan untuk meninggalkan halaman dengan jawaban kosong dan menuju pertanyaan selanjutnya. Kamu diperbolehkan untuk kembali ke pertanyaan sebelumnya apabila masih ada waktu yang tersisa."
     },
-    "sam_test": {
+    "sam_test_before": {
       "aroused_title": "Seberapa antusias perasaan kamu sekarang?",
       "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat ini.",
       "pleasure_title": "Seberapa puas perasaan kamu sekarang?",
       "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat ini."
+    },
+    "sam_test_after": {
+      "aroused_title": "Seberapa antusias perasaan kamu saat melakukan tugas pemrograman?",
+      "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat melakukan tugas pemrograman.",
+      "pleasure_title": "Seberapa puas perasaan kamu saat melakukan tugas pemrograman?",
+      "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat melakukan tugas pemrograman."
     },
     "confirmation": {
       "title": "Konfirmasi",

@@ -52,7 +52,7 @@ def main():
         n = __random.randint(-500, 500)
         expected = workingAnswer(n, fromTemperature, toTemperature)
         got = calculateTemperature(n, fromTemperature, toTemperature)
-        testCases.append({ "expected": expected, "got": got })
+        testCases.append({ "expected": float(expected), "got": float(got) })
 
     for i, test in enumerate(testCases):
         got = test["got"]
