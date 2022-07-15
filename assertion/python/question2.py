@@ -58,6 +58,12 @@ def main():
         got = test["got"]
         expected = test["expected"]
 
+        if type(got) == None:
+            print(f"# {i+1} FAILED")
+            print(f"> EXPECTED {expected}")
+            print(f"> GOT {got}")
+            continue
+
         if type(got) != float:
             print(f"# {i+1} FAILED")
             print(f"> EXPECTED { round(float(test['expected']), 2) }")

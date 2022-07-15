@@ -36,8 +36,8 @@ def main():
             print(f"# {i+1} PASSING")
         else:
             print(f"# {i+1} FAILED")
-            print(f"> EXPECTED { ', '.join(map(str,test['expected'])) }" )
-            print(f"> GOT { ', '.join(map(str,test['got'])) }" )
+            print(f"> EXPECTED [{ ', '.join(map(str,test['expected'])) }]" )
+            print(f"> GOT [{ ', '.join(map(str,test['got'])) }]" )
 
 if __name__ == "__main__":
     main()
