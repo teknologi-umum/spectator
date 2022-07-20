@@ -64,12 +64,6 @@ def main():
             print(f"> GOT {got}")
             continue
 
-        if type(got) != float:
-            print(f"# {i+1} FAILED")
-            print(f"> EXPECTED { round(float(test['expected']), 2) }")
-            print(f"> GOT { test['got'] }")
-            continue
-
         if round(float(got), 2) == round(float(expected), 2):
             print(f'# {i+1} PASSING')
         else:
