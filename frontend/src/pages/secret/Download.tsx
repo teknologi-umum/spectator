@@ -170,11 +170,11 @@ export default function Download() {
                     </Flex>
                   </Flex>
                   {data.map((entry, index) => {
-                    const url =
-                      entry.jsonFileUrl !== ""
+                    const fileUrl =
+                      entry.jsonFileUrl !== null
                         ? entry.jsonFileUrl
                         : entry.csvFileUrl;
-                    const entryName = parseFileName(url);
+                    const entryName = parseFileName(fileUrl);
                     return (
                       <Flex
                         key={index}
@@ -185,7 +185,7 @@ export default function Download() {
                       >
                         <span>{entryName}</span>
                         <Flex>
-                          {entry.jsonFileUrl !== "" ? (
+                          {entry.jsonFileUrl !== null ? (
                             <Button
                               as="a"
                               colorScheme="blue"
@@ -196,7 +196,7 @@ export default function Download() {
                               Download JSON
                             </Button>
                           ) : null}
-                          {entry.csvFileUrl !== "" ? (
+                          {entry.csvFileUrl !== null ? (
                             <Button
                               as="a"
                               colorScheme="green"
