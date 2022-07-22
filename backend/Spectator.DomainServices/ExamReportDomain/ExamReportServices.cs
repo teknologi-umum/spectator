@@ -84,8 +84,10 @@ namespace Spectator.DomainServices.ExamReportDomain {
 				.SelectMany(filesList => filesList.Files.Select(file => new ReportFile(
 					sessionId: Guid.Parse(filesList.SessionId),
 					studentNumber: file.StudentNumber,
-					jsonFileUrl: new Uri(file.FileUrlJson),
-					csvFileUrl: new Uri(file.FileUrlCsv)
+					// treat empty string file url as null since `Uri` doesn't accept
+					// empty or null as its constructor paramter
+					jsonFileUrl: file.FileUrlJson.Length > 1 ? new Uri(file.FileUrlJson) : null,
+					csvFileUrl: file.FileUrlCsv.Length > 1 ? new Uri(file.FileUrlCsv) : null
 				)))
 				.ToImmutableList();
 		}
