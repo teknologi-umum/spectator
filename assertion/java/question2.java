@@ -1,14 +1,30 @@
 import java.util.*;
-import java.io.*;
-import java.math.*;
+import java.math.BigDecimal;
 
-_REPLACE_ME_WITH_DIRECTIVES_
+// _REPLACE_ME_WITH_DIRECTIVES_
 
 public class question2 {
 
     private static String[] temperatures = { "Celcius", "Fahrenheit", "Kelvin" };
 
-    _REPLACE_ME_WITH_SOLUTION_
+    // _REPLACE_ME_WITH_SOLUTION_
+    private static class Temperature {
+        public static double calculateTemperature(double temp, String from, String to) {
+            if (isC(from) && isF(to))
+                return (temp * 9 / 5) + 32;
+            if (isC(from) && isK(to))
+                return (temp + 273.15);
+            if (isF(from) && isC(to))
+                return (temp - 32) * 5 / 9;
+            if (isF(from) && isK(to))
+                return ((temp - 32) * 5 / 9 + 273.15);
+            if (isK(from) && isC(to))
+                return (temp - 273.15);
+            if (isK(from) && isF(to))
+                return ((temp - 273.15) * 9 / 5 + 32);
+            return 0;
+        }
+    }
 
     private static boolean isC(String tempName) {
         return tempName.equalsIgnoreCase("Celcius");
@@ -22,48 +38,48 @@ public class question2 {
         return tempName.equalsIgnoreCase("Kelvin");
     }
 
-    private static int workingAnswer(int temp, String from, String to) {
+    private static double workingAnswer(double temp, String from, String to) {
         if (isC(from) && isF(to))
             return (temp * 9 / 5) + 32;
         if (isC(from) && isK(to))
-            return (int) (temp + 273.15);
+            return (temp + 273.15);
         if (isF(from) && isC(to))
             return (temp - 32) * 5 / 9;
         if (isF(from) && isK(to))
-            return (int) ((temp - 32) * 5 / 9 + 273.15);
+            return ((temp - 32) * 5 / 9 + 273.15);
         if (isK(from) && isC(to))
-            return (int) (temp - 273.15);
+            return (temp - 273.15);
         if (isK(from) && isF(to))
-            return (int) ((temp - 273.15) * 9 / 5 + 32);
+            return ((temp - 273.15) * 9 / 5 + 32);
         return 0;
     }
 
-    private static List<int[]> generateTestCase() {
-        var listOfTest = new ArrayList<int[]>();
+    private static List<double[]> generateTestCase() {
+        var listOfTest = new ArrayList<double[]>();
 
-        listOfTest.add(new int[] { 212, Temperature.calculateTemperature(100, "Celcius", "Fahrenheit") });
-        listOfTest.add(new int[] { 373, Temperature.calculateTemperature(212, "Fahrenheit", "Kelvin") });
-        listOfTest.add(new int[] { 273, Temperature.calculateTemperature(0, "Celcius", "Kelvin") });
-        listOfTest.add(new int[] { 32, Temperature.calculateTemperature(0, "Celcius", "Fahrenheit") });
-        listOfTest.add(new int[] { -459, Temperature.calculateTemperature(0, "Kelvin", "Fahrenheit") });
+        listOfTest.add(new double[] { 212, Temperature.calculateTemperature(100, "Celcius", "Fahrenheit") });
+        listOfTest.add(new double[] { 373.15, Temperature.calculateTemperature(212, "Fahrenheit", "Kelvin") });
+        listOfTest.add(new double[] { 273.15, Temperature.calculateTemperature(0, "Celcius", "Kelvin") });
+        listOfTest.add(new double[] { 32, Temperature.calculateTemperature(0, "Celcius", "Fahrenheit") });
+        listOfTest.add(new double[] { -459.67, Temperature.calculateTemperature(0, "Kelvin", "Fahrenheit") });
 
         return listOfTest;
     }
 
-    private static List<int[]> generateRandomTestCase(int numberOfTC) {
-        var listOfTest = new ArrayList<int[]>();
+    private static List<double[]> generateRandomTestCase(int numberOfTestCases) {
+        var listOfTest = new ArrayList<double[]>();
 
-        for (int i = 0; i < numberOfTC; i++) {
+        for (int i = 0; i < numberOfTestCases; i++) {
             var from = temperatures[getRandomNumber(0, 2)];
             var to = temperatures[getRandomNumber(0, 2)];
-            var randTemp = getRandomNumber(-500, 500);
+            double randomTemperature = getRandomNumber(-500, 500);
 
-            var expected = workingAnswer(randTemp, from, to);
-            var got = Temperature.calculateTemperature(randTemp, from, to);
+            double expected = workingAnswer(randomTemperature, from, to);
+            double got = Temperature.calculateTemperature(randomTemperature, from, to);
 
-            listOfTest.add(new int[] { expected, got });
-
+            listOfTest.add(new double[] { expected, got });
         }
+
         return listOfTest;
     }
 
@@ -72,20 +88,23 @@ public class question2 {
     }
 
     public static void main(String[] args) {
-        var testCase = generateTestCase();
-        var randomTestCase = generateRandomTestCase(5);
+        List<double[]> testCase = generateTestCase();
+        List<double[]> randomTestCase = generateRandomTestCase(5);
 
         testCase.addAll(randomTestCase);
 
-        var counter = 0;
-        for (int[] test : testCase) {
+        int counter = 0;
+        for (double[] test : testCase) {
+            BigDecimal expected = BigDecimal.valueOf(test[0]);
+            BigDecimal got = BigDecimal.valueOf(test[1]);
+
             counter++;
-            if (test[0] == test[1]) {
+            if (expected.compareTo(got) == 0) {
                 System.out.printf("# %d PASSING\n", counter);
             } else {
                 System.out.printf("# %d FAILED\n", counter);
-                System.out.printf("> EXPECTED %d\n", test[0]);
-                System.out.printf("> GOT %d\n", test[1]);
+                System.out.printf("> EXPECTED %f\n", expected);
+                System.out.printf("> GOT %f\n", got);
             }
         }
     }

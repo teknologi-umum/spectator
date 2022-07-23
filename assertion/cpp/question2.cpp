@@ -5,11 +5,11 @@
 #include <time.h>
 #include <vector>
 
-_REPLACE_ME_WITH_DIRECTIVES_
+// _REPLACE_ME_WITH_DIRECTIVES_
 
-int calculateTemperature(int temp, std::string from, std::string to);
+float calculateTemperature(float temp, std::string from, std::string to);
 
-_REPLACE_ME_WITH_SOLUTION_
+// _REPLACE_ME_WITH_SOLUTION_
 
 const std::string __CELCIUS = "Celcius";
 const std::string __FAHRENHEIT = "Fahrenheit";
@@ -19,7 +19,7 @@ bool isC(std::string unit) { return unit.compare(__CELCIUS) == 0; }
 bool isF(std::string unit) { return unit.compare(__FAHRENHEIT) == 0; }
 bool isK(std::string unit) { return unit.compare(__KELVIN) == 0; }
 
-int __workingAnswer(int n, std::string a, std::string b) {
+float __workingAnswer(float n, std::string a, std::string b) {
     if (isC(a) && isF(b)) return (n * 9 / 5) + 32;
     if (isC(a) && isK(b)) return n + 273.15;
     if (isF(a) && isC(b)) return (n - 32) * 5 / 9;
@@ -30,8 +30,8 @@ int __workingAnswer(int n, std::string a, std::string b) {
 }
 
 typedef struct TestCase {
-    int expected;
-    int got;
+    float expected;
+    float got;
 } TestCase;
 
 // creates a random number between min and max
@@ -44,17 +44,17 @@ int main() {
 
     std::vector<std::string> temperatures{"Celcius", "Fahrenheit", "Kelvin"};
 
-    std::vector<TestCase> testCases{};
+    std::vector<TestCase> testCases(5);
 
-    testCases[0].expected = 212;
+    testCases[0].expected = 212.0;
     testCases[0].got = calculateTemperature(100, "Celcius", "Fahrenheit");
-    testCases[1].expected = 373;
+    testCases[1].expected = 373.15;
     testCases[1].got = calculateTemperature(212, "Fahrenheit", "Kelvin");
-    testCases[2].expected = 273;
+    testCases[2].expected = 273.15;
     testCases[2].got = calculateTemperature(0, "Celcius", "Kelvin");
-    testCases[3].expected = 32;
+    testCases[3].expected = 32.0;
     testCases[3].got = calculateTemperature(0, "Celcius", "Fahrenheit");
-    testCases[4].expected = -459;
+    testCases[4].expected = -459.67;
     testCases[4].got = calculateTemperature(0, "Kelvin", "Fahrenheit");
 
     for (unsigned int i = 0; i < 5; i++) {
@@ -76,8 +76,8 @@ int main() {
             printf("# %d PASSING\n", i + 1);
         } else {
             printf("# %d FAILED\n", i + 1);
-            printf("> EXPECTED %d\n", test.expected);
-            printf("> GOT %d\n", test.got);
+            printf("> EXPECTED %.2f\n", test.expected);
+            printf("> GOT %.2f\n", test.got);
         }
     }
 
