@@ -45,7 +45,7 @@ std::vector<int> genVector(int n) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{};
+    std::vector<TestCase> testCases(1);
     testCases[0].expected = {75, 67, 40, 33};
     testCases[0].got = calculateGrade({75, 67, 40, 33});
 

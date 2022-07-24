@@ -17,7 +17,7 @@ int isC(const char* unit) { return strcmp(unit, __CELCIUS) == 0; }
 int isF(const char* unit) { return strcmp(unit, __FAHRENHEIT) == 0; }
 int isK(const char* unit) { return strcmp(unit, __KELVIN) == 0; }
 
-int __workingAnswer(int n, const char* a, const char* b) {
+float __workingAnswer(int n, const char* a, const char* b) {
     if (isC(a) && isF(b)) return (n * 9 / 5) + 32;
     if (isC(a) && isK(b)) return n + 273.15;
     if (isF(a) && isC(b)) return (n - 32) * 5 / 9;
@@ -28,8 +28,8 @@ int __workingAnswer(int n, const char* a, const char* b) {
 }
 
 typedef struct TestCase {
-    int expected;
-    int got;
+    float expected;
+    float got;
 } TestCase;
 
 // creates a random number between min and max
@@ -45,13 +45,13 @@ int main() {
     TestCase testCases[10] = {
         {.expected = 212,
          .got = calculateTemperature(100, "Celcius", "Fahrenheit")},
-        {.expected = 373,
+        {.expected = 373.15,
          .got = calculateTemperature(212, "Fahrenheit", "Kelvin")},
-        {.expected = 273,
+        {.expected = 273.15,
          .got = calculateTemperature(0, "Celcius", "Kelvin")},
         {.expected = 32,
          .got = calculateTemperature(0, "Celcius", "Fahrenheit")},
-        {.expected = -459,
+        {.expected = -459.67,
          .got = calculateTemperature(0, "Kelvin", "Fahrenheit")}};
 
     // `sizeof` returns the size of the memory used, not the length of the

@@ -58,7 +58,7 @@ std::string __genWords(int n) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{};
+    std::vector<TestCase> testCases(2);
     testCases[0].expected = "A-Bb-Ccc-Dddd";
     testCases[0].got = mumble("abcd");
     testCases[1].expected = "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy";
