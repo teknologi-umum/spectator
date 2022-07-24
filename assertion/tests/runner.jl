@@ -35,17 +35,22 @@ function normalassertion(result::String)
     # split each string by new line
     results = split(strip(result), "\n")
 
-    ok = false
+    ok = 0
+    failed = 0
 
     # for every line of results, check whether
     # it contains "PASSED"
     for line in results
         if contains(strip(line), "PASSING")
-            ok = true
+            ok += 1
+        end
+
+        if contains(strip(line), "FAILED")
+            failed += 1
         end
     end
 
-    ok
+    ok > 0 && failed == 0
 end
 
 
@@ -90,23 +95,31 @@ for walkedpath in walkdir(dirpath)
 
                 executecommand = replace(execcmd, "{file}" => executepath)
 
-                result = read(`sh -c $executecommand`, String)
+                result = read(Cmd(`sh -c $executecommand`, ignorestatus=true, detach=true), String)
 
                 if questionnumber == "question1"
                     if strip(result) == twinkle
                         println("   ✅ Test passed: " * file)
                     else
-                        println("   ❌ Test failed: " * file)
-                        println(result)
-                        global failedresults += 1
+                        if contains(file, "fail")
+                            println("   🚸 Test intentionally failed: " * file)
+                        else
+                            println("   ❌ Test failed: " * file)
+                            println(result)
+                            global failedresults += 1
+                        end
                     end
                 else
                     if normalassertion(result)
                         println("   ✅ Test passed: " * file)
                     else
-                        println("   ❌ Test failed: " * file)
-                        println(result)
-                        global failedresults += 1
+                        if contains(file, "failing")
+                            println("   🚸 Test intentionally failed: " * file)
+                        else
+                            println("   ❌ Test failed: " * file)
+                            println(result)
+                            global failedresults += 1
+                        end
                     end
                 end
 
