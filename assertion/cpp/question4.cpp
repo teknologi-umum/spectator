@@ -32,7 +32,7 @@ long __randomNumber(int min, long max) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{};
+    std::vector<TestCase> testCases(1);
     testCases[0].expected = 19;
     testCases[0].got = findHeaterPower(100212373);
 

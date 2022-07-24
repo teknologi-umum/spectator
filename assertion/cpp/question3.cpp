@@ -22,7 +22,7 @@ int __randomNumber(int min, int max) {
 int main() {
     srand(time(0));
 
-    std::vector<TestCase> testCases{};
+    std::vector<TestCase> testCases(2);
     testCases[0].expected = false;
     testCases[0].got = isSameNumber(100, 212);
     testCases[1].expected = true;
