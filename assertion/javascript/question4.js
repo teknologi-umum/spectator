@@ -14,7 +14,7 @@ function main() {
         const s = String(n);
         let sum = 0;
         for (let i = 0; i < s.length; i++) {
-          sum += Number(s[i]);
+            sum += Number(s[i]);
         }
         return sum;
     };
@@ -28,10 +28,10 @@ function main() {
 
     for (let i = 0; i < testCases.length; i++) {
         const test = testCases[i];
-        if (test.got === test.expected) {
-            console.log(`# ${i+1} PASSING`);
+        if (test.got == test.expected) {
+            console.log(`# ${i + 1} PASSING`);
         } else {
-            console.log(`# ${i+1} FAILED`);
+            console.log(`# ${i + 1} FAILED`);
             console.log(`> EXPECTED ${test.expected}`);
             console.log(`> GOT ${test.got}`)
         }

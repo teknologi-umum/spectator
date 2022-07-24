@@ -1,5 +1,6 @@
 import random as __random
 from decimal import Decimal
+from types import NoneType
 
 _REPLACE_ME_WITH_DIRECTIVES_
 
@@ -58,7 +59,7 @@ def main():
         got = test["got"]
         expected = test["expected"]
 
-        if type(got) == None:
+        if type(got) == NoneType:
             print(f"# {i+1} FAILED")
             print(f"> EXPECTED {expected}")
             print(f"> GOT {got}")
