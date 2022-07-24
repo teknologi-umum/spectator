@@ -146,14 +146,24 @@ namespace Spectator.Piston {
 					_ => _pistonOptions.MemoryLimit,
 				};
 
+				var runTimeout = language.ToLowerInvariant() switch {
+					"java" => 15_000,
+					_ => _pistonOptions.RunTimeout,
+				};
+
+				var compileTimeout = language.ToLowerInvariant() switch {
+					"java" => 15_000,
+					_ => _pistonOptions.CompileTimeout,
+				};
+
 				var runtime = await GetRuntimeAsync(language, cancellationToken) ?? throw new KeyNotFoundException($"Runtime for {language} not found.");
 				return await _rceClient.ExecuteAsync(
 					new CodeRequest {
 						Code = code,
 						Version = version,
 						Language = language,
-						CompileTimeout = _pistonOptions.CompileTimeout,
-						RunTimeout = _pistonOptions.RunTimeout,
+						CompileTimeout = compileTimeout,
+						RunTimeout = runTimeout,
 						MemoryLimit = memoryLimit,
 					},
 					cancellationToken: cancellationToken
