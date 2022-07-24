@@ -143,7 +143,7 @@ test.serial("should be able to compile and run a file - C", async (t) => {
         `#include <stdio.h>
 
         int main() {
-            printf("Hello world~");
+            printf("Hello World~");
             return 0;
         }`,
         10_000,
