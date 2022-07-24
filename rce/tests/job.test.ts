@@ -99,25 +99,18 @@ test.serial("should be able to run a file - NodeJS", async (t) => {
     await job.createFile();
 
     const filePath = path.join("/code", `/${job.user.username}`, `/code.${runtime.extension}`);
-    const stat = await fs.stat(filePath);
-
-    if (stat.isFile()) {
-        t.pass("File assert created");
-    } else {
-        t.fail("File assert not created");
-    }
 
     const result = await job.run();
 
     t.assert(result.exitCode === 0, `Run result didn't exit with 0, instead it exited with ${result.exitCode} and message ${result.output}`);
 
-    t.assert(result.output.trim() === "Hello world~", `File output must be "Hello World~", instead of "${result.output}"`);
+    t.assert(result.output.trim() === "Hello world~", `File output must be "Hello world~", instead of "${result.output}"`);
 
     t.assert(result.stderr.trim() === "", "File stderr assert must be empty");
 
-    t.assert(result.stdout.trim() === "Hello world~", `File stdout must be "Hello World~", instead of "${result.stdout}"`);
+    t.assert(result.stdout.trim() === "Hello world~", `File stdout must be "Hello world~", instead of "${result.stdout}"`);
 
-    await fs.rm(filePath);
+    await fs.rm(filePath, { force: true });
 });
 
 test.serial("should be able to compile and run a file - C", async (t) => {
@@ -154,13 +147,6 @@ test.serial("should be able to compile and run a file - C", async (t) => {
     await job.createFile();
 
     const filePath = path.join("/code", `/${job.user.username}`, `/code.${runtime.extension}`);
-    const stat = await fs.stat(filePath);
-
-    if (stat.isFile()) {
-        t.pass("File assert created");
-    } else {
-        t.fail("File assert not created");
-    }
 
     const compileResult = await job.compile();
 
@@ -176,5 +162,5 @@ test.serial("should be able to compile and run a file - C", async (t) => {
 
     t.assert(runResult.stdout.trim() === "Hello World~", `File stdout must be "Hello World~", instead of "${runResult.stdout}"`);
 
-    await fs.rm(filePath);
+    await fs.rm(filePath, { force: true });
 });
