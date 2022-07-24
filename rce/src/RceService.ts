@@ -91,6 +91,7 @@ export class RceServiceImpl implements IRceService {
                 runtime,
                 req.code,
                 req.compileTimeout,
+                req.runTimeout,
                 req.memoryLimit
             );
 
