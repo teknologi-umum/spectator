@@ -111,7 +111,7 @@ test.serial("should be able to run a file - NodeJS", async (t) => {
 
     t.assert(result.exitCode === 0, `Run result didn't exit with 0, instead it exited with ${result.exitCode} and message ${result.output}`);
 
-    t.assert(result.output.trim() === "Hello World~", `File output must be "Hello World~", instead of "${result.output}"`);
+    t.assert(result.output.trim() === "Hello world~", `File output must be "Hello World~", instead of "${result.output}"`);
 
     t.assert(result.stderr.trim() === "", "File stderr assert must be empty");
 
