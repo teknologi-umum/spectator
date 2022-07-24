@@ -21,7 +21,7 @@ public class question2 {
         return tempName.equalsIgnoreCase("Kelvin");
     }
 
-    private static double workingAnswer(int temp, String from, String to) {
+    private static double workingAnswer(double temp, String from, String to) {
         if (isC(from) && isF(to))
             return (temp * 9 / 5) + 32;
         if (isC(from) && isK(to))
@@ -44,7 +44,7 @@ public class question2 {
         listOfTest.add(new double[] { 373.15, Temperature.calculateTemperature(212, "Fahrenheit", "Kelvin") });
         listOfTest.add(new double[] { 273.15, Temperature.calculateTemperature(0, "Celcius", "Kelvin") });
         listOfTest.add(new double[] { 32, Temperature.calculateTemperature(0, "Celcius", "Fahrenheit") });
-        listOfTest.add(new double[] { -459.67, Temperature.calculateTemperature(0, "Kelvin", "Fahrenheit") });
+        listOfTest.add(new double[] { 212, Temperature.calculateTemperature(373.15, "Kelvin", "Fahrenheit") });
 
         return listOfTest;
     }
