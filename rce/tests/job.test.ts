@@ -115,7 +115,7 @@ test.serial("should be able to run a file - NodeJS", async (t) => {
 
     t.assert(result.stderr.trim() === "", "File stderr assert must be empty");
 
-    t.assert(result.stdout.trim() === "Hello World~", `File stdout must be "Hello World~", instead of "${result.stdout}"`);
+    t.assert(result.stdout.trim() === "Hello world~", `File stdout must be "Hello World~", instead of "${result.stdout}"`);
 
     await fs.rm(filePath);
 });
