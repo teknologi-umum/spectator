@@ -1,5 +1,5 @@
 import test from "ava";
-import {SystemUsers} from "../src/user/user.js";
+import { SystemUsers } from "../src/user/user.js";
 
 test("should acquire a user", (t) => {
     const users = new SystemUsers(1, 10, 1);

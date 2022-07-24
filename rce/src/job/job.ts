@@ -9,7 +9,7 @@ export interface JobPrerequisites {
     user: User;
     runtime: Runtime;
     code: string;
-    timeout: number;
+    compileTimeout: number;
     memoryLimit: number;
 }
 
@@ -24,14 +24,16 @@ export interface CommandOutput {
 export class Job implements JobPrerequisites {
     private _sourceFilePath: string;
     private _builtFilePath: string;
-    public timeout: number;
-    public memoryLimit: number;
+    public readonly compileTimeout: number;
+    public readonly runTimeout: number;
+    public readonly memoryLimit: number;
 
     constructor(
-        public user: User,
-        public runtime: Runtime,
-        public code: string,
-        timeout?: number,
+        public readonly user: User,
+        public readonly runtime: Runtime,
+        public readonly code: string,
+        compileTimeout?: number,
+        runTimeout?: number,
         memoryLimit?: number
     ) {
         if (user === undefined
@@ -44,10 +46,16 @@ export class Job implements JobPrerequisites {
             throw new TypeError("Invalid job parameters");
         }
 
-        if (timeout !== undefined && timeout !== null && timeout >= 1) {
-            this.timeout = timeout;
+        if (compileTimeout !== undefined && compileTimeout !== null && compileTimeout >= 1) {
+            this.compileTimeout = compileTimeout;
         } else {
-            this.timeout = 5_000;
+            this.compileTimeout = 5_000;
+        }
+
+        if (runTimeout !== undefined && runTimeout !== null && runTimeout >= 1) {
+            this.runTimeout = runTimeout;
+        } else {
+            this.runTimeout = 10_000;
         }
 
         if (
@@ -96,7 +104,7 @@ export class Job implements JobPrerequisites {
                 "--nproc=128",
                 "--nofile=2048",
                 "--fsize=10000000", // 10MB
-                "--rttime=" + this.timeout.toString(),
+                "--rttime=" + this.compileTimeout.toString(),
                 "--as=" + this.memoryLimit.toString(),
                 "nosocket",
                 ...this.runtime.buildCommand.map(arg => arg.replace("{file}", fileName))
@@ -136,7 +144,7 @@ export class Job implements JobPrerequisites {
                 "--nproc=128",
                 "--nofile=2048",
                 "--fsize=30000000", // 30MB
-                "--rttime=" + this.timeout.toString()
+                "--rttime=" + this.runTimeout.toString()
             ];
 
             if (memoryLimit !== "") {
@@ -175,7 +183,7 @@ export class Job implements JobPrerequisites {
 
     private executeCommand(command: string[]): Promise<CommandOutput> {
         const { gid, uid, username } = this.user;
-        const timeout = this.timeout;
+        const timeout = this.compileTimeout;
 
         return new Promise((resolve, reject) => {
             let stdout = "";
