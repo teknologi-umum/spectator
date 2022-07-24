@@ -9,6 +9,9 @@ jobs:
     name: Assertion
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./assertion
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
