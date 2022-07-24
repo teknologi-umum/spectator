@@ -111,11 +111,11 @@ test.serial("should be able to run a file - NodeJS", async (t) => {
 
     t.assert(result.exitCode === 0, `Run result didn't exit with 0, instead it exited with ${result.exitCode} and message ${result.output}`);
 
-    t.assert(result.output === "Hello World~", `File output must be "Hello World~", instead of "${result.output}"`);
+    t.assert(result.output.trim() === "Hello World~", `File output must be "Hello World~", instead of "${result.output}"`);
 
-    t.assert(result.stderr === "", "File stderr assert must be empty");
+    t.assert(result.stderr.trim() === "", "File stderr assert must be empty");
 
-    t.assert(result.stdout === "Hello World~", `File stdout must be "Hello World~", instead of "${result.stdout}"`);
+    t.assert(result.stdout.trim() === "Hello World~", `File stdout must be "Hello World~", instead of "${result.stdout}"`);
 
     await fs.rm(filePath);
 });
@@ -168,13 +168,13 @@ test.serial("should be able to compile and run a file - C", async (t) => {
 
     const runResult = await job.run();
 
-    t.assert(runResult.exitCode === 1, `Run result didn't exit with 0, instead it exited with ${runResult.exitCode} and message ${runResult.output}`);
+    t.assert(runResult.exitCode === 0, `Run result didn't exit with 0, instead it exited with ${runResult.exitCode} and message ${runResult.output}`);
 
-    t.assert(runResult.output === "Hello World~", `File output must be "Hello World~", instead of "${runResult.output}"`);
+    t.assert(runResult.output.trim() === "Hello World~", `File output must be "Hello World~", instead of "${runResult.output}"`);
 
-    t.assert(runResult.stderr === "", `File stderr assert must be empty, instead of ${runResult.stderr}`);
+    t.assert(runResult.stderr.trim() === "", `File stderr assert must be empty, instead of ${runResult.stderr}`);
 
-    t.assert(runResult.stdout === "Hello World~", `File stdout must be "Hello World~", instead of "${runResult.stdout}"`);
+    t.assert(runResult.stdout.trim() === "Hello World~", `File stdout must be "Hello World~", instead of "${runResult.stdout}"`);
 
     await fs.rm(filePath);
 });

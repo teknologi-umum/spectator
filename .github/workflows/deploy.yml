@@ -189,6 +189,8 @@ jobs:
           apt-get update &&
           apt-get install -y coreutils binutils build-essential libseccomp-dev gcc apt-utils &&
           make -C ./nosocket/ all && make -C ./nosocket/ install
+      - name: Setup directory
+        run: mkdir -p /code/$(whoami)
       - name: Install dependencies
         run: npm install
       - name: Lint
@@ -197,6 +199,8 @@ jobs:
         run: npm run build
       - name: Test & coverage
         run: npm run test
+        env:
+          CI: true
   configs:
     name: Verify config
     runs-on: ubuntu-latest
