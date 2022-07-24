@@ -1,0 +1,43 @@
+name: Check
+on:
+  pull_request:
+    paths:
+      - "assertion/**"
+
+jobs:
+  assertion:
+    name: Assertion
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./assertion
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v1
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "11"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.x"
+          coverage: none
+      - name: Setup GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 9
+      - name: Run tests
+        run: julia tests/runner.jl ./tests
