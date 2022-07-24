@@ -1,30 +1,13 @@
 import java.util.*;
 import java.math.BigDecimal;
 
-// _REPLACE_ME_WITH_DIRECTIVES_
+_REPLACE_ME_WITH_DIRECTIVES_
 
 public class question2 {
 
     private static String[] temperatures = { "Celcius", "Fahrenheit", "Kelvin" };
 
-    // _REPLACE_ME_WITH_SOLUTION_
-    private static class Temperature {
-        public static double calculateTemperature(double temp, String from, String to) {
-            if (isC(from) && isF(to))
-                return (temp * 9 / 5) + 32;
-            if (isC(from) && isK(to))
-                return (temp + 273.15);
-            if (isF(from) && isC(to))
-                return (temp - 32) * 5 / 9;
-            if (isF(from) && isK(to))
-                return ((temp - 32) * 5 / 9 + 273.15);
-            if (isK(from) && isC(to))
-                return (temp - 273.15);
-            if (isK(from) && isF(to))
-                return ((temp - 273.15) * 9 / 5 + 32);
-            return 0;
-        }
-    }
+    _REPLACE_ME_WITH_SOLUTION_
 
     private static boolean isC(String tempName) {
         return tempName.equalsIgnoreCase("Celcius");
@@ -38,7 +21,7 @@ public class question2 {
         return tempName.equalsIgnoreCase("Kelvin");
     }
 
-    private static double workingAnswer(double temp, String from, String to) {
+    private static double workingAnswer(int temp, String from, String to) {
         if (isC(from) && isF(to))
             return (temp * 9 / 5) + 32;
         if (isC(from) && isK(to))
@@ -72,7 +55,7 @@ public class question2 {
         for (int i = 0; i < numberOfTestCases; i++) {
             var from = temperatures[getRandomNumber(0, 2)];
             var to = temperatures[getRandomNumber(0, 2)];
-            double randomTemperature = getRandomNumber(-500, 500);
+            int randomTemperature = getRandomNumber(-500, 500);
 
             double expected = workingAnswer(randomTemperature, from, to);
             double got = Temperature.calculateTemperature(randomTemperature, from, to);
