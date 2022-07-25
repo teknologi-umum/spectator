@@ -161,7 +161,7 @@ export default function Download() {
                       <Button
                         as="a"
                         colorScheme="blue"
-                        href={`${MINIO_URL}/public/${studentNumber}_video.mp4`}
+                        href={`${MINIO_URL}/public/${data.sessionId}_video.mp4`}
                         target="_blank"
                         size="sm"
                       >
