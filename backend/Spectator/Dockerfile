@@ -20,7 +20,7 @@ ENV VITE_EVENT_HUB_URL /hubs/event
 ENV VITE_LOGGER_URL /log
 ENV VITE_VIDEO_STREAM_URL /video
 ENV VITE_ADMIN_URL /admin
-ENV VITE_MINIO_URL https://minio.spectator.my.id/
+ENV VITE_MINIO_URL https://minio.spectator.my.id
 
 WORKDIR /src
 COPY ["backend/Spectator/Spectator.csproj", "backend/Spectator/"]
