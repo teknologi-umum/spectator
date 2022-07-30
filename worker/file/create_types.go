@@ -22,7 +22,7 @@ type MouseEvents struct {
 	MouseClick            *[]MouseClick            `json:"mouse_click" csv:"mouse_click"`
 	MouseMoved            *[]MouseMovement         `json:"mouse_moved" csv:"mouse_moved"`
 	MouseScrolled         *[]MouseScrolled         `json:"mouse_scrolled" csv:"mouse_scrolled"`
-	MouseDistanceTraveled *[]MouseDistanceTraveled `json:"mouse_distance_Traveled" csv:"mouse_distance_Traveled"`
+	MouseDistanceTraveled *[]MouseDistanceTraveled `json:"mouse_distance_traveled" csv:"mouse_distance_traveled"`
 }
 
 type SolutionEvents struct {
