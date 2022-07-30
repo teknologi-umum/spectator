@@ -16,6 +16,7 @@ namespace Spectator.RepositoryDALs.Tests {
 			var @event = new KeystrokeEvent(
 				SessionId: sessionId,
 				Timestamp: timestamp,
+				QuestionNumber: 3,
 				KeyChar: "V",
 				Shift: true,
 				Alt: false,
@@ -28,6 +29,7 @@ namespace Spectator.RepositoryDALs.Tests {
 			var lineProtocol = pointData.ToLineProtocol();
 			lineProtocol.Should().StartWith("keystroke,");
 			lineProtocol.Should().Contain($"session_id={sessionId}");
+			lineProtocol.Should().Contain("question_number=3");
 			lineProtocol.Should().Contain("key_char=\"V\"");
 			lineProtocol.Should().Contain("shift=true");
 			lineProtocol.Should().Contain("alt=false");
@@ -43,6 +45,7 @@ namespace Spectator.RepositoryDALs.Tests {
 			var @event = new MouseMovedEvent(
 				SessionId: sessionId,
 				Timestamp: timestamp,
+				QuestionNumber: 3,
 				X: 100,
 				Y: 200,
 				Direction: MouseDirection.Right
@@ -52,6 +55,7 @@ namespace Spectator.RepositoryDALs.Tests {
 			var lineProtocol = pointData.ToLineProtocol();
 			lineProtocol.Should().StartWith("mouse_moved,");
 			lineProtocol.Should().Contain($"session_id={sessionId}");
+			lineProtocol.Should().Contain("question_number=3");
 			lineProtocol.Should().Contain("x=100");
 			lineProtocol.Should().Contain("y=200");
 			lineProtocol.Should().Contain("direction=\"Right\"");
@@ -64,6 +68,7 @@ namespace Spectator.RepositoryDALs.Tests {
 				Values = {
 					{ "_measurement", "mouse_moved" },
 					{ "session_id", sessionId.ToString() },
+					{ "question_number", 3 },
 					{ "x", 100 },
 					{ "y", 200 },
 					{ "direction", "Right" }
@@ -72,6 +77,7 @@ namespace Spectator.RepositoryDALs.Tests {
 			var mapper = new DomainObjectMapper();
 			var @event = mapper.ConvertToEntity<MouseMovedEvent>(fluxRecord);
 			@event.SessionId.Should().Be(sessionId);
+			@event.QuestionNumber.Should().Be(3);
 			@event.X.Should().Be(100);
 			@event.Y.Should().Be(200);
 			@event.Direction.Should().Be(MouseDirection.Right);
