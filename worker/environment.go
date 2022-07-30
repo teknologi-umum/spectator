@@ -32,6 +32,12 @@ func loadEnvironment() error {
 		var line = scanner.Text()
 		var env = line[:strings.Index(line, "=")]
 		var value = line[strings.Index(line, "=")+1:]
+
+		// Should skip Setenv if key already exists
+		if _, ok := os.LookupEnv(env); ok {
+			continue
+		}
+
 		os.Setenv(env, value)
 	}
 
