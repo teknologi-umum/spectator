@@ -93,8 +93,8 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 
 		// go to the next timeframe if the distance between keypress is more than 330ms
 		if elapsed >= 330 && len(currentFrame) != 0 {
-			// only accept at least 10 keystrokes per burst
-			if len(currentFrame) > 10 {
+			// only accept at least 5 keystrokes per burst
+			if len(currentFrame) > 5 {
 				var characters int64
 				start := currentFrame[0]
 				end := currentFrame[len(currentFrame)-1]
@@ -112,6 +112,7 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 
 				totalKeystrokes = append(totalKeystrokes, (words/duration)*60)
 			}
+
 			// reset current frame when the distance between 2 keystrokes is too long
 			currentFrame = []int64{}
 			continue
