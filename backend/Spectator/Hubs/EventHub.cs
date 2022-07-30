@@ -32,6 +32,7 @@ namespace Spectator.Hubs {
 			await _inputServices.AddInputEventAsync(new MouseUpEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
+				QuestionNumber: mouseClickInfo.QuestionNumber,
 				X: mouseClickInfo.X,
 				Y: mouseClickInfo.Y,
 				Button: (MouseButton)mouseClickInfo.Button
@@ -51,6 +52,7 @@ namespace Spectator.Hubs {
 			await _inputServices.AddInputEventAsync(new MouseDownEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
+				QuestionNumber: mouseClickInfo.QuestionNumber,
 				X: mouseClickInfo.X,
 				Y: mouseClickInfo.Y,
 				Button: (MouseButton)mouseClickInfo.Button
@@ -70,6 +72,7 @@ namespace Spectator.Hubs {
 			await _inputServices.AddInputEventAsync(new MouseMovedEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
+				QuestionNumber: mouseMoveInfo.QuestionNumber,
 				X: mouseMoveInfo.X,
 				Y: mouseMoveInfo.Y,
 				Direction: (MouseDirection)mouseMoveInfo.Direction
@@ -89,6 +92,7 @@ namespace Spectator.Hubs {
 			await _inputServices.AddInputEventAsync(new MouseScrolledEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
+				QuestionNumber: mouseScrollInfo.QuestionNumber,
 				X: mouseScrollInfo.X,
 				Y: mouseScrollInfo.Y,
 				Delta: mouseScrollInfo.Delta
@@ -108,6 +112,7 @@ namespace Spectator.Hubs {
 			await _inputServices.AddInputEventAsync(new KeystrokeEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
+				QuestionNumber: keystrokeInfo.QuestionNumber,
 				KeyChar: keystrokeInfo.KeyChar,
 				Shift: keystrokeInfo.Shift,
 				Alt: keystrokeInfo.Alt,
@@ -130,6 +135,7 @@ namespace Spectator.Hubs {
 			await _inputServices.AddInputEventAsync(new WindowSizedEvent(
 				SessionId: session.Id,
 				Timestamp: DateTimeOffset.UtcNow,
+				QuestionNumber: windowSizeInfo.QuestionNumber,
 				Width: windowSizeInfo.Width,
 				Height: windowSizeInfo.Height
 			));

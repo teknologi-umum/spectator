@@ -4,6 +4,7 @@ namespace Spectator.DomainEvents.InputDomain {
 	public record KeystrokeEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,
+		int QuestionNumber,
 		string KeyChar,
 		bool Shift,
 		bool Alt,
