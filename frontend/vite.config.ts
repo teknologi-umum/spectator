@@ -8,12 +8,12 @@ export default defineConfig({
   plugins: [react({ jsxRuntime: "classic" }), svgr({ memo: true })],
   resolve: {
     alias: {
-      "@": resolve("src"),
-    },
+      "@": resolve("src")
+    }
   },
   build: {
     ssr: false,
     target: ["es2020"],
-    outDir: "../backend/Spectator/wwwroot",
-  },
+    outDir: "../backend/Spectator/wwwroot"
+  }
 });
