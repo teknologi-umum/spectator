@@ -53,7 +53,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: apt-get update && apt-get upgrade -y && apt-get install -y curl build-essential ffmpeg
+        run: >
+          apt-get update &&
+          apt-get upgrade -y &&
+          apt-get install -y curl build-essential pkg-config &&
+          apt-get install -y ffmpeg libvpx-dev libvpx6 vpx-tools libopus-dev libx264-dev libbz2-dev liblzma-dev libvidstab-dev libx265-dev
       - name: Build test
         run: go build .
       - name: Run test
