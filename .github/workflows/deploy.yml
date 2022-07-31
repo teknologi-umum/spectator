@@ -90,7 +90,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install dependencies
-         run: >
+        run: >
           apt-get update &&
           apt-get upgrade -y &&
           apt-get install -y curl build-essential pkg-config &&
