@@ -39,7 +39,7 @@ export default function CoercedRoute() {
     deadlineUtc,
     questions,
     examResult,
-    secondSAMSubmitted,
+    secondSAMSubmitted
   ]);
 
   if (location.pathname !== validPath) {

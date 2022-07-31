@@ -3,10 +3,11 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import {
-  Box,
+  Flex,
   ChakraProvider,
   ColorModeScript,
-  Heading
+  Heading,
+  Spinner
 } from "@chakra-ui/react";
 import theme from "@/styles/themes";
 import { store, persistor } from "@/store";
@@ -15,29 +16,34 @@ import "@fontsource/mulish/400.css";
 import "@fontsource/mulish/600.css";
 import "@fontsource/mulish/700.css";
 import "@fontsource/mulish/800.css";
-import "@/index.css";
 import "@/i18n";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Suspense fallback={<div>Loading....</div>}>
-      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme}>
+      <Suspense
+        fallback={
+          <Flex align="center" justify="center" w="full" h="full">
+            <Spinner size="lg" color="blue.500" />
+          </Flex>
+        }
+      >
+        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         <Provider store={store}>
           {navigator.cookieEnabled ? (
             <PersistGate loading={null} persistor={persistor}>
               <App />
             </PersistGate>
           ) : (
-            <Box>
-              <Heading textAlign="center" mt="4">
+            <Flex align="center" justify="center" w="full" h="full">
+              <Heading textAlign="center">
                 This app needs cookie access to work properly.
               </Heading>
-            </Box>
+            </Flex>
           )}
         </Provider>
-      </ChakraProvider>
-    </Suspense>
+      </Suspense>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
