@@ -43,7 +43,7 @@ func (f *Ffmpeg) Concat(ctx context.Context, src string, dst string) ([]byte, er
 		return []byte{}, ErrFfmpegInvalid
 	}
 
-	cmd := exec.CommandContext(ctx, "ffmpeg", "-y", "-f", "concat", "-i", src, "-c", "copy", dst)
+	cmd := exec.CommandContext(ctx, "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", src, "-c", "copy", dst)
 	stdout, err := cmd.Output()
 	if err != nil {
 		var exitErr *exec.ExitError
