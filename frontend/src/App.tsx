@@ -1,14 +1,15 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import PersonalInfo from "@/pages/PersonalInfoPage";
-import Instructions from "@/pages/Instructions";
-import SAMTest from "@/pages/SAMTest";
-import CodingTest from "@/pages/CodingTest";
-import FunFact from "@/pages/FunFact";
-import Login from "@/pages/secret/Login";
-import Download from "@/pages/secret/Download";
-import { CoercedRoute } from "@/hoc/CoercedRoute";
-import { SecretRoute } from "@/hoc/SecretRoute";
+
+const Instructions = React.lazy(() => import("@/pages/Instructions"));
+const PersonalInfo = React.lazy(() => import("@/pages/PersonalInfoPage"));
+const SAMTest = React.lazy(() => import("@/pages/SAMTest"));
+const CodingTest = React.lazy(() => import("@/pages/CodingTest"));
+const FunFact = React.lazy(() => import("@/pages/FunFact"));
+const Login = React.lazy(() => import("@/pages/secret/Login"));
+const Download = React.lazy(() => import("@/pages/secret/Download"));
+const CoercedRoute = React.lazy(() => import("@/hoc/CoercedRoute"));
+const SecretRoute = React.lazy(() => import("@/hoc/SecretRoute"));
 
 function App() {
   return (
