@@ -9,6 +9,10 @@ const theme = extendTheme({
   },
   styles: {
     global: (props: { colorMode: "light" | "dark" }) => ({
+      "html, body, #root": {
+        width: "full",
+        height: "full"
+      },
       "*::-webkit-scrollbar": {
         width: "1rem"
       },

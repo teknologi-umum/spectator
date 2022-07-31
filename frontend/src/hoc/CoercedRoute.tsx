@@ -3,7 +3,7 @@ import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/store";
 import { useMemo } from "react";
 
-export const CoercedRoute = () => {
+export default function CoercedRoute() {
   const { accessToken, firstSAMSubmitted, secondSAMSubmitted } = useAppSelector(
     (state) => state.session
   );
@@ -13,11 +13,19 @@ export const CoercedRoute = () => {
   const location = useLocation();
 
   const validPath = useMemo(() => {
-    if (accessToken === null || studentNumber === null || studentNumber === "") {
+    if (
+      accessToken === null ||
+      studentNumber === null ||
+      studentNumber === ""
+    ) {
       return "/";
     }
 
-    if (firstSAMSubmitted === false || deadlineUtc === null || questions === null) {
+    if (
+      firstSAMSubmitted === false ||
+      deadlineUtc === null ||
+      questions === null
+    ) {
       return "/sam-test";
     }
 
@@ -39,4 +47,4 @@ export const CoercedRoute = () => {
   }
 
   return <Outlet />;
-};
+}

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useAppSelector } from "@/store";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-export const SecretRoute = () => {
+export default function SecretRoute() {
   const { sessionId } = useAppSelector((state) => state.session);
   const location = useLocation();
 
@@ -15,4 +15,4 @@ export const SecretRoute = () => {
   }
 
   return <Outlet />;
-};
+}
