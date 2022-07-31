@@ -28,9 +28,9 @@ queue.execute();
 
 export interface UploadRequest {
   blob: Blob;
-  size: string;
   accessToken: string;
   startedAt: number;
+  stoppedAt: number;
 }
 
 const worker = self as unknown as Worker;
@@ -38,14 +38,18 @@ worker.onmessage = (e: MessageEvent<UploadRequest>) => {
   const fetcher = async () => {
     const formData = new FormData();
     formData.append("startedAt", e.data.startedAt.toString());
-    formData.append("stoppedAt", Date.now().toString());
-    formData.append("file", e.data.blob);
+    formData.append("stoppedAt", e.data.stoppedAt.toString());
+    formData.append(
+      "file",
+      e.data.blob,
+      `${e.data.startedAt}_${e.data.stoppedAt}.webm`
+    );
 
     try {
       await fetch(VIDEO_STREAM_URL, {
         method: "POST",
         headers: {
-          "Content-Length": e.data.size,
+          "Content-Length": e.data.blob.size.toString(),
           Authorization: e.data.accessToken
         },
         body: formData
