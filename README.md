@@ -11,6 +11,7 @@ Brief explanation of the project. TBC.
 | rce       | Node.js service for  code execution engine inspired by [Piston][piston-url] |
 | logger    | Go service for any logging                                                  |
 | worker    | Go service for post-data processing                                         |
+| video     | Go service for video processing                                             |
 | dummy     | Python sample data generation for InfluxDB                                  |
 | assertion | Coding test assertion scripts                                               |
 | proto     | Shared protocol buffers contracts                                           |
