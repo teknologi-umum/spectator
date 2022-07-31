@@ -25,14 +25,14 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 		defer cancel()
 
 		// Check if bucket exists
-		exists, err := d.Bucket.BucketExists(ctx, in.SessionId)
+		exists, err := d.Bucket.BucketExists(ctx, sessionId)
 		if err != nil {
 			defer d.Logger.Log(
 				fmt.Errorf("checking bucket existance: %v", err).Error(),
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
@@ -41,7 +41,7 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 		}
 
 		if !exists {
-			log.Printf("error: video data not found for session id: %s", in.SessionId)
+			log.Printf("error: video data not found for session id: %s", sessionId)
 			return
 		}
 
@@ -53,7 +53,7 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
@@ -61,14 +61,14 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 			return
 		}
 
-		files, err := d.acquireListOfFiles(ctx, in.SessionId)
+		files, err := d.acquireListOfFiles(ctx, sessionId)
 		if err != nil {
 			defer d.Logger.Log(
 				fmt.Errorf("acquiring list of files: %v", err).Error(),
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
@@ -77,14 +77,14 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 		}
 
 		for _, file := range files {
-			err = d.downloadFile(ctx, in.SessionId, file)
+			err = d.downloadFile(ctx, sessionId, file)
 			if err != nil {
 				defer d.Logger.Log(
 					fmt.Errorf("downloading file: %v", err).Error(),
 					logger_proto.Level_ERROR.Enum(),
 					"",
 					map[string]string{
-						"session_id": in.GetSessionId(),
+						"session_id": sessionId,
 						"function":   "GetVideo",
 					},
 				)
@@ -93,39 +93,22 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 			}
 		}
 
-		listFilePath, err := d.putListOfFilesToFile(in.SessionId, files)
+		outputCombinedWebmFile, err := d.concatFiles(sessionId, files)
 		if err != nil {
 			defer d.Logger.Log(
-				fmt.Errorf("generating file lists: %v", err).Error(),
+				fmt.Errorf("concatenating files: %v", err).Error(),
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
-			log.Printf("error: generating file lists: %v", err)
+			log.Printf("error: concatenating files: %v", err)
 			return
 		}
 
-		outputCombinedWebmFile := path.Join(BaseDirectory, in.SessionId, "combined.webm")
-
-		_, err = d.Ffmpeg.Concat(ctx, listFilePath, outputCombinedWebmFile)
-		if err != nil {
-			defer d.Logger.Log(
-				fmt.Errorf("combining files with ffmpeg: %v", err).Error(),
-				logger_proto.Level_ERROR.Enum(),
-				"",
-				map[string]string{
-					"session_id": in.GetSessionId(),
-					"function":   "GetVideo",
-				},
-			)
-			log.Printf("error: combining files with ffmpeg: %v", err)
-			return
-		}
-
-		outputMp4File := path.Join(BaseDirectory, in.SessionId, "combined.mp4")
+		outputMp4File := path.Join(BaseDirectory, sessionId, "combined.mp4")
 
 		_, err = d.Ffmpeg.Convert(ctx, outputCombinedWebmFile, outputMp4File)
 		if err != nil {
@@ -134,7 +117,7 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
@@ -142,14 +125,14 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 			return
 		}
 
-		uploadedFilePath, err := d.uploadCombinedFile(ctx, in.SessionId, outputMp4File)
+		uploadedFilePath, err := d.uploadCombinedFile(ctx, sessionId, outputMp4File)
 		if err != nil {
 			defer d.Logger.Log(
 				fmt.Errorf("uploading combined files to minio: %v", err).Error(),
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
@@ -157,14 +140,14 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 			return
 		}
 
-		err = os.RemoveAll(BaseDirectory + "/" + in.SessionId)
+		err = os.RemoveAll(BaseDirectory + "/" + sessionId)
 		if err != nil {
 			defer d.Logger.Log(
 				fmt.Errorf("removing directory: %v", err).Error(),
 				logger_proto.Level_ERROR.Enum(),
 				"",
 				map[string]string{
-					"session_id": in.GetSessionId(),
+					"session_id": sessionId,
 					"function":   "GetVideo",
 				},
 			)
@@ -288,4 +271,54 @@ func (d *Dependency) uploadCombinedFile(ctx context.Context, sessionID string, f
 	}
 
 	return path.Join("public", resultingFile), nil
+}
+
+func (d *Dependency) concatFiles(id string, files []string) (string, error) {
+	outputFilePath := path.Join(BaseDirectory, id, "combined.webm")
+
+	f, err := os.Create(outputFilePath)
+	if err != nil {
+		return "", fmt.Errorf("creating file: %w", err)
+	}
+	defer func() {
+		err := f.Close()
+		if err != nil {
+			log.Printf("error closing file: %v", err)
+		}
+	}()
+
+	for _, file := range files {
+		r, err := os.Open(file)
+		if err != nil {
+			return "", fmt.Errorf("opening file: %w", err)
+		}
+		defer func() {
+			err := r.Close()
+			if err != nil {
+				log.Printf("error closing file: %v", err)
+			}
+		}()
+
+		body, err := io.ReadAll(r)
+		if err != nil {
+			return "", fmt.Errorf("reading file: %w", err)
+		}
+
+		fileInfo, err := f.Stat()
+		if err != nil {
+			return "", fmt.Errorf("reading file status: %w", err)
+		}
+
+		_, err = f.WriteAt(body, fileInfo.Size())
+		if err != nil {
+			return "", fmt.Errorf("writing buffer to file: %w", err)
+		}
+	}
+
+	err = f.Sync()
+	if err != nil {
+		return "", fmt.Errorf("synchronizing file: %w", err)
+	}
+
+	return outputFilePath, nil
 }
