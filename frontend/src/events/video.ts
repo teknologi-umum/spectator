@@ -1,7 +1,7 @@
 import type { UploadRequest } from "@/events/video.worker";
 
 const worker = new Worker(new URL("./video.worker.ts", import.meta.url), {
-  type: "module",
+  type: "module"
 });
 
 export function uploadVideo(accessToken: string, startedAt: number) {
@@ -10,7 +10,7 @@ export function uploadVideo(accessToken: string, startedAt: number) {
       blob: e.data,
       accessToken: accessToken,
       startedAt: startedAt,
-      stoppedAt: Math.round(e.timeStamp),
+      stoppedAt: Math.round(e.timeStamp)
     };
     worker.postMessage(data);
   };

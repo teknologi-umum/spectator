@@ -50,9 +50,9 @@ worker.onmessage = (e: MessageEvent<UploadRequest>) => {
         method: "POST",
         headers: {
           "Content-Length": e.data.blob.size.toString(),
-          Authorization: e.data.accessToken,
+          Authorization: e.data.accessToken
         },
-        body: formData,
+        body: formData
       });
     } catch (err) {
       if (err instanceof Error) {
