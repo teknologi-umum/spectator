@@ -6,6 +6,7 @@ export interface SessionState {
   firstSAMSubmitted: boolean;
   secondSAMSubmitted: boolean;
   hasPermission: boolean;
+  deviceId: string | null;
   tourCompleted: {
     personalInfo: boolean;
     samTest: boolean;
@@ -19,6 +20,7 @@ const initialState: SessionState = {
   firstSAMSubmitted: false,
   secondSAMSubmitted: false,
   hasPermission: false,
+  deviceId: null,
   tourCompleted: {
     personalInfo: false,
     samTest: false,
@@ -53,6 +55,9 @@ export const sessionSlice = createSlice({
     },
     allowVideoPermission: (state) => {
       state.hasPermission = true;
+    },
+    setVideoDeviceId: (state, action: PayloadAction<string>) => {
+      state.deviceId = action.payload;
     }
   }
 });
@@ -64,7 +69,8 @@ export const {
   markTourCompleted,
   setSessionId,
   removeSessionId,
-  allowVideoPermission
+  allowVideoPermission,
+  setVideoDeviceId
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;
