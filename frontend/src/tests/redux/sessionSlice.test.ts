@@ -1,10 +1,12 @@
 import { describe, expect } from "vitest";
 import reducer, {
+  allowVideoPermission,
   markFirstSAMSubmitted,
   markSecondSAMSubmitted,
   markTourCompleted,
   SessionState,
-  setAccessToken
+  setAccessToken,
+  setVideoDeviceId
 } from "@/store/slices/sessionSlice";
 
 const initialState: SessionState = {
@@ -12,6 +14,8 @@ const initialState: SessionState = {
   accessToken: null,
   firstSAMSubmitted: false,
   secondSAMSubmitted: false,
+  hasPermission: false,
+  deviceId: null,
   tourCompleted: {
     personalInfo: false,
     samTest: false,
@@ -78,6 +82,22 @@ describe("Tour", (it) => {
         ...initialState.tourCompleted,
         codingTest: true
       }
+    });
+  });
+});
+
+describe("Video", (it) => {
+  it("should be able to complete the personal info tour", () => {
+    expect(reducer(initialState, allowVideoPermission())).toEqual({
+      ...initialState,
+      hasPermission: true
+    });
+  });
+
+  it("should be able to set the device ID", () => {
+    expect(reducer(initialState, setVideoDeviceId("bruh"))).toEqual({
+      ...initialState,
+      deviceId: "bruh"
     });
   });
 });

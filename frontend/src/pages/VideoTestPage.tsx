@@ -17,7 +17,10 @@ import { MenuDropdown } from "@/components/TopBar";
 import { getUserMedia } from "@/utils/getUserMedia";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { allowVideoPermission } from "@/store/slices/sessionSlice";
+import {
+  allowVideoPermission,
+  setVideoDeviceId
+} from "@/store/slices/sessionSlice";
 import { ToastBase } from "@/components/Toast";
 import { CrossIcon } from "@/icons";
 
@@ -55,8 +58,8 @@ export default function VideoTestPage() {
           onClick={() => toast.close(id as ToastId)}
         >
           <Flex align="center" gap="3" color={red}>
-            <CrossIcon width="1.25rem" height="1.25rem" /> Permission denied. Please allow camera
-            access and refresh the page.
+            <CrossIcon width="1.25rem" height="1.25rem" /> Permission denied.
+            Please allow camera access and refresh the page.
           </Flex>
         </ToastBase>
       )
@@ -77,6 +80,7 @@ export default function VideoTestPage() {
 
   async function changeVideoSource(deviceId: string) {
     const newStream = await getUserMedia(deviceId);
+    dispatch(setVideoDeviceId(deviceId));
     setVideoStream(newStream);
   }
 
