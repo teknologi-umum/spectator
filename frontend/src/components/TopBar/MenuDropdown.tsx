@@ -1,12 +1,13 @@
 import React from "react";
 import type { ReactNode } from "react";
 import { ChevronDownIcon } from "@/icons";
-import { Menu, Button, MenuButton, MenuList } from "@chakra-ui/react";
+import { Menu, Button, MenuButton, MenuList, MenuButtonProps } from "@chakra-ui/react";
+import { useColorModeValue } from "@/hooks";
 
-interface MenuItemProps {
+interface MenuItemProps extends MenuButtonProps {
   buttonWidth?: string;
-  bg: string;
-  fg: string;
+  bg?: string;
+  fg?: string;
   dropdownWidth: string;
   title: string;
   children: ReactNode;
@@ -14,26 +15,27 @@ interface MenuItemProps {
 
 export default function MenuDropdown({
   buttonWidth = "auto",
-  bg,
-  fg,
   dropdownWidth,
   title,
   children,
-  ...rest
+  ...props
 }: MenuItemProps) {
+  const bg = props.bg ?? useColorModeValue("white", "gray.700", "gray.800");
+  const fg = props.fg ?? useColorModeValue("gray.800", "gray.100", "gray.100");
+
   return (
-    <Menu >
+    <Menu>
       <MenuButton
         textTransform="capitalize"
         textAlign="left"
         w={buttonWidth}
         as={Button}
         rightIcon={<ChevronDownIcon />}
-        color={fg}
-        bg={bg}
+        {...props}
         _hover={{ backgroundColor: bg }}
         _active={{ backgroundColor: bg }}
-        {...rest}
+        color={fg}
+        bg={bg}
       >
         {title}
       </MenuButton>

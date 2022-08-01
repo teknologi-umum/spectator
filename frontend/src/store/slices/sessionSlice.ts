@@ -5,6 +5,7 @@ export interface SessionState {
   accessToken: string | null;
   firstSAMSubmitted: boolean;
   secondSAMSubmitted: boolean;
+  hasPermission: boolean;
   tourCompleted: {
     personalInfo: boolean;
     samTest: boolean;
@@ -17,6 +18,7 @@ const initialState: SessionState = {
   sessionId: null,
   firstSAMSubmitted: false,
   secondSAMSubmitted: false,
+  hasPermission: false,
   tourCompleted: {
     personalInfo: false,
     samTest: false,
@@ -48,6 +50,9 @@ export const sessionSlice = createSlice({
       action: PayloadAction<"personalInfo" | "samTest" | "codingTest">
     ) => {
       state.tourCompleted[action.payload] = true;
+    },
+    allowVideoPermission: (state) => {
+      state.hasPermission = true;
     }
   }
 });
@@ -58,7 +63,8 @@ export const {
   markSecondSAMSubmitted,
   markTourCompleted,
   setSessionId,
-  removeSessionId
+  removeSessionId,
+  allowVideoPermission
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

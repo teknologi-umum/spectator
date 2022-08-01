@@ -14,7 +14,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure
+  useDisclosure,
+  HStack
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { LocaleButton, ThemeButton } from "@/components/TopBar";
@@ -229,21 +230,18 @@ function SAMTest() {
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              mr={3}
-              onClick={onClose}
-            >
-              {t("ui.cancel")}
-            </Button>
-            <Button
-              colorScheme="blue"
-              onClick={finishSAMTest}
-              data-tour="step-2"
-            >
-              {t("ui.confirm")}
-            </Button>
+            <HStack spacing={3}>
+              <Button colorScheme="blue" variant="outline" onClick={onClose}>
+                {t("ui.cancel")}
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={finishSAMTest}
+                data-tour="step-2"
+              >
+                {t("ui.confirm")}
+              </Button>
+            </HStack>
           </ModalFooter>
         </ModalContent>
       </Modal>
