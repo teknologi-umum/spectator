@@ -10,7 +10,7 @@ interface ToastBaseProps {
   onClick: () => void;
 }
 
-export default function ToastBase({
+export function ToastBase({
   bg,
   fg,
   children,

@@ -5,7 +5,10 @@ import {
   HStack,
   MenuItemOption,
   MenuOptionGroup,
-  Stack
+  Stack,
+  type ToastId,
+  useToast,
+  Flex
 } from "@chakra-ui/react";
 import { useColorModeValue, useVideoSources } from "@/hooks";
 import Layout from "@/components/Layout";
@@ -15,15 +18,20 @@ import { getUserMedia } from "@/utils/getUserMedia";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { allowVideoPermission } from "@/store/slices/sessionSlice";
+import { ToastBase } from "@/components/Toast";
+import { CrossIcon } from "@/icons";
 
 export default function VideoTestPage() {
   // hooks
+  const toast = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { hasPermission } = useAppSelector((state) => state.session);
 
   // styles
   const videoBackground = useColorModeValue("gray.400", "gray.700", "gray.800");
+  const toastBg = useColorModeValue("white", "gray.600", "gray.700");
+  const red = useColorModeValue("red.500", "red.400", "red.300");
 
   // local states
   const videoElement = useRef<HTMLVideoElement | null>(null);
@@ -36,6 +44,25 @@ export default function VideoTestPage() {
     return sourceName;
   }, [videoStream]);
 
+  function showAlert() {
+    const id = toast({
+      position: "top-right",
+      render: () => (
+        <ToastBase
+          bg={toastBg}
+          fg={red}
+          borderColor={red}
+          onClick={() => toast.close(id as ToastId)}
+        >
+          <Flex align="center" gap="3" color={red}>
+            <CrossIcon width="1.25rem" height="1.25rem" /> Permission denied. Please allow camera
+            access and refresh the page.
+          </Flex>
+        </ToastBase>
+      )
+    });
+  }
+
   async function acquirePermission() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
@@ -44,7 +71,7 @@ export default function VideoTestPage() {
       setAllowed(true);
     } catch (err: unknown) {
       setAllowed(false);
-      alert("Please allow camera permission and refresh the page.");
+      showAlert();
     }
   }
 
@@ -66,7 +93,7 @@ export default function VideoTestPage() {
     } catch (err) {
       if (err instanceof DOMException) {
         if (err.message === "Permission denied") {
-          alert("Please allow camera access");
+          showAlert();
         }
       }
       // eslint-disable-next-line no-console
