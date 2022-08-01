@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heading, Text, Container, Button, Box, Flex } from "@chakra-ui/react";
+import { Heading, Text, Container, Button, Box } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { ReactComponent as Arousal } from "@/images/arousal/arousal.svg";
-import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import { SettingsDropdown } from "@/components/Settings";
 
 export default function Instructions() {
   const navigate = useNavigate();
@@ -24,10 +24,7 @@ export default function Instructions() {
 
   return (
     <Layout>
-      <Flex gap={2} position="fixed" left={4} top={4}>
-        <ThemeButton bg={bg} fg={fg} title={t("ui.theme")} />
-        <LocaleButton bg={bg} fg={fg} />
-      </Flex>
+      <SettingsDropdown />
       <Container maxW="container.md" bg={bg} p="6" rounded="md" shadow="md">
         <Heading size="lg" textAlign="center" mb="4" color={fg}>
           {t("instructions.title")}

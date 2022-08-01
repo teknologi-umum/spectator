@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { ThemeButton } from "@/components/TopBar";
 import {
   Accordion,
   AccordionButton,
@@ -14,13 +13,13 @@ import {
   Text as ChakraText
 } from "@chakra-ui/react";
 import { useColorModeValue } from "@/hooks";
-import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { LogLevel } from "@microsoft/signalr";
 import { loggerInstance } from "@/spoke/logger";
 import { useNavigate } from "react-router-dom";
 import { removeSessionId } from "@/store/slices/sessionSlice";
 import { ADMIN_BASE_URL, MINIO_URL } from "@/constants";
+import { SettingsDropdown } from "@/components/Settings";
 
 interface FileEntry {
   csvFileUrl: string;
@@ -71,15 +70,10 @@ export default function Download() {
   const [isLoading, setLoading] = useState(false);
   const [files, setFiles] = useState<GroupedFileEntry>({});
   const { sessionId } = useAppSelector((state) => state.session);
-  const { t } = useTranslation("translation", {
-    keyPrefix: "translations.ui"
-  });
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const boxBg = useColorModeValue("white", "gray.700", "gray.800");
   const bg = useColorModeValue("gray.100", "gray.800", "gray.900");
-  const fg = useColorModeValue("gray.800", "gray.100", "gray.100");
 
   useEffect(() => {
     (async () => {
@@ -119,9 +113,7 @@ export default function Download() {
 
   return (
     <Flex bg={bg} justifyContent="center" w="full" minH="full" py="10" px="4">
-      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
-        <ThemeButton bg={boxBg} fg={fg} title={t("theme")} />
-      </Flex>
+      <SettingsDropdown disableLocaleButton />
       <Box display="flex" flexDirection="column" alignItems="center">
         <Heading mb="8" size="lg" textAlign="center" fontWeight="700">
           List of Students Data

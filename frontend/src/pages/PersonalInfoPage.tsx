@@ -100,7 +100,7 @@ function PersonalInfoPage() {
 
   return (
     <Layout display="flex">
-      <SettingsDropdown />
+      <SettingsDropdown data-tour='step-1' />
       <Box
         display="flex"
         alignItems="center"

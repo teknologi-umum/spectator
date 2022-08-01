@@ -18,7 +18,6 @@ import {
   HStack
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -33,6 +32,7 @@ import WithTour from "@/hoc/WithTour";
 import { samTestTour } from "@/tours";
 import { useTour } from "@reactour/tour";
 import { sessionSpoke } from "@/spoke";
+import { SettingsDropdown } from "@/components/Settings";
 
 const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
@@ -123,10 +123,7 @@ function SAMTest() {
   return (
     <>
       <Layout display="flex">
-        <Flex gap={2} position="fixed" left={4} top={4}>
-          <ThemeButton bg={bg} fg={fg} title={t("ui.theme")} />
-          <LocaleButton bg={bg} fg={fg} />
-        </Flex>
+        <SettingsDropdown />
         <Box
           as="form"
           onSubmit={(e: FormEvent) => e.preventDefault()}

@@ -1,10 +1,17 @@
 import React from "react";
-import { Flex } from "@chakra-ui/react";
+import { Flex, FlexProps } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { useColorModeValue } from "@/hooks";
 import { ThemeButton, LocaleButton } from "../TopBar";
 
-export function SettingsDropdown() {
+type SettingsDropdownProps = {
+  disableLocaleButton?: boolean;
+} & FlexProps;
+
+export function SettingsDropdown({
+  disableLocaleButton = false,
+  ...props
+}: SettingsDropdownProps) {
   const { t } = useTranslation("translation", {
     keyPrefix: "translations"
   });
@@ -17,11 +24,11 @@ export function SettingsDropdown() {
       position="fixed"
       left={4}
       top={4}
-      data-tour="step-1"
       zIndex={10}
+      {...props}
     >
       <ThemeButton bg={bg} fg={fg} title={t("ui.theme")} />
-      <LocaleButton bg={bg} fg={fg} />
+      {!disableLocaleButton && <LocaleButton bg={bg} fg={fg} />}
     </Flex>
   );
 }
