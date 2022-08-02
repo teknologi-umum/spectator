@@ -9,6 +9,17 @@ export enum RecordingStatus {
   STOPPED,
 }
 
+function getSupportedCodec() {
+  const codecs = ["vp9", "vp8", "vp8.0", "h264", "opus"];
+  for (const codec of codecs) {
+    const mimeType = `video/webm;codecs=${codec}`;
+    if (MediaRecorder.isTypeSupported(mimeType)) {
+      return mimeType;
+    }
+  }
+  throw new Error("No codec was supported");
+}
+
 export function useVideoRecorder(accessToken: string | null) {
   const { deviceId } = useAppSelector((state) => state.session);
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>(
@@ -30,7 +41,7 @@ export function useVideoRecorder(accessToken: string | null) {
     (async () => {
       const stream = await getUserMedia(deviceId);
       mediaRecorder.current = new MediaRecorder(stream, {
-        mimeType: "video/webm;codecs=vp9",
+        mimeType: getSupportedCodec(),
         videoBitsPerSecond: 200_000 // 0.2Mbits / sec
       });
 
