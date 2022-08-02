@@ -20,7 +20,7 @@ import { LANGUAGES, Language } from "@/models/Language";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useColorModeValue } from "@/hooks";
 import { ClockIcon } from "@/icons";
-import CodingResultToast from "@/components/Toast/CodingResultToast";
+import { CodingResultToast } from "@/components/Toast";
 import { MenuDropdown, ThemeButton, LocaleButton } from "@/components/TopBar";
 import { sessionSpoke } from "@/spoke";
 import { Solution } from "@/models/Solution";
@@ -111,7 +111,7 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
 
       const isSessionFinished = allSnapshots.reduce((prev, curr) => {
         // only count correct answers
-        return prev && (curr.submissionSubmitted && curr.submissionAccepted);
+        return prev && curr.submissionSubmitted && curr.submissionAccepted;
       }, true);
 
       if (isSessionFinished) {

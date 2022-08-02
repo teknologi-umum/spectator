@@ -12,7 +12,7 @@ interface CodingResultToastProps {
   red: string;
 }
 
-export default function CodingResultToast({
+export function CodingResultToast({
   isCorrect,
   onClick,
   bg,

@@ -4,9 +4,13 @@ import { useAppSelector } from "@/store";
 import { useMemo } from "react";
 
 export default function CoercedRoute() {
-  const { accessToken, firstSAMSubmitted, secondSAMSubmitted } = useAppSelector(
-    (state) => state.session
-  );
+  const {
+    accessToken,
+    firstSAMSubmitted,
+    secondSAMSubmitted,
+    hasPermission,
+    deviceId
+  } = useAppSelector((state) => state.session);
   const { studentNumber } = useAppSelector((state) => state.personalInfo);
   const { deadlineUtc, questions } = useAppSelector((state) => state.editor);
   const { examResult } = useAppSelector((state) => state.examResult);
@@ -29,6 +33,10 @@ export default function CoercedRoute() {
       return "/sam-test";
     }
 
+    if (!hasPermission || deviceId === null || deviceId === "") {
+      return "/video-test";
+    }
+
     if (examResult === null) return "/coding-test";
     if (!secondSAMSubmitted) return "/sam-test";
     return "/fun-fact";
@@ -39,7 +47,8 @@ export default function CoercedRoute() {
     deadlineUtc,
     questions,
     examResult,
-    secondSAMSubmitted
+    secondSAMSubmitted,
+    hasPermission
   ]);
 
   if (location.pathname !== validPath) {

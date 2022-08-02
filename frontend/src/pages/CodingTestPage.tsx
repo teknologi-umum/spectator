@@ -23,8 +23,7 @@ import { useTour } from "@reactour/tour";
 import WithTour from "@/hoc/WithTour";
 import { codingTestTour } from "@/tours";
 import { Editor, Problem, ScratchPad, SideBar } from "@/components/CodingTest";
-import ToastBase from "@/components/Toast/ToastBase";
-import ToastOverlay from "@/components/Toast/ToastOverlay";
+import { ToastBase, ToastOverlay } from "@/components/Toast";
 import { TopBar } from "@/components/TopBar";
 import {
   keystrokeHandler,

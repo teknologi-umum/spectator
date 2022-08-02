@@ -14,13 +14,11 @@ import {
   Heading,
   Button,
   FormErrorMessage,
-  Flex,
   InputGroup,
   Select,
   InputRightElement
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
-import { LocaleButton, ThemeButton } from "@/components/TopBar";
 import { useColorModeValue } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import type { PersonalInfo } from "@/models/PersonalInfo";
@@ -30,6 +28,7 @@ import WithTour from "@/hoc/WithTour";
 import { sessionSpoke } from "@/spoke";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
+import { SettingsDropdown } from "@/components/Settings";
 
 function PersonalInfoPage() {
   const { t } = useTranslation("translation", {
@@ -101,21 +100,7 @@ function PersonalInfoPage() {
 
   return (
     <Layout display="flex">
-      <Flex
-        gap={2}
-        position="fixed"
-        left={4}
-        top={4}
-        data-tour="step-1"
-        zIndex={10}
-      >
-        <ThemeButton
-          bg={bg}
-          fg={fg}
-          title={t("ui.theme")}
-        />
-        <LocaleButton bg={bg} fg={fg} />
-      </Flex>
+      <SettingsDropdown data-tour='step-1' />
       <Box
         display="flex"
         alignItems="center"
@@ -143,9 +128,7 @@ function PersonalInfoPage() {
               mt="6"
               isInvalid={errors.studentNumber !== undefined}
             >
-              <FormLabel>
-                {t("personal_info.student_number")}
-              </FormLabel>
+              <FormLabel>{t("personal_info.student_number")}</FormLabel>
               <Input
                 type="text"
                 {...register("studentNumber")}
@@ -160,9 +143,7 @@ function PersonalInfoPage() {
               mt="6"
               isInvalid={errors.yearsOfExperience !== undefined}
             >
-              <FormLabel>
-                {t("personal_info.programming_years")}
-              </FormLabel>
+              <FormLabel>{t("personal_info.programming_years")}</FormLabel>
               <Input
                 type="number"
                 {...register("yearsOfExperience")}
@@ -177,11 +158,7 @@ function PersonalInfoPage() {
               mt="6"
               isInvalid={errors.hoursOfPractice !== undefined}
             >
-              <FormLabel>
-                {t(
-                  "personal_info.programming_practice"
-                )}
-              </FormLabel>
+              <FormLabel>{t("personal_info.programming_practice")}</FormLabel>
               <Input
                 type="number"
                 {...register("hoursOfPractice")}
@@ -196,11 +173,7 @@ function PersonalInfoPage() {
               mt="6"
               isInvalid={errors.familiarLanguages !== undefined}
             >
-              <FormLabel>
-                {t(
-                  "personal_info.programming_experience"
-                )}
-              </FormLabel>
+              <FormLabel>{t("personal_info.programming_experience")}</FormLabel>
               <Input
                 type="text"
                 {...register("familiarLanguages")}
@@ -215,9 +188,7 @@ function PersonalInfoPage() {
               mt="6"
               isInvalid={errors.familiarLanguages !== undefined}
             >
-              <FormLabel>
-                {t("personal_info.wallet_number")}
-              </FormLabel>
+              <FormLabel>{t("personal_info.wallet_number")}</FormLabel>
               <InputGroup>
                 <Input
                   type="text"

@@ -1,5 +1,4 @@
 import React from "react";
-import { ThemeButton } from "@/components/TopBar";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useColorModeValue } from "@/hooks";
 import {
@@ -15,21 +14,18 @@ import { useEffect } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoginSchema } from "@/schema/SecretPage";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "@/store";
 import { setSessionId } from "@/store/slices/sessionSlice";
 import { loggerInstance } from "@/spoke/logger";
 import { LogLevel } from "@microsoft/signalr";
 import { ADMIN_BASE_URL } from "@/constants";
+import { SettingsDropdown } from "@/components/Settings";
 
 interface FormValues {
   password: string;
 }
 
 export default function Login() {
-  const { t } = useTranslation("translation", {
-    keyPrefix: "translations.ui"
-  });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const boxBg = useColorModeValue("white", "gray.700", "gray.800");
@@ -103,9 +99,7 @@ export default function Login() {
       py="10"
       px="4"
     >
-      <Flex gap={2} position="fixed" left={4} top={4} data-tour="step-1">
-        <ThemeButton bg={boxBg} fg={fg} title={t("theme")} />
-      </Flex>
+      <SettingsDropdown disableLocaleButton />
       <Box
         height="full"
         display="flex"

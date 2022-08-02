@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { useColorModeValue } from "@/hooks";
 import { Box } from "@chakra-ui/react";
 import type { FC } from "react";
-import ToastOverlay from "@/components/Toast/ToastOverlay";
+import { ToastOverlay } from "@/components/Toast";
 import { eventSpoke, sessionSpoke } from "@/spoke";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { Locale as DtoLocale } from "@/stub/enums";
