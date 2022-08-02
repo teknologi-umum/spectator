@@ -3,4 +3,4 @@
 cd ~
 
 apt-get update
-apt-get install -y openjdk-17--jre
+apt-get install -y openjdk-17-jre
