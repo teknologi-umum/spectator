@@ -10,7 +10,7 @@ export enum RecordingStatus {
 }
 
 function getSupportedCodec() {
-  const codecs = ["vp9", "vp8", "vp8.0", "h264", "opus"];
+  const codecs = ["vp9", "vp8", "opus,vp8", "vp8.0", "h264", "opus"];
   for (const codec of codecs) {
     const mimeType = `video/webm;codecs=${codec}`;
     if (MediaRecorder.isTypeSupported(mimeType)) {
