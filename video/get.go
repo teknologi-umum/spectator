@@ -288,7 +288,7 @@ func (d *Dependency) concatFiles(id string, files []string) (string, error) {
 	}()
 
 	for _, file := range files {
-		r, err := os.Open(file)
+		r, err := os.Open(path.Join(BaseDirectory, id, file))
 		if err != nil {
 			return "", fmt.Errorf("opening file: %w", err)
 		}
