@@ -100,7 +100,7 @@ services:
     restart: on-failure:5
     hostname: rce
     healthcheck:
-      test: grpcurl  -d '{}' -import-path . -proto rce.proto -plaintext localhost:3000 rce.CodeExecutionEngineService.Ping
+      test: grpcurl  -d '{}' -import-path . -proto rce.proto -plaintext localhost:50051 rce.CodeExecutionEngineService.Ping
       interval: 15s
       timeout: 10s
       retries: 10
@@ -121,7 +121,7 @@ services:
     restart: on-failure:5
     hostname: worker
     healthcheck:
-      test: grpcurl  -d '{}' -import-path . -proto worker.proto -plaintext localhost:3000 worker.Worker.Ping
+      test: grpcurl  -d '{}' -import-path . -proto worker.proto -plaintext localhost:3000 worker_proto.Worker.Ping
       interval: 15s
       timeout: 10s
       retries: 10
