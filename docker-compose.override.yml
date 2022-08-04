@@ -50,7 +50,7 @@ services:
     ports:
       - 127.0.0.1:5000:80
     healthcheck:
-      test: curl -f http://localhost:5000/ || exit 1
+      test: curl -f http://localhost:80/ || exit 1
       interval: 15s
       timeout: 10s
       retries: 10
