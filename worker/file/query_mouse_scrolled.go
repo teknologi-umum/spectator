@@ -13,11 +13,12 @@ import (
 )
 
 type MouseScrolled struct {
-	Measurement string    `json:"_measurement" csv:"_measurement"`
-	SessionID   string    `json:"session_id" csv:"session_id"`
-	X           int64     `json:"x" csv:"x"`
-	Y           int64     `json:"y" csv:"y"`
-	Timestamp   time.Time `json:"timestamp" csv:"timestamp"`
+	Measurement    string    `json:"_measurement" csv:"_measurement"`
+	SessionID      string    `json:"session_id" csv:"session_id"`
+	QuestionNumber int       `json:"question_number" csv:"question_number"`
+	X              int64     `json:"x" csv:"x"`
+	Y              int64     `json:"y" csv:"y"`
+	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
 }
 
 func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]MouseScrolled, error) {
@@ -53,12 +54,18 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 			y = 0
 		}
 
+		questionNumber, ok := record.ValueByKey("question_number").(int64)
+		if !ok {
+			questionNumber = 0
+		}
+
 		outputMouseScrolled = append(outputMouseScrolled, MouseScrolled{
-			Measurement: common.MeasurementMouseScrolled,
-			SessionID:   sessionID.String(),
-			X:           x,
-			Y:           y,
-			Timestamp:   record.Time(),
+			Measurement:    common.MeasurementMouseScrolled,
+			SessionID:      sessionID.String(),
+			QuestionNumber: int(questionNumber),
+			X:              x,
+			Y:              y,
+			Timestamp:      record.Time(),
 		})
 	}
 
