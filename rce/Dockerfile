@@ -1,21 +1,30 @@
-FROM node:16.14.0-bullseye
+FROM node:16.16.0-bullseye
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
 RUN apt-get update && \
-    apt-get install -y coreutils binutils build-essential libseccomp-dev gcc apt-utils
+    apt-get upgrade -y && \
+    apt-get install -y coreutils binutils build-essential libseccomp-dev gcc apt-utils curl tar gzip
 
-COPY ./nosocket ./nosocket
+RUN curl -LO https://github.com/fullstorydev/grpcurl/releases/download/v1.8.6/grpcurl_1.8.6_linux_x86_64.tar.gz && \
+    tar -zxf grpcurl_1.8.6_linux_x86_64.tar.gz && \
+    mv grpcurl /usr/bin/grpcurl && \
+    chmod +x /usr/bin/grpcurl && \
+    rm grpcurl_1.8.6_linux_x86_64.tar.gz LICENSE
+
+COPY ./proto/rce.proto .
+
+COPY ./rce/nosocket ./nosocket
 
 RUN make -C ./nosocket/ all && make -C ./nosocket/ install
 
-COPY ./packages ./packages
+COPY ./rce/packages ./packages
 
-COPY ./scripts ./scripts
+COPY ./rce/scripts ./scripts
 
-COPY package*.json .
+COPY ./rce/package*.json .
 
 RUN npm install
 
@@ -23,11 +32,11 @@ RUN node ./scripts/install.cjs
 
 RUN node ./scripts/register-users.cjs
 
-COPY tsconfig.json .
+COPY ./rce/tsconfig.json .
 
-COPY ./src ./src
+COPY ./rce/src ./src
 
-COPY build.js .
+COPY ./rce/build.js .
 
 RUN npm run build
 
