@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path"
@@ -11,8 +10,6 @@ import (
 
 	"video/logger_proto"
 	pb "video/video_proto"
-
-	"github.com/minio/minio-go/v7"
 )
 
 const BaseDirectory = "/data"
@@ -77,7 +74,7 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 		}
 
 		for _, file := range files {
-			err = d.downloadFile(ctx, sessionId, file)
+			_, err := d.downloadFile(ctx, sessionId, file)
 			if err != nil {
 				defer d.Logger.Log(
 					fmt.Errorf("downloading file: %v", err).Error(),
@@ -159,166 +156,4 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 	}(in.GetSessionId())
 
 	return &pb.VideoResponse{VideoUrl: ""}, nil
-}
-
-func (d *Dependency) acquireListOfFiles(ctx context.Context, sessionID string) ([]string, error) {
-	defer func() {
-		if e := recover(); e != nil {
-			log.Print(e)
-		}
-	}()
-
-	var files []string
-	for f := range d.Bucket.ListObjects(ctx, sessionID, minio.ListObjectsOptions{}) {
-		files = append(files, f.Key)
-	}
-
-	return files, nil
-}
-
-func (d *Dependency) downloadFile(ctx context.Context, sessionID string, file string) error {
-	filePath := path.Join(BaseDirectory, sessionID, file)
-
-	object, err := d.Bucket.GetObject(ctx, sessionID, file, minio.GetObjectOptions{})
-	if err != nil {
-		return fmt.Errorf("getting the object: %w", err)
-	}
-	defer func() {
-		err := object.Close()
-		if err != nil {
-			log.Printf("error closing object reader: %v", err)
-		}
-	}()
-
-	objectBody, err := io.ReadAll(object)
-	if err != nil {
-		return fmt.Errorf("reading object: %w", err)
-	}
-
-	f, err := os.Create(filePath)
-	if err != nil {
-		return fmt.Errorf("creating file: %w", err)
-	}
-	defer func() {
-		err := f.Close()
-		if err != nil {
-			log.Printf("error closing file: %v", err)
-		}
-	}()
-
-	_, err = f.Write(objectBody)
-	if err != nil {
-		return fmt.Errorf("writing object into file: %w", err)
-	}
-
-	err = f.Sync()
-	if err != nil {
-		return fmt.Errorf("synchronizing file: %w", err)
-	}
-
-	return nil
-}
-
-func (d *Dependency) putListOfFilesToFile(sessionID string, files []string) (string, error) {
-	filePath := path.Join(BaseDirectory, sessionID, "videos.txt")
-	f, err := os.Create(filePath)
-	if err != nil {
-		return "", fmt.Errorf("creating file: %w", err)
-	}
-	defer func() {
-		err := f.Close()
-		if err != nil {
-			log.Printf("error closing file: %v", err)
-		}
-	}()
-
-	for _, file := range files {
-		_, err := f.WriteString("file '" + file + "'\n")
-		if err != nil {
-			return "", fmt.Errorf("writing buffer to file: %w", err)
-		}
-	}
-
-	err = f.Sync()
-	if err != nil {
-		return "", fmt.Errorf("synchronizing file: %w", err)
-	}
-
-	return filePath, nil
-}
-
-func (d *Dependency) uploadCombinedFile(ctx context.Context, sessionID string, filePath string) (string, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return "", fmt.Errorf("opening file: %w", err)
-	}
-	defer func() {
-		err := f.Close()
-		if err != nil {
-			log.Printf("error closing file: %v", err)
-		}
-	}()
-
-	fileStat, err := f.Stat()
-	if err != nil {
-		return "", fmt.Errorf("getting file stat: %w", err)
-	}
-
-	resultingFile := sessionID + "_" + "video.mp4"
-	_, err = d.Bucket.PutObject(ctx, "public", resultingFile, f, fileStat.Size(), minio.PutObjectOptions{})
-	if err != nil {
-		return "", fmt.Errorf("putting object: %w", err)
-	}
-
-	return path.Join("public", resultingFile), nil
-}
-
-func (d *Dependency) concatFiles(id string, files []string) (string, error) {
-	outputFilePath := path.Join(BaseDirectory, id, "combined.webm")
-
-	f, err := os.Create(outputFilePath)
-	if err != nil {
-		return "", fmt.Errorf("creating file: %w", err)
-	}
-	defer func() {
-		err := f.Close()
-		if err != nil {
-			log.Printf("error closing file: %v", err)
-		}
-	}()
-
-	for _, file := range files {
-		r, err := os.Open(path.Join(BaseDirectory, id, file))
-		if err != nil {
-			return "", fmt.Errorf("opening file: %w", err)
-		}
-		defer func() {
-			err := r.Close()
-			if err != nil {
-				log.Printf("error closing file: %v", err)
-			}
-		}()
-
-		body, err := io.ReadAll(r)
-		if err != nil {
-			return "", fmt.Errorf("reading file: %w", err)
-		}
-
-		fileInfo, err := f.Stat()
-		if err != nil {
-			return "", fmt.Errorf("reading file status: %w", err)
-		}
-
-		_, err = f.WriteAt(body, fileInfo.Size())
-		if err != nil {
-			return "", fmt.Errorf("writing buffer to file: %w", err)
-		}
-	}
-
-	err = f.Sync()
-	if err != nil {
-		return "", fmt.Errorf("synchronizing file: %w", err)
-	}
-
-	return outputFilePath, nil
 }
