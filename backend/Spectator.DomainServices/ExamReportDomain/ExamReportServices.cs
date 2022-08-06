@@ -11,7 +11,9 @@ using Spectator.DomainEvents.ExamReportDomain;
 using Spectator.DomainModels.ExamReportDomain;
 using Spectator.DomainServices.MemoryCache;
 using Spectator.Repositories;
+using Spectator.VideoClient;
 using Spectator.WorkerClient;
+using Spectator.DomainServices.Utilities;
 
 namespace Spectator.DomainServices.ExamReportDomain {
 	public class ExamReportServices {
@@ -20,17 +22,20 @@ namespace Spectator.DomainServices.ExamReportDomain {
 		private static readonly TimeSpan ADMIN_SESSION_TTL = TimeSpan.FromMinutes(60);
 		private readonly ISessionEventRepository _sessionEventRepository;
 		private readonly WorkerServices _workerServices;
+		private readonly VideoServices _videoServices;
 
 		public ExamReportServices(
 			IMemoryCache memoryCache,
 			IOptions<ExamReportOptions> optionsAccessor,
 			ISessionEventRepository sessionEventRepository,
-			WorkerServices workerServices
+			WorkerServices workerServices,
+			VideoServices videoServices
 		) {
 			ResultCache.Initialize(out _adminSessionById, memoryCache);
 			_examReportOptions = optionsAccessor.Value;
 			_sessionEventRepository = sessionEventRepository;
 			_workerServices = workerServices;
+			_videoServices = videoServices;
 		}
 
 		public AdministratorSession Login(string password) {
@@ -90,6 +95,22 @@ namespace Spectator.DomainServices.ExamReportDomain {
 					csvFileUrl: file.FileUrlCsv.Length > 1 ? new Uri(file.FileUrlCsv) : null
 				)))
 				.ToImmutableList();
+		}
+
+		public async Task RetriggerResultAsync(Guid adminSessionId, Guid userSessionId, CancellationToken cancellationToken) {
+			// Authorize admin session
+			if (!_adminSessionById.TryGetValue(adminSessionId, out var adminSession)
+				|| adminSession.ExpiresAt <= DateTimeOffset.UtcNow) {
+				throw new UnauthorizedAccessException();
+			}
+
+			// Call the worker service to regenerate fun fact
+			await _workerServices.FunFactAsync(userSessionId, cancellationToken);
+
+			// When fun fact is done, we can now regenerate the files and videos
+			// Because we don't need their results, we'll just ignore them.
+			_workerServices.GenerateFilesAsync(userSessionId, cancellationToken).Ignore();
+			_videoServices.GetVideoAsync(userSessionId, cancellationToken).Ignore();
 		}
 	}
 }
