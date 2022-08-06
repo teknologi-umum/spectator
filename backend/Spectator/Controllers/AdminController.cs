@@ -61,5 +61,24 @@ namespace Spectator.Controllers {
 				return Unauthorized();
 			}
 		}
+
+		[HttpPost]
+		[Route("/admin/retrigger")]
+		public async Task<IActionResult> RetriggerAsync([FromBody] RetriggerRequest request, CancellationToken cancellationToken) {
+			if (request.SessionId == null) return BadRequest(new { Message = "SessionId is required" });
+			if (request.ExamSessionId == null) return BadRequest(new { Message = "ExamSessionId is required" });
+
+			if (!Guid.TryParse(request.SessionId, out var adminSessionId)) {
+				return BadRequest(new { Message = "Invalid admin session id" });
+			}
+
+			if (!Guid.TryParse(request.ExamSessionId, out var examSessionId)) {
+				return BadRequest(new { Message = "Invalid exam session id" });
+			}
+
+			await _examReportServices.RetriggerResultAsync(adminSessionId, examSessionId, cancellationToken);
+
+			return Ok();
+		}
 	}
 }
