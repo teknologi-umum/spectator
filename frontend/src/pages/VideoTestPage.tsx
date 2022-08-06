@@ -103,7 +103,7 @@ export default function VideoTestPage() {
       // eslint-disable-next-line no-console
       console.error(err);
     }
-  }, [isAllowed]);
+  }, [isAllowed, videoStream]);
 
   return (
     <Layout display="flex">
@@ -139,7 +139,14 @@ export default function VideoTestPage() {
             >
               <MenuOptionGroup
                 type="radio"
-                onChange={(deviceId) => changeVideoSource(deviceId as string)}
+                onChange={(deviceId: string | string[]) => {
+                  if (typeof deviceId === "string") {
+                    changeVideoSource(deviceId);
+                  } else if (typeof deviceId === "object" && Array.isArray(deviceId) && deviceId.length > 0) {
+                    // Select the first one
+                    changeVideoSource(deviceId[0]);
+                  }
+                }}
               >
                 {videoSources.map((source) => (
                   <MenuItemOption

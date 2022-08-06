@@ -16,7 +16,7 @@ export function useVideoSources(options: { isAllowed: boolean }) {
         )
       );
     })();
-  }, []);
+  }, [options.isAllowed]);
 
   return videoSources;
 }
