@@ -76,9 +76,12 @@ namespace Spectator.Controllers {
 				return BadRequest(new { Message = "Invalid exam session id" });
 			}
 
-			await _examReportServices.RetriggerResultAsync(adminSessionId, examSessionId, cancellationToken);
-
-			return Ok();
+			try {
+				await _examReportServices.RetriggerResultAsync(adminSessionId, examSessionId, cancellationToken);
+				return Ok();
+			} catch (UnauthorizedAccessException) {
+				return Unauthorized();
+			}
 		}
 	}
 }
