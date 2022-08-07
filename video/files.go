@@ -27,6 +27,10 @@ func (d *Dependency) acquireListOfFiles(ctx context.Context, sessionID string) (
 
 	var files []string
 	for f := range d.Bucket.ListObjects(ctx, sessionID, minio.ListObjectsOptions{}) {
+		if !strings.HasSuffix(f.Key, ".webm") {
+			continue
+		}
+
 		files = append(files, f.Key)
 	}
 
@@ -195,12 +199,7 @@ func (d *Dependency) concatFiles(id string, files []string) (string, error) {
 			return "", fmt.Errorf("reading file: %w", err)
 		}
 
-		fileInfo, err := f.Stat()
-		if err != nil {
-			return "", fmt.Errorf("reading file status: %w", err)
-		}
-
-		_, err = f.WriteAt(body, fileInfo.Size())
+		_, err = f.Write(body)
 		if err != nil {
 			return "", fmt.Errorf("writing buffer to file: %w", err)
 		}
