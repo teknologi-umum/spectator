@@ -5,6 +5,7 @@ _REPLACE_ME_WITH_SOLUTION_
 function main() {
     const testCases = [
         {
+            arguments: "findHeaterPower(100212373)",
             got: findHeaterPower(100212373),
             expected: 19
         }
@@ -23,17 +24,22 @@ function main() {
         const n = randomNumber(1000000000, 9999999999);
         const expected = workingAnswer(n);
         const got = findHeaterPower(n);
-        testCases.push({ got, expected });
+        const arguments = `findHeaterPower(${n})`;
+        testCases.push({ got, expected, arguments });
     }
 
     for (let i = 0; i < testCases.length; i++) {
         const test = testCases[i];
         if (test.got == test.expected) {
             console.log(`# ${i + 1} PASSING`);
+            console.log(`> ARGUMENTS ${test.arguments}`);
+            console.log(`> EXPECTED ${test.expected}`);
+            console.log(`> GOT ${test.got}`);
         } else {
             console.log(`# ${i + 1} FAILED`);
+            console.log(`> ARGUMENTS ${test.arguments}`);
             console.log(`> EXPECTED ${test.expected}`);
-            console.log(`> GOT ${test.got}`)
+            console.log(`> GOT ${test.got}`);
         }
     }
 }

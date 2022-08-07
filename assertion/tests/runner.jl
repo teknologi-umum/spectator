@@ -3,6 +3,14 @@ println("✨ Starting tests")
 _args = ARGS
 dirpath = ""
 
+verbose = false
+
+try 
+    global verbose = ENV["VERBOSE"] != ""
+catch KeyError
+    global verbose = false
+end
+
 if length(_args) > 0
     global dirpath = _args[1]
 else
@@ -40,7 +48,7 @@ function normalassertion(result::String)
 
     # for every line of results, check whether
     # it contains "PASSED"
-    for line in results
+    for line in results       
         if contains(strip(line), "PASSING")
             ok += 1
         end
@@ -48,6 +56,11 @@ function normalassertion(result::String)
         if contains(strip(line), "FAILED")
             failed += 1
         end
+    end
+
+    if verbose
+        println("ok count: ", ok)
+        println("failed count: ", failed)
     end
 
     ok > 0 && failed == 0
@@ -96,6 +109,10 @@ for walkedpath in walkdir(dirpath)
                 executecommand = replace(execcmd, "{file}" => executepath)
 
                 result = read(Cmd(`sh -c $executecommand`, ignorestatus=true, detach=true), String)
+
+                if verbose
+                    println(result)
+                end
 
                 if questionnumber == "question1"
                     if strip(result) == twinkle
