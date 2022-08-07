@@ -51,7 +51,7 @@ int main()
 {
     srand(time(0));
 
-    char temperatures[3][10] = {"Celcius", "Fahrenheit", "Kelvin"};
+    char temperatures[3][12] = {"Celcius", "Fahrenheit", "Kelvin"};
 
     TestCase testCases[10] = {
         {.expected = 212,
