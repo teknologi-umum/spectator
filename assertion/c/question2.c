@@ -74,6 +74,8 @@ int main()
     // array so we need to divide it by the size of the struct
     for (unsigned int i = 5; i < sizeof(testCases) / sizeof(TestCase); i++)
     {
+        TestCase *test = &testCases[i];
+
         // Generate random test cases
         int randNum = __randomNumber(-500, 500);
 
@@ -81,32 +83,35 @@ int main()
         char *to = temperatures[__randomNumber(0, 2)];
         int expected = __workingAnswer(randNum, from, to);
         int got = calculateTemperature(randNum, from, to);
-        char arguments[100];
-        sprintf(arguments, "calculateTemperature(%d, \"%s\", \"%s\")", randNum, from, to);
 
-        testCases[i].expected = expected;
-        testCases[i].got = got;
-        testCases[i].arguments = arguments;
+        test->expected = expected;
+        test->got = got;
+        test->arguments = malloc(sizeof(char[100]));
+        sprintf(test->arguments, "calculateTemperature(%d, \"%s\", \"%s\")", randNum, from, to);
     }
 
     for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
     {
-        TestCase test = testCases[i];
+        TestCase *test = &testCases[i];
 
-        if (test.got == test.expected)
+        if (test->got == test->expected)
         {
             printf("# %d PASSING\n", i + 1);
-            printf("> ARGUMENTS %s\n", test.arguments);
-            printf("> EXPECTED %f\n", test.expected);
-            printf("> GOT %f\n", test.got);
         }
         else
         {
             printf("# %d FAILED\n", i + 1);
-            printf("> ARGUMENTS %s\n", test.arguments);
-            printf("> EXPECTED %f\n", test.expected);
-            printf("> GOT %f\n", test.got);
+        }
+
+        printf("> ARGUMENTS %s\n", test->arguments);
+        printf("> EXPECTED %f\n", test->expected);
+        printf("> GOT %f\n", test->got);
+
+        if (i >= 5)
+        {
+            free(test->arguments);
         }
     }
+
     return 0;
 }
