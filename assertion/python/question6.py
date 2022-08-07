@@ -7,6 +7,7 @@ _REPLACE_ME_WITH_SOLUTION_
 def main():
     testCases = [
         {
+            "arguments": "calculateGrade([73, 67, 38, 33])",
             "got": calculateGrade([73, 67, 38, 33]),
             "expected": [75, 67, 40, 33]
         }
@@ -29,13 +30,18 @@ def main():
         
         expected = workingAnswer(inp)
         got = calculateGrade(inp)
-        testCases.append({ "expected": expected, "got": got })
+        arguments = f"calculateGrade([{', '.join(map(str, inp))}])"
+        testCases.append({ "expected": expected, "got": got, "arguments": arguments })
 
     for i, test in enumerate(testCases):
         if ", ".join( map(str,test["expected"]) ) ==  ", ".join( map(str,test["got"]) ):
             print(f"# {i+1} PASSING")
+            print(f"> ARGUMENTS {test['arguments']}")
+            print(f"> EXPECTED [{ ', '.join(map(str,test['expected'])) }]" )
+            print(f"> GOT [{ ', '.join(map(str,test['got'])) }]" )
         else:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED [{ ', '.join(map(str,test['expected'])) }]" )
             print(f"> GOT [{ ', '.join(map(str,test['got'])) }]" )
 

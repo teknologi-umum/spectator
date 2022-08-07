@@ -7,10 +7,12 @@ _REPLACE_ME_WITH_SOLUTION_
 def main():
     testCases = [
         {
+            "arguments": "mumble(\"abcd\")",
             "expected": "A-Bb-Ccc-Dddd",
             "got": mumble("abcd")
         },
         {
+            "arguments": "mumble(\"RqaEzTy\")",
             "expected": "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy",
             "got": mumble("RqaEzTy")
         }
@@ -28,19 +30,25 @@ def main():
         chars = __random.choices(characters, k=seed)
         expected = workingAnswer(chars)
         got = mumble(chars)
-        testCases.append({ "expected": expected, "got": got })
+        arguments = f"mumble({chars})"
+        testCases.append({ "expected": expected, "got": got, "arguments": arguments })
 
     for i, test in enumerate(testCases):
         if type(test["got"]) != str:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED {test['expected']}")
             print(f"> GOT \"{test['got']}\"")
             continue
 
         if test["expected"] == test["got"]:
             print(f"# {i+1} PASSING")
+            print(f"> ARGUMENTS {test['arguments']}")
+            print(f"> EXPECTED \"{test['expected']}\"")
+            print(f"> GOT \"{test['got']}\"")
         else:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED \"{test['expected']}\"")
             print(f"> GOT \"{test['got']}\"")
 

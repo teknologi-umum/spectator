@@ -9,22 +9,27 @@ _REPLACE_ME_WITH_SOLUTION_
 def main():
     testCases = [
         {
+            "arguments": "calculateTemperature(100, 'Celcius', 'Fahrenheit')",
             "got": calculateTemperature(100, "Celcius", "Fahrenheit"),
             "expected": 212
         },
         {
+            "arguments": "calculateTemperature(212, 'Fahrenheit', 'Kelvin')",
             "got": calculateTemperature(212, "Fahrenheit", "Kelvin"),
             "expected": 373.15
         },
         {
+            "arguments": "calculateTemperature(0, 'Celcius', 'Kelvin')",
             "got": calculateTemperature(0, "Celcius", "Kelvin"),
             "expected": 273.15
         },
         {
+            "arguments": "calculateTemperature(0, 'Celcius', 'Fahrenheit')",
             "got": calculateTemperature(0, "Celcius", "Fahrenheit"),
             "expected": 32
         },
         {
+            "arguments": "calculateTemperature(0, 'Kelvin', 'Fahrenheit')",
             "got": calculateTemperature(0, "Kelvin", "Fahrenheit"),
             "expected": -459.67
         }
@@ -53,7 +58,8 @@ def main():
         n = __random.randint(-500, 500)
         expected = workingAnswer(n, fromTemperature, toTemperature)
         got = calculateTemperature(n, fromTemperature, toTemperature)
-        testCases.append({ "expected": expected, "got": got })
+        arguments = f"calculateTemperature({n}, '{fromTemperature}', '{toTemperature}')"
+        testCases.append({ "expected": expected, "got": got, "arguments": arguments })
 
     for i, test in enumerate(testCases):
         got = test["got"]
@@ -61,14 +67,19 @@ def main():
 
         if type(got) == NoneType:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED {expected}")
             print(f"> GOT {got}")
             continue
 
         if round(float(got), 2) == round(float(expected), 2):
             print(f'# {i+1} PASSING')
+            print(f"> ARGUMENTS {test['arguments']}")
+            print(f"> EXPECTED { round(float(test['expected']), 2) }")
+            print(f"> GOT { round(float(test['got']), 2) }")
         else:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED { round(float(test['expected']), 2) }")
             print(f"> GOT { round(float(test['got']), 2) }")
 

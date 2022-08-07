@@ -8,6 +8,7 @@ _REPLACE_ME_WITH_SOLUTION_
 def main():
     testCases = [
         {
+            "arguments": "findHeaterPower(100212373)",
             "got": findHeaterPower(100212373),
             "expected": 19
         }
@@ -24,25 +25,32 @@ def main():
         n = __random.randint(1000000000, 9999999999)
         expected = workingAnswer(n)
         got = findHeaterPower(n)
-        testCases.append({ "got": got, "expected": expected })
+        arguments = f"findHeaterPower({n})"
+        testCases.append({ "got": got, "expected": expected, "arguments": arguments })
 
     for i, test in enumerate(testCases):
         if type(test["got"]) != int and type(test["got"]) != float and type(test["got"]) != str:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED {test['expected']}")
             print(f"> GOT {test['got']}")
             continue
 
         if type(test["got"]) == str and test["got"].isdigit() == False:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED {test['expected']}")
             print(f"> GOT {test['got']}")
             continue
 
         if int(test["got"]) == int(test["expected"]):
             print(f"# {i+1} PASSING")
+            print(f"> ARGUMENTS {test['arguments']}")
+            print(f"> EXPECTED {test['expected']}")
+            print(f"> GOT {test['got']}")
         else:
             print(f"# {i+1} FAILED")
+            print(f"> ARGUMENTS {test['arguments']}")
             print(f"> EXPECTED {test['expected']}")
             print(f"> GOT {test['got']}")
 
