@@ -7,10 +7,12 @@ _REPLACE_ME_WITH_SOLUTION_
 function main(): void {
     $test_cases = [
         [
+            "arguments" => "mumble(\"abcd\")",
             "expected" => "A-Bb-Ccc-Dddd",
             "got" => mumble("abcd")
         ],
         [
+            "arguments" => "mumble(\"RqaEzTy\")",
             "expected" => "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy",
             "got" => mumble("RqaEzTy")
         ]
@@ -35,11 +37,15 @@ function main(): void {
         for ($j = 0; $j < $seed; $j++) {
             $chars .= $characters[rand(0, strlen($characters) - 1)];
         }
+
         $expected = working_answer($chars);
         $got = mumble($chars);
+        $arguments = "mumble($chars)";
+        
         array_push($test_cases, [
             "got" => $got,
-            "expected" => $expected
+            "expected" => $expected,
+            "arguments" => $arguments
         ]);
     }
 
@@ -47,11 +53,15 @@ function main(): void {
         $test = $test_cases[$i];
 
         if ($test["got"] === $test["expected"]) {
-            echo "# ". $i + 1 . " PASSING"; 
+            echo "# ". $i + 1 . " PASSING\n";
+            echo "> ARGUMENTS " . $test["arguments"] . "\n";
+            echo "> EXPECTED " . $test["expected"] . "\n";
+            echo "> GOT " . $test["got"] . "\n";
         } else {
-            echo "# " . $i + 1 . " FAILED";
-            echo "> EXPECTED " . $test["expected"];
-            echo "> GOT " . $test["got"];
+            echo "# " . $i + 1 . " FAILED\n";
+            echo "> ARGUMENTS " . $test["arguments"] . "\n";
+            echo "> EXPECTED " . $test["expected"] . "\n";
+            echo "> GOT " . $test["got"] . "\n";
         }
     }
 }

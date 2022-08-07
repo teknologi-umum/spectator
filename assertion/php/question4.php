@@ -7,6 +7,7 @@ _REPLACE_ME_WITH_SOLUTION_
 function main(): void {
     $test_cases = [
         [
+            "arguments" => "findHeaterPower(100212373)",
             "got" => findHeaterPower(100212373),
             "expected" => 19
         ]
@@ -26,9 +27,11 @@ function main(): void {
         $n = rand(1000000000, 9999999999);
         $expected = working_answer($n);
         $got = findHeaterPower($n);
+        $arguments = "findHeaterPower($n)";
         array_push($test_cases, [
             "got" => $got,
-            "expected" => $expected
+            "expected" => $expected,
+            "arguments" => $arguments
         ]);
     }
 
@@ -36,11 +39,15 @@ function main(): void {
         $test = $test_cases[$i];
 
         if ($test["got"] === $test["expected"]) {
-            echo "# ". $i + 1 . " PASSING"; 
+            echo "# ". $i + 1 . " PASSING\n"; 
+            echo "> ARGUMENTS " . $test["arguments"] . "\n";
+            echo "> EXPECTED " . $test["expected"] . "\n";
+            echo "> GOT " . $test["got"] . "\n";
         } else {
-            echo "# " . $i + 1 . " FAILED";
-            echo "> EXPECTED " . $test["expected"];
-            echo "> GOT " . $test["got"];
+            echo "# " . $i + 1 . " FAILED\n";
+            echo "> ARGUMENTS " . $test["arguments"] . "\n";
+            echo "> EXPECTED " . $test["expected"] . "\n";
+            echo "> GOT " . $test["got"] . "\n";
         }
     }
 }
