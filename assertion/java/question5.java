@@ -34,11 +34,11 @@ public class question5 {
         return sb.toString();
     }
 
-    private static List<String[]> generateTestCase() {
-        var listOfTest = new ArrayList<String[]>();
+    private static List<Object[]> generateTestCase() {
+        var listOfTest = new ArrayList<Object[]>();
 
-        listOfTest.add(new String[] { "A-Bb-Ccc-Dddd", Mumble.mumble("abcd") });
-        listOfTest.add(new String[] { "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy", Mumble.mumble("RqaEzTy") });
+        listOfTest.add(new Object[] { "A-Bb-Ccc-Dddd", Mumble.mumble("abcd"), new QuestionAttribute("abcd") });
+        listOfTest.add(new Object[] { "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy", Mumble.mumble("RqaEzTy"), new QuestionAttribute("RqaEzTy") });
 
         return listOfTest;
     }
@@ -60,8 +60,8 @@ public class question5 {
         return sb.toString();
     }
 
-    private static List<String[]> generateRandomTestCase(int numberOfTC) {
-        var listOfTest = new ArrayList<String[]>();
+    private static List<Object[]> generateRandomTestCase(int numberOfTC) {
+        var listOfTest = new ArrayList<Object[]>();
 
         for (int i = 0; i < numberOfTC; i++) {
 
@@ -70,7 +70,7 @@ public class question5 {
             var expected = workingAnswer(generated);
             var got = Mumble.mumble(generated);
 
-            listOfTest.add(new String[] { expected, got });
+            listOfTest.add(new Object[] { expected, got, new QuestionAttribute(generated) });
 
         }
         return listOfTest;
@@ -83,15 +83,25 @@ public class question5 {
         testCase.addAll(randomTestCase);
 
         var counter = 0;
-        for (String[] test : testCase) {
+        for (Object[] test : testCase) {
             counter++;
             if (test[0].equals(test[1])) {
                 System.out.printf("# %d PASSING\n", counter);
             } else {
                 System.out.printf("# %d FAILED\n", counter);
-                System.out.printf("> EXPECTED %s\n", test[0]);
-                System.out.printf("> GOT %s\n", test[1]);
             }
+            QuestionAttribute argument = (QuestionAttribute) test[2];
+            System.out.printf("> ARGUMENTS mumble(\"%s\")\n", argument.input);
+            System.out.printf("> EXPECTED %s\n", test[0]);
+            System.out.printf("> GOT %s\n", test[1]);
         }
+    }
+}
+
+class QuestionAttribute {
+    public String input;
+
+    public QuestionAttribute(String input) {
+        this.input = input;
     }
 }
