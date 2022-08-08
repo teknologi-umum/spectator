@@ -92,7 +92,7 @@ int main()
 
     for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
     {
-        TestCase *test = &testCases[i];
+        TestCase *test = testCases + i;
 
         if (test->got == test->expected)
         {

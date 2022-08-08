@@ -36,7 +36,7 @@ int main()
 
     for (int i = 2; i < 6; i++)
     {
-        TestCase *test = &testCases[i];
+        TestCase *test = testCases + i;
 
         int a = __randomNumber(0, 9999);
         int b = __randomNumber(0, 9999);
@@ -44,14 +44,14 @@ int main()
         int got = isSameNumber(a, b);
         test->got = got;
         test->expected = expected;
-        test->arguments = malloc(sizeof(char) * 100);
+        test->arguments = malloc(sizeof(char[100]));
         sprintf(test->arguments, "isSameNumber(%d, %d)", a, b);
     }
 
     for (int i = 6; i < 10; i++)
     {
-        TestCase *test = &testCases[i];
-     
+        TestCase *test = testCases + i;
+
         int a = __randomNumber(0, 9999);
         int expected = 1;
         int got = isSameNumber(a, a);
@@ -65,7 +65,7 @@ int main()
     // array so we need to divide it by the size of the struct
     for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
     {
-        TestCase *test = &testCases[i];
+        TestCase *test = testCases + i;
 
         if (test->got == test->expected)
         {
@@ -75,7 +75,7 @@ int main()
         {
             printf("# %d FAILED\n", i + 1);
         }
-        
+
         printf("> ARGUMENTS %s\n", test->arguments);
         printf("> EXPECTED %d\n", test->expected);
         printf("> GOT %d\n", test->got);
