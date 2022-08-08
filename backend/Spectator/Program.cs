@@ -76,7 +76,7 @@ builder.Services.Setup(services => {
 	// Add Cors Policy
 	services.AddCors(options => options.AddPolicy("AllowAll", builder => {
 		// TODO(elianiva): replace this with proper CORS policy, ATM this is being used to make it *just works*
-		builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+		builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
 	}));
 
 	// Add SPA static files
