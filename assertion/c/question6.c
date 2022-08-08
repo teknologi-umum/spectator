@@ -35,7 +35,7 @@ typedef struct TestCase
 } TestCase;
 
 // creates a random number between min and max
-long __randomNumber(int min, long max)
+int __randomNumber(int min, int max)
 {
     return (rand() % (max - min + 1)) + min;
 }
@@ -53,14 +53,15 @@ int *genArray(int len)
 // this is poorman's implementation
 char *arrayToString(int len, int *arr)
 {
+    int index = 0;
     char *result = malloc(255 * sizeof(char));
 
-    sprintf(&result[0], "%c", '[');
+    index += sprintf(result, "%c", '[');
     for (int i = 0; i < len - 1; i++)
     {
-        sprintf(&result[strlen(result)], "%d, ", arr[i]);
+        index += sprintf(result + index, "%d, ", arr[i]);
     }
-    sprintf(&result[strlen(result)], "%d%c", arr[len], ']');
+    sprintf(result + index, "%d%c", arr[len - 1], ']');
 
     return result;
 }
@@ -71,13 +72,8 @@ int main()
 
     TestCase testCases[10];
 
+    int input[] = {73, 67, 38, 33};
     int answer[] = {75, 67, 40, 33};
-
-    int *input = malloc(4 * sizeof(int));
-    input[0] = 73;
-    input[1] = 67;
-    input[2] = 38;
-    input[3] = 33;
 
     testCases[0].expected = arrayToString(4, answer);
     testCases[0].got = arrayToString(4, calculateGrade(4, input));
@@ -85,28 +81,30 @@ int main()
 
     for (int i = 1; i < 10; i++)
     {
+        TestCase *test = testCases + i;
+
         int len = __randomNumber(4, 20);
 
         int *input = genArray(len);
-        // if I don't add +1 here it'll lead to UB, idk why but this thing works
-        int *input2 = malloc(len * sizeof(int) + 1);
-        memcpy(input2, input, len * sizeof(int) + 1);
+        int *input2 = malloc(len * sizeof(int));
+        memcpy(input2, input, len * sizeof(int));
 
         int *expected = __workingAnswer(len, input);
         int *got = calculateGrade(len, input2);
-        char *arguments = malloc(sizeof(char) * 100);
-        sprintf(arguments, "calculateGrade(%d, %s)", len, arrayToString(len, input));
+        test->expected = arrayToString(len, expected);
+        test->got = arrayToString(len, got);
+        test->arguments = malloc(sizeof(char[100]));
+        sprintf(test->arguments, "calculateGrade(%d, %s)", len, arrayToString(len, input));
 
-        testCases[i].expected = arrayToString(len, expected);
-        testCases[i].got = arrayToString(len, got);
-        testCases[i].arguments = arguments;
+        free(input);
+        free(input2);
     }
 
-    for (unsigned int i = 0, len = sizeof(testCases) / sizeof(TestCase); i < len; i++)
+    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
     {
-        TestCase test = testCases[i];
+        TestCase *test = testCases + i;
 
-        if (strcmp(test.got, test.expected) == 0)
+        if (strcmp(test->got, test->expected) == 0)
         {
             printf("# %d PASSING\n", i + 1);
         }
@@ -115,13 +113,14 @@ int main()
             printf("# %d FAILED\n", i + 1);
         }
 
-        printf("> ARGUMENTS %s\n", test.arguments);
-        printf("> EXPECTED %s\n", test.expected);
-        printf("> GOT %s\n", test.got);
+        printf("> ARGUMENTS %s\n", test->arguments);
+        printf("> EXPECTED %s\n", test->expected);
+        printf("> GOT %s\n", test->got);
 
-        if (i >= 1)
-        {
-            free(testCases[i].arguments);
+        free(test->expected);
+        free(test->got);
+        if (i >= 1) {
+            free(test->arguments);
         }
     }
     return 0;
