@@ -27,13 +27,13 @@ import { useTranslation } from "react-i18next";
 interface OutputBoxProps {
   expected: string;
   actual: string;
-  arguments: string;
+  argument: string;
 }
-function OutputBox({ expected, actual, arguments }: OutputBoxProps) {
+function OutputBox({ expected, actual, argument }: OutputBoxProps) {
   return (
     <Box>
       <Text>
-        Caller: <Code>{arguments}</Code>
+        Caller: <Code>{argument}</Code>
       </Text>
       <Text>
         Expected: <Code>{expected}</Code>
@@ -164,9 +164,9 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                     <>
                       <Text>Passed!</Text>
                       <OutputBox
-                        expected={testResult.failingTest.expectedStdout}
-                        actual={testResult.failingTest.actualStdout}
-                        arguments={testResult.failingTest.argumentsStdout}
+                        expected={testResult.passingTest.expectedStdout}
+                        actual={testResult.passingTest.actualStdout}
+                        argument={testResult.passingTest.argumentsStdout}
                       />
                     </>
                   )}
@@ -183,7 +183,7 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                     <OutputBox
                       expected={testResult.failingTest.expectedStdout}
                       actual={testResult.failingTest.actualStdout}
-                      arguments={testResult.failingTest.argumentsStdout}
+                      argument={testResult.failingTest.argumentsStdout}
                     />
                   )}
                 </AccordionPanel>
