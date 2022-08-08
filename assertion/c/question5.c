@@ -19,7 +19,7 @@ char *__workingAnswer(const char *input)
     // count the total of the hyphens used as a separator.
     // i hate c string, they need some whacky ass malloc ritual or some shit
     // ...that, or i'm just dumb, most likely the latter
-    int resultLen = (inputLen + 1) * (inputLen  + 2) / 2 - 1;
+    int resultLen = (inputLen + 1) * (inputLen + 2) / 2 - 1;
     char *result = malloc(resultLen);
 
     int pos = 0;
@@ -113,7 +113,8 @@ int main()
         printf("> EXPECTED %s\n", test.expected);
         printf("> GOT %s\n", test.got);
 
-        if (i >= 2) {
+        if (i >= 2)
+        {
             free(testCases[i].arguments);
         };
     }

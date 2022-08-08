@@ -86,7 +86,7 @@ int main()
 
         test->expected = expected;
         test->got = got;
-        test->arguments = malloc(sizeof(char[100]));
+        test->arguments = malloc(sizeof(char) * 100);
         sprintf(test->arguments, "calculateTemperature(%d, \"%s\", \"%s\")", randNum, from, to);
     }
 

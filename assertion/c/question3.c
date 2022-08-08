@@ -44,7 +44,7 @@ int main()
         int got = isSameNumber(a, b);
         test->got = got;
         test->expected = expected;
-        test->arguments = malloc(sizeof(char[100]));
+        test->arguments = malloc(sizeof(char) * 100);
         sprintf(test->arguments, "isSameNumber(%d, %d)", a, b);
     }
 

@@ -81,7 +81,7 @@ int main()
 
     testCases[0].expected = arrayToString(4, answer);
     testCases[0].got = arrayToString(4, calculateGrade(4, input));
-    testCases[0].arguments = "calculateGrade(4, {73, 67, 38, 33})";
+    testCases[0].arguments = "calculateGrade(4, [73, 67, 38, 33])";
 
     for (int i = 1; i < 10; i++)
     {
@@ -94,7 +94,7 @@ int main()
 
         int *expected = __workingAnswer(len, input);
         int *got = calculateGrade(len, input2);
-        char *arguments = malloc(sizeof(char[150]));
+        char *arguments = malloc(sizeof(char) * 100);
         sprintf(arguments, "calculateGrade(%d, %s)", len, arrayToString(len, input));
 
         testCases[i].expected = arrayToString(len, expected);
@@ -119,7 +119,7 @@ int main()
         printf("> EXPECTED %s\n", test.expected);
         printf("> GOT %s\n", test.got);
 
-        if (i > 0)
+        if (i >= 1)
         {
             free(testCases[i].arguments);
         }
