@@ -49,7 +49,7 @@ typedef struct TestCase
 } TestCase;
 
 // creates a random number between min and max
-long __randomNumber(int min, long max)
+int __randomNumber(int min, int max)
 {
     return (rand() % (max - min + 1)) + min;
 }
@@ -84,23 +84,24 @@ int main()
 
     for (int i = 2; i < 10; i++)
     {
+        TestCase *test = testCases + i;
+
         int n = __randomNumber(4, 20);
         char *word = __genWords(n);
         char *expected = __workingAnswer(word);
         char *got = mumble(word);
-        char *arguments = malloc(sizeof(char) * 150);
-        sprintf(arguments, "mumble(\"%s\")", word);
-        testCases[i].expected = expected;
-        testCases[i].got = got;
-        testCases[i].arguments = arguments;
+        test->expected = expected;
+        test->got = got;
+        test->arguments = malloc(sizeof(char[150]));
+        sprintf(test->arguments, "mumble(\"%s\")", word);
         free(word);
     }
 
     for (unsigned int i = 0, len = sizeof(testCases) / sizeof(TestCase); i < len; i++)
     {
-        TestCase test = testCases[i];
+        TestCase *test = testCases + i;
 
-        if (strcmp(test.got, test.expected) == 0)
+        if (strcmp(test->got, test->expected) == 0)
         {
             printf("# %d PASSING\n", i + 1);
         }
@@ -109,13 +110,15 @@ int main()
             printf("# %d FAILED\n", i + 1);
         }
 
-        printf("> ARGUMENTS %s\n", test.arguments);
-        printf("> EXPECTED %s\n", test.expected);
-        printf("> GOT %s\n", test.got);
+        printf("> ARGUMENTS %s\n", test->arguments);
+        printf("> EXPECTED %s\n", test->expected);
+        printf("> GOT %s\n", test->got);
 
         if (i >= 2)
         {
-            free(testCases[i].arguments);
+            free(test->expected);
+            free(test->got);
+            free(test->arguments);
         };
     }
     return 0;
