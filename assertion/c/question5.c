@@ -19,8 +19,7 @@ char *__workingAnswer(const char *input)
     // count the total of the hyphens used as a separator.
     // i hate c string, they need some whacky ass malloc ritual or some shit
     // ...that, or i'm just dumb, most likely the latter
-    int triNum = (inputLen * (inputLen + 1)) / 2;
-    int resultLen = triNum + inputLen - 1;
+    int resultLen = (inputLen + 1) * (inputLen  + 2) / 2 - 1;
     char *result = malloc(resultLen);
 
     int pos = 0;
@@ -32,12 +31,12 @@ char *__workingAnswer(const char *input)
             result[pos] = j == 0 ? toupper(c) : tolower(c);
             pos++;
         }
-        if (pos != resultLen)
-        {
-            result[pos] = '-';
-            pos++;
-        }
+
+        result[pos] = '-';
+        pos++;
     }
+    // HACK: Ronny did this
+    result[--pos] = '\0';
 
     return result;
 }
@@ -66,6 +65,7 @@ char *__genWords(int n)
         char randomChar = characters[__randomNumber(0, nchar)];
         result[i] = randomChar;
     }
+    result[n] = '\0';
 
     return result;
 }
@@ -88,7 +88,7 @@ int main()
         char *word = __genWords(n);
         char *expected = __workingAnswer(word);
         char *got = mumble(word);
-        char arguments[100];
+        char *arguments = malloc(sizeof(char) * 150);
         sprintf(arguments, "mumble(\"%s\")", word);
         testCases[i].expected = expected;
         testCases[i].got = got;
@@ -103,16 +103,19 @@ int main()
         if (strcmp(test.got, test.expected) == 0)
         {
             printf("# %d PASSING\n", i + 1);
-            printf("> ARGUMENTS %s\n", test.arguments);
-            printf("> EXPECTED %s\n", test.expected);
-            printf("> GOT %s\n", test.got);
         }
         else
         {
             printf("# %d FAILED\n", i + 1);
-            printf("> EXPECTED %s\n", test.expected);
-            printf("> GOT %s\n", test.got);
         }
+
+        printf("> ARGUMENTS %s\n", test.arguments);
+        printf("> EXPECTED %s\n", test.expected);
+        printf("> GOT %s\n", test.got);
+
+        if (i >= 2) {
+            free(testCases[i].arguments);
+        };
     }
     return 0;
 }

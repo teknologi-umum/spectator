@@ -94,7 +94,7 @@ int main()
 
         int *expected = __workingAnswer(len, input);
         int *got = calculateGrade(len, input2);
-        char arguments[100];
+        char *arguments = malloc(sizeof(char[150]));
         sprintf(arguments, "calculateGrade(%d, %s)", len, arrayToString(len, input));
 
         testCases[i].expected = arrayToString(len, expected);
@@ -109,20 +109,20 @@ int main()
         if (strcmp(test.got, test.expected) == 0)
         {
             printf("# %d PASSING\n", i + 1);
-            printf("> ARGUMENTS %s\n", test.arguments);
-            printf("> EXPECTED %s\n", test.expected);
-            printf("> GOT %s\n", test.got);
         }
         else
         {
             printf("# %d FAILED\n", i + 1);
-            printf("> ARGUMENTS %s\n", test.arguments);
-            printf("> EXPECTED %s\n", test.expected);
-            printf("> GOT %s\n", test.got);
         }
 
-        free(test.got);
-        free(test.expected);
+        printf("> ARGUMENTS %s\n", test.arguments);
+        printf("> EXPECTED %s\n", test.expected);
+        printf("> GOT %s\n", test.got);
+
+        if (i > 0)
+        {
+            free(testCases[i].arguments);
+        }
     }
     return 0;
 }
