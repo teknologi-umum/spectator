@@ -27,10 +27,14 @@ import { useTranslation } from "react-i18next";
 interface OutputBoxProps {
   expected: string;
   actual: string;
+  arguments: string;
 }
-function OutputBox({ expected, actual }: OutputBoxProps) {
+function OutputBox({ expected, actual, arguments }: OutputBoxProps) {
   return (
     <Box>
+      <Text>
+        Caller: <Code>{arguments}</Code>
+      </Text>
       <Text>
         Expected: <Code>{expected}</Code>
       </Text>
@@ -157,7 +161,14 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                 </AccordionButton>
                 <AccordionPanel pb={4} color={fgDarker}>
                   {testResult.resultCase === ResultCase.Passing && (
-                    <Text>Passed!</Text>
+                    <>
+                      <Text>Passed!</Text>
+                      <OutputBox
+                        expected={testResult.failingTest.expectedStdout}
+                        actual={testResult.failingTest.actualStdout}
+                        arguments={testResult.failingTest.argumentsStdout}
+                      />
+                    </>
                   )}
 
                   {testResult.resultCase === ResultCase.RuntimeError && (
@@ -172,6 +183,7 @@ export default function Result({ fg, fgDarker }: ResultProps) {
                     <OutputBox
                       expected={testResult.failingTest.expectedStdout}
                       actual={testResult.failingTest.actualStdout}
+                      arguments={testResult.failingTest.argumentsStdout}
                     />
                   )}
                 </AccordionPanel>

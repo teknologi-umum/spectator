@@ -252,6 +252,18 @@ export interface TestResult {
  * @generated from protobuf message session.TestResult.PassingTest
  */
 export interface TestResult_PassingTest {
+    /**
+     * @generated from protobuf field: string expected_stdout = 2;
+     */
+    expectedStdout: string;
+    /**
+     * @generated from protobuf field: string actual_stdout = 3;
+     */
+    actualStdout: string;
+    /**
+     * @generated from protobuf field: string arguments_stdout = 4;
+     */
+    argumentsStdout: string;
 }
 /**
  * @generated from protobuf message session.TestResult.FailingTest
@@ -265,6 +277,10 @@ export interface TestResult_FailingTest {
      * @generated from protobuf field: string actual_stdout = 3;
      */
     actualStdout: string;
+    /**
+     * @generated from protobuf field: string arguments_stdout = 4;
+     */
+    argumentsStdout: string;
 }
 /**
  * @generated from protobuf message session.TestResult.CompileError
@@ -1102,19 +1118,54 @@ export const TestResult = new TestResult$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class TestResult_PassingTest$Type extends MessageType<TestResult_PassingTest> {
     constructor() {
-        super("session.TestResult.PassingTest", []);
+        super("session.TestResult.PassingTest", [
+            { no: 2, name: "expected_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "actual_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "arguments_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
     }
     create(value?: PartialMessage<TestResult_PassingTest>): TestResult_PassingTest {
-        const message = {};
+        const message = { expectedStdout: "", actualStdout: "", argumentsStdout: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<TestResult_PassingTest>(this, message, value);
         return message;
     }
     internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TestResult_PassingTest): TestResult_PassingTest {
-        return target ?? this.create();
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string expected_stdout */ 2:
+                    message.expectedStdout = reader.string();
+                    break;
+                case /* string actual_stdout */ 3:
+                    message.actualStdout = reader.string();
+                    break;
+                case /* string arguments_stdout */ 4:
+                    message.argumentsStdout = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
     }
     internalBinaryWrite(message: TestResult_PassingTest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string expected_stdout = 2; */
+        if (message.expectedStdout !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.expectedStdout);
+        /* string actual_stdout = 3; */
+        if (message.actualStdout !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.actualStdout);
+        /* string arguments_stdout = 4; */
+        if (message.argumentsStdout !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.argumentsStdout);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1130,11 +1181,12 @@ class TestResult_FailingTest$Type extends MessageType<TestResult_FailingTest> {
     constructor() {
         super("session.TestResult.FailingTest", [
             { no: 2, name: "expected_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "actual_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 3, name: "actual_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "arguments_stdout", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<TestResult_FailingTest>): TestResult_FailingTest {
-        const message = { expectedStdout: "", actualStdout: "" };
+        const message = { expectedStdout: "", actualStdout: "", argumentsStdout: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<TestResult_FailingTest>(this, message, value);
@@ -1150,6 +1202,9 @@ class TestResult_FailingTest$Type extends MessageType<TestResult_FailingTest> {
                     break;
                 case /* string actual_stdout */ 3:
                     message.actualStdout = reader.string();
+                    break;
+                case /* string arguments_stdout */ 4:
+                    message.argumentsStdout = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1169,6 +1224,9 @@ class TestResult_FailingTest$Type extends MessageType<TestResult_FailingTest> {
         /* string actual_stdout = 3; */
         if (message.actualStdout !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.actualStdout);
+        /* string arguments_stdout = 4; */
+        if (message.argumentsStdout !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.argumentsStdout);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
