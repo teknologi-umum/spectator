@@ -94,10 +94,12 @@ int main()
         test->expected = arrayToString(len, expected);
         test->got = arrayToString(len, got);
         test->arguments = malloc(sizeof(char[100]));
-        sprintf(test->arguments, "calculateGrade(%d, %s)", len, arrayToString(len, input));
+        char *args = arrayToString(len, input);
+        sprintf(test->arguments, "calculateGrade(%d, %s)", len, args);
 
         free(input);
         free(input2);
+        free(args);
     }
 
     for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
