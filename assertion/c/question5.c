@@ -20,20 +20,18 @@ char *__workingAnswer(const char *input)
     // i hate c string, they need some whacky ass malloc ritual or some shit
     // ...that, or i'm just dumb, most likely the latter
     int resultLen = (inputLen + 1) * (inputLen + 2) / 2 - 1;
-    char *result = malloc(resultLen);
+    char *result = malloc(resultLen * sizeof(char));
 
     int pos = 0;
-    for (int i = 0; i < inputLen; i++)
+    for (int i = 0; i < inputLen; i++, pos++)
     {
-        for (int j = 0; j <= i; j++)
+        for (int j = 0; j <= i; j++, pos++)
         {
             char c = input[i];
             result[pos] = j == 0 ? toupper(c) : tolower(c);
-            pos++;
         }
 
         result[pos] = '-';
-        pos++;
     }
     // HACK: Ronny did this
     result[--pos] = '\0';
@@ -117,9 +115,9 @@ int main()
         if (i >= 2)
         {
             free(test->expected);
-            free(test->got);
             free(test->arguments);
         };
+        free(test->got);
     }
     return 0;
 }
