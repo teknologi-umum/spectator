@@ -116,7 +116,7 @@ int main()
         {
             free(test->expected);
             free(test->arguments);
-        };
+        }
         free(test->got);
     }
     return 0;
