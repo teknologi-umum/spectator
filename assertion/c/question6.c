@@ -86,6 +86,7 @@ int main()
         int len = __randomNumber(4, 20);
 
         int *input = genArray(len);
+        char *args = arrayToString(len, input);
         int *input2 = malloc(len * sizeof(int));
         memcpy(input2, input, len * sizeof(int));
 
@@ -93,8 +94,7 @@ int main()
         int *got = calculateGrade(len, input2);
         test->expected = arrayToString(len, expected);
         test->got = arrayToString(len, got);
-        test->arguments = malloc(sizeof(char[100]));
-        char *args = arrayToString(len, input);
+        test->arguments = malloc(sizeof(char[250]));
         sprintf(test->arguments, "calculateGrade(%d, %s)", len, args);
 
         free(input);
@@ -121,7 +121,8 @@ int main()
 
         free(test->expected);
         free(test->got);
-        if (i >= 1) {
+        if (i >= 1)
+        {
             free(test->arguments);
         }
     }
