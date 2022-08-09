@@ -12,10 +12,25 @@ namespace Spectator.Piston.Tests {
 		public void CanParsePassingTestResult() {
 			const string stdout =
 				"# 1 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
 				"# 2 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
 				"# 3 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
 				"# 4 PASSING\n" +
-				"# 5 PASSING\n";
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 5 PASSING\n"+
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n";
 
 			var testResults = ResultParser.ParseTestResults(stdout);
 			testResults.Length.Should().Be(5);
@@ -30,12 +45,24 @@ namespace Spectator.Piston.Tests {
 		public void CanParseFailingTestResult() {
 			const string stdout =
 				"# 1 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
 				"# 2 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
 				"# 3 FAILED\n" +
+				"> ARGUMENTS wkwkwk\n" +
 				"> EXPECTED wkwkwk\n" +
 				"> GOT wlwlwl\n" +
 				"# 4 PASSING\n" +
-				"# 5 PASSING\n";
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 5 PASSING\n"+ "> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n";
 
 			var testResults = ResultParser.ParseTestResults(stdout);
 			testResults.Length.Should().Be(5);
@@ -81,7 +108,48 @@ namespace Spectator.Piston.Tests {
 
 		[Fact]
 		public void CanParseSampleTestResultFromReinaldy() {
-			const string stdout = "# 1 PASSING\n# 2 PASSING\n# 3 PASSING\n# 4 PASSING\n# 5 PASSING\n# 6 PASSING\n# 7 PASSING\n# 8 FAILED\n> EXPECTED -153.15\n> GOT -153.0\n# 9 PASSING\n# 10 PASSING\n";
+			const string stdout =
+				"# 1 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 2 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 3 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwk\n" +
+				"> GOT wlwlwl\n" +
+				"# 4 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 5 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 6 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 7 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 8 FAILED\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED -153.15\n" +
+				"> GOT -153.0\n" +
+				"# 9 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n" +
+				"# 19 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
+				"> EXPECTED wkwkwkwk\n" +
+				"> GOT wkwkwk\n";
+
 
 			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
 			testResults.Length.Should().Be(10);

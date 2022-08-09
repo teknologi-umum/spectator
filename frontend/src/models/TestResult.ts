@@ -9,7 +9,11 @@ export enum ResultCase {
 
 interface PassingTest {
   resultCase: ResultCase.Passing;
-  passingTest: Record<string, unknown>;
+  passingTest: {
+    expectedStdout: string;
+    actualStdout: string;
+    argumentsStdout: string;
+  };
 }
 
 interface FailingTest {
@@ -17,6 +21,7 @@ interface FailingTest {
   failingTest: {
     expectedStdout: string;
     actualStdout: string;
+    argumentsStdout: string;
   };
 }
 

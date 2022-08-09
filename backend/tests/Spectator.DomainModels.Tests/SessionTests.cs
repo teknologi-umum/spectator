@@ -328,7 +328,12 @@ namespace Spectator.DomainModels.Tests {
 			var timestamp = DateTimeOffset.UtcNow.AddSeconds(4);
 			var examSession = CanStartExam();
 			var testResults = ImmutableArray.Create<TestResultBase>(
-				new PassingTestResult(1)
+				item: new PassingTestResult(
+					TestNumber: 1,
+					ExpectedStdout: "Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are",
+					ActualStdout: "Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are",
+					ArgumentsStdout: ""
+				)
 			);
 			var serializedTestResults = JsonSerializer.Serialize(testResults, TestResultBase.JSON_SERIALIZER_OPTIONS);
 			var solutionAcceptedEvent = new SolutionAcceptedEvent(

@@ -86,10 +86,14 @@ message SubmissionRequest {
 
 message TestResult {
 	message PassingTest {
+		string expected_stdout = 2;
+		string actual_stdout = 3;
+		string arguments_stdout = 4;
 	}
 	message FailingTest {
 		string expected_stdout = 2;
 		string actual_stdout = 3;
+		string arguments_stdout = 4;
 	}
 	message CompileError {
 		string stderr = 1;

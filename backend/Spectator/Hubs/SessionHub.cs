@@ -195,13 +195,18 @@ namespace Spectator.Hubs {
 					select testResult switch {
 						PassingTestResult passing => new TestResult {
 							TestNumber = passing.TestNumber,
-							PassingTest = new TestResult.Types.PassingTest()
+							PassingTest = new TestResult.Types.PassingTest { 
+								ExpectedStdout = passing.ExpectedStdout,
+								ActualStdout = passing.ActualStdout,
+								ArgumentsStdout = passing.ArgumentsStdout
+							}
 						},
 						FailingTestResult failing => new TestResult {
 							TestNumber = failing.TestNumber,
 							FailingTest = new TestResult.Types.FailingTest {
 								ExpectedStdout = failing.ExpectedStdout,
-								ActualStdout = failing.ActualStdout
+								ActualStdout = failing.ActualStdout,
+								ArgumentsStdout = failing.ArgumentsStdout
 							}
 						},
 						CompileErrorResult compileError => new TestResult {
@@ -252,13 +257,18 @@ namespace Spectator.Hubs {
 					select testResult switch {
 						PassingTestResult passing => new TestResult {
 							TestNumber = passing.TestNumber,
-							PassingTest = new TestResult.Types.PassingTest()
+							PassingTest = new TestResult.Types.PassingTest { 
+								ExpectedStdout = passing.ExpectedStdout,
+								ActualStdout = passing.ActualStdout,
+								ArgumentsStdout = passing.ArgumentsStdout
+							}
 						},
 						FailingTestResult failing => new TestResult {
 							TestNumber = failing.TestNumber,
 							FailingTest = new TestResult.Types.FailingTest {
 								ExpectedStdout = failing.ExpectedStdout,
-								ActualStdout = failing.ActualStdout
+								ActualStdout = failing.ActualStdout,
+								ArgumentsStdout = failing.ArgumentsStdout 
 							}
 						},
 						CompileErrorResult compileError => new TestResult {

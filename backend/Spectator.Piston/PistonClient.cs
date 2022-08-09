@@ -125,14 +125,18 @@ namespace Spectator.Piston {
 					new FailingTestResult(
 						TestNumber: 1,
 						ExpectedStdout: "Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are",
-						ActualStdout: executeResult.Runtime.Stdout
+						ActualStdout: executeResult.Runtime.Stdout,
+						ArgumentsStdout: ""
 					)
 				);
 			}
 
 			return ImmutableArray.Create<TestResultBase>(
 				new PassingTestResult(
-					TestNumber: 1
+					TestNumber: 1,
+					ExpectedStdout: "Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are",
+					ActualStdout: executeResult.Runtime.Stdout,
+					ArgumentsStdout: ""
 				)
 			);
 		}
