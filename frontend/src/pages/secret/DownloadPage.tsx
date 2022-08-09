@@ -66,6 +66,26 @@ function parseFileName(url: string) {
     .join(" ");
 }
 
+async function retriggerResult(adminSessionId: string, examSessionId: string): Promise<void> {
+  const response = await fetch(
+    `${ADMIN_BASE_URL}/retrigger`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        sessionId: adminSessionId,
+        examSessionId: examSessionId
+      })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+}
+
 export default function Download() {
   const [isLoading, setLoading] = useState(false);
   const [files, setFiles] = useState<GroupedFileEntry>({});
@@ -141,6 +161,25 @@ export default function Download() {
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel pb={4}>
+                  <Flex
+                    key={index - 1}
+                    justify="space-between"
+                    py="4"
+                    borderTopWidth={1}
+                    borderTopColor={bg}
+                  >
+                    <span>Regenerate results (use with caution)</span>
+                    <Flex>
+                      <Button
+                        as="button"
+                        colorScheme="orange"
+                        size="sm"
+                        onClick={() => retriggerResult(sessionId as string, data[0].sessionId)}
+                      >
+                        Regenerate
+                      </Button>
+                    </Flex>
+                  </Flex>
                   <Flex
                     key={index}
                     justify="space-between"
