@@ -7,10 +7,12 @@ _REPLACE_ME_WITH_SOLUTION_
 function main(): void {
     $test_cases = [
         [
+            "arguments" => "isSameNumber(100, 212)",
             "got" => isSameNumber(100, 212),
             "expected" => false
         ],
         [
+            "arguments" => "isSameNumber(25, 25)",
             "got" => isSameNumber(25, 25),
             "expected" => true
         ],
@@ -21,9 +23,11 @@ function main(): void {
         $b = rand(0, 9999);
         $expected = $a === $b;
         $got = isSameNumber($a, $b);
+        $arguments = "isSameNumber($a, $b)";
         array_push($test_cases, [
             "got" => $got,
-            "expected" => $expected
+            "expected" => $expected,
+            "arguments" => $arguments
         ]);
     }
 
@@ -31,9 +35,11 @@ function main(): void {
         $a = rand(0, 9999);
         $expected = true;
         $got = isSameNumber($a, $a);
+        $arguments = "isSameNumber($a, $a)";
         array_push($test_cases, [
             "got" => $got,
-            "expected" => $expected
+            "expected" => $expected,
+            "arguments" => $arguments
         ]);
     }
 
@@ -41,11 +47,15 @@ function main(): void {
         $test = $test_cases[$i];
 
         if ($test["got"] === $test["expected"]) {
-            echo "# ". $i + 1 . " PASSING"; 
+            echo "# ". $i + 1 . " PASSING\n";
+            echo "> ARGUMENTS " . $test["arguments"] . "\n";
+            echo "> EXPECTED " . $test["expected"] . "\n";
+            echo "> GOT " . $test["got"] . "\n";
         } else {
-            echo "# " . $i + 1 . " FAILED";
-            echo "> EXPECTED " . $test["expected"];
-            echo "> GOT " . $test["got"];
+            echo "# " . $i + 1 . " FAILED\n";
+            echo "> ARGUMENTS " . $test["arguments"] . "\n";
+            echo "> EXPECTED " . $test["expected"] . "\n";
+            echo "> GOT " . $test["got"] . "\n";
         }
     }
 }
