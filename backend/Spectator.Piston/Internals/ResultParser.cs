@@ -12,21 +12,30 @@ namespace Spectator.Piston.Internals {
 
 			for (var i = 0; i < lines.Length; i++) {
 				if (Regex.Match(lines[i], "# ([0-9]+) PASSING").Groups is { Count: 2 } passingGroups
-						&& int.TryParse(passingGroups[1].Value, out var passingTestNumber)) {
+					&& int.TryParse(passingGroups[1].Value, out var passingTestNumber)
+					&& Regex.Match(lines[++i], "> ARGUMENTS (.*)").Groups is { Count: 2 } passingArgumentsGroups
+					&& Regex.Match(lines[++i], "> EXPECTED (.*)").Groups is { Count: 2 } passingExpectedGroups
+					&& Regex.Match(lines[++i], "> GOT (.*)").Groups is { Count: 2 } passingActualGroups) {
 					testResults.Add(new PassingTestResult(
-						TestNumber: passingTestNumber
+						TestNumber: passingTestNumber,
+						ExpectedStdout: passingExpectedGroups[1].Value,
+						ActualStdout: passingActualGroups[1].Value,
+						ArgumentsStdout: passingArgumentsGroups[1].Value
+
 					));
 					continue;
 				}
 
 				if (Regex.Match(lines[i], "# ([0-9]+) FAILED").Groups is { Count: 2 } failingGroups
 					&& int.TryParse(failingGroups[1].Value, out var failingTestNumber)
-					&& Regex.Match(lines[++i], "> EXPECTED (.*)").Groups is { Count: 2 } expectedGroups
-					&& Regex.Match(lines[++i], "> GOT (.*)").Groups is { Count: 2 } actualGroups) {
+					&& Regex.Match(lines[++i], "> ARGUMENTS (.*)").Groups is { Count: 2 } failingArgumentsGroups
+					&& Regex.Match(lines[++i], "> EXPECTED (.*)").Groups is { Count: 2 } failingExpectedGroups
+					&& Regex.Match(lines[++i], "> GOT (.*)").Groups is { Count: 2 } failingActualGroups) {
 					testResults.Add(new FailingTestResult(
 						TestNumber: failingTestNumber,
-						ExpectedStdout: expectedGroups[1].Value,
-						ActualStdout: actualGroups[1].Value
+						ExpectedStdout: failingExpectedGroups[1].Value,
+						ActualStdout: failingActualGroups[1].Value,
+						ArgumentsStdout: failingArgumentsGroups[1].Value
 					));
 					continue;
 				}

@@ -2,6 +2,7 @@
 	public record FailingTestResult(
 		int TestNumber,
 		string ExpectedStdout,
-		string ActualStdout
+		string ActualStdout,
+		string ArgumentsStdout
 	) : TestResultBase(TestNumber);
 }
