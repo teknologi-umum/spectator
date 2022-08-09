@@ -37,20 +37,25 @@ public class question2 {
         return 0;
     }
 
-    private static List<double[]> generateTestCase() {
-        var listOfTest = new ArrayList<double[]>();
+    private static List<Object[]> generateTestCase() {
+        var listOfTest = new ArrayList<Object[]>();
 
-        listOfTest.add(new double[] { 212, Temperature.calculateTemperature(100, "Celcius", "Fahrenheit") });
-        listOfTest.add(new double[] { 373.15, Temperature.calculateTemperature(212, "Fahrenheit", "Kelvin") });
-        listOfTest.add(new double[] { 273.15, Temperature.calculateTemperature(0, "Celcius", "Kelvin") });
-        listOfTest.add(new double[] { 32, Temperature.calculateTemperature(0, "Celcius", "Fahrenheit") });
-        listOfTest.add(new double[] { 212, Temperature.calculateTemperature(373.15, "Kelvin", "Fahrenheit") });
+        listOfTest.add(new Object[] { 212.0, Temperature.calculateTemperature(100, "Celcius", "Fahrenheit"),
+                new QuestionAttribute(100, "Celcius", "Fahrenheit") });
+        listOfTest.add(new Object[] { 373.15, Temperature.calculateTemperature(212, "Fahrenheit", "Kelvin"),
+                new QuestionAttribute(212, "Fahrenheit", "Kelvin") });
+        listOfTest.add(new Object[] { 273.15, Temperature.calculateTemperature(0, "Celcius", "Kelvin"),
+                new QuestionAttribute(0, "Celcius", "Kelvin") });
+        listOfTest.add(new Object[] { 32.0, Temperature.calculateTemperature(0, "Celcius", "Fahrenheit"),
+                new QuestionAttribute(0, "Celcius", "Fahrenheit") });
+        listOfTest.add(new Object[] { 212.0, Temperature.calculateTemperature(373.15, "Kelvin", "Fahrenheit"),
+                new QuestionAttribute(373.15, "Kelvin", "Fahrenheit") });
 
         return listOfTest;
     }
 
-    private static List<double[]> generateRandomTestCase(int numberOfTestCases) {
-        var listOfTest = new ArrayList<double[]>();
+    private static List<Object[]> generateRandomTestCase(int numberOfTestCases) {
+        var listOfTest = new ArrayList<Object[]>();
 
         for (int i = 0; i < numberOfTestCases; i++) {
             var from = temperatures[getRandomNumber(0, 2)];
@@ -60,7 +65,7 @@ public class question2 {
             double expected = workingAnswer(randomTemperature, from, to);
             double got = Temperature.calculateTemperature(randomTemperature, from, to);
 
-            listOfTest.add(new double[] { expected, got });
+            listOfTest.add(new Object[] { expected, got, new QuestionAttribute(randomTemperature, from, to) });
         }
 
         return listOfTest;
@@ -71,24 +76,40 @@ public class question2 {
     }
 
     public static void main(String[] args) {
-        List<double[]> testCase = generateTestCase();
-        List<double[]> randomTestCase = generateRandomTestCase(5);
+        List<Object[]> testCase = generateTestCase();
+        List<Object[]> randomTestCase = generateRandomTestCase(5);
 
         testCase.addAll(randomTestCase);
 
         int counter = 0;
-        for (double[] test : testCase) {
-            BigDecimal expected = BigDecimal.valueOf(test[0]);
-            BigDecimal got = BigDecimal.valueOf(test[1]);
+        for (Object[] test : testCase) {
+            BigDecimal expected = BigDecimal.valueOf((Double) test[0]);
+            BigDecimal got = BigDecimal.valueOf((Double) test[1]);
 
             counter++;
+
             if (expected.compareTo(got) == 0) {
                 System.out.printf("# %d PASSING\n", counter);
             } else {
                 System.out.printf("# %d FAILED\n", counter);
-                System.out.printf("> EXPECTED %f\n", expected);
-                System.out.printf("> GOT %f\n", got);
             }
+            QuestionAttribute argument = (QuestionAttribute) test[2];
+            System.out.printf("> ARGUMENTS calculateTemperatures(%f, \"%s\", \"%s\")\n", argument.temp, argument.from,
+                    argument.to);
+            System.out.printf("> EXPECTED %f\n", expected);
+            System.out.printf("> GOT %f\n", got);
         }
+    }
+}
+
+class QuestionAttribute {
+    public double temp;
+    public String from;
+    public String to;
+
+    public QuestionAttribute(double temp, String from, String to) {
+        this.temp = temp;
+        this.from = from;
+        this.to = to;
     }
 }

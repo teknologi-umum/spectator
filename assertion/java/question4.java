@@ -17,16 +17,17 @@ public class question4 {
         return result;
     }
 
-    private static List<int[]> generateTestCase() {
-        var listOfTest = new ArrayList<int[]>();
+    private static List<Object[]> generateTestCase() {
+        var listOfTest = new ArrayList<Object[]>();
 
-        listOfTest.add(new int[] { 19, Heater.findHeaterPower(100212373) });
+        long power = 100212373;
+        listOfTest.add(new Object[] { 19, Heater.findHeaterPower(power), new QuestionAttribute(power) });
 
         return listOfTest;
     }
 
-    private static List<int[]> generateRandomTestCase(int numberOfTC) {
-        var listOfTest = new ArrayList<int[]>();
+    private static List<Object[]> generateRandomTestCase(int numberOfTC) {
+        var listOfTest = new ArrayList<Object[]>();
 
         for (var i = 0; i < numberOfTC; i++) {
 
@@ -35,7 +36,7 @@ public class question4 {
             var expected = workingAnswer(number);
             var got = Heater.findHeaterPower(number);
 
-            listOfTest.add(new int[] { expected, got });
+            listOfTest.add(new Object[] { expected, got, new QuestionAttribute(number) });
 
         }
         return listOfTest;
@@ -52,15 +53,25 @@ public class question4 {
         testCase.addAll(randomTestCase);
 
         var counter = 0;
-        for (int[] test : testCase) {
+        for (Object[] test : testCase) {
             counter++;
             if (test[0] == test[1]) {
                 System.out.printf("# %d PASSING\n", counter);
             } else {
                 System.out.printf("# %d FAILED\n", counter);
-                System.out.printf("> EXPECTED %d\n", test[0]);
-                System.out.printf("> GOT %d\n", test[1]);
             }
+            QuestionAttribute argument = (QuestionAttribute) test[2];
+            System.out.printf("> ARGUMENTS findHeaterPower(%d)\n", argument.power);
+            System.out.printf("> EXPECTED %d\n", test[0]);
+            System.out.printf("> GOT %d\n", test[1]);
         }
+    }
+}
+
+class QuestionAttribute {
+    public long power;
+
+    public QuestionAttribute(long power) {
+        this.power = power;
     }
 }

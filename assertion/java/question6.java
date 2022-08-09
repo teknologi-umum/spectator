@@ -21,8 +21,8 @@ public class question6 {
         return result;
     }
 
-    private static List<String[]> generateTestCase() {
-        var listOfTest = new ArrayList<String[]>();
+    private static List<Object[]> generateTestCase() {
+        var listOfTest = new ArrayList<Object[]>();
 
         var answer = new ArrayList<Integer>();
 
@@ -38,13 +38,13 @@ public class question6 {
         testInput.add(38);
         testInput.add(33);
 
-        listOfTest.add(new String[] { answer.toString(), Grade.calculateGrade(testInput).toString() });
+        listOfTest.add(new Object[] { answer.toString(), Grade.calculateGrade(testInput).toString(), new QuestionAttribute(testInput) });
 
         return listOfTest;
     }
 
-    private static List<String[]> generateRandomTestCase(int numberOfTC) {
-        var listOfTest = new ArrayList<String[]>();
+    private static List<Object[]> generateRandomTestCase(int numberOfTC) {
+        var listOfTest = new ArrayList<Object[]>();
 
         for (int i = 0; i < numberOfTC; i++) {
             var len = getRandomNumber(4, 20);
@@ -53,7 +53,7 @@ public class question6 {
             var expected = workingAnswer(input).toString();
             var got = Grade.calculateGrade(input).toString();
 
-            listOfTest.add(new String[] { expected, got });
+            listOfTest.add(new Object[] { expected, got, new QuestionAttribute(input)  });
 
         }
         return listOfTest;
@@ -79,16 +79,25 @@ public class question6 {
         testCase.addAll(randomTestCase);
 
         var counter = 0;
-        for (String[] test : testCase) {
+        for (Object[] test : testCase) {
             counter++;
             if (test[0].equals(test[1])) {
                 System.out.printf("# %d PASSING\n", counter);
             } else {
                 System.out.printf("# %d FAILED\n", counter);
-                System.out.printf("> EXPECTED %s\n", test[0]);
-                System.out.printf("> GOT %s\n", test[1]);
             }
+            QuestionAttribute argument = (QuestionAttribute) test[2];
+            System.out.printf("> ARGUMENTS calculateGrade(%s)\n", argument.input);
+            System.out.printf("> EXPECTED %s\n", test[0]);
+            System.out.printf("> GOT %s\n", test[1]);
         }
     }
+}
 
+class QuestionAttribute {
+    public List<Integer> input;
+
+    public QuestionAttribute(List<Integer> input) {
+        this.input = input;
+    }
 }
