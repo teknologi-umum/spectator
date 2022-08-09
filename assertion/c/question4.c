@@ -8,9 +8,11 @@ int findHeaterPower(long power);
 
 _REPLACE_ME_WITH_SOLUTION_
 
-int __workingAnswer(long power) {
+int __workingAnswer(long power)
+{
     int result = 0;
-    while (power != 0) {
+    while (power != 0)
+    {
         result += power % 10;
         power /= 10;
     }
@@ -18,41 +20,62 @@ int __workingAnswer(long power) {
     return result;
 }
 
-typedef struct TestCase {
+typedef struct TestCase
+{
     int expected;
     int got;
+    char *arguments;
 } TestCase;
 
 // creates a random number between min and max
-long __randomNumber(int min, long max) {
+long __randomNumber(long min, long max)
+{
     return (rand() % (max - min + 1)) + min;
 }
 
-int main() {
+int main()
+{
     srand(time(0));
 
     TestCase testCases[10] = {
         {.expected = 19,
-         .got = findHeaterPower(100212373)}};
+         .got = findHeaterPower(100212373),
+         .arguments = "findHeaterPower(100212373)"}};
 
-    for (int i = 0; i < 9; i++) {
-        int n = __randomNumber(1000000000, 9999999999);
+    for (int i = 0; i < 9; i++)
+    {
+        TestCase *test = testCases + i + 1;
+
+        long n = __randomNumber(1000000000, 9999999999);
         int expected = __workingAnswer(n);
         int got = findHeaterPower(n);
-        testCases[i].expected = expected;
-        testCases[i].got = got;
+        test->expected = expected;
+        test->got = got;
+        test->arguments = malloc(sizeof(char[100]));
+        sprintf(test->arguments, "findHeaterPower(%ld)", n);
     }
 
     // TODO: use constant for size
-    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++) {
-        TestCase test = testCases[i];
+    for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
+    {
+        TestCase *test = testCases + i;
 
-        if (test.got == test.expected) {
+        if (test->got == test->expected)
+        {
             printf("# %d PASSING\n", i + 1);
-        } else {
+        }
+        else
+        {
             printf("# %d FAILED\n", i + 1);
-            printf("> EXPECTED %d\n", test.expected);
-            printf("> GOT %d\n", test.got);
+        }
+
+        printf("> ARGUMENTS %s\n", test->arguments);
+        printf("> EXPECTED %d\n", test->expected);
+        printf("> GOT %d\n", test->got);
+
+        if (i > 0)
+        {
+            free(test->arguments);
         }
     }
     return 0;

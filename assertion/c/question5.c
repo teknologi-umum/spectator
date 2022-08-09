@@ -6,11 +6,12 @@
 
 _REPLACE_ME_WITH_DIRECTIVES_
 
-char* mumble(char* input);
+char *mumble(char *input);
 
 _REPLACE_ME_WITH_SOLUTION_
 
-char* __workingAnswer(const char* input) {
+char *__workingAnswer(const char *input)
+{
     int inputLen = strlen(input);
     // `triNum` is the final length of the result. Since we want `abcd` to be
     // `a-bb-ccc-dddd`, it's basically 1 + 2 + 3 + 4 <- this notation is called
@@ -18,78 +19,105 @@ char* __workingAnswer(const char* input) {
     // count the total of the hyphens used as a separator.
     // i hate c string, they need some whacky ass malloc ritual or some shit
     // ...that, or i'm just dumb, most likely the latter
-    int triNum = (inputLen * (inputLen + 1)) / 2;
-    int resultLen = triNum + inputLen - 1;
-    char* result = malloc(resultLen);
+    int resultLen = (inputLen + 1) * (inputLen + 2) / 2 - 1;
+    char *result = malloc(resultLen * sizeof(char));
 
     int pos = 0;
-    for (int i = 0; i < inputLen; i++) {
-        for (int j = 0; j <= i; j++) {
+    for (int i = 0; i < inputLen; i++, pos++)
+    {
+        for (int j = 0; j <= i; j++, pos++)
+        {
             char c = input[i];
             result[pos] = j == 0 ? toupper(c) : tolower(c);
-            pos++;
         }
-        if (pos != resultLen) {
-            result[pos] = '-';
-            pos++;
-        }
+
+        result[pos] = '-';
     }
+    // HACK: Ronny did this
+    result[--pos] = '\0';
 
     return result;
 }
 
-typedef struct TestCase {
-    char* expected;
-    char* got;
+typedef struct TestCase
+{
+    char *expected;
+    char *got;
+    char *arguments;
 } TestCase;
 
 // creates a random number between min and max
-long __randomNumber(int min, long max) {
+int __randomNumber(int min, int max)
+{
     return (rand() % (max - min + 1)) + min;
 }
 
-const char* characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-char* __genWords(int n) {
-    char* result = malloc(n + 1); // 1 for null terminating character
+const char *characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+char *__genWords(int n)
+{
+    char *result = malloc(n + 1); // 1 for null terminating character
 
     const int nchar = strlen(characters);
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         char randomChar = characters[__randomNumber(0, nchar)];
         result[i] = randomChar;
     }
+    result[n] = '\0';
 
     return result;
 }
 
-int main() {
+int main()
+{
     srand(time(0));
 
     TestCase testCases[10] = {
         {.expected = "A-Bb-Ccc-Dddd",
-         .got = mumble("abcd")},
+         .got = mumble("abcd"),
+         .arguments = "mumble(\"abcd\")"},
         {.expected = "R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy",
-         .got = mumble("RqaEzTy")}};
+         .got = mumble("RqaEzTy"),
+         .arguments = "mumble(\"RqaEzTy\")"}};
 
-    for (int i = 2; i < 10; i++) {
+    for (int i = 2; i < 10; i++)
+    {
+        TestCase *test = testCases + i;
+
         int n = __randomNumber(4, 20);
-        char* word = __genWords(n);
-        char* expected = __workingAnswer(word);
-        char* got = mumble(word);
-        testCases[i].expected = expected;
-        testCases[i].got = got;
+        char *word = __genWords(n);
+        char *expected = __workingAnswer(word);
+        char *got = mumble(word);
+        test->expected = expected;
+        test->got = got;
+        test->arguments = malloc(sizeof(char[150]));
+        sprintf(test->arguments, "mumble(\"%s\")", word);
         free(word);
     }
 
-    for (unsigned int i = 0, len = sizeof(testCases) / sizeof(TestCase); i < len; i++) {
-        TestCase test = testCases[i];
+    for (unsigned int i = 0, len = sizeof(testCases) / sizeof(TestCase); i < len; i++)
+    {
+        TestCase *test = testCases + i;
 
-        if (strcmp(test.got, test.expected) == 0) {
+        if (strcmp(test->got, test->expected) == 0)
+        {
             printf("# %d PASSING\n", i + 1);
-        } else {
-            printf("# %d FAILED\n", i + 1);
-            printf("> EXPECTED %s\n", test.expected);
-            printf("> GOT %s\n", test.got);
         }
+        else
+        {
+            printf("# %d FAILED\n", i + 1);
+        }
+
+        printf("> ARGUMENTS %s\n", test->arguments);
+        printf("> EXPECTED %s\n", test->expected);
+        printf("> GOT %s\n", test->got);
+
+        if (i >= 2)
+        {
+            free(test->expected);
+            free(test->arguments);
+        }
+        free(test->got);
     }
     return 0;
 }
