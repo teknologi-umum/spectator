@@ -22,6 +22,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release Spectator.sln
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal Spectator.sln /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+
   logger:
     name: Logger
     runs-on: ubuntu-latest
@@ -60,6 +61,7 @@ jobs:
           INFLUX_URL: http://db:8086/
           INFLUX_ORG: teknologi
           INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+
   video:
     name: Video
     runs-on: ubuntu-latest
@@ -110,6 +112,7 @@ jobs:
           MINIO_TOKEN: ""
           LOGGER_SERVER_ADDRESS: http://logger:9000/
           LOGGER_SERVER_TOKEN: testing
+
   worker:
     name: Worker
     runs-on: ubuntu-latest
@@ -171,6 +174,7 @@ jobs:
           LOGGER_SERVER_ADDRESS: http://logger:9000/
           LOGGER_SERVER_TOKEN: testing
           MINIO_TOKEN: ""
+
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
@@ -194,6 +198,7 @@ jobs:
         run: npm run build:prod
       - name: Test
         run: npm run test:coverage
+
   rce:
     name: RCE
     runs-on: ubuntu-latest
@@ -222,6 +227,7 @@ jobs:
         run: npm run test
         env:
           CI: true
+
   configs:
     name: Verify config
     runs-on: ubuntu-latest
@@ -250,6 +256,7 @@ jobs:
           && docker-compose --file docker-compose.override.yml config
       - name: Lint ansible
         run: ansible-lint -v -f rich ansible.yml
+
   assertion:
     name: Assertion
     runs-on: ubuntu-latest
@@ -274,7 +281,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
-          java-version: "11"
+          java-version: "17"
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
