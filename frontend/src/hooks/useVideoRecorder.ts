@@ -28,7 +28,7 @@ export function useVideoRecorder(accessToken: string | null) {
   const mediaRecorder = useRef<MediaRecorder | null>();
 
   useEffect(() => {
-    if (accessToken === null || deviceId === null) return;
+    if (accessToken === null || deviceId === null) return undefined;
 
     // We want to generate the StartedAt field here because we need it as a marker
     // for the start of the recording.
@@ -60,7 +60,7 @@ export function useVideoRecorder(accessToken: string | null) {
     })();
 
     // stop recording when the component is unmounted
-    () => {
+    return () => {
       if (mediaRecorder.current) {
         mediaRecorder.current.stop();
         mediaRecorder.current = null;

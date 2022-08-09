@@ -1,5 +1,5 @@
 language = "Java"
-version = "11"
+version = "17"
 compiled = false
 extension = "java"
 build_command = [
