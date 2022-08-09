@@ -5,22 +5,27 @@ _REPLACE_ME_WITH_SOLUTION_
 function main() {
   const testCases = [
     {
+      arguments: "calculateTemperature(100, \"Celcius\", \"Fahrenheit\")",
       got: calculateTemperature(100, "Celcius", "Fahrenheit"),
       expected: 212
     },
     {
+      arguments: "calculateTemperature(212, \"Fahrenheit\", \"Kelvin\")",
       got: calculateTemperature(212, "Fahrenheit", "Kelvin"),
       expected: 373.15
     },
     {
+      arguments: "calculateTemperature(0, \"Celcius\", \"Kelvin\")",
       got: calculateTemperature(0, "Celcius", "Kelvin"),
       expected: 273.15
     },
     {
+      arguments: "calculateTemperature(0, \"Celcius\", \"Fahrenheit\")",
       got: calculateTemperature(0, "Celcius", "Fahrenheit"),
       expected: 32
     },
     {
+      arguments: "calculateTemperature(0, \"Kelvin\", \"Fahrenheit\")",
       got: calculateTemperature(0, "Kelvin", "Fahrenheit"),
       expected: -459.67
     }
@@ -51,9 +56,10 @@ function main() {
     const from = temperatures[randomNumber(0, temperatures.length - 1)];
     const to = temperatures[randomNumber(0, temperatures.length - 1)];
     const n = randomNumber(-500, 500);
+    const arguments = `calculateTemperature(${n}, "${from}", "${to}")`;
     const expected = workingAnswer(n, from, to);
     const got = calculateTemperature(n, from, to);
-    testCases.push({ got, expected });
+    testCases.push({ got, expected, arguments });
   }
 
   // Test the thang
@@ -62,6 +68,7 @@ function main() {
 
     if (typeof test.got === "string" && Number.isNaN(Number(test.got))) {
       console.log(`# ${i + 1} FAILED`);
+      console.log(`> ARGUMENTS ${test.arguments}`);
       console.log(`> EXPECTED ${test.expected.toFixed(2)}`);
       console.log(`> GOT ${Number(test.got).toFixed(2)}`);
       continue;
@@ -69,8 +76,12 @@ function main() {
 
     if (Number(test.got).toFixed(2) === test.expected.toFixed(2)) {
       console.log(`# ${i + 1} PASSING`);
+      console.log(`> ARGUMENTS ${test.arguments}`);
+      console.log(`> EXPECTED ${test.expected.toFixed(2)}`);
+      console.log(`> GOT ${Number(test.got).toFixed(2)}`);
     } else {
       console.log(`# ${i + 1} FAILED`);
+      console.log(`> ARGUMENTS ${test.arguments}`);
       console.log(`> EXPECTED ${test.expected.toFixed(2)}`);
       console.log(`> GOT ${Number(test.got).toFixed(2)}`);
     }

@@ -5,6 +5,7 @@ _REPLACE_ME_WITH_SOLUTION_
 function main() {
     const testCases = [
         {
+            arguments: "calculateGrade([73, 67, 38, 33])",
             got: calculateGrade([73, 67, 38, 33]),
             expected: [75, 67, 40, 33]
         }
@@ -24,6 +25,7 @@ function main() {
         }
         return out;
     }
+
     const randomNumber = (a, b) => Math.floor(Math.random() * (b - a + 1) + a);
     for (let i = 0; i < 9; i++) {
         const input = [];
@@ -34,18 +36,23 @@ function main() {
 
         const expected = workingAnswer(input);
         const got = calculateGrade(input);
+        const arguments = `calculateGrade([${input.join(", ")}])`;
 
-        testCases.push({ expected, got });
+        testCases.push({ expected, got, arguments });
     }
 
     for (let i = 0; i < testCases.length; i++) {
         const test = testCases[i];
         if (test.expected.join(", ") === test.got.join(", ")) {
-            console.log(`# ${i+1} PASSING`);
-        } else {
-            console.log(`# ${i+1} FAILED`);
+            console.log(`# ${i + 1} PASSING`);
+            console.log(`> ARGUMENTS ${test.arguments}`);
             console.log(`> EXPECTED ${test.expected.join(", ")}`);
-            console.log(`> GOT ${test.got.join(", ")}`)
+            console.log(`> GOT ${test.got.join(", ")}`);
+        } else {
+            console.log(`# ${i + 1} FAILED`);
+            console.log(`> ARGUMENTS ${test.arguments}`);
+            console.log(`> EXPECTED ${test.expected.join(", ")}`);
+            console.log(`> GOT ${test.got.join(", ")}`);
         }
     }
 }
