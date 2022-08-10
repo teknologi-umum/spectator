@@ -159,6 +159,7 @@ func main() {
 		Logger:         loggerClient,
 		LoggerToken:    loggerToken,
 		Environment:    environment,
+		Queue:          queue,
 		Funfact: &funfact.Dependency{
 			Environment:    environment,
 			DB:             influxConn,
