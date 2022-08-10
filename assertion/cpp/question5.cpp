@@ -44,7 +44,7 @@ typedef struct TestCase
 } TestCase;
 
 // creates a random number between min and max
-int __randomNumber(int min, long max)
+int __randomNumber(int min, int max)
 {
     return (rand() % (max - min + 1)) + min;
 }
@@ -57,8 +57,8 @@ std::string __genWords(int n)
     const int nchar = characters.size() - 1;
     for (int i = 0; i < n; i++)
     {
-        const char randomChar = characters[__randomNumber(0, nchar)];
-        result.append(&randomChar);
+        const char randomChar = characters.at(__randomNumber(0, nchar));
+        result.append(1, randomChar);
     }
 
     return result;

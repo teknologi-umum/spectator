@@ -102,7 +102,7 @@ int main()
         };
 
         std::stringstream gotStream;
-        for (size_t i = 0; i < test.got.length(); ++i)
+        for (size_t i = 0; i < test.got.size(); ++i)
         {
             if (i != 0)
             {

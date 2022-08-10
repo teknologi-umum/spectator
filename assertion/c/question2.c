@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+#include <float.h>
 
 _REPLACE_ME_WITH_DIRECTIVES_
 
@@ -20,17 +22,17 @@ int isK(const char *unit) { return strcmp(unit, __KELVIN) == 0; }
 float __workingAnswer(int n, const char *a, const char *b)
 {
     if (isC(a) && isF(b))
-        return (n * 9 / 5) + 32;
+        return (n * 9 / 5.0f) + 32;
     if (isC(a) && isK(b))
-        return n + 273.15;
+        return n + 273.15f;
     if (isF(a) && isC(b))
-        return (n - 32) * 5 / 9;
+        return (n - 32) * 5 / 9.0f;
     if (isF(a) && isK(b))
-        return (n - 32) * 5 / 9 + 273.15;
+        return (n - 32) * 5 / 9.0f + 273.15f;
     if (isK(a) && isC(b))
-        return n - 273.15;
+        return n - 273.15f;
     if (isK(a) && isF(b))
-        return (n - 273.15) * 9 / 5 + 32;
+        return (n - 273.15f) * 9 / 5.0f + 32;
     return n;
 }
 
@@ -94,7 +96,7 @@ int main()
     {
         TestCase *test = testCases + i;
 
-        if (test->got == test->expected)
+        if (fabs(test->got - test->expected) < FLT_EPSILON)
         {
             printf("# %d PASSING\n", i + 1);
         }
