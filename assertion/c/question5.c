@@ -57,7 +57,7 @@ char *__genWords(int n)
 {
     char *result = malloc(n + 1); // 1 for null terminating character
 
-    const int nchar = strlen(characters);
+    const int nchar = strlen(characters) - 1;
     for (int i = 0; i < n; i++)
     {
         char randomChar = characters[__randomNumber(0, nchar)];

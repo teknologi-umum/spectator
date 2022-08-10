@@ -54,7 +54,7 @@ std::string __genWords(int n)
 {
     std::string result;
 
-    const int nchar = characters.size() - 1;
+    const int nchar = characters.length() - 1;
     for (int i = 0; i < n; i++)
     {
         const char randomChar = characters.at(__randomNumber(0, nchar));
