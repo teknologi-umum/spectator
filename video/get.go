@@ -22,7 +22,7 @@ func (d *Dependency) GetVideo(ctx context.Context, in *pb.VideoRequest) (*pb.Vid
 
 	err := d.Queue.Enqueue(&VideoJob{SessionId: in.GetSessionId()})
 	if err != nil {
-		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "failed to enqueue video job: %w", err)
+		return &pb.VideoResponse{}, status.Errorf(codes.Internal, "failed to enqueue video job: %v", err)
 	}
 
 	return &pb.VideoResponse{VideoUrl: ""}, nil
