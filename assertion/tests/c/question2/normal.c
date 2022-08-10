@@ -7,17 +7,17 @@
 float calculateTemperature(int temp, char *from, char *to)
 {
     if (strcmp(from, "Celcius") == 0 && strcmp(to, "Fahrenheit") == 0)
-        return (temp * 9 / 5) + 32;
+        return (temp * 9 / 5.0f) + 32.0f;
     if (strcmp(from, "Celcius") == 0 && strcmp(to, "Kelvin") == 0)
-        return temp + 273.15;
+        return temp + 273.15f;
     if (strcmp(from, "Fahrenheit") == 0 && strcmp(to, "Celcius") == 0)
-        return (temp - 32) * 5 / 9;
+        return (temp - 32) * 5 / 9.0f;
     if (strcmp(from, "Fahrenheit") == 0 && strcmp(to, "Kelvin") == 0)
-        return (temp - 32) * 5 / 9 + 273.15;
+        return (temp - 32) * 5 / 9.0f + 273.15f;
     if (strcmp(from, "Kelvin") == 0 && strcmp(to, "Celcius") == 0)
-        return temp - 273.15;
+        return temp - 273.15f;
     if (strcmp(from, "Kelvin") == 0 && strcmp(to, "Fahrenheit") == 0)
-        return (temp - 273.15) * 9 / 5 + 32;
+        return (temp - 273.15) * 9 / 5.0f + 32.0f;
 
     return temp;
 }

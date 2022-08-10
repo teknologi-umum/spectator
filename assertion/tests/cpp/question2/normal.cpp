@@ -8,27 +8,27 @@ float calculateTemperature(int temp, std::string from, std::string to)
 {
     if (from.compare("Celcius") == 0 && to.compare("Fahrenheit") == 0)
     {
-        return (temp * 9 / 5) + 32;
+        return (temp * 9 / 5.0f) + 32.0f;
     }
     else if (from.compare("Celcius") == 0 && to.compare("Kelvin") == 0)
     {
-        return temp + 273.15;
+        return temp + 273.15f;
     }
     else if (from.compare("Fahrenheit") == 0 && to.compare("Celcius") == 0)
     {
-        return (temp - 32) * 5 / 9;
+        return (temp - 32) * 5 / 9.0f;
     }
     else if (from.compare("Fahrenheit") == 0 && to.compare("Kelvin") == 0)
     {
-        return (temp - 32) * 5 / 9 + 273.15;
+        return (temp - 32) * 5 / 9.0f + 273.15f;
     }
     else if (from.compare("Kelvin") == 0 && to.compare("Celcius") == 0)
     {
-        return temp - 273.15;
+        return temp - 273.15f;
     }
     else if (from.compare("Kelvin") == 0 && to.compare("Fahrenheit") == 0)
     {
-        return (temp - 273.15) * 9 / 5 + 32;
+        return (temp - 273.15) * 9 / 5.0f + 32.0f;
     }
     else
     {
