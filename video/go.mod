@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/google/uuid v1.1.2
 	github.com/influxdata/influxdb-client-go/v2 v2.9.1
+	github.com/joncrlsn/dque v0.0.0-20211108142734-c2ef48c5192a
 	github.com/minio/minio-go/v7 v7.0.30
 	google.golang.org/grpc v1.47.0
 	google.golang.org/protobuf v1.27.1
@@ -13,6 +14,7 @@ require (
 require (
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/gofrs/flock v0.7.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/influxdata/line-protocol v0.0.0-20200327222509-2487e7298839 // indirect
