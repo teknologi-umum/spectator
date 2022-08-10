@@ -9,7 +9,7 @@ std::string mumble(std::string input)
     // write your code here
     std::vector<std::string> words;
 
-    for (unsigned int i = 0; i < input.size(); i++)
+    for (unsigned int i = 0; i < input.length(); i++)
     {
         std::string m = "";
         for (unsigned int j = 0; j <= i; j++)
