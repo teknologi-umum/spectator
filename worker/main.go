@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"time"
 	"worker/file"
 	"worker/funfact"
@@ -13,6 +14,7 @@ import (
 	"worker/status"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/joncrlsn/dque"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"google.golang.org/grpc"
@@ -28,6 +30,7 @@ type Dependency struct {
 	Environment    string
 	DB             influxdb2.Client
 	Bucket         *minio.Client
+	Queue          *dque.DQue
 	DBOrganization string
 	Logger         *logger.Logger
 	LoggerToken    string
@@ -98,6 +101,18 @@ func main() {
 		portNumber = "3000"
 	}
 
+	// Create embedded queue instance
+	queue, err := dque.NewOrOpen("worker-queue", ".", 50, FileJobBuilder)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer func() {
+		err := queue.Close()
+		if err != nil {
+			log.Printf("closing queue: %v", err)
+		}
+	}()
+
 	// Create InfluxDB instance
 	influxConn := influxdb2.NewClient(influxHost, influxToken)
 	defer influxConn.Close()
@@ -118,7 +133,12 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer loggerConn.Close()
+	defer func() {
+		err := loggerConn.Close()
+		if err != nil {
+			log.Printf("closing logger service connection: %v", err)
+		}
+	}()
 
 	loggerClient := logger.New(
 		loggerpb.NewLoggerClient(loggerConn),
@@ -139,6 +159,7 @@ func main() {
 		Logger:         loggerClient,
 		LoggerToken:    loggerToken,
 		Environment:    environment,
+		Queue:          queue,
 		Funfact: &funfact.Dependency{
 			Environment:    environment,
 			DB:             influxConn,
@@ -197,21 +218,61 @@ func main() {
 		log.Fatalf("Error preparing InfluxDB buckets: %s\n", err)
 	}
 
+	exitSignal := make(chan os.Signal, 1)
+	signal.Notify(exitSignal, os.Interrupt)
+
 	// gRPC uses TCP connection.
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", "0.0.0.0", portNumber))
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}
-	defer listener.Close()
+	defer func() {
+		err := listener.Close()
+		if err != nil {
+			log.Printf("closing listener: %v", err)
+		}
+	}()
 
 	// Initialize gRPC server
 	server := grpc.NewServer()
 
 	// Register the service with the server, including injecting service dependencies.
 	pb.RegisterWorkerServer(server, dependencies)
-	log.Printf("Server listening at %s", listener.Addr().String())
 
-	if err := server.Serve(listener); err != nil {
-		log.Fatalln("Failed to serve:", err)
-	}
+	go func() {
+		log.Printf("Server listening at %s", listener.Addr().String())
+
+		if err := server.Serve(listener); err != nil {
+			log.Fatalln("Failed to serve:", err)
+		}
+	}()
+
+	go func() {
+		log.Println("Starting queue consumer")
+		for {
+			iface, err := queue.DequeueBlock()
+			if err != nil {
+				log.Printf("error dequeuing block: %v", err)
+				time.Sleep(time.Second)
+				continue
+			}
+
+			block, ok := iface.(*FileJob)
+			if !ok {
+				log.Printf("iface is not a type of VideoJob")
+				time.Sleep(time.Second)
+				continue
+			}
+
+			time.Sleep(time.Minute * 3)
+
+			dependencies.File.CreateFile(block.RequestID, block.SessionID)
+		}
+	}()
+
+	<-exitSignal
+
+	log.Println("Shutting down server")
+
+	server.GracefulStop()
 }

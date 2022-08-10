@@ -48,7 +48,22 @@ func (d *Dependency) GenerateFiles(ctx context.Context, in *pb.Member) (*pb.Empt
 		return &pb.EmptyResponse{}, status.Error(codes.NotFound, "session not found")
 	}
 
-	go d.File.CreateFile(in.RequestId, sessionID)
+	err = d.Queue.Enqueue(&FileJob{
+		SessionID: sessionID,
+		RequestID: in.GetRequestId(),
+	})
+	if err != nil {
+		return &pb.EmptyResponse{}, status.Errorf(codes.Internal, "enqueuing job: %v", err)
+	}
 
 	return &pb.EmptyResponse{}, nil
+}
+
+type FileJob struct {
+	SessionID uuid.UUID
+	RequestID string
+}
+
+func FileJobBuilder() interface{} {
+	return &FileJob{}
 }
