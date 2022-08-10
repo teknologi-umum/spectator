@@ -90,7 +90,7 @@ int main()
         char *got = mumble(word);
         test->expected = expected;
         test->got = got;
-        test->arguments = malloc(sizeof(char[150]));
+        test->arguments = malloc(sizeof(char[250]));
         sprintf(test->arguments, "mumble(\"%s\")", word);
         free(word);
     }
