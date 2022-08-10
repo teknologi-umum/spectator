@@ -102,7 +102,7 @@ int main()
         };
 
         std::stringstream gotStream;
-        for (size_t i = 0; i < test.got.size(); ++i)
+        for (size_t i = 0; i < test.got.length(); ++i)
         {
             if (i != 0)
             {
@@ -111,6 +111,7 @@ int main()
 
             gotStream << test.got[i];
         }
+
         if (gotStream.str() == expectedStream.str())
         {
             printf("# %d PASSING\n", i + 1);
