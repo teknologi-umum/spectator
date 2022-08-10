@@ -83,8 +83,8 @@ int main()
 
         char *from = temperatures[__randomNumber(0, 2)];
         char *to = temperatures[__randomNumber(0, 2)];
-        int expected = __workingAnswer(randNum, from, to);
-        int got = calculateTemperature(randNum, from, to);
+        float expected = __workingAnswer(randNum, from, to);
+        float got = calculateTemperature(randNum, from, to);
 
         test->expected = expected;
         test->got = got;
