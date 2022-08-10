@@ -22,7 +22,7 @@ int isK(const char *unit) { return strcmp(unit, __KELVIN) == 0; }
 float __workingAnswer(int n, const char *a, const char *b)
 {
     if (isC(a) && isF(b))
-        return (n * 9 / 5.0f) + 32;
+        return (n * 9 / 5.0f) + 32.0f;
     if (isC(a) && isK(b))
         return n + 273.15f;
     if (isF(a) && isC(b))
@@ -32,7 +32,7 @@ float __workingAnswer(int n, const char *a, const char *b)
     if (isK(a) && isC(b))
         return n - 273.15f;
     if (isK(a) && isF(b))
-        return (n - 273.15f) * 9 / 5.0f + 32;
+        return (n - 273.15f) * 9 / 5.0f + 32.0f;
     return n;
 }
 
@@ -106,8 +106,8 @@ int main()
         }
 
         printf("> ARGUMENTS %s\n", test->arguments);
-        printf("> EXPECTED %f\n", test->expected);
-        printf("> GOT %f\n", test->got);
+        printf("> EXPECTED %.2f\n", test->expected);
+        printf("> GOT %.2f\n", test->got);
 
         if (i >= 5)
         {

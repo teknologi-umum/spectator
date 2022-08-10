@@ -24,7 +24,7 @@ bool isK(std::string unit) { return unit.compare(__KELVIN) == 0; }
 float __workingAnswer(int n, std::string a, std::string b)
 {
     if (isC(a) && isF(b))
-        return (n * 9 / 5.0f) + 32;
+        return (n * 9 / 5.0f) + 32.0f;
     if (isC(a) && isK(b))
         return n + 273.15f;
     if (isF(a) && isC(b))
@@ -34,7 +34,7 @@ float __workingAnswer(int n, std::string a, std::string b)
     if (isK(a) && isC(b))
         return n - 273.15f;
     if (isK(a) && isF(b))
-        return (n - 273.15f) * 9 / 5.0f + 32;
+        return (n - 273.15f) * 9 / 5.0f + 32.0f;
     return n;
 }
 
