@@ -21,20 +21,20 @@ bool isC(std::string unit) { return unit.compare(__CELCIUS) == 0; }
 bool isF(std::string unit) { return unit.compare(__FAHRENHEIT) == 0; }
 bool isK(std::string unit) { return unit.compare(__KELVIN) == 0; }
 
-float __workingAnswer(int n, std::string a, std::string b)
+float __workingAnswer(float n, std::string a, std::string b)
 {
     if (isC(a) && isF(b))
-        return (n * 9 / 5.0f) + 32.0f;
+        return (n * 9 / 5.0) + 32.0;
     if (isC(a) && isK(b))
-        return n + 273.15f;
+        return n + 273.15;
     if (isF(a) && isC(b))
-        return (n - 32) * 5 / 9.0f;
+        return (n - 32) * 5 / 9.0;
     if (isF(a) && isK(b))
-        return (n - 32) * 5 / 9.0f + 273.15f;
+        return (n - 32) * 5 / 9.0 + 273.15;
     if (isK(a) && isC(b))
-        return n - 273.15f;
+        return n - 273.15;
     if (isK(a) && isF(b))
-        return (n - 273.15f) * 9 / 5.0f + 32.0f;
+        return (n - 273.15) * 9 / 5.0 + 32.0;
     return n;
 }
 
@@ -59,26 +59,26 @@ int main()
 
     std::vector<TestCase> testCases(5);
 
-    testCases[0].expected = 212.0;
-    testCases[0].got = calculateTemperature(100, "Celcius", "Fahrenheit");
+    testCases[0].expected = 212.0f;
+    testCases[0].got = calculateTemperature(100.0f, "Celcius", "Fahrenheit");
     testCases[0].arguments = "calculateTemperature(100, \"Celcius\", \"Fahrenheit\")";
-    testCases[1].expected = 373.15;
-    testCases[1].got = calculateTemperature(212, "Fahrenheit", "Kelvin");
+    testCases[1].expected = 373.15f;
+    testCases[1].got = calculateTemperature(212.0f, "Fahrenheit", "Kelvin");
     testCases[1].arguments = "calculateTemperature(212, \"Fahrenheit\", \"Kelvin\")";
-    testCases[2].expected = 273.15;
-    testCases[2].got = calculateTemperature(0, "Celcius", "Kelvin");
+    testCases[2].expected = 273.15f;
+    testCases[2].got = calculateTemperature(0.0f, "Celcius", "Kelvin");
     testCases[2].arguments = "calculateTemperature(0, \"Celcius\", \"Kelvin\")";
-    testCases[3].expected = 32.0;
-    testCases[3].got = calculateTemperature(0, "Celcius", "Fahrenheit");
+    testCases[3].expected = 32.0f;
+    testCases[3].got = calculateTemperature(0.0f, "Celcius", "Fahrenheit");
     testCases[3].arguments = "calculateTemperature(0, \"Celcius\", \"Fahrenheit\")";
-    testCases[4].expected = -459.67;
-    testCases[4].got = calculateTemperature(0, "Kelvin", "Fahrenheit");
+    testCases[4].expected = -459.67f;
+    testCases[4].got = calculateTemperature(0.0f, "Kelvin", "Fahrenheit");
     testCases[4].arguments = "calculateTemperature(0, \"Kelvin\", \"Fahrenheit\")";
 
-    for (unsigned int i = 0; i < 5; i++)
+    for (unsigned int i = 0; testCases.size() < 100; i++)
     {
         // Generate random test cases
-        int randNum = __randomNumber(-500, 500);
+        float randNum = (float)__randomNumber(-500, 500);
         std::string from = temperatures.at(__randomNumber(0, 2));
         std::string to = temperatures.at(__randomNumber(0, 2));
 

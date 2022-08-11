@@ -22,17 +22,17 @@ int isK(const char *unit) { return strcmp(unit, __KELVIN) == 0; }
 float __workingAnswer(float n, const char *a, const char *b)
 {
     if (isC(a) && isF(b))
-        return (n * 9 / 5.0f) + 32.0f;
+        return (n * 9 / 5.0) + 32.0;
     if (isC(a) && isK(b))
-        return n + 273.15f;
+        return n + 273.15;
     if (isF(a) && isC(b))
-        return (n - 32) * 5 / 9.0f;
+        return (n - 32) * 5 / 9.0;
     if (isF(a) && isK(b))
-        return (n - 32) * 5 / 9.0f + 273.15f;
+        return (n - 32) * 5 / 9.0 + 273.15;
     if (isK(a) && isC(b))
-        return n - 273.15f;
+        return n - 273.15;
     if (isK(a) && isF(b))
-        return (n - 273.15f) * 9 / 5.0f + 32.0f;
+        return (n - 273.15) * 9 / 5.0 + 32.0;
     return n;
 }
 
@@ -55,21 +55,21 @@ int main()
 
     char temperatures[3][12] = {"Celcius", "Fahrenheit", "Kelvin"};
 
-    TestCase testCases[10] = {
-        {.expected = 212,
-         .got = calculateTemperature(100, "Celcius", "Fahrenheit"),
+    TestCase testCases[100] = {
+        {.expected = 212.0f,
+         .got = calculateTemperature(100.0f, "Celcius", "Fahrenheit"),
          .arguments = "calculateTemperature(100, \"Celcius\", \"Fahrenheit\")"},
-        {.expected = 373.15,
-         .got = calculateTemperature(212, "Fahrenheit", "Kelvin"),
+        {.expected = 373.15f,
+         .got = calculateTemperature(212.0f, "Fahrenheit", "Kelvin"),
          .arguments = "calculateTemperature(212, \"Fahrenheit\", \"Kelvin\")"},
-        {.expected = 273.15,
-         .got = calculateTemperature(0, "Celcius", "Kelvin"),
+        {.expected = 273.15f,
+         .got = calculateTemperature(0.0f, "Celcius", "Kelvin"),
          .arguments = "calculateTemperature(0, \"Celcius\", \"Kelvin\")"},
-        {.expected = 32,
-         .got = calculateTemperature(0, "Celcius", "Fahrenheit"),
+        {.expected = 32.0f,
+         .got = calculateTemperature(0.0f, "Celcius", "Fahrenheit"),
          .arguments = "calculateTemperature(0, \"Celcius\", \"Fahrenheit\")"},
-        {.expected = -459.67,
-         .got = calculateTemperature(0, "Kelvin", "Fahrenheit"),
+        {.expected = -459.67f,
+         .got = calculateTemperature(0.0f, "Kelvin", "Fahrenheit"),
          .arguments = "calculateTemperature(0, \"Kelvin\", \"Fahrenheit\")"}};
 
     // `sizeof` returns the size of the memory used, not the length of the
@@ -79,7 +79,7 @@ int main()
         TestCase *test = &testCases[i];
 
         // Generate random test cases
-        float randNum = (float) __randomNumber(-500, 500);
+        float randNum = (float)__randomNumber(-500, 500);
 
         char *from = temperatures[__randomNumber(0, 2)];
         char *to = temperatures[__randomNumber(0, 2)];
@@ -89,7 +89,7 @@ int main()
         test->expected = expected;
         test->got = got;
         test->arguments = malloc(sizeof(char) * 100);
-        sprintf(test->arguments, "calculateTemperature(%f, \"%s\", \"%s\")", randNum, from, to);
+        sprintf(test->arguments, "calculateTemperature(%.0f, \"%s\", \"%s\")", randNum, from, to);
     }
 
     for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
