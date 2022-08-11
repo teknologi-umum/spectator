@@ -7,7 +7,7 @@
 
 _REPLACE_ME_WITH_DIRECTIVES_
 
-float calculateTemperature(int temp, char *from, char *to);
+float calculateTemperature(float temp, char *from, char *to);
 
 _REPLACE_ME_WITH_SOLUTION_
 
@@ -19,7 +19,7 @@ int isC(const char *unit) { return strcmp(unit, __CELCIUS) == 0; }
 int isF(const char *unit) { return strcmp(unit, __FAHRENHEIT) == 0; }
 int isK(const char *unit) { return strcmp(unit, __KELVIN) == 0; }
 
-float __workingAnswer(int n, const char *a, const char *b)
+float __workingAnswer(float n, const char *a, const char *b)
 {
     if (isC(a) && isF(b))
         return (n * 9 / 5.0f) + 32.0f;
@@ -79,7 +79,7 @@ int main()
         TestCase *test = &testCases[i];
 
         // Generate random test cases
-        int randNum = __randomNumber(-500, 500);
+        float randNum = (float) __randomNumber(-500, 500);
 
         char *from = temperatures[__randomNumber(0, 2)];
         char *to = temperatures[__randomNumber(0, 2)];
@@ -89,7 +89,7 @@ int main()
         test->expected = expected;
         test->got = got;
         test->arguments = malloc(sizeof(char) * 100);
-        sprintf(test->arguments, "calculateTemperature(%d, \"%s\", \"%s\")", randNum, from, to);
+        sprintf(test->arguments, "calculateTemperature(%f, \"%s\", \"%s\")", randNum, from, to);
     }
 
     for (unsigned int i = 0; i < sizeof(testCases) / sizeof(TestCase); i++)
@@ -106,8 +106,8 @@ int main()
         }
 
         printf("> ARGUMENTS %s\n", test->arguments);
-        printf("> EXPECTED %.2f\n", test->expected);
-        printf("> GOT %.2f\n", test->got);
+        printf("> EXPECTED %f\n", test->expected);
+        printf("> GOT %f\n", test->got);
 
         if (i >= 5)
         {

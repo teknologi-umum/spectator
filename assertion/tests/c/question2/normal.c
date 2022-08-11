@@ -4,7 +4,7 @@
 // `calculateTemperature` is a function that accepts 3 arguments as its input:
 // `temp` as integer, `from` as string, `to` as string. It returns a float
 // as its output.
-float calculateTemperature(int temp, char *from, char *to)
+float calculateTemperature(float temp, char *from, char *to)
 {
     if (strcmp(from, "Celcius") == 0 && strcmp(to, "Fahrenheit") == 0)
         return (temp * 9 / 5.0f) + 32.0f;
