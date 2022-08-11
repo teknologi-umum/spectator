@@ -6,7 +6,8 @@ import reducer, {
   markTourCompleted,
   SessionState,
   setAccessToken,
-  setVideoDeviceId
+  setVideoDeviceId,
+  setVideoStream
 } from "@/store/slices/sessionSlice";
 
 const initialState: SessionState = {
@@ -16,6 +17,7 @@ const initialState: SessionState = {
   secondSAMSubmitted: false,
   hasPermission: false,
   deviceId: null,
+  videoStream: null,
   tourCompleted: {
     personalInfo: false,
     samTest: false,
@@ -100,4 +102,12 @@ describe("Video", (it) => {
       deviceId: "bruh"
     });
   });
+  
+  it("should be able to set the video stream", () => {
+    expect(reducer(initialState, setVideoStream("hello world" as unknown as MediaStream))).toEqual({
+      ...initialState,
+      videoStream: "hello world"
+    });
+  });
 });
+
