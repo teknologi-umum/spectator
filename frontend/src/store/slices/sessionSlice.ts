@@ -7,6 +7,7 @@ export interface SessionState {
   secondSAMSubmitted: boolean;
   hasPermission: boolean;
   deviceId: string | null;
+  videoStream: MediaStream | null;
   tourCompleted: {
     personalInfo: boolean;
     samTest: boolean;
@@ -21,6 +22,7 @@ const initialState: SessionState = {
   secondSAMSubmitted: false,
   hasPermission: false,
   deviceId: null,
+  videoStream: null,
   tourCompleted: {
     personalInfo: false,
     samTest: false,
@@ -58,6 +60,9 @@ export const sessionSlice = createSlice({
     },
     setVideoDeviceId: (state, action: PayloadAction<string>) => {
       state.deviceId = action.payload;
+    },
+    setVideoStream: (state, action: PayloadAction<MediaStream | null>) => {
+      state.videoStream = action.payload;
     }
   }
 });
@@ -70,7 +75,8 @@ export const {
   setSessionId,
   removeSessionId,
   allowVideoPermission,
-  setVideoDeviceId
+  setVideoDeviceId,
+  setVideoStream
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

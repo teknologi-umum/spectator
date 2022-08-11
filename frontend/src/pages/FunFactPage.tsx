@@ -9,8 +9,9 @@ import {
   QuestionOutlineIcon
 } from "@/icons";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { ExamResult_FunFact } from "@/stub/session";
+import { setVideoStream } from "@/store/slices/sessionSlice";
 
 interface FunFactData {
   name: string;
@@ -54,7 +55,9 @@ function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
 }
 
 export default function FunFact() {
+  const dispatch = useAppDispatch();
   const { examResult } = useAppSelector((state) => state.examResult);
+  const { videoStream } = useAppSelector((state) => state.session);
   const { t } = useTranslation("translation", {
     keyPrefix: "translations.funfact"
   });
@@ -77,6 +80,14 @@ export default function FunFact() {
   useEffect(() => {
     document.title = "Fun Fact | Spectator";
   }, []);
+
+  // stop the webcam
+  useEffect(() => {
+    if (videoStream) {
+      videoStream.getVideoTracks()?.[0].stop();
+      dispatch(setVideoStream(null));
+    }
+  }, [videoStream]);
 
   return (
     <Flex maxW="container.lg" mx="auto" h="full">
