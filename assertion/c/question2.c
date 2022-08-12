@@ -55,7 +55,7 @@ int main()
 
     char temperatures[3][12] = {"Celcius", "Fahrenheit", "Kelvin"};
 
-    TestCase testCases[100] = {
+    TestCase testCases[10] = {
         {.expected = 212.0f,
          .got = calculateTemperature(100.0f, "Celcius", "Fahrenheit"),
          .arguments = "calculateTemperature(100, \"Celcius\", \"Fahrenheit\")"},
