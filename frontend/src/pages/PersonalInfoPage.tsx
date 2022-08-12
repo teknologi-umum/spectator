@@ -203,11 +203,12 @@ function PersonalInfoPage() {
                     variant="filled"
                     mr="1"
                     bg={darkerBg}
+                    defaultValue="grabpay"
                   >
-                    <option value="grabpay" selected>
+                    <option value="grabpay">
                       GrabPay
                     </option>
-                    <option value="grabpay">GoPay</option>
+                    <option value="gopay">GoPay</option>
                   </Select>
                 </InputRightElement>
               </InputGroup>

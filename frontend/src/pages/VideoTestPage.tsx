@@ -19,7 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   allowVideoPermission,
-  setVideoDeviceId
+  setVideoDeviceId,
+  setVideoStream
 } from "@/store/slices/sessionSlice";
 import { ToastBase } from "@/components/Toast";
 import { CrossIcon } from "@/icons";
@@ -29,7 +30,7 @@ export default function VideoTestPage() {
   const toast = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { hasPermission } = useAppSelector((state) => state.session);
+  const { hasPermission, videoStream } = useAppSelector((state) => state.session);
 
   // styles
   const videoBackground = useColorModeValue("gray.400", "gray.700", "gray.800");
@@ -38,7 +39,6 @@ export default function VideoTestPage() {
 
   // local states
   const videoElement = useRef<HTMLVideoElement | null>(null);
-  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [isAllowed, setAllowed] = useState(hasPermission);
   const videoSources = useVideoSources({ isAllowed });
   const activeSourceName = useMemo(() => {
@@ -46,6 +46,7 @@ export default function VideoTestPage() {
     const sourceName = videoStream.getTracks()?.[0].label ?? "Unknown";
     return sourceName;
   }, [videoStream]);
+
 
   function showAlert() {
     const id = toast({
@@ -70,7 +71,7 @@ export default function VideoTestPage() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
       const stream = await getUserMedia();
-      setVideoStream(stream);
+      dispatch(setVideoStream(stream));
       setAllowed(true);
     } catch (err: unknown) {
       setAllowed(false);
@@ -81,7 +82,7 @@ export default function VideoTestPage() {
   async function changeVideoSource(deviceId: string) {
     const newStream = await getUserMedia(deviceId);
     dispatch(setVideoDeviceId(deviceId));
-    setVideoStream(newStream);
+    dispatch(setVideoStream(newStream));
   }
 
   function startCodingTest() {
