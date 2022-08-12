@@ -75,7 +75,7 @@ int main()
     testCases[4].got = calculateTemperature(0.0f, "Kelvin", "Fahrenheit");
     testCases[4].arguments = "calculateTemperature(0, \"Kelvin\", \"Fahrenheit\")";
 
-    for (unsigned int i = 0; testCases.size() < 100; i++)
+    for (unsigned int i = 0; testCases.size() < 10; i++)
     {
         // Generate random test cases
         float randNum = (float)__randomNumber(-500, 500);
