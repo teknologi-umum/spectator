@@ -57,7 +57,7 @@ char *__genWords(int n)
 {
     char *result = malloc(n + 1); // 1 for null terminating character
 
-    const int nchar = strlen(characters);
+    const int nchar = strlen(characters) - 1;
     for (int i = 0; i < n; i++)
     {
         char randomChar = characters[__randomNumber(0, nchar)];
@@ -90,7 +90,7 @@ int main()
         char *got = mumble(word);
         test->expected = expected;
         test->got = got;
-        test->arguments = malloc(sizeof(char[150]));
+        test->arguments = malloc(sizeof(char[250]));
         sprintf(test->arguments, "mumble(\"%s\")", word);
         free(word);
     }
