@@ -9,7 +9,7 @@ jobs:
   video:
     name: Video
     runs-on: ubuntu-latest
-    container: golang:1.18
+    container: golang:1.18-buster
     timeout-minutes: 10
     services:
       db:
@@ -57,7 +57,8 @@ jobs:
           apt-get update &&
           apt-get upgrade -y &&
           apt-get install -y curl build-essential pkg-config &&
-          apt-get install -y ffmpeg libvpx-dev libvpx6 vpx-tools libopus-dev libx264-dev libbz2-dev liblzma-dev libvidstab-dev libx265-dev
+          apt-get install -y --install-suggests ffmpeg libvpx-dev libvpx6 vpx-tools libopus-dev \
+          libx264-dev libbz2-dev liblzma-dev libvidstab-dev libx265-dev libnuma-dev libdav1d-dev
       - name: Build test
         run: go build .
       - name: Run test
