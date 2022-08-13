@@ -11,7 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { ExamResult_FunFact } from "@/stub/session";
-import { setVideoStream } from "@/store/slices/sessionSlice";
+import { setVideoStream, removeAccessToken } from "@/store/slices/sessionSlice";
 
 interface FunFactData {
   name: string;
@@ -62,7 +62,7 @@ export default function FunFact() {
     keyPrefix: "translations.funfact"
   });
 
-  const gray = useColorModeValue("gray.500", "gray.800", "gray.900");
+  const gray = useColorModeValue("gray.500", "gray.200", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
   const [funfactData, setFunfactData] = useState<FunFactData[]>([]);
@@ -73,6 +73,7 @@ export default function FunFact() {
       if (examResult === null) throw new Error("examResult is null");
       setFunfactData(mapFunFactToList(examResult.funFact));
       setLoading(false);
+      removeAccessToken();
     }, 2500);
     return () => clearTimeout(id);
   }, []);
@@ -83,8 +84,13 @@ export default function FunFact() {
 
   // stop the webcam
   useEffect(() => {
-    if (videoStream) {
-      videoStream.getVideoTracks()?.[0].stop();
+    if (videoStream?.active) {
+      const videoTracks = videoStream.getVideoTracks();
+      for (const videoTrack of videoTracks) {
+        videoStream.removeTrack(videoTrack);
+        videoTrack.stop();
+      }
+
       dispatch(setVideoStream(null));
     }
   }, [videoStream]);
