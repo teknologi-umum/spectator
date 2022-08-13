@@ -197,24 +197,24 @@ jobs:
           tar xjvf ffmpeg-5.1.tar.bz2 &&
           cd ffmpeg-5.1 &&
           PKG_CONFIG_PATH="/usr/lib/pkgconfig" LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH ./configure
-            --prefix="/usr"
-            --pkg-config-flags="--static"
-            --extra-cflags="-I/usr/bin/include"
-            --extra-ldflags="-L/usr/bin/lib"
-            --extra-libs="-lpthread -lm"
-            --ld="g++"
-            --bindir="/usr/bin"
-            --enable-gpl
-            --enable-gnutls
-            --enable-libass
-            --enable-libfreetype
-            --enable-libmp3lame
-            --enable-libopus
-            --enable-libdav1d
-            --enable-libvorbis
-            --enable-libvpx
-            --enable-libx264
-            --enable-libx265 &&
+          --prefix="/usr"
+          --pkg-config-flags="--static"
+          --extra-cflags="-I/usr/bin/include"
+          --extra-ldflags="-L/usr/bin/lib"
+          --extra-libs="-lpthread -lm"
+          --ld="g++"
+          --bindir="/usr/bin"
+          --enable-gpl
+          --enable-gnutls
+          --enable-libass
+          --enable-libfreetype
+          --enable-libmp3lame
+          --enable-libopus
+          --enable-libdav1d
+          --enable-libvorbis
+          --enable-libvpx
+          --enable-libx264
+          --enable-libx265 &&
           make &&
           make install &&
           hash -r
