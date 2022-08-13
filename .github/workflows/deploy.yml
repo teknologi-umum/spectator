@@ -65,8 +65,8 @@ jobs:
   video:
     name: Video
     runs-on: ubuntu-latest
-    container: golang:1.18-buster
-    timeout-minutes: 10
+    container: golang:1.18-bullseye
+    timeout-minutes: 20
     services:
       db:
         image: influxdb:2.3.0
@@ -91,13 +91,133 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install dependencies
+      - name: Install requirements
         run: >
           apt-get update &&
           apt-get upgrade -y &&
-          apt-get install -y curl build-essential pkg-config &&
-          apt-get install -y --install-suggests ffmpeg libvpx-dev libvpx6 vpx-tools libopus-dev \
-          libx264-dev libbz2-dev liblzma-dev libvidstab-dev libx265-dev libnuma-dev libdav1d-dev
+          apt-get install -y curl tar gzip bzip2 autoconf automake build-essential gcc g++ cmake git-core
+          libass-dev libfreetype6-dev libgnutls28-dev libmp3lame-dev libsdl2-dev libtool
+          libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev
+          pkg-config texinfo wget yasm zlib1g-dev python3 python3-pip python3-setuptools python3-wheel
+      - name: Install ninja
+        run: >
+          mkdir -p /setup/ninja &&
+          cd /setup/ninja &&
+          curl -LO https://github.com/ninja-build/ninja/archive/refs/tags/v1.11.0.tar.gz &&
+          tar -zxf v1.11.0.tar.gz &&
+          cd ninja-1.11.0 &&
+          python3 configure.py --bootstrap &&
+          cp -v ninja /usr/bin/ninja
+      - name: Install meson
+        run: >
+          mkdir -p /setup/meson &&
+          cd /setup/meson &&
+          curl -LO https://github.com/mesonbuild/meson/releases/download/0.63.0/meson-0.63.0.tar.gz &&
+          tar -zxf meson-0.63.0.tar.gz &&
+          cd meson-0.63.0 &&
+          ./packaging/create_zipapp.py --outfile meson --interpreter '/usr/bin/env python3' . &&
+          cp -v meson /usr/bin/meson &&
+          mkdir -vp ~/.local/bin &&
+          cp -v meson ~/.local/bin/meson
+      - name: Install nasm
+        run: >
+          mkdir -p /setup/nasm &&
+          cd /setup/nasm &&
+          wget https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.bz2 &&
+          tar xjvf nasm-2.15.05.tar.bz2 &&
+          cd nasm-2.15.05 &&
+          ./autogen.sh &&
+          ./configure --prefix="/usr" --bindir="/usr/bin" &&
+          make &&
+          make install
+      - name: Install x264
+        run: >
+          mkdir -p /setup/x264 &&
+          cd /setup/x264 &&
+          git -C x264 pull 2> /dev/null || git clone --depth 1 https://code.videolan.org/videolan/x264.git &&
+          cd x264 &&
+          PKG_CONFIG_PATH="/usr/lib/pkgconfig" ./configure --prefix="/usr" --bindir="/usr/bin" --enable-static --enable-pic &&
+          make &&
+          make install
+      - name: Install x265
+        run: >
+          mkdir -p /setup/x265 &&
+          cd /setup/x265 &&
+          apt-get install -y libnuma-dev &&
+          wget -O x265.tar.bz2 https://bitbucket.org/multicoreware/x265_git/get/master.tar.bz2 &&
+          tar xjvf x265.tar.bz2 &&
+          cd multicoreware*/build/linux &&
+          cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/usr" -DENABLE_SHARED=off ../../source &&
+          make &&
+          make install
+      - name: Install vpx
+        run: >
+          mkdir -p /setup/libvpx &&
+          cd /setup/libvpx &&
+          git -C libvpx pull 2> /dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git &&
+          cd libvpx &&
+          ./configure --prefix="/usr" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm &&
+          make &&
+          make install
+      - name: Install opus
+        run: >
+          mkdir -p /setup/opus &&
+          cd /setup/opus &&
+          git -C opus pull 2> /dev/null || git clone --depth 1 https://github.com/xiph/opus.git &&
+          cd opus &&
+          ./autogen.sh &&
+          ./configure --prefix="/usr" --disable-shared &&
+          make &&
+          make install
+      - name: Install vmaf
+        run: >
+          mkdir -p /setup/vmaf &&
+          cd /setup/vmaf &&
+          wget https://github.com/Netflix/vmaf/archive/v2.1.1.tar.gz &&
+          tar xvf v2.1.1.tar.gz &&
+          mkdir -p vmaf-2.1.1/libvmaf/build &&
+          cd vmaf-2.1.1/libvmaf/build &&
+          meson setup -Denable_tests=false -Denable_docs=false --buildtype=release --default-library=static .. --prefix "/usr" --bindir="/usr/bin" --libdir="/usr/lib" &&
+          ninja &&
+          ninja install
+      - name: Install dav1d
+        run: >
+          mkdir -p /setup/dav1d &&
+          cd /setup/dav1d &&
+          git -C dav1d pull 2> /dev/null || git clone --depth 1 https://code.videolan.org/videolan/dav1d.git &&
+          mkdir -p dav1d/build &&
+          cd dav1d/build &&
+          meson setup -Denable_tools=false -Denable_tests=false --default-library=static .. --prefix "/usr" --libdir="/usr/lib" &&
+          ninja &&
+          ninja install
+      - name: Install ffmpeg
+        run: >
+          apt-get install -y gnutls-bin libgnutls30 libunistring-dev &&
+          wget -O ffmpeg-5.1.tar.bz2 https://ffmpeg.org/releases/ffmpeg-5.1.tar.bz2 &&
+          tar xjvf ffmpeg-5.1.tar.bz2 &&
+          cd ffmpeg-5.1 &&
+          PKG_CONFIG_PATH="/usr/lib/pkgconfig" LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH ./configure
+            --prefix="/usr"
+            --pkg-config-flags="--static"
+            --extra-cflags="-I/usr/bin/include"
+            --extra-ldflags="-L/usr/bin/lib"
+            --extra-libs="-lpthread -lm"
+            --ld="g++"
+            --bindir="/usr/bin"
+            --enable-gpl
+            --enable-gnutls
+            --enable-libass
+            --enable-libfreetype
+            --enable-libmp3lame
+            --enable-libopus
+            --enable-libdav1d
+            --enable-libvorbis
+            --enable-libvpx
+            --enable-libx264
+            --enable-libx265 &&
+          make &&
+          make install &&
+          hash -r
       - name: Build test
         run: go build .
       - name: Run test
