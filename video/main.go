@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -107,7 +108,7 @@ func main() {
 	}
 	defer func() {
 		err := queue.Close()
-		if err != nil {
+		if err != nil && !errors.Is(err, dque.ErrQueueClosed) {
 			log.Printf("closing queue: %v", err)
 		}
 	}()
@@ -205,6 +206,11 @@ func main() {
 	<-exitSignal
 
 	log.Println("Shutting down server...")
+
+	err = queue.Close()
+	if err != nil {
+		log.Printf("closing queue: %v", err)
+	}
 
 	server.GracefulStop()
 }
