@@ -137,7 +137,7 @@ func (d *Dependency) putListOfFilesToFile(sessionID string, files []string) (str
 	return filePath, nil
 }
 
-// uploadCOmbinedFiles takes a filepath from the local (or container's filesystem)
+// uploadCombinedFiles takes a filepath from the local (or container's filesystem)
 // and uploads it to the bucket. It will return the bucket path for the resulting
 // file.
 func (d *Dependency) uploadCombinedFile(ctx context.Context, sessionID string, filePath string) (string, error) {
@@ -157,7 +157,9 @@ func (d *Dependency) uploadCombinedFile(ctx context.Context, sessionID string, f
 		return "", fmt.Errorf("getting file stat: %w", err)
 	}
 
-	resultingFile := sessionID + "_" + "video.mp4"
+	fileExtension := path.Ext(filePath)
+
+	resultingFile := sessionID + "_video" + fileExtension
 	_, err = d.Bucket.PutObject(ctx, "public", resultingFile, f, fileStat.Size(), minio.PutObjectOptions{})
 	if err != nil {
 		return "", fmt.Errorf("putting object: %w", err)

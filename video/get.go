@@ -84,6 +84,22 @@ func (d *Dependency) executeVideoJob(sessionId string) {
 		return
 	}
 
+	defer func() {
+		err = os.RemoveAll(BaseDirectory + "/" + sessionId)
+		if err != nil {
+			defer d.Logger.Log(
+				fmt.Errorf("removing directory: %v", err).Error(),
+				logger_proto.Level_ERROR.Enum(),
+				"",
+				map[string]string{
+					"session_id": sessionId,
+					"function":   "GetVideo",
+				},
+			)
+			log.Printf("error: removing directory: %v", err)
+		}
+	}()
+
 	for _, file := range files {
 		_, err := d.downloadFile(ctx, sessionId, file)
 		if err != nil {
@@ -116,6 +132,22 @@ func (d *Dependency) executeVideoJob(sessionId string) {
 		return
 	}
 
+	uploadedWebmFilePath, err := d.uploadCombinedFile(ctx, sessionId, outputCombinedWebmFile)
+	if err != nil {
+		defer d.Logger.Log(
+			fmt.Errorf("uploading combined file: %v", err).Error(),
+			logger_proto.Level_ERROR.Enum(),
+			"",
+			map[string]string{
+				"session_id": sessionId,
+				"function":   "GetVideo",
+			},
+		)
+
+		log.Printf("error: uploading combined file: %v", err)
+		return
+	}
+
 	outputMp4File := path.Join(BaseDirectory, sessionId, "combined.mp4")
 
 	_, err = d.Ffmpeg.Convert(ctx, outputCombinedWebmFile, outputMp4File)
@@ -133,7 +165,7 @@ func (d *Dependency) executeVideoJob(sessionId string) {
 		return
 	}
 
-	uploadedFilePath, err := d.uploadCombinedFile(ctx, sessionId, outputMp4File)
+	uploadedMp4FilePath, err := d.uploadCombinedFile(ctx, sessionId, outputMp4File)
 	if err != nil {
 		defer d.Logger.Log(
 			fmt.Errorf("uploading combined files to minio: %v", err).Error(),
@@ -148,22 +180,7 @@ func (d *Dependency) executeVideoJob(sessionId string) {
 		return
 	}
 
-	err = os.RemoveAll(BaseDirectory + "/" + sessionId)
-	if err != nil {
-		defer d.Logger.Log(
-			fmt.Errorf("removing directory: %v", err).Error(),
-			logger_proto.Level_ERROR.Enum(),
-			"",
-			map[string]string{
-				"session_id": sessionId,
-				"function":   "GetVideo",
-			},
-		)
-		log.Printf("error: removing directory: %v", err)
-		return
-	}
-
-	log.Printf("done: uploaded file for %s to %s", sessionId, uploadedFilePath)
+	log.Printf("done: uploaded file for %s to %s and %s", sessionId, uploadedWebmFilePath, uploadedMp4FilePath)
 }
 
 type VideoJob struct {
