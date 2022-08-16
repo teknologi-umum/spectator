@@ -74,7 +74,7 @@ export default class SpokeBase {
       store.dispatch(setConnectionState(SignalR.HubConnectionState.Connected));
       console.log("SignalR connected.");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setTimeout(() => this.start(), 5000);
     }
   }

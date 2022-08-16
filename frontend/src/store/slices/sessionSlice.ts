@@ -43,6 +43,9 @@ export const sessionSlice = createSlice({
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
+    removeAccessToken: (state) => {
+      state.accessToken = null;
+    },
     markFirstSAMSubmitted: (state) => {
       state.firstSAMSubmitted = true;
     },
@@ -69,6 +72,7 @@ export const sessionSlice = createSlice({
 
 export const {
   setAccessToken,
+  removeAccessToken,
   markFirstSAMSubmitted,
   markSecondSAMSubmitted,
   markTourCompleted,
