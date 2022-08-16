@@ -105,10 +105,10 @@ if (app.Environment.IsDevelopment()) {
 // }
 
 // Middlewares
+app.UseCors("AllowAll");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowAll");
 
 // Map Frontend static files
 app.UseDefaultFiles();
