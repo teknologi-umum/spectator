@@ -58,6 +58,11 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       worker:
         condition: service_started
@@ -89,6 +94,11 @@ services:
       start_period: 60s
     volumes:
       - ./data/minio:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
 
   influx:
     image: influxdb:2.3.0
@@ -113,6 +123,11 @@ services:
       - ./data/influx/data2:/var/lib/influxdb2
       - ./data/influx/data1:/var/lib/influxdb
       - ./data/influx/etc:/etc/influxdb2
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
 
   rce:
     build:
@@ -131,6 +146,11 @@ services:
       PORT: 50051
       LOGGER_TOKEN: ${LOGGER_TOKEN}
       LOGGER_SERVER_ADDRESS: logger:3000
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       logger:
         condition: service_started
@@ -159,6 +179,11 @@ services:
       MINIO_TOKEN: ''
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: ${LOGGER_TOKEN}
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       logger:
         condition: service_started
@@ -191,6 +216,11 @@ services:
       MINIO_TOKEN: ''
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: ${LOGGER_TOKEN}
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       logger:
         condition: service_started
@@ -218,6 +248,11 @@ services:
       INFLUX_URL: http://influx:8086
       INFLUX_ORG: ${INFLUXDB_ORG}
       ACCESS_TOKEN: ${LOGGER_TOKEN}
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       influx:
         condition: service_healthy

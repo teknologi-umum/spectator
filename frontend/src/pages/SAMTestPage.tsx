@@ -110,7 +110,7 @@ function SAMTest() {
         })
       );
       dispatch(markFirstSAMSubmitted());
-      navigate("/coding-test");
+      navigate("/video-test");
     }
   }
 
