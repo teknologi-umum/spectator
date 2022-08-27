@@ -43,7 +43,8 @@ func TestMain(m *testing.M) {
 		influxOrg = "teknum_spectator"
 	}
 
-	db := influxdb2.NewClient(influxHost, influxToken)
+	influxOptions := influxdb2.DefaultOptions().SetBatchSize(100).SetFlushInterval(200)
+	db := influxdb2.NewClientWithOptions(influxHost, influxToken, influxOptions)
 
 	deps = &funfact.Dependency{
 		DB:             db,

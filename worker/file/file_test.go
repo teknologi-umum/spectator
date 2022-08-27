@@ -60,7 +60,9 @@ func TestMain(m *testing.M) {
 		minioToken = ""
 	}
 
-	db := influxdb2.NewClient(influxHost, influxToken)
+	influxOptions := influxdb2.DefaultOptions().SetBatchSize(100).SetFlushInterval(200)
+
+	db := influxdb2.NewClientWithOptions(influxHost, influxToken, influxOptions)
 
 	bucket, err := minio.New(
 		minioHost,

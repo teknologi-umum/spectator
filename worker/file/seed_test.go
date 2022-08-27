@@ -540,6 +540,9 @@ func seedData(ctx context.Context) error {
 		statisticWriteAPI.WritePoint(point)
 	}
 
+	// Make it flush!
+	time.Sleep(time.Second * 10)
+
 	sessionWriteAPI.Flush()
 	inputWriteAPI.Flush()
 	statisticWriteAPI.Flush()
