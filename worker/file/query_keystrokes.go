@@ -27,7 +27,7 @@ type Keystroke struct {
 }
 
 func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
-	keystrokeMouseRows, err := queryAPI.Query(
+	keystrokeRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketInputEvents+`")
 		|> range(start: 0)
@@ -37,12 +37,17 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 	if err != nil {
 		return []Keystroke{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
-	defer keystrokeMouseRows.Close()
+	defer func() {
+		err := keystrokeRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing keystrokeRows")
+		}
+	}()
 
 	var outputKeystroke []Keystroke
 
-	for keystrokeMouseRows.Next() {
-		record := keystrokeMouseRows.Record()
+	for keystrokeRows.Next() {
+		record := keystrokeRows.Record()
 
 		if record.Time().Year() != 2022 {
 			log.Warn().

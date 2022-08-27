@@ -35,7 +35,12 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 	if err != nil {
 		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseMoveRows")
+		}
+	}()
 
 	for rows.Next() {
 		record := rows.Record()

@@ -58,6 +58,12 @@ func (d *Dependency) queryExamEvents(ctx context.Context, queryAPI api.QueryAPI,
 	if err != nil {
 		return []ExamEvent{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
+	defer func() {
+		err := afterExamSamRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing afterExamSamRows")
+		}
+	}()
 
 	var outputExamEvents []ExamEvent
 

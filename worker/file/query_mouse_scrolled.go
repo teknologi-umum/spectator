@@ -22,7 +22,7 @@ type MouseScrolled struct {
 }
 
 func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseScrolled, error) {
-	mouseClickRows, err := queryAPI.Query(
+	mouseScrolledRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketInputEvents+`")
 		|> range(start: 0)
@@ -32,11 +32,17 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 	if err != nil {
 		return []MouseScrolled{}, fmt.Errorf("failed to query mouse down: %w", err)
 	}
+	defer func() {
+		err := mouseScrolledRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseScrolledRows")
+		}
+	}()
 
 	var outputMouseScrolled []MouseScrolled
 
-	for mouseClickRows.Next() {
-		record := mouseClickRows.Record()
+	for mouseScrolledRows.Next() {
+		record := mouseScrolledRows.Record()
 
 		if record.Time().Year() != 2022 {
 			log.Warn().

@@ -32,7 +32,12 @@ func (d *Dependency) QueryFunfact(ctx context.Context, queryAPI api.QueryAPI, se
 	if err != nil {
 		return &Funfact{}, fmt.Errorf("failed to query funfact: %w", err)
 	}
-	defer funfactRows.Close()
+	defer func() {
+		err := funfactRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing funfactRows")
+		}
+	}()
 
 	var outputFunfact Funfact
 

@@ -33,7 +33,12 @@ func (d *Dependency) QueryMouseDistanceTraveled(ctx context.Context, queryAPI ap
 	if err != nil {
 		return []MouseDistanceTraveled{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseDistanceTraveledRows")
+		}
+	}()
 
 	var currentQuestionNumber int
 	var currentDistance float64

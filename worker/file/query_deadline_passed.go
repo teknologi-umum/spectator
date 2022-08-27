@@ -20,7 +20,7 @@ type DeadlinePassed struct {
 }
 
 func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*DeadlinePassed, error) {
-	afterExamSamRows, err := queryAPI.Query(
+	deadlinePassedRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
@@ -29,11 +29,17 @@ func (d *Dependency) QueryDeadlinePassed(ctx context.Context, queryAPI api.Query
 	if err != nil {
 		return &DeadlinePassed{}, fmt.Errorf("failed to query deadline_passed: %w", err)
 	}
+	defer func() {
+		err := deadlinePassedRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing deadlinePassedRows")
+		}
+	}()
 
 	var outputDeadlinePassed DeadlinePassed
 
-	for afterExamSamRows.Next() {
-		record := afterExamSamRows.Record()
+	for deadlinePassedRows.Next() {
+		record := deadlinePassedRows.Record()
 
 		if record.Time().Year() != 2022 {
 			log.Warn().

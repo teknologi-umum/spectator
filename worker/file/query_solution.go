@@ -42,7 +42,12 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 	if err != nil {
 		return []Solution{}, fmt.Errorf("failed to query solution for measurement %s: %v", measurement, err)
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing querySolution rows")
+		}
+	}()
 
 	var outputSolution []Solution
 

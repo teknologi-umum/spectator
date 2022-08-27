@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/rs/zerolog/log"
 )
 
 type Mouse struct {
@@ -52,7 +53,12 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 	if err != nil {
 		return []Mouse{}, fmt.Errorf("failed to query session start time: %w", err)
 	}
-	defer examStartedRow.Close()
+	defer func() {
+		err := examStartedRow.Close()
+		if err != nil {
+			log.Err(err).Msg("closing examStartedRow")
+		}
+	}()
 
 	var startTime int64
 	if examStartedRow.Next() {
@@ -72,7 +78,12 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 	if err != nil {
 		return []Mouse{}, fmt.Errorf("failed to query mouse up: %w", err)
 	}
-	defer mouseRows.Close()
+	defer func() {
+		err := mouseRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseRows")
+		}
+	}()
 
 	var outputMouse []Mouse
 	for mouseRows.Next() {

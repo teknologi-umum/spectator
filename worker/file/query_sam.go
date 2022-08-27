@@ -30,7 +30,7 @@ func (d *Dependency) QueryBeforeExamSam(ctx context.Context, queryAPI api.QueryA
 }
 
 func (d *Dependency) querySelfAssessmentManekin(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) (*SelfAssessmentManekin, error) {
-	afterExamSamRows, err := queryAPI.Query(
+	rows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
 		|> range(start: 0)
@@ -40,12 +40,17 @@ func (d *Dependency) querySelfAssessmentManekin(ctx context.Context, queryAPI ap
 	if err != nil {
 		return &SelfAssessmentManekin{}, fmt.Errorf("failed to query after_exam_sam_submitted: %w", err)
 	}
-	defer afterExamSamRows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing querySelfAssessmentManekin rows")
+		}
+	}()
 
-	var outputAfterExam SelfAssessmentManekin
+	var outputSelfAssessmentManekin SelfAssessmentManekin
 
-	for afterExamSamRows.Next() {
-		record := afterExamSamRows.Record()
+	for rows.Next() {
+		record := rows.Record()
 
 		if record.Time().Year() != 2022 {
 			log.Warn().
@@ -68,7 +73,7 @@ func (d *Dependency) querySelfAssessmentManekin(ctx context.Context, queryAPI ap
 			sessionId = ""
 		}
 
-		outputAfterExam = SelfAssessmentManekin{
+		outputSelfAssessmentManekin = SelfAssessmentManekin{
 			Measurement:  measurement,
 			SessionId:    sessionId,
 			ArousedLevel: uint32(arousedLevel),
@@ -77,5 +82,5 @@ func (d *Dependency) querySelfAssessmentManekin(ctx context.Context, queryAPI ap
 		}
 	}
 
-	return &outputAfterExam, nil
+	return &outputSelfAssessmentManekin, nil
 }
