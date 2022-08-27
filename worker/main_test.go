@@ -98,7 +98,7 @@ func TestMain(m *testing.M) {
 	s := grpc.NewServer()
 	pb.RegisterWorkerServer(s, &worker.Dependency{DB: db, Bucket: bucket, DBOrganization: influxOrg})
 	go func() {
-		if err := s.Serve(lis); err != nil {
+		if err := s.Serve(lis); err != nil && !strings.Contains(err.Error(), "closed") {
 			log.Fatalf("Server exited with error: %v", err)
 		}
 	}()
