@@ -55,7 +55,7 @@ jobs:
       - name: Build test
         run: go build .
       - name: Run test
-        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -v -coverprofile=coverage.out -covermode=atomic -race ./...
         env:
           ENVIRONMENT: ""
           INFLUX_HOST: http://db:8086/
