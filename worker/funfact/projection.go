@@ -24,7 +24,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 				Msg("recovered from panic on CreateProjection")
 
 			d.Logger.Log(
-				r.(error).Error(),
+				r.Error(),
 				loggerpb.Level_CRITICAL.Enum(),
 				requestID,
 				map[string]string{

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -86,9 +87,9 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to create minio client: %v", err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	prepareCtx, prepareCancel := context.WithTimeout(context.Background(), time.Second*30)
 
-	err = prepareBuckets(ctx, db, influxOrg)
+	err = prepareBuckets(prepareCtx, db, influxOrg)
 	if err != nil {
 		log.Fatalf("Failed to prepare buckets: %v", err)
 	}
@@ -102,13 +103,27 @@ func TestMain(m *testing.M) {
 		}
 	}()
 
+	prepareCancel()
+
 	code := m.Run()
 
 	// It turns out that defer doesn't work
 	// when combined with os.Exit()
-	cancel()
-	cleanup()
+	cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), time.Second*30)
+
+	err = cleanup(cleanupCtx, db, dbOrganization)
+	if err != nil {
+		log.Printf("cleaning up: %v", err)
+	}
+
 	db.Close()
+
+	err = lis.Close()
+	if err != nil {
+		log.Printf("closing listener: %v", err)
+	}
+
+	cleanupCancel()
 
 	os.Exit(code)
 }
@@ -128,11 +143,11 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	for _, bucket := range bucketNames {
 		var b = bucket
 		_, err := bucketsAPI.FindBucketByName(ctx, b)
-		if err != nil && err.Error() != "bucket '"+b+"' not found" {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return fmt.Errorf("finding bucket: %w", err)
 		}
 
-		if err != nil && err.Error() == "bucket '"+b+"' not found" {
+		if err != nil && strings.Contains(err.Error(), "not found") {
 			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
 			if err != nil {
 				return fmt.Errorf("finding organization: %w", err)
@@ -148,45 +163,46 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	return nil
 }
 
-func cleanup() {
-	// create new context
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
-
+// cleanup deletes the buckets' data
+func cleanup(ctx context.Context, db influxdb2.Client, org string) error {
 	// find current organization
-	currentOrganization, err := db.OrganizationsAPI().FindOrganizationByName(ctx, dbOrganization)
+	currentOrganization, err := db.OrganizationsAPI().FindOrganizationByName(ctx, org)
 	if err != nil {
-		log.Fatalf("finding organization: %v", err)
+		return fmt.Errorf("finding organization: %w", err)
 	}
 
-	// find input_events bucket
-	inputEventsBucket, err := db.BucketsAPI().FindBucketByName(ctx, common.BucketInputEvents)
-	if err != nil {
-		log.Fatalf("finding bucket: %v", err)
+	bucketNames := []string{
+		common.BucketInputEvents,
+		common.BucketSessionEvents,
+		common.BucketFileEvents,
+		common.BucketInputStatisticEvents,
+		common.BucketWorkerStatus,
 	}
 
-	// delete bucket data
-	deleteAPI := db.DeleteAPI()
-
-	inputEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
-	for _, measurement := range inputEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, inputEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
+	for _, bucket := range bucketNames {
+		acquiredBucket, err := db.BucketsAPI().FindBucketByName(ctx, bucket)
 		if err != nil {
-			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
+			if strings.Contains(err.Error(), "not found") {
+				continue
+			}
+
+			return fmt.Errorf("finding bucket: %w", err)
+		}
+
+		err = db.BucketsAPI().DeleteBucket(ctx, acquiredBucket)
+		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				continue
+			}
+
+			return fmt.Errorf("deleting bucket: %w", err)
+		}
+
+		_, err = db.BucketsAPI().CreateBucketWithName(ctx, currentOrganization, bucket)
+		if err != nil {
+			return fmt.Errorf("creating bucket: %w", err)
 		}
 	}
 
-	// find input_events bucket
-	sessionEventsBucket, err := db.BucketsAPI().FindBucketByName(ctx, common.BucketSessionEvents)
-	if err != nil {
-		log.Fatalf("finding bucket: %v", err)
-	}
-
-	sessionEventMeasurements := []string{"ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL"}
-	for _, measurement := range sessionEventMeasurements {
-		err = deleteAPI.Delete(ctx, currentOrganization, sessionEventsBucket, time.UnixMilli(0), time.Now(), "_measurement=\""+measurement+"\"")
-		if err != nil {
-			log.Fatalf("deleting bucket data: [%s] %v", measurement, err)
-		}
-	}
+	return nil
 }

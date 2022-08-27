@@ -58,7 +58,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	// It's shorter, I know, but the performance is ugh.
 	switch s := data.(type) {
 	case *KeystrokeEvents:
-		dataCSV, err := gocsv.MarshalBytes(*(s.Keystroke))
+		dataCSV, err := gocsv.MarshalBytes(s.Keystroke)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", fileName, err)
 		}
@@ -82,7 +82,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	case *MouseEvents:
 		// MouseDown, MouseUp, MouseMoved, MouseScrolled, MouseDistanceTraveled
 		currentFileName := fileName + "_" + "mouse_click"
-		dataCSV, err := gocsv.MarshalBytes(*(s.MouseClick))
+		dataCSV, err := gocsv.MarshalBytes(s.MouseClick)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
@@ -105,7 +105,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		))
 
 		currentFileName = fileName + "_" + "mouse_moved"
-		dataCSV, err = gocsv.MarshalBytes(*(s.MouseMoved))
+		dataCSV, err = gocsv.MarshalBytes(s.MouseMoved)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
@@ -128,7 +128,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		))
 
 		currentFileName = fileName + "_" + "mousescrolled"
-		dataCSV, err = gocsv.MarshalBytes(*(s.MouseScrolled))
+		dataCSV, err = gocsv.MarshalBytes(s.MouseScrolled)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
@@ -151,7 +151,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		))
 
 		currentFileName = fileName + "_" + "mouse_distance_traveled"
-		dataCSV, err = gocsv.MarshalBytes(*(s.MouseDistanceTraveled))
+		dataCSV, err = gocsv.MarshalBytes(s.MouseDistanceTraveled)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
@@ -175,7 +175,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 	case *SolutionEvents:
 		// SolutionAcepted, SolutionRejected
 		currentFileName := fileName + "_" + "solutionaccepted"
-		dataCSV, err := gocsv.MarshalBytes(*(s.SolutionAccepted))
+		dataCSV, err := gocsv.MarshalBytes(s.SolutionAccepted)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
@@ -198,7 +198,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		))
 
 		currentFileName = fileName + "_" + "solutionrejected"
-		dataCSV, err = gocsv.MarshalBytes(*(s.SolutionRejected))
+		dataCSV, err = gocsv.MarshalBytes(s.SolutionRejected)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
 		}
@@ -360,7 +360,7 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 		))
 
 		currentFileName = fileName + "_" + "examidereloaded"
-		dataCSV, err = gocsv.MarshalBytes(*(s.ExamIDEReloaded))
+		dataCSV, err = gocsv.MarshalBytes(s.ExamIDEReloaded)
 		if err != nil {
 			return fmt.Errorf("failed to marshal csv %s data: %v", currentFileName, err)
 		}

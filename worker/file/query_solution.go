@@ -23,15 +23,15 @@ type Solution struct {
 	Timestamp            time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QuerySolutionAccepted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Solution, error) {
+func (d *Dependency) QuerySolutionAccepted(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Solution, error) {
 	return d.querySolution(ctx, queryAPI, sessionID, common.MeasurementSolutionAccepted)
 }
 
-func (d *Dependency) QuerySolutionRejected(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Solution, error) {
+func (d *Dependency) QuerySolutionRejected(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Solution, error) {
 	return d.querySolution(ctx, queryAPI, sessionID, common.MeasurementSolutionRejected)
 }
 
-func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) (*[]Solution, error) {
+func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) ([]Solution, error) {
 	rows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
@@ -40,7 +40,7 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return &[]Solution{}, fmt.Errorf("failed to query solution for measurement %s: %v", measurement, err)
+		return []Solution{}, fmt.Errorf("failed to query solution for measurement %s: %v", measurement, err)
 	}
 	defer rows.Close()
 
@@ -95,5 +95,5 @@ func (d *Dependency) querySolution(ctx context.Context, queryAPI api.QueryAPI, s
 		)
 	}
 
-	return &outputSolution, nil
+	return outputSolution, nil
 }

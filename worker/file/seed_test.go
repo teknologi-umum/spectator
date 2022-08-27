@@ -56,6 +56,8 @@ func seedData(ctx context.Context) error {
 					"hours_of_practice":   4,
 					"years_of_experience": 3,
 					"familiar_languages":  "java,kotlin,swift",
+					"wallet_number":       "0812131415",
+					"wallet_type":         "Gopay",
 				},
 				eventStart.Add(time.Minute),
 			)
@@ -115,7 +117,9 @@ func seedData(ctx context.Context) error {
 				map[string]string{
 					"session_id": sessionID,
 				},
-				map[string]interface{}{"arbitrary": "arbitrary"},
+				map[string]interface{}{
+					"arbitrary": "arbitrary",
+				},
 				eventStart.Add(time.Minute*6),
 			)
 
@@ -516,5 +520,6 @@ func seedData(ctx context.Context) error {
 	}()
 
 	wg.Wait()
+
 	return nil
 }

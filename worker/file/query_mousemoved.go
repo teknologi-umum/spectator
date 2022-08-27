@@ -21,7 +21,7 @@ type MouseMovement struct {
 	Timestamp   time.Time `json:"timestamp" csv:"_timestamp"`
 }
 
-func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]MouseMovement, error) {
+func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseMovement, error) {
 	var outputMouseMove []MouseMovement
 
 	rows, err := queryAPI.Query(
@@ -33,7 +33,7 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return &[]MouseMovement{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
+		return []MouseMovement{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
 	}
 	defer rows.Close()
 
@@ -74,5 +74,5 @@ func (d *Dependency) QueryMouseMove(ctx context.Context, queryAPI api.QueryAPI, 
 		)
 	}
 
-	return &outputMouseMove, nil
+	return outputMouseMove, nil
 }
