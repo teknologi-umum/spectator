@@ -7,6 +7,7 @@ import (
 	"worker/status"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 // Solution provides a union struct to host the solution_rejected
@@ -50,7 +51,12 @@ func (d *Dependency) CalculateSubmissionAttempts(ctx context.Context, sessionID 
 		d.Status.AppendState(ctx, sessionID, "calculate_submission_attempts", status.StateFailed)
 		return fmt.Errorf("failed to query solution_accepted measurement: %w", err)
 	}
-	defer solutionSubmittedRows.Close()
+	defer func() {
+		err := solutionSubmittedRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing solutionSubmittedRows")
+		}
+	}()
 
 	for solutionSubmittedRows.Next() {
 		output += solutionSubmittedRows.Record().ValueByKey("language").(int64)

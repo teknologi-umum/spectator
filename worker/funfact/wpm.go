@@ -8,6 +8,7 @@ import (
 	"worker/status"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid.UUID, result chan int64) error {
@@ -81,7 +82,12 @@ func (d *Dependency) CalculateWordsPerMinute(ctx context.Context, sessionID uuid
 		d.Status.AppendState(ctx, sessionID, "calculate_wpm", status.StateFailed)
 		return fmt.Errorf("failed to query keystroke events: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing rows")
+		}
+	}()
 
 	// calculate wpm every short burst
 	var totalKeystrokes []int64

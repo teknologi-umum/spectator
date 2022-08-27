@@ -7,6 +7,7 @@ import (
 	"worker/status"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.UUID, result chan float64) error {
@@ -35,7 +36,12 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StateFailed)
 		return fmt.Errorf("failed to query deletion rate: %w", err)
 	}
-	defer deletionRows.Close()
+	defer func() {
+		err := deletionRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing deletionRows")
+		}
+	}()
 
 	for deletionRows.Next() {
 		totalDeletion += 1
@@ -53,7 +59,12 @@ func (d *Dependency) CalculateDeletionRate(ctx context.Context, sessionID uuid.U
 		d.Status.AppendState(ctx, sessionID, "calculate_deletion_rate", status.StateFailed)
 		return fmt.Errorf("failed to query keystroke total: %w", err)
 	}
-	defer keystrokeTotalRows.Close()
+	defer func() {
+		err := keystrokeTotalRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing keystrokeTotalRows")
+		}
+	}()
 
 	for keystrokeTotalRows.Next() {
 		totalKeystrokes += 1
