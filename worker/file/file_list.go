@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
+	"github.com/rs/zerolog/log"
 )
 
 // File contains the struct regarding the file object
@@ -34,7 +35,12 @@ func (d *Dependency) ListFiles(ctx context.Context, sessionID uuid.UUID) ([]File
 	if err != nil {
 		return []File{}, fmt.Errorf("failed to query exported_data: %w", err)
 	}
-	defer testFileRows.Close()
+	defer func() {
+		err := testFileRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing testFileRows")
+		}
+	}()
 
 	var outputFile []File
 	for testFileRows.Next() {

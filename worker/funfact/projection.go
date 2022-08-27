@@ -24,7 +24,7 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 				Msg("recovered from panic on CreateProjection")
 
 			d.Logger.Log(
-				r.(error).Error(),
+				r.Error(),
 				loggerpb.Level_CRITICAL.Enum(),
 				requestID,
 				map[string]string{
@@ -70,7 +70,12 @@ func (d *Dependency) CreateProjection(sessionID uuid.UUID, wpm int64, attempts i
 		d.Status.AppendState(ctx, sessionID, "create_projection", status.StateFailed)
 		return
 	}
-	defer personalInfoRows.Close()
+	defer func() {
+		err := personalInfoRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing personalInfoRows")
+		}
+	}()
 
 	var studentNumber string
 	for personalInfoRows.Next() {

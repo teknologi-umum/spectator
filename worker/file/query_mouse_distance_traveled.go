@@ -19,7 +19,7 @@ type MouseDistanceTraveled struct {
 	Distance       float64 `json:"distance" csv:"distance"`
 }
 
-func (d *Dependency) QueryMouseDistanceTraveled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]MouseDistanceTraveled, error) {
+func (d *Dependency) QueryMouseDistanceTraveled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseDistanceTraveled, error) {
 	var outputDistanceTraveled []MouseDistanceTraveled
 
 	rows, err := queryAPI.Query(
@@ -31,9 +31,14 @@ func (d *Dependency) QueryMouseDistanceTraveled(ctx context.Context, queryAPI ap
 		|> sort(columns: ["_time", "question_number"])`,
 	)
 	if err != nil {
-		return &[]MouseDistanceTraveled{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
+		return []MouseDistanceTraveled{}, fmt.Errorf("failed to query mouse move - direction: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseDistanceTraveledRows")
+		}
+	}()
 
 	var currentQuestionNumber int
 	var currentDistance float64
@@ -117,5 +122,5 @@ func (d *Dependency) QueryMouseDistanceTraveled(ctx context.Context, queryAPI ap
 		}
 	}
 
-	return &outputDistanceTraveled, nil
+	return outputDistanceTraveled, nil
 }

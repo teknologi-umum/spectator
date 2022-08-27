@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"testing"
 	"time"
 	"worker/common"
@@ -59,7 +60,9 @@ func TestMain(m *testing.M) {
 		minioToken = ""
 	}
 
-	db := influxdb2.NewClient(influxHost, influxToken)
+	influxOptions := influxdb2.DefaultOptions().SetBatchSize(100).SetFlushInterval(200)
+
+	db := influxdb2.NewClientWithOptions(influxHost, influxToken, influxOptions)
 
 	bucket, err := minio.New(
 		minioHost,
@@ -135,7 +138,7 @@ func TestMain(m *testing.M) {
 
 	err = cleanup(cleanupCtx)
 	if err != nil {
-		log.Fatalf("Failed to cleanup: %v", err)
+		log.Fatalf("Failed on second cleanup: %v", err)
 	}
 
 	cleanupCancel()
@@ -161,11 +164,11 @@ func prepareBuckets(ctx context.Context, db influxdb2.Client, org string) error 
 	for _, bucket := range bucketNames {
 		var b = bucket
 		_, err := bucketsAPI.FindBucketByName(ctx, b)
-		if err != nil && err.Error() != "bucket '"+b+"' not found" {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return fmt.Errorf("finding bucket: %w", err)
 		}
 
-		if err != nil && err.Error() == "bucket '"+b+"' not found" {
+		if err != nil && strings.Contains(err.Error(), "not found") {
 			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, org)
 			if err != nil {
 				return fmt.Errorf("finding organization: %w", err)
@@ -200,11 +203,19 @@ func cleanup(ctx context.Context) error {
 	for _, bucket := range bucketNames {
 		acquiredBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, bucket)
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				continue
+			}
+
 			return fmt.Errorf("finding bucket: %w", err)
 		}
 
 		err = deps.DB.BucketsAPI().DeleteBucket(ctx, acquiredBucket)
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				continue
+			}
+
 			return fmt.Errorf("deleting bucket: %w", err)
 		}
 

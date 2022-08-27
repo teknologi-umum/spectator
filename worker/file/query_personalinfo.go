@@ -39,7 +39,12 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 	if err != nil {
 		return &PersonalInfo{}, fmt.Errorf("failed to query personal info - student number: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		err := rows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing personalInfoRows")
+		}
+	}()
 
 	for rows.Next() {
 		record := rows.Record()

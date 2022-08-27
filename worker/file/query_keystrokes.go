@@ -26,8 +26,8 @@ type Keystroke struct {
 	Timestamp    time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Keystroke, error) {
-	keystrokeMouseRows, err := queryAPI.Query(
+func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Keystroke, error) {
+	keystrokeRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketInputEvents+`")
 		|> range(start: 0)
@@ -35,14 +35,19 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		|> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return &[]Keystroke{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return []Keystroke{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
-	defer keystrokeMouseRows.Close()
+	defer func() {
+		err := keystrokeRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing keystrokeRows")
+		}
+	}()
 
 	var outputKeystroke []Keystroke
 
-	for keystrokeMouseRows.Next() {
-		record := keystrokeMouseRows.Record()
+	for keystrokeRows.Next() {
+		record := keystrokeRows.Record()
 
 		if record.Time().Year() != 2022 {
 			log.Warn().
@@ -99,5 +104,5 @@ func (d *Dependency) QueryKeystrokes(ctx context.Context, queryAPI api.QueryAPI,
 		})
 	}
 
-	return &outputKeystroke, nil
+	return outputKeystroke, nil
 }

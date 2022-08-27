@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -42,7 +43,8 @@ func TestMain(m *testing.M) {
 		influxOrg = "teknum_spectator"
 	}
 
-	db := influxdb2.NewClient(influxHost, influxToken)
+	influxOptions := influxdb2.DefaultOptions().SetBatchSize(100).SetFlushInterval(200)
+	db := influxdb2.NewClientWithOptions(influxHost, influxToken, influxOptions)
 
 	deps = &funfact.Dependency{
 		DB:             db,
@@ -64,18 +66,10 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Error preparing influxdb buckets: %v", err)
 	}
 
-	// First cleanup to ensure that there are no data in the database
-	err = cleanup(prepareCtx)
-	if err != nil {
-		log.Fatalf("Error cleaning up buckets: %v", err)
-	}
-
 	err = seedData(prepareCtx)
 	if err != nil {
 		log.Fatalf("Error seeding data: %v", err)
 	}
-
-	db.Close()
 
 	prepareCancel()
 
@@ -106,11 +100,11 @@ func prepareBuckets(ctx context.Context) error {
 
 	for _, bucket := range bucketNames {
 		_, err := bucketsAPI.FindBucketByName(ctx, bucket)
-		if err != nil && err.Error() != "bucket '"+bucket+"' not found" {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return fmt.Errorf("finding bucket: %w", err)
 		}
 
-		if err != nil && err.Error() == "bucket '"+bucket+"' not found" {
+		if err != nil && strings.Contains(err.Error(), "not found") {
 			orgDomain, err := organizationAPI.FindOrganizationByName(ctx, deps.DBOrganization)
 			if err != nil {
 				return fmt.Errorf("finding organization: %w", err)
@@ -402,8 +396,6 @@ func seedData(ctx context.Context) error {
 
 	wg.Wait()
 
-	deps.DB.Close()
-
 	return nil
 }
 
@@ -417,11 +409,19 @@ func cleanup(ctx context.Context) error {
 	for _, bucket := range []string{common.BucketInputEvents, common.BucketSessionEvents, common.BucketInputStatisticEvents} {
 		acquiredBucket, err := deps.DB.BucketsAPI().FindBucketByName(ctx, bucket)
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				continue
+			}
+
 			return fmt.Errorf("finding bucket: %w", err)
 		}
 
 		err = deps.DB.BucketsAPI().DeleteBucket(ctx, acquiredBucket)
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				continue
+			}
+
 			return fmt.Errorf("deleting bucket: %w", err)
 		}
 

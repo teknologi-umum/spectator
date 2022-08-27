@@ -21,8 +21,8 @@ type MouseScrolled struct {
 	Timestamp      time.Time `json:"timestamp" csv:"timestamp"`
 }
 
-func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]MouseScrolled, error) {
-	mouseClickRows, err := queryAPI.Query(
+func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseScrolled, error) {
+	mouseScrolledRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketInputEvents+`")
 		|> range(start: 0)
@@ -30,13 +30,19 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 		|> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")`,
 	)
 	if err != nil {
-		return &[]MouseScrolled{}, fmt.Errorf("failed to query mouse down: %w", err)
+		return []MouseScrolled{}, fmt.Errorf("failed to query mouse down: %w", err)
 	}
+	defer func() {
+		err := mouseScrolledRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseScrolledRows")
+		}
+	}()
 
 	var outputMouseScrolled []MouseScrolled
 
-	for mouseClickRows.Next() {
-		record := mouseClickRows.Record()
+	for mouseScrolledRows.Next() {
+		record := mouseScrolledRows.Record()
 
 		if record.Time().Year() != 2022 {
 			log.Warn().
@@ -69,5 +75,5 @@ func (d *Dependency) QueryMouseScrolled(ctx context.Context, queryAPI api.QueryA
 		})
 	}
 
-	return &outputMouseScrolled, nil
+	return outputMouseScrolled, nil
 }

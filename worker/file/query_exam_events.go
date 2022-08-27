@@ -24,11 +24,11 @@ func (d *Dependency) QueryExamEnded(ctx context.Context, queryAPI api.QueryAPI, 
 		return &ExamEvent{}, err
 	}
 
-	if len(*events) == 0 {
+	if len(events) == 0 {
 		return &ExamEvent{}, nil
 	}
 
-	return &(*events)[0], nil
+	return &events[0], nil
 }
 
 func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*ExamEvent, error) {
@@ -37,18 +37,18 @@ func (d *Dependency) QueryExamForfeited(ctx context.Context, queryAPI api.QueryA
 		return &ExamEvent{}, err
 	}
 
-	if len(*events) == 0 {
+	if len(events) == 0 {
 		return &ExamEvent{}, nil
 	}
 
-	return &(*events)[0], nil
+	return &events[0], nil
 }
 
-func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]ExamEvent, error) {
+func (d *Dependency) QueryExamIDEReloaded(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]ExamEvent, error) {
 	return d.queryExamEvents(ctx, queryAPI, sessionID, common.MeasurementExamIDEReloaded)
 }
 
-func (d *Dependency) queryExamEvents(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) (*[]ExamEvent, error) {
+func (d *Dependency) queryExamEvents(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) ([]ExamEvent, error) {
 	afterExamSamRows, err := queryAPI.Query(
 		ctx,
 		`from(bucket: "`+common.BucketSessionEvents+`")
@@ -56,8 +56,14 @@ func (d *Dependency) queryExamEvents(ctx context.Context, queryAPI api.QueryAPI,
 		|> filter(fn: (r) => r["_measurement"] == "`+measurement+`" and r["session_id"] == "`+sessionID.String()+`")`,
 	)
 	if err != nil {
-		return &[]ExamEvent{}, fmt.Errorf("failed to query keystrokes: %w", err)
+		return []ExamEvent{}, fmt.Errorf("failed to query keystrokes: %w", err)
 	}
+	defer func() {
+		err := afterExamSamRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing afterExamSamRows")
+		}
+	}()
 
 	var outputExamEvents []ExamEvent
 
@@ -77,5 +83,5 @@ func (d *Dependency) queryExamEvents(ctx context.Context, queryAPI api.QueryAPI,
 		})
 	}
 
-	return &outputExamEvents, nil
+	return outputExamEvents, nil
 }

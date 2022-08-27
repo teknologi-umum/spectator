@@ -12,23 +12,6 @@ jobs:
     container: golang:1.18
     timeout-minutes: 10
     services:
-      db:
-        image: influxdb:2.3.0
-        env:
-          DOCKER_INFLUXDB_INIT_MODE: setup
-          DOCKER_INFLUXDB_INIT_USERNAME: root
-          DOCKER_INFLUXDB_INIT_PASSWORD: password
-          DOCKER_INFLUXDB_INIT_ORG: teknologi
-          DOCKER_INFLUXDB_INIT_BUCKET: public
-          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
-        ports:
-          - 8086:8086
-        options: >-
-          --health-cmd "influx ping"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 5
-          --health-start-period 30s
       bucket:
         image: minio/minio:edge-cicd
         env:
@@ -46,6 +29,23 @@ jobs:
           --health-start-period 120s
         volumes:
           - minio-data:/data
+      db:
+        image: influxdb:2.3.0
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: root
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
+          DOCKER_INFLUXDB_INIT_ORG: teknologi
+          DOCKER_INFLUXDB_INIT_BUCKET: public
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: iKPpruHfaXygrwSV
+        ports:
+          - 8086:8086
+        options: >-
+          --health-cmd "influx ping"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+          --health-start-period 30s
     defaults:
       run:
         working-directory: ./worker
@@ -55,7 +55,7 @@ jobs:
       - name: Build test
         run: go build .
       - name: Run test
-        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        run: go test -v -coverprofile=coverage.out -covermode=atomic -race ./...
         env:
           ENVIRONMENT: ""
           INFLUX_HOST: http://db:8086/

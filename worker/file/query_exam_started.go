@@ -33,7 +33,12 @@ func (d *Dependency) QueryExamStarted(ctx context.Context, queryAPI api.QueryAPI
 	if err != nil {
 		return &ExamStarted{}, fmt.Errorf("failed to query exam_started: %w", err)
 	}
-	defer examStartedRows.Close()
+	defer func() {
+		err := examStartedRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing examStartedRows")
+		}
+	}()
 
 	var outputExamStarted ExamStarted
 

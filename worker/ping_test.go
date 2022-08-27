@@ -25,7 +25,12 @@ func TestPing(t *testing.T) {
 	if err != nil {
 		t.Errorf("an error was thrown: %v", err)
 	}
-	defer conn.Close()
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			t.Logf("closing client connection: %v", err)
+		}
+	}()
 
 	client := pb.NewWorkerClient(conn)
 	response, err := client.Ping(ctx, &pb.EmptyRequest{})

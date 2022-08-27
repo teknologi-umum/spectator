@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/rs/zerolog/log"
 )
 
 type Mouse struct {
@@ -32,15 +33,15 @@ type MouseClick struct {
 	Duration           int64              `json:"duration" csv:"duration"`
 }
 
-func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Mouse, error) {
+func (d *Dependency) QueryMouseDown(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Mouse, error) {
 	return d.queryMouse(ctx, queryAPI, sessionID, common.MeasurementMouseDown)
 }
 
-func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]Mouse, error) {
+func (d *Dependency) QueryMouseUp(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]Mouse, error) {
 	return d.queryMouse(ctx, queryAPI, sessionID, common.MeasurementMouseUp)
 }
 
-func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) (*[]Mouse, error) {
+func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID, measurement string) ([]Mouse, error) {
 	// Get the value of the time that the user started and ended the session.
 	examStartedRow, err := queryAPI.Query(
 		ctx,
@@ -50,9 +51,14 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 			                  r["session_id"] == "`+sessionID.String()+`"))`,
 	)
 	if err != nil {
-		return &[]Mouse{}, fmt.Errorf("failed to query session start time: %w", err)
+		return []Mouse{}, fmt.Errorf("failed to query session start time: %w", err)
 	}
-	defer examStartedRow.Close()
+	defer func() {
+		err := examStartedRow.Close()
+		if err != nil {
+			log.Err(err).Msg("closing examStartedRow")
+		}
+	}()
 
 	var startTime int64
 	if examStartedRow.Next() {
@@ -70,9 +76,14 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 			|> sort(columns: ["_time"])`,
 	)
 	if err != nil {
-		return &[]Mouse{}, fmt.Errorf("failed to query mouse up: %w", err)
+		return []Mouse{}, fmt.Errorf("failed to query mouse up: %w", err)
 	}
-	defer mouseRows.Close()
+	defer func() {
+		err := mouseRows.Close()
+		if err != nil {
+			log.Err(err).Msg("closing mouseRows")
+		}
+	}()
 
 	var outputMouse []Mouse
 	for mouseRows.Next() {
@@ -103,30 +114,30 @@ func (d *Dependency) queryMouse(ctx context.Context, queryAPI api.QueryAPI, sess
 		})
 	}
 
-	return &outputMouse, nil
+	return outputMouse, nil
 }
 
-func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) (*[]MouseClick, error) {
+func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI, sessionID uuid.UUID) ([]MouseClick, error) {
 	mouseUpRows, err := d.QueryMouseUp(ctx, queryAPI, sessionID)
 	if err != nil {
-		return &[]MouseClick{}, fmt.Errorf("failed to query mouse up: %w", err)
+		return []MouseClick{}, fmt.Errorf("failed to query mouse up: %w", err)
 	}
 
 	mouseDownRows, err := d.QueryMouseDown(ctx, queryAPI, sessionID)
 	if err != nil {
-		return &[]MouseClick{}, fmt.Errorf("failed to query mouse down: %w", err)
+		return []MouseClick{}, fmt.Errorf("failed to query mouse down: %w", err)
 	}
 
 	// zip mouseUp and mouseDown since they're coming in pair
 	var outputMouse []MouseClick
-	for i, mouseUp := range *mouseUpRows {
+	for i, mouseUp := range mouseUpRows {
 		// just in case there's a mouse down without a mouse up
 		// this should never happen
-		if i >= len(*mouseDownRows) {
+		if i >= len(mouseDownRows) {
 			break
 		}
 
-		mouseDown := (*mouseDownRows)[i]
+		mouseDown := mouseDownRows[i]
 
 		outputMouse = append(outputMouse, MouseClick{
 			SessionID:          sessionID.String(),
@@ -142,5 +153,5 @@ func (d *Dependency) QueryMouseClick(ctx context.Context, queryAPI api.QueryAPI,
 		})
 	}
 
-	return &outputMouse, nil
+	return outputMouse, nil
 }
