@@ -74,7 +74,7 @@ services:
         condition: service_healthy
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+    image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
     command: server /data --console-address ":9001"
     restart: on-failure:10
     ports:

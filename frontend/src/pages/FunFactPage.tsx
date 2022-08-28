@@ -89,6 +89,8 @@ export default function FunFact() {
       for (const videoTrack of videoTracks) {
         videoStream.removeTrack(videoTrack);
         videoTrack.stop();
+        // This works. See: https://stackoverflow.com/a/64288487
+        videoTrack.enabled = false;
       }
 
       dispatch(setVideoStream(null));
