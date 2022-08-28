@@ -26,6 +26,28 @@ services:
       - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
       - ASPNETCORE_InfluxDbOptions__Org=teknum_spectator
       - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
+      - ASPNETCORE_LoggerOptions__AccessToken=PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+      - ASPNETCORE_LoggerOptions__Address=http://logger:3000
+      - ASPNETCORE_JwtAuthentication__Secret=q6r+MfCs2qAjFe6z2vfrIXtDrTc7uNwPzZwE1RNFFM2IQ6n84zOMUFbwmPtguZwAP5kgCZ803iJgmXkbRzGCbQ==
+      - ASPNETCORE_JwtAuthentication__Issuer=https://teknologiumum.com
+      - ASPNETCORE_JwtAuthentication__Audience=https://teknologiumum.com
+      - ASPNETCORE_JwtAuthentication__Lifetime=31536000
+      - ASPNETCORE_MinioOptions__Url=minio:9000
+      - ASPNETCORE_MinioOptions__AccessKey=teknum
+      - ASPNETCORE_MinioOptions__SecretKey=c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      - ASPNETCORE_PistonOptions__Address=http://rce:50051
+      - ASPNETCORE_PistonOptions__MaxConcurrentExecution=2
+      - ASPNETCORE_PistonOptions__CompileTimeout=5000
+      - ASPNETCORE_PistonOptions__RunTimeout=10000
+      - ASPNETCORE_PistonOptions__MemoryLimit=2000000000
+      - ASPNETCORE_WorkerOptions__Address=http://worker:3000
+      - ASPNETCORE_VideoOptions__Address=http://video:3000
+      - VITE_SESSION_HUB_URL=/hubs/session
+      - VITE_EVENT_HUB_URL=/hubs/event
+      - VITE_LOGGER_URL=/log
+      - VITE_VIDEO_STREAM_URL=/video
+      - VITE_ADMIN_URL=/admin
+      - VITE_MINIO_URL=http://localhost:9000
     ports:
       - 127.0.0.1:5000:80
     healthcheck:
@@ -37,6 +59,11 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       worker:
         condition: service_started
@@ -68,6 +95,11 @@ services:
       start_period: 60s
     volumes:
       - ./data/minio:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
 
   influx:
     image: influxdb:2.3.0-alpine
@@ -92,6 +124,11 @@ services:
       - ./data/influx/data2:/var/lib/influxdb2
       - ./data/influx/data1:/var/lib/influxdb
       - ./data/influx/etc:/etc/influxdb2
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
 
   rce:
     build:
@@ -110,6 +147,11 @@ services:
       PORT: 50051
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
       LOGGER_SERVER_ADDRESS: logger:3000
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       logger:
         condition: service_started
@@ -138,6 +180,11 @@ services:
       MINIO_TOKEN: ''
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       logger:
         condition: service_started
@@ -170,6 +217,11 @@ services:
       MINIO_TOKEN: ''
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       logger:
         condition: service_started
@@ -197,6 +249,11 @@ services:
       INFLUX_URL: http://influx:8086
       INFLUX_ORG: teknum_spectator
       ACCESS_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
       influx:
         condition: service_healthy
