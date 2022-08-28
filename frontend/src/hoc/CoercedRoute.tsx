@@ -38,7 +38,9 @@ export default function CoercedRoute() {
     }
 
     if (examResult === null) return "/coding-test";
+
     if (!secondSAMSubmitted) return "/sam-test";
+
     return "/fun-fact";
   }, [
     accessToken,

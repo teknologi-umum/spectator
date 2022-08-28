@@ -102,7 +102,7 @@ describe("Video", (it) => {
       deviceId: "bruh"
     });
   });
-  
+
   it("should be able to set the video stream", () => {
     expect(reducer(initialState, setVideoStream("hello world" as unknown as MediaStream))).toEqual({
       ...initialState,

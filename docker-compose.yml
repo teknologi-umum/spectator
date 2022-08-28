@@ -75,7 +75,7 @@ services:
         condition: service_healthy
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+    image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
     command: server /data --console-address ":9001"
     restart: on-failure:10
     ports:
@@ -136,6 +136,8 @@ services:
       dockerfile: ./rce/Dockerfile
     restart: on-failure:5
     hostname: rce
+    ports:
+      - 127.0.0.1:50051:50051
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto rce.proto -plaintext localhost:50051 rce.CodeExecutionEngineService.Ping
       interval: 15s
@@ -162,6 +164,8 @@ services:
       dockerfile: ./worker/Dockerfile
     restart: on-failure:5
     hostname: worker
+    ports:
+      - 127.0.0.1:27297:3000
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto worker.proto -plaintext localhost:3000 worker_proto.Worker.Ping
       interval: 15s
@@ -199,6 +203,8 @@ services:
       dockerfile: ./video/Dockerfile
     restart: on-failure:5
     hostname: video
+    ports:
+      - 127.0.0.1:29354:3000
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto video.proto -plaintext localhost:3000 video.VideoService.Ping
       interval: 15s
@@ -236,6 +242,8 @@ services:
       dockerfile: ./logger/Dockerfile
     restart: on-failure:5
     hostname: logger
+    ports:
+      - 127.0.0.1:25594:3000
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto logger.proto -plaintext localhost:3000 logger.Logger.Ping
       interval: 15s

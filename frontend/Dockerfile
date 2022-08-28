@@ -1,4 +1,4 @@
-FROM node:16.13-alpine
+FROM node:16.17.0
 
 WORKDIR /home/node/app
 
@@ -13,8 +13,8 @@ ENV VITE_VIDEO_STREAM_URL=/video
 ENV VITE_ADMIN_URL=/admin
 
 RUN npm run build:prod \
-    && rm -rf node_modules \
-    && npm install --production
+  && rm -rf node_modules \
+  && npm install --production
 
 ENV NODE_ENV=production
 
