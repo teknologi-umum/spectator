@@ -43,6 +43,10 @@ export default function VideoTestPage() {
   const videoSources = useVideoSources({ isAllowed });
   const activeSourceName = useMemo(() => {
     if (videoStream === null) return "Unknown";
+    if (videoStream instanceof MediaStream === false) {
+      console.error("videoStream is not an instance of MediaStream.", videoStream);
+    }
+
     const sourceName = videoStream.getTracks()?.[0].label ?? "Unknown";
     return sourceName;
   }, [videoStream]);
