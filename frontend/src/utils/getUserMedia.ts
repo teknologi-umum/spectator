@@ -3,8 +3,8 @@ export function getUserMedia(deviceId?: string) {
     audio: false,
     video: {
       deviceId: deviceId ? { exact: deviceId } : undefined,
-      width: 640,
-      height: 360
+      width: { ideal: 640, max: 1280 },
+      height: { ideal: 360, max: 720 }
     }
   });
 }

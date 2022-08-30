@@ -43,9 +43,6 @@ export default function VideoTestPage() {
   const videoSources = useVideoSources({ isAllowed });
   const activeSourceName = useMemo(() => {
     if (videoStream === null) return "Unknown";
-    if (videoStream instanceof MediaStream === false) {
-      console.error("videoStream is not an instance of MediaStream.", videoStream);
-    }
 
     const sourceName = videoStream.getTracks()?.[0].label ?? "Unknown";
     return sourceName;
@@ -75,6 +72,7 @@ export default function VideoTestPage() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
       const stream = await getUserMedia();
+      console.debug("Acquired video stream, please open the arrow on the right.", stream);
       dispatch(setVideoStream(stream));
       setAllowed(true);
     } catch (err: unknown) {
@@ -87,10 +85,12 @@ export default function VideoTestPage() {
     const newStream = await getUserMedia(deviceId);
     dispatch(setVideoDeviceId(deviceId));
     dispatch(setVideoStream(newStream));
+    console.debug("This message means that video device ID and video stream has been successfully set.");
   }
 
   function startCodingTest() {
     dispatch(allowVideoPermission());
+    console.debug("This message means that we have successfully set the allow video permission flag.");
     navigate("/coding-test");
   }
 
