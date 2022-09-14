@@ -9,9 +9,10 @@ import {
   QuestionOutlineIcon
 } from "@/icons";
 import { useTranslation } from "react-i18next";
-import { useAppDispatch, useAppSelector } from "@/store";
+import { useAppSelector } from "@/store";
 import { ExamResult_FunFact } from "@/stub/session";
-import { setVideoStream, removeAccessToken } from "@/store/slices/sessionSlice";
+import { removeAccessToken } from "@/store/slices/sessionSlice";
+import { getUserMedia } from "@/utils/getUserMedia";
 
 interface FunFactData {
   name: string;
@@ -55,20 +56,26 @@ function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
 }
 
 export default function FunFact() {
-  const dispatch = useAppDispatch();
   const { examResult } = useAppSelector((state) => state.examResult);
-  const { videoStream } = useAppSelector((state) => state.session);
+  const { deviceId, hasPermission } = useAppSelector((state) => state.session);
   const { t } = useTranslation("translation", {
     keyPrefix: "translations.funfact"
   });
 
+  // styles
   const gray = useColorModeValue("gray.500", "gray.200", "gray.100");
   const fgDarker = useColorModeValue("gray.700", "gray.300", "gray.400");
 
+  // local states
   const [funfactData, setFunfactData] = useState<FunFactData[]>([]);
   const [isLoading, setLoading] = useState(true);
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
+    if (hasPermission) {
+      getUserMedia(deviceId).then((stream) => setVideoStream(stream));
+    }
+
     const id = setTimeout(() => {
       if (examResult === null) throw new Error("examResult is null");
       setFunfactData(mapFunFactToList(examResult.funFact));
@@ -76,7 +83,7 @@ export default function FunFact() {
       removeAccessToken();
     }, 2500);
     return () => clearTimeout(id);
-  }, []);
+  }, [hasPermission]);
 
   useEffect(() => {
     document.title = "Fun Fact | Spectator";
@@ -93,7 +100,7 @@ export default function FunFact() {
         videoTrack.enabled = false;
       }
 
-      dispatch(setVideoStream(null));
+      setVideoStream(null);
     }
   }, [videoStream]);
 
