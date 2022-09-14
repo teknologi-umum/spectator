@@ -15,7 +15,8 @@ type UserEvents struct {
 }
 
 type KeystrokeEvents struct {
-	Keystroke []Keystroke `json:"keystroke" csv:"keystroke"`
+	Keystroke       []Keystroke     `json:"keystroke" csv:"keystroke"`
+	TotalCharacters TotalCharacters `json:"total_characters" csv:"total_characters"`
 }
 
 type MouseEvents struct {
