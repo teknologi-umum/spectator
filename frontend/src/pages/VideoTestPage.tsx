@@ -19,8 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   allowVideoPermission,
-  setVideoDeviceId,
-  setVideoStream
+  setVideoDeviceId
 } from "@/store/slices/sessionSlice";
 import { ToastBase } from "@/components/Toast";
 import { CrossIcon } from "@/icons";
@@ -30,7 +29,7 @@ export default function VideoTestPage() {
   const toast = useToast();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { hasPermission, videoStream } = useAppSelector((state) => state.session);
+  const { hasPermission, deviceId } = useAppSelector((state) => state.session);
 
   // styles
   const videoBackground = useColorModeValue("gray.400", "gray.700", "gray.800");
@@ -41,13 +40,18 @@ export default function VideoTestPage() {
   const videoElement = useRef<HTMLVideoElement | null>(null);
   const [isAllowed, setAllowed] = useState(hasPermission);
   const videoSources = useVideoSources({ isAllowed });
-  const activeSourceName = useMemo(() => {
-    if (videoStream === null) return "Unknown";
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  // if it's allowed previously, set the initial video stream
+  useEffect(() => {
+    // get initial videostream when it's already allowed
+    getUserMedia(deviceId).then((stream) => setVideoStream(stream));
+  }, [isAllowed]);
 
+  const activeSourceName = useMemo(() => {
+    if (videoStream === null || videoStream === undefined) return "Unknown";
     const sourceName = videoStream.getTracks()?.[0].label ?? "Unknown";
     return sourceName;
   }, [videoStream]);
-
 
   function showAlert() {
     const id = toast({
@@ -72,8 +76,10 @@ export default function VideoTestPage() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
       const stream = await getUserMedia();
-      console.debug("Acquired video stream, please open the arrow on the right.", stream);
-      dispatch(setVideoStream(stream));
+      console.debug(
+        "Acquired video stream, please open the arrow on the right.",
+        stream
+      );
       setAllowed(true);
     } catch (err: unknown) {
       setAllowed(false);
@@ -83,14 +89,18 @@ export default function VideoTestPage() {
 
   async function changeVideoSource(deviceId: string) {
     const newStream = await getUserMedia(deviceId);
+    setVideoStream(newStream);
     dispatch(setVideoDeviceId(deviceId));
-    dispatch(setVideoStream(newStream));
-    console.debug("This message means that video device ID and video stream has been successfully set.");
+    console.debug(
+      "This message means that video device ID and video stream has been successfully set."
+    );
   }
 
   function startCodingTest() {
     dispatch(allowVideoPermission());
-    console.debug("This message means that we have successfully set the allow video permission flag.");
+    console.debug(
+      "This message means that we have successfully set the allow video permission flag."
+    );
     navigate("/coding-test");
   }
 
@@ -100,10 +110,11 @@ export default function VideoTestPage() {
     try {
       videoElement.current.srcObject = videoStream;
     } catch (err) {
-      if (err instanceof DOMException) {
-        if (err.message === "Permission denied") {
-          showAlert();
-        }
+      if (
+        err instanceof DOMException &&
+        err.message.toLowerCase() === "permission denied"
+      ) {
+        showAlert();
       }
       // eslint-disable-next-line no-console
       console.error(err);
@@ -145,12 +156,8 @@ export default function VideoTestPage() {
               <MenuOptionGroup
                 type="radio"
                 onChange={(deviceId: string | string[]) => {
-                  if (typeof deviceId === "string") {
-                    changeVideoSource(deviceId);
-                  } else if (typeof deviceId === "object" && Array.isArray(deviceId) && deviceId.length > 0) {
-                    // Select the first one
-                    changeVideoSource(deviceId[0]);
-                  }
+                  // no need to handle `string[]` since deviceId will never be an array of string
+                  changeVideoSource(deviceId as string);
                 }}
               >
                 {videoSources.map((source) => (
