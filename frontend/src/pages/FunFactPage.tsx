@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store";
 import { ExamResult_FunFact } from "@/stub/session";
 import { removeAccessToken } from "@/store/slices/sessionSlice";
-import { getUserMedia } from "@/utils/getUserMedia";
 
 interface FunFactData {
   name: string;
@@ -57,7 +56,7 @@ function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
 
 export default function FunFact() {
   const { examResult } = useAppSelector((state) => state.examResult);
-  const { deviceId, hasPermission } = useAppSelector((state) => state.session);
+  const { hasPermission } = useAppSelector((state) => state.session);
   const { t } = useTranslation("translation", {
     keyPrefix: "translations.funfact"
   });
@@ -69,13 +68,8 @@ export default function FunFact() {
   // local states
   const [funfactData, setFunfactData] = useState<FunFactData[]>([]);
   const [isLoading, setLoading] = useState(true);
-  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
-    if (hasPermission) {
-      getUserMedia(deviceId).then((stream) => setVideoStream(stream));
-    }
-
     const id = setTimeout(() => {
       if (examResult === null) throw new Error("examResult is null");
       setFunfactData(mapFunFactToList(examResult.funFact));
@@ -88,21 +82,6 @@ export default function FunFact() {
   useEffect(() => {
     document.title = "Fun Fact | Spectator";
   }, []);
-
-  // stop the webcam
-  useEffect(() => {
-    if (videoStream?.active) {
-      const videoTracks = videoStream.getVideoTracks();
-      for (const videoTrack of videoTracks) {
-        videoStream.removeTrack(videoTrack);
-        videoTrack.stop();
-        // This works. See: https://stackoverflow.com/a/64288487
-        videoTrack.enabled = false;
-      }
-
-      setVideoStream(null);
-    }
-  }, [videoStream]);
 
   return (
     <Flex maxW="container.lg" mx="auto" h="full">
