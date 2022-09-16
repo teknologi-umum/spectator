@@ -38,8 +38,9 @@ export function useVideoRecorder(accessToken: string | null) {
     // If we don't have this marker, we wouldn't know which one is the first chunk for each recording session.
     const startedAt = Date.now();
 
+    let stream: MediaStream;
     (async () => {
-      const stream = await getUserMedia(deviceId);
+      stream = await getUserMedia(deviceId);
       mediaRecorder.current = new MediaRecorder(stream, {
         mimeType: getSupportedCodec(),
         videoBitsPerSecond: 200_000 // 0.2Mbits / sec
@@ -61,6 +62,12 @@ export function useVideoRecorder(accessToken: string | null) {
 
     // stop recording when the component is unmounted
     return () => {
+      if (stream?.active) {
+        for (const videoTrack of stream.getVideoTracks()) {
+          videoTrack.stop();
+        }
+      }
+
       if (mediaRecorder.current) {
         mediaRecorder.current.stop();
         mediaRecorder.current = null;
