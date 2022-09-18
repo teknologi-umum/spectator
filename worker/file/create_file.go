@@ -64,6 +64,12 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
+	outputTotalCharacters, err := d.QueryTotalCharacters(ctx, queryAPI, sessionID)
+	if err != nil {
+		cfDeps.sendErrorLog(err, "failed to query total characters", requestID, sessionID)
+		return
+	}
+
 	// Mouse events queries
 	outputMouseClick, err := d.QueryMouseClick(ctx, queryAPI, sessionID)
 	if err != nil {
@@ -193,7 +199,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	}
 
 	keystrokeEvents := &KeystrokeEvents{
-		Keystroke: outputKeystroke,
+		Keystroke:       outputKeystroke,
+		TotalCharacters: outputTotalCharacters,
 	}
 
 	solutionEvents := &SolutionEvents{
