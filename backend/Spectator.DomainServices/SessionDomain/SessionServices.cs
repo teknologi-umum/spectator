@@ -253,7 +253,9 @@ namespace Spectator.DomainServices.SessionDomain {
 			);
 
 			// Create event
-			SessionEventBase @event = new SolutionTestedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS));
+			SessionEventBase @event = submission.Accepted 
+				? new TestAcceptedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS))
+				: new TestRejectedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS));
 
 			// Dispatch event
 			sessionStore.Dispatch(@event);

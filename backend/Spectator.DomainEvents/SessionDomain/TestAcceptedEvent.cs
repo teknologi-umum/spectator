@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Spectator.Primitives;
 
 namespace Spectator.DomainEvents.SessionDomain {
-	public record SolutionTestedEvent(
+	public record TestAcceptedEvent(
 		Guid SessionId,
 		DateTimeOffset Timestamp,
 		int QuestionNumber,
