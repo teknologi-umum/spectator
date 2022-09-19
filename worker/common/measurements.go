@@ -55,6 +55,11 @@ const (
 	MeasurementSolutionRejected = "solution_rejected"
 	MeasurementSolutionAccepted = "solution_accepted"
 
+	// MeasurementTest provides the name of the test measurement
+	// type that is used for storing rejected or accepted tests.
+	MeasurementTestRejected = "test_rejected"
+	MeasurementTestAccepted = "test_accepted"
+
 	// MeasurementExportedData provides the name for the measurement
 	// that is meant to keep the resulting data link that is kept on MinIO
 	MeasurementExportedData = "exported_data"

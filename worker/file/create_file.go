@@ -163,6 +163,18 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
+	outputTestRejected, err := d.QueryTestRejected(ctx, queryAPI, sessionID)
+	if err != nil {
+		cfDeps.sendErrorLog(err, "failed to query test rejected", requestID, sessionID)
+		return
+	}
+
+	outputTestAccepted, err := d.QueryTestAccepted(ctx, queryAPI, sessionID)
+	if err != nil {
+		cfDeps.sendErrorLog(err, "failed to query test accepted", requestID, sessionID)
+		return
+	}
+
 	// Then, we'll write to 2 different files with 2 different formats.
 	// Do this repeatedly for each event.
 	//
@@ -206,6 +218,8 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	solutionEvents := &SolutionEvents{
 		SolutionAccepted: outputSolutionAccepted,
 		SolutionRejected: outputSolutionRejected,
+		TestAccepted:     outputTestAccepted,
+		TestRejected:     outputTestRejected,
 	}
 
 	writeAPI := d.DB.WriteAPIBlocking(d.DBOrganization, common.BucketFileEvents)
