@@ -27,6 +27,8 @@ type MouseEvents struct {
 }
 
 type SolutionEvents struct {
-	SolutionAccepted []Solution `json:"solution_accepted" csv:"solution_accepted"`
-	SolutionRejected []Solution `json:"solution_rejected" csv:"solution_rejected"`
+	SolutionAccepted []Solution  `json:"solution_accepted" csv:"solution_accepted"`
+	SolutionRejected []Solution  `json:"solution_rejected" csv:"solution_rejected"`
+	TestAccepted     []TestEvent `json:"test_accepted" csv:"test_accepted"`
+	TestRejected     []TestEvent `json:"test_rejected" csv:"test_rejected"`
 }

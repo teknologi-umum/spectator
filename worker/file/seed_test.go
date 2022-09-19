@@ -341,6 +341,52 @@ func seedData(ctx context.Context) error {
 		}
 	}
 
+	// Test Accepted
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/TestAcceptedEvent.cs
+	for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+		for i := 0; i < 20; i++ {
+			point := influxdb2.NewPoint(
+				common.MeasurementTestAccepted,
+				map[string]string{
+					"session_id": sessionID,
+				},
+				map[string]interface{}{
+					"question_number":         i + 1,
+					"language":                "PHP",
+					"solution":                "echo 'Hello World!';",
+					"scratchpad":              "Lorem ipsum dolot sit amet",
+					"serialized_test_results": "Hello World!",
+				},
+				eventStart.Add(time.Minute*10+time.Second*time.Duration(i)),
+			)
+
+			sessionWriteAPI.WritePoint(point)
+		}
+	}
+
+	// Test Rejected
+	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/TestRejectedEvent.cs
+	for _, sessionID := range []string{globalID.String(), globalID2.String()} {
+		for i := 0; i < 20; i++ {
+			point := influxdb2.NewPoint(
+				common.MeasurementTestRejected,
+				map[string]string{
+					"session_id": sessionID,
+				},
+				map[string]interface{}{
+					"question_number":         i + 1,
+					"language":                "PHP",
+					"solution":                "echo 'Hello World!';",
+					"scratchpad":              "Lorem ipsum dolot sit amet",
+					"serialized_test_results": "Hello World!",
+				},
+				eventStart.Add(time.Minute*11+time.Second*time.Duration(i)),
+			)
+
+			sessionWriteAPI.WritePoint(point)
+		}
+	}
+
 	// Deadline Passed
 	// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/DeadlinePassedEvent.cs
 	for _, sessionID := range []string{globalID.String(), globalID2.String()} {
