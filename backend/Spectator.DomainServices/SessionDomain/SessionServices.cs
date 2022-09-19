@@ -252,6 +252,17 @@ namespace Spectator.DomainServices.SessionDomain {
 				cancellationToken: cancellationToken
 			);
 
+			// Create event
+			SessionEventBase @event = submission.Accepted 
+				? new TestAcceptedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS))
+				: new TestRejectedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS));
+
+			// Dispatch event
+			sessionStore.Dispatch(@event);
+
+			// Raise event
+			await _sessionEventRepository.AddEventAsync(@event);
+
 			// Return submission
 			return submission;
 		}

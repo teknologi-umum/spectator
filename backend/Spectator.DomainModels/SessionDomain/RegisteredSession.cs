@@ -151,5 +151,49 @@ namespace Spectator.DomainModels.SessionDomain {
 				))
 			};
 		}
+
+		public RegisteredSession Apply(TestAcceptedEvent @event) {
+			if (ExamStartedAt == null) throw new InvalidOperationException("Exam hasn't been started");
+			if (ExamEndedAt != null) throw new InvalidOperationException("Exam already ended");
+			if (ExamDeadline == null) throw new InvalidProgramException("Invalid state");
+			if (@event.Timestamp >= ExamDeadline) throw new InvalidOperationException("Deadline passed");
+			if (QuestionNumbers == null) throw new InvalidProgramException("Invalid state");
+			if (SubmissionByQuestionNumber == null) throw new InvalidProgramException("Invalid state");
+			if (!QuestionNumbers.Value.Contains(@event.QuestionNumber)) throw new InvalidOperationException("Invalid question number");
+
+			return this with {
+				UpdatedAt = @event.Timestamp,
+				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, new Submission(
+					QuestionNumber: @event.QuestionNumber,
+					Language: @event.Language,
+					Solution: @event.Solution,
+					ScratchPad: @event.ScratchPad,
+					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults, TestResultBase.JSON_SERIALIZER_OPTIONS),
+					Accepted: true
+				))
+			};
+		}
+
+		public RegisteredSession Apply(TestRejectedEvent @event) {
+			if (ExamStartedAt == null) throw new InvalidOperationException("Exam hasn't been started");
+			if (ExamEndedAt != null) throw new InvalidOperationException("Exam already ended");
+			if (ExamDeadline == null) throw new InvalidProgramException("Invalid state");
+			if (@event.Timestamp >= ExamDeadline) throw new InvalidOperationException("Deadline passed");
+			if (QuestionNumbers == null) throw new InvalidProgramException("Invalid state");
+			if (SubmissionByQuestionNumber == null) throw new InvalidProgramException("Invalid state");
+			if (!QuestionNumbers.Value.Contains(@event.QuestionNumber)) throw new InvalidOperationException("Invalid question number");
+
+			return this with {
+				UpdatedAt = @event.Timestamp,
+				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, new Submission(
+					QuestionNumber: @event.QuestionNumber,
+					Language: @event.Language,
+					Solution: @event.Solution,
+					ScratchPad: @event.ScratchPad,
+					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults, TestResultBase.JSON_SERIALIZER_OPTIONS),
+					Accepted: false
+				))
+			};
+		}
 	}
 }
