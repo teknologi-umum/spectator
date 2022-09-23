@@ -79,15 +79,15 @@
     },
     "sam_test_before": {
       "aroused_title": "How aroused are you right now?",
-      "aroused_body": "Arousal refers to how aroused are you generally in the meantime.",
+      "aroused_body": "Arousal refers to how aroused are you generally in the meantime.<br />1 (very calm) - 9 (very excited)",
       "pleasure_title": "How pleased are you right now?",
-      "pleasure_body": "Pleasure refers to how aroused are you generally in the meantime."
+      "pleasure_body": "Pleasure refers to how pleased are you generally in the meantime.<br />1 (very unpleasant) - 9 (very pleasant)"
     },
     "sam_test_after": {
       "aroused_title": "How aroused are you when doing programming task?",
-      "aroused_body": "Arousal refers to how aroused are you generally when doing programming task.",
+      "aroused_body": "Arousal refers to how aroused are you generally when doing programming task.<br />1 (very calm) - 9 (very excited)",
       "pleasure_title": "How pleased are you when doing programming task?",
-      "pleasure_body": "Pleasure refers to how aroused are you generally when doing programming task."
+      "pleasure_body": "Pleasure refers to how pleased are you generally when doing programming task.<br />1 (very unpleasant) - 9 (very pleasant)"
     },
     "confirmation": {
       "title": "Confirmation",

@@ -31,12 +31,15 @@ export default function SAMRadioGroup({
 
   return (
     <Flex wrap="wrap" gap="3" mt="4" color={fgDarker} {...group}>
-      {items.map(({ value, Icon }) => {
+      {items.map(({ value, Icon }, index) => {
         const radio = getRadioProps({ value });
         return (
-          <SAMRadio key={value} {...radio}>
-            <Icon.ReactComponent />
-          </SAMRadio>
+          <Flex key={value} direction="column" align="center">
+            <SAMRadio key={value} {...radio}>
+              <Icon.ReactComponent />
+            </SAMRadio>
+            {index + 1}
+          </Flex>
         );
       })}
     </Flex>

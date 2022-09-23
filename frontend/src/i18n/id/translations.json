@@ -79,15 +79,15 @@
     },
     "sam_test_before": {
       "aroused_title": "Seberapa antusias perasaan kamu sekarang?",
-      "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat ini.",
+      "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat ini.<br />1 (sangat tenang) - 9 (sangat bersemangat)",
       "pleasure_title": "Seberapa puas perasaan kamu sekarang?",
-      "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat ini."
+      "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat ini.<br />1 (sangat tidak menyenangkan) - 9 (sangat menyenangkan)"
     },
     "sam_test_after": {
       "aroused_title": "Seberapa antusias perasaan kamu saat melakukan tugas pemrograman?",
-      "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat melakukan tugas pemrograman.",
+      "aroused_body": "Antusiasme mengarah pada seberapa tergugah perasaanmu saat melakukan tugas pemrograman.<br />1 (sangat tenang) - 9 (sangat bersemangat)",
       "pleasure_title": "Seberapa puas perasaan kamu saat melakukan tugas pemrograman?",
-      "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat melakukan tugas pemrograman."
+      "pleasure_body": "Kepuasan mengarah pada seberapa puas perasaanmu saat melakukan tugas pemrograman.<br />1 (sangat tidak menyenangkan) - 9 (sangat menyenangkan)"
     },
     "confirmation": {
       "title": "Konfirmasi",
