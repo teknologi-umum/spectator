@@ -30,6 +30,7 @@ import { setExamResult } from "@/store/slices/examResultSlice";
 import { setQuestionTabIndex } from "@/store/slices/codingTestSlice";
 import { SubmissionResult } from "@/models/SubmissionResult";
 import { FinishedModal } from "@/components/CodingTest";
+import { startSAMTest } from "@/store/slices/sessionSlice";
 
 function toReadableTime(ms: number): string {
   const seconds = ms / 1000;
@@ -204,6 +205,11 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           />
         )
       });
+
+      if (submissionType === "submit" && submissionResult.accepted) {
+        dispatch(startSAMTest());
+        navigate("/sam-test");
+      }
     } catch (err) {
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);

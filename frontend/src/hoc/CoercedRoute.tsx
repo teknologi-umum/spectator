@@ -9,7 +9,9 @@ export default function CoercedRoute() {
     firstSAMSubmitted,
     secondSAMSubmitted,
     hasPermission,
-    deviceId
+    deviceId,
+    isWorkingOnSAM,
+    hasGivenUp
   } = useAppSelector((state) => state.session);
   const { studentNumber } = useAppSelector((state) => state.personalInfo);
   const { deadlineUtc, questions } = useAppSelector((state) => state.editor);
@@ -28,7 +30,8 @@ export default function CoercedRoute() {
     if (
       firstSAMSubmitted === false ||
       deadlineUtc === null ||
-      questions === null
+      questions === null ||
+      !hasGivenUp && isWorkingOnSAM
     ) {
       return "/sam-test";
     }

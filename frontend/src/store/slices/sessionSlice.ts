@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface SessionState {
+  hasFinished: boolean;
+  hasGivenUp: boolean;
+  isWorkingOnSAM: boolean;
   sessionId: string | null;
   accessToken: string | null;
   firstSAMSubmitted: boolean;
@@ -15,6 +18,9 @@ export interface SessionState {
 }
 
 const initialState: SessionState = {
+  hasFinished: false,
+  hasGivenUp: false,
+  isWorkingOnSAM: false,
   accessToken: null,
   sessionId: null,
   firstSAMSubmitted: false,
@@ -61,6 +67,12 @@ export const sessionSlice = createSlice({
     },
     setVideoDeviceId: (state, action: PayloadAction<string>) => {
       state.deviceId = action.payload;
+    },
+    startSAMTest: (state) => {
+      state.isWorkingOnSAM = true;
+    },
+    finishSAMTest: (state) => {
+      state.isWorkingOnSAM = false;
     }
   }
 });
@@ -74,7 +86,9 @@ export const {
   setSessionId,
   removeSessionId,
   allowVideoPermission,
-  setVideoDeviceId
+  setVideoDeviceId,
+  startSAMTest,
+  finishSAMTest
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

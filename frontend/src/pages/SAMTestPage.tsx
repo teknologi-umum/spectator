@@ -22,7 +22,8 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   markFirstSAMSubmitted,
-  markSecondSAMSubmitted
+  markSecondSAMSubmitted,
+  finishSAMTest
 } from "@/store/slices/sessionSlice";
 import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
@@ -83,7 +84,7 @@ function SAMTest() {
     }
   }
 
-  async function finishSAMTest() {
+  async function endSAMTest() {
     if (accessToken === null) return;
 
     if (firstSAMSubmitted) {
@@ -94,6 +95,7 @@ function SAMTest() {
       });
       dispatch(markSecondSAMSubmitted());
       navigate("/fun-fact");
+      dispatch(finishSAMTest());
     } else {
       await sessionSpoke.submitBeforeExamSAM({
         accessToken,
@@ -111,6 +113,7 @@ function SAMTest() {
       );
       dispatch(markFirstSAMSubmitted());
       navigate("/video-test");
+      dispatch(finishSAMTest());
     }
   }
 
@@ -233,7 +236,7 @@ function SAMTest() {
               </Button>
               <Button
                 colorScheme="blue"
-                onClick={finishSAMTest}
+                onClick={endSAMTest}
                 data-tour="step-2"
               >
                 {t("ui.confirm")}
