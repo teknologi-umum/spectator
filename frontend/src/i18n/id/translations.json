@@ -98,6 +98,7 @@
       "body": "Apakah kamu yakin ingin menyerah? Pastikan kamu sudah yakin karena kamu tidak akan bisa melanjutkan tes ini setelah menyerah."
     },
     "funfact": {
+      "calculating": "Menghitung hasil kamu...",
       "words_per_minute": {
         "title": "Kata per Menit",
         "description": "Kata per Menit adalah berapa banyak kata yang mampu kamu tulis dalam satu menit. Orang biasa biasanya memiliki kecepatan sekitar 40-60 kata per menit"

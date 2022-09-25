@@ -99,6 +99,7 @@
       "body": "Are you sure you want to surrender? Make sure you've think this through because you will no longer be able to continue the test once you surrender."
     },
     "funfact": {
+      "calculating": "Calculating your personal result...",
       "words_per_minute": {
         "title": "Words Per Minute",
         "description": "Words Per Minute is how many words you can type in a minute. An average person usually has around 40-60 words per minute rate."

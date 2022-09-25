@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Text, Box, Heading, Flex, Spinner, Tooltip } from "@chakra-ui/react";
+import {
+  Text,
+  Box,
+  Heading,
+  Flex,
+  Spinner,
+  Tooltip,
+  Image
+} from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useColorModeValue } from "@/hooks";
 import {
@@ -12,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "@/store";
 import { ExamResult_FunFact } from "@/stub/session";
 import { removeAccessToken } from "@/store/slices/sessionSlice";
+import meme from "@/images/meme.jpg";
 
 interface FunFactData {
   name: string;
@@ -23,33 +32,36 @@ interface FunFactData {
 function mapFunFactToList(funfact: ExamResult_FunFact | undefined) {
   if (funfact === undefined) return [];
 
-  const result = Object.entries(funfact).reduce((prev, [key, value]) => {
-    switch (key) {
-    case "wordsPerMinute":
-      return prev.concat({
-        name: "words_per_minute",
-        color: "blue",
-        icon: <SpeedIcon width="48px" height="48px" />,
-        value: value
-      });
-    case "deletionRate":
-      return prev.concat({
-        name: "deletion_rate",
-        color: "red",
-        icon: <BackspaceIcon width="48px" height="48px" />,
-        value: `${value}%`
-      });
-    case "submissionAttempts":
-      return prev.concat({
-        name: "submission_attempts",
-        color: "green",
-        icon: <RetryIcon width="48px" height="48px" />,
-        value: value
-      });
-    default:
-      return prev;
-    }
-  }, [] as FunFactData[]);
+  const result = Object.entries(funfact).reduce(
+    (prev, [key, value]: [string, number]) => {
+      switch (key) {
+      case "wordsPerMinute":
+        return prev.concat({
+          name: "words_per_minute",
+          color: "blue",
+          icon: <SpeedIcon width="48px" height="48px" />,
+          value: value.toString()
+        });
+      case "deletionRate":
+        return prev.concat({
+          name: "deletion_rate",
+          color: "red",
+          icon: <BackspaceIcon width="48px" height="48px" />,
+          value: `${value.toFixed(3)}%`
+        });
+      case "submissionAttempts":
+        return prev.concat({
+          name: "submission_attempts",
+          color: "green",
+          icon: <RetryIcon width="48px" height="48px" />,
+          value: value.toString()
+        });
+      default:
+        return prev;
+      }
+    },
+    [] as FunFactData[]
+  );
 
   return result;
 }
@@ -67,7 +79,7 @@ export default function FunFact() {
 
   // local states
   const [funfactData, setFunfactData] = useState<FunFactData[]>([]);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -95,20 +107,12 @@ export default function FunFact() {
         >
           <Spinner thickness="8px" size="xl" speed="1s" color={gray} />
           <Text fontSize="3xl" color={fgDarker}>
-            Calculating your personal result...
+            {t("calculating")}
           </Text>
         </Flex>
       ) : (
         <Flex gap="8rem" w="full" align="center" justify="center">
-          <Heading
-            fontSize="5xl"
-            textAlign="center"
-            fontWeight="800"
-            mb="2"
-            flex="1"
-          >
-            Yay, you did it!
-          </Heading>
+          <Image w="32rem" h="auto" src={meme} />
           <Flex gap="4rem" direction="column" flex="1">
             {funfactData.map(({ name: title, color, icon, value }, idx) => (
               <Flex gap="6" align="center" key={idx}>
