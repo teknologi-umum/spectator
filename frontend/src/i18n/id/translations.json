@@ -93,6 +93,14 @@
       "title": "Konfirmasi",
       "body": "Dalam Programming Test ini, SEMUA aktivitas mouse dan keyboard kamu akan direkam dengan tujuan pengumpulan data. Kami juga akan membutuhkan perizinan kamera untuk merekam pergerakanmu. Dengan menekan tombol konfirmasi, kamu sepenuhnya setuju dengan kondisi yang diberikan dan memberikan perizinanmu."
     },
+    "video_test": {
+      "notification": "Izin ditolak. Izinkan akses kamera dan refresh halaman.",
+      "no_video_placeholder": "Video kamu akan muncul di sini",
+      "dropdown_title": "Pilih Kamera",
+      "start_coding_test": "Mulai Coding Test",
+      "allow_permission": "Izinkan Akses",
+      "instruction": "Kamu bisa memilih kamera yang ingin kamu gunakan melalui dropdown di atas"
+    },
     "surrender": {
       "title": "Menyerah",
       "body": "Apakah kamu yakin ingin menyerah? Pastikan kamu sudah yakin karena kamu tidak akan bisa melanjutkan tes ini setelah menyerah."

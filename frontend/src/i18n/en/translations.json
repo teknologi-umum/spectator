@@ -94,6 +94,14 @@
       "body": "In this programming test, ALL of your mouse and keyboard activities will be recorded for data collecting purpose. We will also ask for the camera permission to record your movement. By pressing the confirm button, you fully agree with these conditions and give us your permissions.",
       "body-alt": "Are you sure you want to submit your answer?"
     },
+    "video_test": {
+      "notification": "Permission denied. Please allow camera access and refresh the page.",
+      "no_video_placeholder": "Your video will appear here",
+      "dropdown_title": "Select Camera",
+      "start_coding_test": "Start the Coding Test",
+      "allow_permission": "Allow Permission",
+      "instruction": "You can choose the camera you want to use using the dropdown above"
+    },
     "surrender": {
       "title": "Surrender",
       "body": "Are you sure you want to surrender? Make sure you've think this through because you will no longer be able to continue the test once you surrender."

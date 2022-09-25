@@ -8,7 +8,8 @@ import {
   Stack,
   type ToastId,
   useToast,
-  Flex
+  Flex,
+  Text
 } from "@chakra-ui/react";
 import { useColorModeValue, useVideoSources } from "@/hooks";
 import Layout from "@/components/Layout";
@@ -23,6 +24,7 @@ import {
 } from "@/store/slices/sessionSlice";
 import { ToastBase } from "@/components/Toast";
 import { CrossIcon } from "@/icons";
+import { useTranslation } from "react-i18next";
 
 export default function VideoTestPage() {
   // hooks
@@ -30,6 +32,9 @@ export default function VideoTestPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { hasPermission, deviceId } = useAppSelector((state) => state.session);
+  const { t } = useTranslation("translation", {
+    keyPrefix: "translations.video_test"
+  });
 
   // styles
   const videoBackground = useColorModeValue("gray.400", "gray.700", "gray.800");
@@ -48,8 +53,8 @@ export default function VideoTestPage() {
   }, [isAllowed]);
 
   const activeSourceName = useMemo(() => {
-    if (videoStream === null || videoStream === undefined) return "Unknown";
-    const sourceName = videoStream.getTracks()?.[0].label ?? "Unknown";
+    if (videoStream === null || videoStream === undefined) return null;
+    const sourceName = videoStream.getTracks()?.[0].label;
     return sourceName;
   }, [videoStream]);
 
@@ -64,8 +69,7 @@ export default function VideoTestPage() {
           onClick={() => toast.close(id as ToastId)}
         >
           <Flex align="center" gap="3" color={red}>
-            <CrossIcon width="1.25rem" height="1.25rem" /> Permission denied.
-            Please allow camera access and refresh the page.
+            <CrossIcon width="1.25rem" height="1.25rem" /> {t("notification")}
           </Flex>
         </ToastBase>
       )
@@ -76,6 +80,7 @@ export default function VideoTestPage() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
       const stream = await getUserMedia();
+      // eslint-disable-next-line no-console
       console.debug(
         "Acquired video stream, please open the arrow on the right.",
         stream
@@ -91,6 +96,7 @@ export default function VideoTestPage() {
     const newStream = await getUserMedia(deviceId);
     setVideoStream(newStream);
     dispatch(setVideoDeviceId(deviceId));
+    // eslint-disable-next-line no-console
     console.debug(
       "This message means that video device ID and video stream has been successfully set."
     );
@@ -98,6 +104,7 @@ export default function VideoTestPage() {
 
   function startCodingTest() {
     dispatch(allowVideoPermission());
+    // eslint-disable-next-line no-console
     console.debug(
       "This message means that we have successfully set the allow video permission flag."
     );
@@ -135,7 +142,7 @@ export default function VideoTestPage() {
           sx={{
             "&::before": !isAllowed
               ? {
-                content: "\"Your video will appear here\"",
+                content: `"${t("no_video_placeholder")}"`,
                 position: "absolute",
                 left: "50%",
                 top: "50%",
@@ -148,36 +155,39 @@ export default function VideoTestPage() {
           <video ref={videoElement} autoPlay width={640} height={360} />
         </Box>
         {isAllowed ? (
-          <HStack spacing={4}>
-            <MenuDropdown
-              dropdownWidth="10rem"
-              title={activeSourceName ?? "Select video source"}
-            >
-              <MenuOptionGroup
-                type="radio"
-                onChange={(deviceId: string | string[]) => {
-                  // no need to handle `string[]` since deviceId will never be an array of string
-                  changeVideoSource(deviceId as string);
-                }}
+          <Stack justify="center" align="center">
+            <HStack spacing={4}>
+              <MenuDropdown
+                dropdownWidth="10rem"
+                title={activeSourceName ?? t("dropdown_title")}
               >
-                {videoSources.map((source) => (
-                  <MenuItemOption
-                    key={source.deviceId}
-                    textTransform="capitalize"
-                    value={source.deviceId ?? ""}
-                  >
-                    <span>{source.label}</span>
-                  </MenuItemOption>
-                ))}
-              </MenuOptionGroup>
-            </MenuDropdown>
-            <Button colorScheme="blue" onClick={startCodingTest}>
-              Start the Coding Test
-            </Button>
-          </HStack>
+                <MenuOptionGroup
+                  type="radio"
+                  onChange={(deviceId: string | string[]) => {
+                    // no need to handle `string[]` since deviceId will never be an array of string
+                    changeVideoSource(deviceId as string);
+                  }}
+                >
+                  {videoSources.map((source) => (
+                    <MenuItemOption
+                      key={source.deviceId}
+                      textTransform="capitalize"
+                      value={source.deviceId ?? ""}
+                    >
+                      <span>{source.label}</span>
+                    </MenuItemOption>
+                  ))}
+                </MenuOptionGroup>
+              </MenuDropdown>
+              <Button colorScheme="blue" onClick={startCodingTest}>
+                {t("start_coding_test")}
+              </Button>
+            </HStack>
+            <Text>{t("instruction")}</Text>
+          </Stack>
         ) : (
           <Button colorScheme="blue" onClick={acquirePermission}>
-            Allow Permission
+            {t("allow_permission")}
           </Button>
         )}
       </Stack>
