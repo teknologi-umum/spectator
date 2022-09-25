@@ -102,8 +102,6 @@ function SAMTest() {
       });
       const exam = await sessionSpoke.startExam({ accessToken });
       dispatch(
-        // TODO(elianiva): we should get the deadline and questions from the
-        //                 server
         setDeadlineAndQuestions({
           deadlineUtc: Number(exam.deadline),
           questions: []
@@ -147,9 +145,14 @@ function SAMTest() {
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     {t(`${samTranslationKey}.aroused_title`)}
                   </Text>
-                  <Text color={fgDarker} fontSize="lg" mb="4">
-                    {t(`${samTranslationKey}.aroused_body`)}
-                  </Text>
+                  <Text
+                    color={fgDarker}
+                    fontSize="lg"
+                    mb="4"
+                    dangerouslySetInnerHTML={{
+                      __html: t(`${samTranslationKey}.aroused_body`)
+                    }}
+                  ></Text>
                   <SAMRadioGroup
                     value={arousal}
                     onChange={(v) => setArousal(parseInt(v))}
@@ -166,9 +169,13 @@ function SAMTest() {
                   <Text fontWeight="bold" color={fg} fontSize="xl" mb="2">
                     {t(`${samTranslationKey}.pleasure_title`)}
                   </Text>
-                  <Text color={fgDarker} fontSize="lg">
-                    {t(`${samTranslationKey}.pleasure_body`)}
-                  </Text>
+                  <Text
+                    color={fgDarker}
+                    fontSize="lg"
+                    dangerouslySetInnerHTML={{
+                      __html: t(`${samTranslationKey}.pleasure_body`)
+                    }}
+                  ></Text>
                   <SAMRadioGroup
                     value={pleasure}
                     onChange={(v) => setPleasure(parseInt(v))}
