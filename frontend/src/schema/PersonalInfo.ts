@@ -22,7 +22,7 @@ export const PersonalInfoSchema = yup.object().shape({
       //    the first 8 characters must be number, the last 2 character is `/` and a number
       // 4. S2018499/1
       //    the first 1 character must be alphabet, the last 2 character is `/` and a number
-      /([a-z]{3}\d{6}|\d{10}|\d{8}\/\d|S20\d{7}\/\d)/,
+      /([a-z]{3}\d{6}|\d{10}|\d{8}\/\d|S20\d{5}\/\d)/,
       "Invalid student number format"
     )
     .ensure()
