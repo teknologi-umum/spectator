@@ -12,7 +12,12 @@ export default function CoercedRoute() {
     deviceId
   } = useAppSelector((state) => state.session);
   const { studentNumber } = useAppSelector((state) => state.personalInfo);
-  const { deadlineUtc, questions } = useAppSelector((state) => state.editor);
+  const {
+    deadlineUtc,
+    questions,
+    currentQuestionNumber,
+    snapshotByQuestionNumber
+  } = useAppSelector((state) => state.editor);
   const { examResult } = useAppSelector((state) => state.examResult);
   const location = useLocation();
 
@@ -26,11 +31,15 @@ export default function CoercedRoute() {
       return "/";
     }
 
-    // filled the first personal info but haven't done the coding test
     if (
-      firstSAMSubmitted === false ||
+      // haven't done the first SAM test
+      !firstSAMSubmitted ||
+      // haven't done the second SAM test
       deadlineUtc === null ||
-      questions === null
+      // has no questions
+      questions === null ||
+      // haven't done the question SAM test
+      snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null
     ) {
       return "/sam-test";
     }

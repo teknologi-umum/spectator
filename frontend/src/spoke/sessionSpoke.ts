@@ -86,7 +86,6 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("SubmitAfterExamSAMAsync", request);
   }
 
-  // TODO: replace with a proper typedef from proto file
   public async submitSolutionSAM(request: SubmitSAMRequest): Promise<void> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SubmitSolutionSAMAsync", request);

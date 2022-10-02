@@ -56,7 +56,8 @@ namespace Spectator.DomainServices.PistonDomain {
 				// if the list is empty
 				Accepted: testResults.Length > 0
 					? testResults.All(testResult => testResult is PassingTestResult)
-					: false
+					: false,
+				SAMTestResult: null
 			);
 		}
 	}

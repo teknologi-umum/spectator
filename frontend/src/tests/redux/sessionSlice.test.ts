@@ -4,10 +4,10 @@ import reducer, {
   markFirstSAMSubmitted,
   markSecondSAMSubmitted,
   markTourCompleted,
-  SessionState,
   setAccessToken,
   setVideoDeviceId
 } from "@/store/slices/sessionSlice";
+import type { SessionState } from "@/models/Session";
 
 const initialState: SessionState = {
   sessionId: null,

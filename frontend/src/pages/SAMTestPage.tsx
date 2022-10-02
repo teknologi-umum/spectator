@@ -24,9 +24,7 @@ import {
   markFirstSAMSubmitted,
   markSecondSAMSubmitted
 } from "@/store/slices/sessionSlice";
-import {
-  setDeadlineAndQuestions
-} from "@/store/slices/editorSlice";
+import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 import SAMRadioGroup from "@/components/SAMTest/SAMRadioGroup";
@@ -90,24 +88,8 @@ function SAMTest() {
   async function finishSAMTest() {
     if (accessToken === null) return;
 
-    if (firstSAMSubmitted) {
-      if (examResult === null) {
-        await sessionSpoke.submitSolutionSAM({
-          accessToken,
-          arousedLevel,
-          pleasedLevel
-        });
-        navigate("/coding-test");
-      } else {
-        await sessionSpoke.submitAfterExamSAM({
-          accessToken,
-          arousedLevel,
-          pleasedLevel
-        });
-        dispatch(markSecondSAMSubmitted());
-        navigate("/fun-fact");
-      }
-    } else {
+    // submit SAM test before starting the exam
+    if (!firstSAMSubmitted) {
       await sessionSpoke.submitBeforeExamSAM({
         accessToken,
         arousedLevel,
@@ -122,7 +104,28 @@ function SAMTest() {
       );
       dispatch(markFirstSAMSubmitted());
       navigate("/video-test");
+      return;
     }
+
+    // submit SAM test after finishing the exam
+    if (examResult !== null) {
+      await sessionSpoke.submitAfterExamSAM({
+        accessToken,
+        arousedLevel,
+        pleasedLevel
+      });
+      dispatch(markSecondSAMSubmitted());
+      navigate("/fun-fact");
+      return;
+    }
+
+    // submit SAM test after each question
+    await sessionSpoke.submitSolutionSAM({
+      accessToken,
+      arousedLevel,
+      pleasedLevel
+    });
+    navigate("/coding-test");
   }
 
   useEffect(() => {
