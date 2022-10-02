@@ -10,12 +10,13 @@ service SessionService {
 	rpc StartSession (StartSessionRequest) returns (SessionReply);
 	rpc SetLocale (SetLocaleRequest) returns (EmptyReply);
 	rpc SubmitPersonalInfo (SubmitPersonalInfoRequest) returns (EmptyReply);
-	rpc SubmitBeforeCodeSAM (SubmitSAMRequest) returns (EmptyReply);
+	rpc SubmitBeforeExamSAM (SubmitSAMRequest) returns (EmptyReply);
 	rpc StartExam (EmptyRequest) returns (Exam);
 	rpc ResumeExam (EmptyRequest) returns (Exam);
 	rpc EndExam (EmptyRequest) returns (ExamResult);
 	rpc SubmitSolution (SubmissionRequest) returns (SubmissionResult);
-	rpc SubmitAfterCodeSAM (SubmitSAMRequest) returns (EmptyReply);
+	rpc SubmitAfterExamSAM (SubmitSAMRequest) returns (EmptyReply);
+	rpc SubmitSolutionSAM (SubmitSAMRequest) returns (EmptyReply);
 }
 
 message StartSessionRequest {
@@ -45,6 +46,13 @@ message SubmitSAMRequest {
 	string access_token = 1;
 	int32 aroused_level = 2;
 	int32 pleased_level = 3;
+}
+
+message SubmitSolutionSAMRequest {
+	string access_token = 1;
+	int32 question_number = 2;
+	int32 aroused_level = 3; 
+	int32 pleased_level = 4;
 }
 
 message Question {

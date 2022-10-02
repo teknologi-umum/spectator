@@ -253,7 +253,7 @@ namespace Spectator.DomainServices.SessionDomain {
 			);
 
 			// Create event
-			SessionEventBase @event = submission.Accepted 
+			SessionEventBase @event = submission.Accepted
 				? new TestAcceptedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS))
 				: new TestRejectedEvent(sessionId, DateTimeOffset.UtcNow, questionNumber, language, solution, scratchPad, JsonSerializer.Serialize(submission.TestResults, TestResultBase.JSON_SERIALIZER_OPTIONS));
 
@@ -325,6 +325,25 @@ namespace Spectator.DomainServices.SessionDomain {
 			// Create event
 			var @event = new AfterExamSAMSubmittedEvent(
 				SessionId: sessionId,
+				Timestamp: DateTimeOffset.UtcNow,
+				SelfAssessmentManikin: new SelfAssessmentManikin(arousedLevel, pleasedLevel)
+			);
+
+			// Dispatch event
+			sessionStore.Dispatch(@event);
+
+			// Raise event
+			await _sessionEventRepository.AddEventAsync(@event);
+		}
+
+		public async Task SubmitSolutionSAMAsync(Guid sessionId, int questionNumber, int arousedLevel, int pleasedLevel) {
+			// Get store
+			var sessionStore = await GetSessionStoreAsync(sessionId, CancellationToken.None);
+
+			// Create event
+			var @event = new SolutionSAMSubmittedEvent(
+				SessionId: sessionId,
+				QuestionNumber: questionNumber,
 				Timestamp: DateTimeOffset.UtcNow,
 				SelfAssessmentManikin: new SelfAssessmentManikin(arousedLevel, pleasedLevel)
 			);

@@ -24,7 +24,9 @@ import {
   markFirstSAMSubmitted,
   markSecondSAMSubmitted
 } from "@/store/slices/sessionSlice";
-import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
+import {
+  setDeadlineAndQuestions
+} from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 import SAMRadioGroup from "@/components/SAMTest/SAMRadioGroup";
@@ -64,12 +66,14 @@ function SAMTest() {
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
   const [currentPage, setCurrentPage] = useState(Page.FIRST);
-  const [arousal, setArousal] = useState(1);
-  const [pleasure, setPleasure] = useState(1);
+  const [arousedLevel, setArousedLevel] = useState(1);
+  const [pleasedLevel, setPleasedLevel] = useState(1);
 
   const { accessToken, firstSAMSubmitted, tourCompleted } = useAppSelector(
     (state) => state.session
   );
+  const { examResult } = useAppSelector((state) => state.examResult);
+
   const samTranslationKey = firstSAMSubmitted
     ? "sam_test_after"
     : "sam_test_before";
@@ -87,18 +91,27 @@ function SAMTest() {
     if (accessToken === null) return;
 
     if (firstSAMSubmitted) {
-      await sessionSpoke.submitAfterExamSAM({
-        accessToken,
-        arousedLevel: arousal,
-        pleasedLevel: pleasure
-      });
-      dispatch(markSecondSAMSubmitted());
-      navigate("/fun-fact");
+      if (examResult === null) {
+        await sessionSpoke.submitSolutionSAM({
+          accessToken,
+          arousedLevel,
+          pleasedLevel
+        });
+        navigate("/coding-test");
+      } else {
+        await sessionSpoke.submitAfterExamSAM({
+          accessToken,
+          arousedLevel,
+          pleasedLevel
+        });
+        dispatch(markSecondSAMSubmitted());
+        navigate("/fun-fact");
+      }
     } else {
       await sessionSpoke.submitBeforeExamSAM({
         accessToken,
-        arousedLevel: arousal,
-        pleasedLevel: pleasure
+        arousedLevel,
+        pleasedLevel
       });
       const exam = await sessionSpoke.startExam({ accessToken });
       dispatch(
@@ -154,9 +167,9 @@ function SAMTest() {
                     }}
                   ></Text>
                   <SAMRadioGroup
-                    value={arousal}
-                    onChange={(v) => setArousal(parseInt(v))}
-                    name="arousal"
+                    value={arousedLevel}
+                    onChange={(v) => setArousedLevel(parseInt(v))}
+                    name="arousedLevel"
                     items={getResponseOptions(Object.values(ICONS.arousal))}
                   />
                 </Box>
@@ -177,9 +190,9 @@ function SAMTest() {
                     }}
                   ></Text>
                   <SAMRadioGroup
-                    value={pleasure}
-                    onChange={(v) => setPleasure(parseInt(v))}
-                    name="pleasure"
+                    value={pleasedLevel}
+                    onChange={(v) => setPleasedLevel(parseInt(v))}
+                    name="pleasedLevel"
                     items={getResponseOptions(Object.values(ICONS.pleasure))}
                   />
                 </Box>

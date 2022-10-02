@@ -17,6 +17,7 @@ export default function CoercedRoute() {
   const location = useLocation();
 
   const validPath = useMemo(() => {
+    // new user
     if (
       accessToken === null ||
       studentNumber === null ||
@@ -25,6 +26,7 @@ export default function CoercedRoute() {
       return "/";
     }
 
+    // filled the first personal info but haven't done the coding test
     if (
       firstSAMSubmitted === false ||
       deadlineUtc === null ||
@@ -33,14 +35,18 @@ export default function CoercedRoute() {
       return "/sam-test";
     }
 
+    // checking video capture device before continuing with the test
     if (!hasPermission || deviceId === null || deviceId === "") {
       return "/video-test";
     }
 
+    // filled out the prerequisites and is currently doing the test
     if (examResult === null) return "/coding-test";
 
+    // has finished the coding test but haven't done the last SAM test
     if (!secondSAMSubmitted) return "/sam-test";
 
+    // has done everything
     return "/fun-fact";
   }, [
     accessToken,

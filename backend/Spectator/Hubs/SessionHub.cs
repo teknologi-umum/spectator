@@ -404,5 +404,21 @@ namespace Spectator.Hubs {
 				pleasedLevel: request.PleasedLevel
 			);
 		}
+
+		public Task SubmitSolutionSAMASync(SubmitSolutionSAMRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress and has a result
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam has ended");
+
+			return _sessionServices.SubmitSolutionSAMAsync(
+				sessionId: session.Id,
+				questionNumber: request.QuestionNumber,
+				arousedLevel: request.ArousedLevel,
+				pleasedLevel: request.PleasedLevel
+			);
+		}
 	}
 }

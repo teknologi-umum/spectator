@@ -1,18 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface SessionState {
-  sessionId: string | null;
-  accessToken: string | null;
-  firstSAMSubmitted: boolean;
-  secondSAMSubmitted: boolean;
-  hasPermission: boolean;
-  deviceId: string | null;
-  tourCompleted: {
-    personalInfo: boolean;
-    samTest: boolean;
-    codingTest: boolean;
-  };
-}
+import type { SessionState } from "@/models/Session";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: SessionState = {
   accessToken: null,

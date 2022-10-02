@@ -1,4 +1,5 @@
 import type { Language } from "./Language";
+import type { SAMTestResult } from "./SAMTestResult";
 import type { TestResult } from "./TestResult";
 
 export interface EditorSnapshot {
@@ -10,4 +11,5 @@ export interface EditorSnapshot {
   submissionAccepted: boolean;
   submissionRefactored: boolean;
   testResults: TestResult[] | null;
+  samTestResult: SAMTestResult | null;
 }

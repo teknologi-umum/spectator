@@ -16,13 +16,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<CoercedRoute />}>
-          <Route index element={<PersonalInfo />} />
-          <Route path="instructions" element={<Instructions />} />
           <Route path="sam-test" element={<SAMTest />} />
           <Route path="video-test" element={<VideoTest />} />
           <Route path="coding-test" element={<CodingTest />} />
           <Route path="fun-fact" element={<FunFact />} />
+        <Route path="/" element={<CoercedRoute />}>
+          <Route index element={<PersonalInfo />} />
+          <Route path="instructions" element={<Instructions />} />
         </Route>
         <Route path="/secret" element={<SecretRoute />}>
           <Route path="login" element={<Login />} />

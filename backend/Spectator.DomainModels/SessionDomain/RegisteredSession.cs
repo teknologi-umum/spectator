@@ -52,6 +52,22 @@ namespace Spectator.DomainModels.SessionDomain {
 			};
 		}
 
+		public RegisteredSession Apply(SolutionSAMSubmittedEvent @event) {
+			if (ExamEndedAt != null) throw new InvalidOperationException("Exam has ended");
+			if (@event.SessionId != Id) throw new ArgumentException("Applied event has different SessionId", nameof(@event));
+			if (SubmissionByQuestionNumber == null) throw new InvalidOperationException("There are no submissions yet");
+
+			var submission = SubmissionByQuestionNumber[@event.QuestionNumber];
+			if (submission == null) throw new InvalidOperationException($"There is no submission for question number: {@event.QuestionNumber}");
+
+			return this with {
+				UpdatedAt = @event.Timestamp,
+				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, submission with {
+					SAMTestResult = @event.SelfAssessmentManikin
+				})
+			};
+		}
+
 		public RegisteredSession Apply(ExamStartedEvent @event) {
 			if (BeforeExamSAM == null) throw new InvalidOperationException("SAM hasn't been submitted");
 			if (ExamStartedAt != null) throw new InvalidOperationException("Exam already started");
@@ -124,7 +140,8 @@ namespace Spectator.DomainModels.SessionDomain {
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
 					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults, TestResultBase.JSON_SERIALIZER_OPTIONS),
-					Accepted: true
+					Accepted: true,
+					SAMTestResult: null
 				))
 			};
 		}
@@ -147,7 +164,8 @@ namespace Spectator.DomainModels.SessionDomain {
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
 					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults, TestResultBase.JSON_SERIALIZER_OPTIONS),
-					Accepted: false
+					Accepted: false,
+					SAMTestResult: null
 				))
 			};
 		}
@@ -169,7 +187,8 @@ namespace Spectator.DomainModels.SessionDomain {
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
 					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults, TestResultBase.JSON_SERIALIZER_OPTIONS),
-					Accepted: true
+					Accepted: true,
+					SAMTestResult: null
 				))
 			};
 		}
@@ -191,7 +210,8 @@ namespace Spectator.DomainModels.SessionDomain {
 					Solution: @event.Solution,
 					ScratchPad: @event.ScratchPad,
 					TestResults: JsonSerializer.Deserialize<ImmutableArray<TestResultBase>>(@event.SerializedTestResults, TestResultBase.JSON_SERIALIZER_OPTIONS),
-					Accepted: false
+					Accepted: false,
+					SAMTestResult: null
 				))
 			};
 		}

@@ -180,7 +180,8 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           submissionSubmitted: currentSnapshot.submissionSubmitted
             ? true // don't change the value if it's already set to true
             : submissionType === "submit",
-          testResults: submissionResult.testResults
+          testResults: submissionResult.testResults,
+          samTestResult: currentSnapshot.samTestResult
         })
       );
 
