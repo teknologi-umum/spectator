@@ -6,7 +6,8 @@ void printLyrics();
 
 _REPLACE_ME_WITH_SOLUTION_
 
-int main() {
+int main()
+{
     printLyrics();
     return 0;
 }

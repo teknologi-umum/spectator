@@ -1,6 +1,19 @@
 {
   "questions": [
     {
+      "id": 0,
+      "question": "Sebelum kita mulai perjalan kita yang luar biasa, kita sebaiknya memperkenalkan diri dulu ke dunia.\n\nKamu hanya perlu mengisi fungsi dengan kode yang mengeluarkan output (atau men-print) \"Hello world\" (tanpa tanda kutip).\n\n**Contoh pseudocode:**\n\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nNgomong-ngomong, pseudocode berarti \"kode palsu\", sebuah cara yang informal dan gamblang untuk menulis sebuah program yang tidak peduli atau terikat dengan bahasa pemrograman apapun, namun kita menulis langkah, cara, dan instruksi dalam bentuk yang dapat dimengerti dengan mudah oleh manusia.",
+      "title": "Hello, world!",
+      "templates": {
+        "c": "TODO: put stuff here",
+        "cpp": "TODO: put stuff here",
+        "java": "TODO: put stuff here",
+        "javascript": "TODO: put stuff here",
+        "php": "TODO: put stuff here",
+        "python": "TODO: put stuff here"
+      }
+    },
+    {
       "id": 1,
       "question": "Kamu telah diberikan sebuah tugas untuk mencegah sebuah bintang jatuh ke bumi.\nTapi tunggu, gimana caranya kamu melakukan hal itu? Sederhana, buatlah sebuah\n_function_ yang akan mencetak lirik dari lagu _twinkle twinkle little star_\ntetapi hanya dengan menggunakan 2 variabel. Apabila kamu menggunakan lebih dari\nitu, atau kurang dari itu maka bintang akan jatuh, dunia akan berakhir, dan\nsemua orang akan menyalahkanmu.\n\n**Output yang diharapkan:**\n```\nTwinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are\n```\n\n**Contoh pseudocode:**\n```\ndefn printLyrics()\n  lyric1 = some lyrics goes here\n  lyric2 = the rest of the lyrics goes here\n  print(lyric1)\n  print(lyric2)\nend\n```\n\nMudah, bukan? Kamu seharusnya bisa melakukannya kurang dari 5 menit.\n",
       "title": "Twinkle Twinkle Little Star",
