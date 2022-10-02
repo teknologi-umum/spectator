@@ -5,12 +5,12 @@
       "question": "Before we begin our awesome journey, we should introduce ourself to the world.\n\nSimply fill the function with a code that prints \"Hello world\" (without the double quotes).\n\n**Pseudocode example:**\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nAnyway, pseudocode means \"fake code\", an informal and naive way to write a program in which we don't actually adhere with any existing programming language, but we write the steps, actions, and instruction in a form that a human can easily understand.",
       "title": "Hello, world!",
       "templates": {
-        "c": "TODO: put stuff here",
-        "cpp": "TODO: put stuff here",
-        "java": "TODO: put stuff here",
-        "javascript": "TODO: put stuff here",
-        "php": "TODO: put stuff here",
-        "python": "TODO: put stuff here"
+        "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
+        "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
+        "java": "class HelloWorld {\n   public static oid helloWorld() {\n      // write your code here\n   }\n}",
+        "javascript": "function helloWorld() {\n  // write your code here\n}",
+        "php": "function helloWorld() {\n   // write your code here\n}",
+        "python": "def helloWorld():\n  // write your code here"
       }
     },
     {
