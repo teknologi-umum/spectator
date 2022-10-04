@@ -33,7 +33,12 @@ namespace Spectator.DomainServices.PistonDomain {
 
 			// execute tests
 			var testResults = questionNumber switch {
-				// HACK: Hard coded check for first question
+				// HACK: Hard coded check for zeroth and first question
+				0 => await _pistonClient.ExecuteHelloWorldTestAsync(
+					language: language,
+					testCode: testCode,
+					cancellationToken: cancellationToken
+				),
 				1 => await _pistonClient.ExecuteTwinkleTwinkleLittleStarTestAsync(
 					language: language,
 					testCode: testCode,
