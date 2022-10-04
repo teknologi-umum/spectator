@@ -51,3 +51,21 @@ func TestQueryAfterExamSAM(t *testing.T) {
 		}
 	}
 }
+
+func TestQuerySolutionSubmittedSam(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	for _, sessionID := range []uuid.UUID{globalID, globalID2} {
+		readInputAPI := deps.DB.QueryAPI(deps.DBOrganization)
+		result, err := deps.QuerySolutionSubmittedSam(ctx, readInputAPI, sessionID)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+			return
+		}
+
+		if len(result) == 0 {
+			t.Logf("result length is 0")
+		}
+	}
+}

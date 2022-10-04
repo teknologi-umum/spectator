@@ -30,6 +30,7 @@ const (
 	// type that is used for any sam related events.
 	MeasurementBeforeExamSAMSubmitted = "before_exam_sam_submitted"
 	MeasurementAfterExamSAMSubmitted  = "after_exam_sam_submitted"
+	MeasurementSolutionSAMSubmitted   = "solution_sam_submitted"
 
 	// MeasurementExam provides the name for the exam measurement
 	// type that is used for any exam related events.
