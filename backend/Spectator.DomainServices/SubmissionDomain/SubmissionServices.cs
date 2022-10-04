@@ -57,12 +57,10 @@ namespace Spectator.DomainServices.PistonDomain {
 				Solution: solution,
 				ScratchPad: scratchPad,
 				TestResults: testResults,
+				SAMTestResult: null,
 				// always return false if timeout reached because Enumerable.All will return true
 				// if the list is empty
-				Accepted: testResults.Length > 0
-					? testResults.All(testResult => testResult is PassingTestResult)
-					: false,
-				SAMTestResult: null
+				Accepted: testResults.Length > 0 && testResults.All(testResult => testResult is PassingTestResult)
 			);
 		}
 	}
