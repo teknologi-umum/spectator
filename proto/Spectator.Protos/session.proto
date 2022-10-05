@@ -16,7 +16,7 @@ service SessionService {
 	rpc EndExam (EmptyRequest) returns (ExamResult);
 	rpc SubmitSolution (SubmissionRequest) returns (SubmissionResult);
 	rpc SubmitAfterExamSAM (SubmitSAMRequest) returns (EmptyReply);
-	rpc SubmitSolutionSAM (SubmitSAMRequest) returns (EmptyReply);
+	rpc SubmitSolutionSAM (SubmitSolutionSAMRequest) returns (EmptyReply);
 }
 
 message StartSessionRequest {

@@ -2,12 +2,12 @@
 
 _REPLACE_ME_WITH_DIRECTIVES_
 
-void printLyrics();
+void helloWorld();
 
 _REPLACE_ME_WITH_SOLUTION_
 
 int main()
 {
-    printLyrics();
+    helloWorld();
     return 0;
 }

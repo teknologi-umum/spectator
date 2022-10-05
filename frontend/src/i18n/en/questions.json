@@ -1,6 +1,19 @@
 {
   "questions": [
     {
+      "id": 0,
+      "question": "Before we begin our awesome journey, we should introduce ourself to the world.\n\nSimply fill the function with a code that prints \"Hello world\" (without the double quotes).\n\n**Pseudocode example:**\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nAnyway, pseudocode means \"fake code\", an informal and naive way to write a program in which we don't actually adhere with any existing programming language, but we write the steps, actions, and instruction in a form that a human can easily understand.",
+      "title": "Hello, world!",
+      "templates": {
+        "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
+        "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
+        "java": "class HelloWorld {\n   public static oid helloWorld() {\n      // write your code here\n   }\n}",
+        "javascript": "function helloWorld() {\n  // write your code here\n}",
+        "php": "function helloWorld() {\n   // write your code here\n}",
+        "python": "def helloWorld():\n  // write your code here"
+      }
+    },
+    {
       "id": 1,
       "question": "You've been given a task to prevent a star from falling down to earth. Wait,\nhow would you do that? Simply create a function that will print the lyrics of a\nsong called twinkle twinkle little star but by only using 2 variables. If you\ndo more than that or less than that, the star will fall, the world will end,\nand everybody will blame you.\n\n**Expected output:**\n```\nTwinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are\n```\n\n**Pseudocode example:**\n```\ndefn printLyrics()\n  lyric1 = some lyrics goes here\n  lyric2 = the rest of the lyrics goes here\n  print(lyric1)\n  print(lyric2)\nend\n```\n\nVery easy, right? You should be able to do it less than 5 minutes.\n",
       "title": "Twinkle Twinkle Little Star",

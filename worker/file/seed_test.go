@@ -83,6 +83,23 @@ func seedData(ctx context.Context) error {
 		)
 		sessionWriteAPI.WritePoint(afterExamSAMPoint)
 
+		for i := 1; i <= 7; i++ {
+			solutionSAMSubmitted := influxdb2.NewPoint(
+				common.MeasurementSolutionSAMSubmitted,
+				map[string]string{
+					"session_id": sessionID,
+				},
+				map[string]interface{}{
+					"aroused_level":   rand.Intn(9) + 1,
+					"pleased_level":   rand.Intn(9) + 1,
+					"question_number": i,
+				},
+				eventStart.Add(time.Minute*time.Duration(i)),
+			)
+
+			sessionWriteAPI.WritePoint(solutionSAMSubmitted)
+		}
+
 		// https://github.com/teknologi-umum/spectator/blob/master/backend/Spectator.DomainEvents/SessionDomain/ExamStartedEvent.cs
 		examStartedPoint := influxdb2.NewPoint(
 			common.MeasurementExamStarted,

@@ -360,6 +360,29 @@ func (d *Dependency) convertAndUpload(ctx context.Context, writeAPI api.WriteAPI
 			time.Now(),
 		))
 
+		currentFileName = fileName + "_" + "samsolutionsubmitted"
+		dataCSV, err = gocsv.MarshalBytes(s.SelfAssessmentSolutionSubmitted)
+		if err != nil {
+			return fmt.Errorf("failed to marshal csv %s data: %w", currentFileName, err)
+		}
+
+		_, err = d.mkFileAndUpload(ctx, dataCSV, studentNumber+"_"+currentFileName+".csv")
+		if err != nil {
+			return fmt.Errorf("failed to upload csv %s file: %w", currentFileName, err)
+		}
+
+		points = append(points, influxdb2.NewPoint(
+			common.MeasurementExportedData,
+			map[string]string{
+				"session_id":     sessionID.String(),
+				"student_number": studentNumber,
+			},
+			map[string]interface{}{
+				"file_csv_url": "/public/" + studentNumber + "_" + currentFileName + ".csv",
+			},
+			time.Now(),
+		))
+
 		currentFileName = fileName + "_" + "examstarted"
 		dataCSV, err = gocsv.MarshalBytes([]ExamStarted{*(s.ExamStarted)})
 		if err != nil {

@@ -81,6 +81,66 @@ namespace Spectator.Piston {
 			return ResultParser.ParseTestResults(executeResult.Runtime.Stdout);
 		}
 
+		// HACK: Hard coded check for zeroth question
+		public async Task<ImmutableArray<TestResultBase>> ExecuteHelloWorldTestAsync(Language language, string testCode, CancellationToken cancellationToken) {
+			var executeResult = await ExecuteAsync(
+				language: language switch {
+					Language.C => "C",
+					Language.CPP => "C++",
+					Language.PHP => "PHP",
+					Language.Javascript => "Javascript",
+					Language.Java => "Java",
+					Language.Python => "Python",
+					_ => throw new InvalidProgramException("Unhandled language")
+				},
+				version: language switch {
+					Language.C => "9.3.0",
+					Language.CPP => "9.3.0",
+					Language.PHP => "8.1",
+					Language.Javascript => "16.15.0",
+					Language.Java => "17",
+					Language.Python => "3.10.2",
+					_ => throw new InvalidProgramException("Unhandled language")
+
+				},
+				code: testCode,
+				cancellationToken: cancellationToken
+			);
+
+			if (executeResult.Compile.ExitCode != 0) {
+				return ImmutableArray.Create<TestResultBase>(
+					new CompileErrorResult(executeResult.Compile.Output_)
+				);
+			}
+
+			// TODO: report runtime error together with passing and failing tests
+			if (executeResult.Runtime.ExitCode != 0) {
+				return ImmutableArray.Create<TestResultBase>(
+					new RuntimeErrorResult(executeResult.Runtime.Output_)
+				);
+			}
+
+			if (executeResult.Runtime.Stdout.Trim() != "Hello world") {
+				return ImmutableArray.Create<TestResultBase>(
+					new FailingTestResult(
+						TestNumber: 0,
+						ExpectedStdout: "Hello world",
+						ActualStdout: executeResult.Runtime.Stdout,
+						ArgumentsStdout: ""
+					)
+				);
+			}
+
+			return ImmutableArray.Create<TestResultBase>(
+				new PassingTestResult(
+					TestNumber: 0,
+					ExpectedStdout: "Hello world",
+					ActualStdout: executeResult.Runtime.Stdout,
+					ArgumentsStdout: ""
+				)
+			);
+		}
+
 		// HACK: Hard coded check for first question
 		public async Task<ImmutableArray<TestResultBase>> ExecuteTwinkleTwinkleLittleStarTestAsync(Language language, string testCode, CancellationToken cancellationToken) {
 			var executeResult = await ExecuteAsync(

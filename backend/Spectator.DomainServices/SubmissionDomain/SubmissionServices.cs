@@ -33,7 +33,12 @@ namespace Spectator.DomainServices.PistonDomain {
 
 			// execute tests
 			var testResults = questionNumber switch {
-				// HACK: Hard coded check for first question
+				// HACK: Hard coded check for zeroth and first question
+				0 => await _pistonClient.ExecuteHelloWorldTestAsync(
+					language: language,
+					testCode: testCode,
+					cancellationToken: cancellationToken
+				),
 				1 => await _pistonClient.ExecuteTwinkleTwinkleLittleStarTestAsync(
 					language: language,
 					testCode: testCode,
@@ -52,12 +57,10 @@ namespace Spectator.DomainServices.PistonDomain {
 				Solution: solution,
 				ScratchPad: scratchPad,
 				TestResults: testResults,
+				SAMTestResult: null,
 				// always return false if timeout reached because Enumerable.All will return true
 				// if the list is empty
-				Accepted: testResults.Length > 0
-					? testResults.All(testResult => testResult is PassingTestResult)
-					: false,
-				SAMTestResult: null
+				Accepted: testResults.Length > 0 && testResults.All(testResult => testResult is PassingTestResult)
 			);
 		}
 	}
