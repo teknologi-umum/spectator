@@ -39,7 +39,8 @@ export default function CoercedRoute() {
       // has no questions
       questions === null ||
       // haven't done the question SAM test
-      snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null
+      (snapshotByQuestionNumber[currentQuestionNumber]?.submissionAccepted &&
+        snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null)
     ) {
       return "/sam-test";
     }
