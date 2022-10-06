@@ -5,6 +5,7 @@ const initialState: PersonalInfo = {
   email: "",
   age: 0,
   gender: "M",
+  nationality: "indonesia",
   studentNumber: "",
   yearsOfExperience: 0,
   hoursOfPractice: 0,

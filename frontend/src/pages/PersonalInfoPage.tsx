@@ -170,8 +170,14 @@ function PersonalInfoPage() {
 
             <FormControl mt="6" isInvalid={errors.studentNumber !== undefined}>
               <FormLabel>{t("personal_info.student_number")}</FormLabel>
-              <Input type="text" {...register("studentNumber")} autoComplete="off" />
-              <FormErrorMessage>{errors?.studentNumber?.message}!</FormErrorMessage>
+              <Input
+                type="text"
+                {...register("studentNumber")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.studentNumber?.message}!
+              </FormErrorMessage>
             </FormControl>
 
             <FormControl
@@ -185,7 +191,6 @@ function PersonalInfoPage() {
                 autoComplete="off"
               />
               <FormErrorMessage>
-                {errors?.yearsOfExperience?.message}!
               </FormErrorMessage>
             </FormControl>
 
