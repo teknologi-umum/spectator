@@ -74,6 +74,10 @@ namespace Spectator.RepositoryDALs.Tests {
 			var newEvent = new PersonalInfoSubmittedEvent(
 				SessionId: sessionId,
 				Timestamp: timestamp,
+				Email: "johnny@example.com",
+				Age: 21,
+				Gender: "M",
+				Nationality: "USA",
 				StudentNumber: "22536257326",
 				YearsOfExperience: 25,
 				HoursOfPractice: 12,

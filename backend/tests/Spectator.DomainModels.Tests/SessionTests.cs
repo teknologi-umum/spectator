@@ -47,6 +47,10 @@ namespace Spectator.DomainModels.Tests {
 			var personalInfoSubmittedEvent = new PersonalInfoSubmittedEvent(
 				SessionId: anonymousSession.Id,
 				Timestamp: timestamp,
+				Email: "johnny@example.com",
+				Age: 21,
+				Gender: "M",
+				Nationality: "USA",
 				StudentNumber: "1234567890",
 				YearsOfExperience: 1,
 				HoursOfPractice: 2,
@@ -87,6 +91,10 @@ namespace Spectator.DomainModels.Tests {
 			var personalInfoSubmittedEvent = new PersonalInfoSubmittedEvent(
 				SessionId: Guid.NewGuid(),
 				Timestamp: timestamp,
+				Email: "johnny@example.com",
+				Age: 21,
+				Gender: "M",
+				Nationality: "USA",
 				StudentNumber: "1234567890",
 				YearsOfExperience: 1,
 				HoursOfPractice: 2,
