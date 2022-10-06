@@ -68,6 +68,10 @@ namespace Spectator.Hubs {
 			// Submit personal info and map results
 			return _sessionServices.SubmitPersonalInfoAsync(
 				sessionId: session.Id,
+				email: request.Email,
+				age: request.Age,
+				gender: request.Gender,
+				nationality: request.Nationality,
 				studentNumber: request.StudentNumber,
 				yearsOfExperience: request.YearsOfExperience,
 				hoursOfPractice: request.HoursOfPractice,
