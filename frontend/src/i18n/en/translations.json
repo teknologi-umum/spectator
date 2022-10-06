@@ -66,6 +66,7 @@
       "email": "Email",
       "age": "Age",
       "gender": "Gender",
+      "nationality": "Nationality",
       "student_number": "Student Number",
       "programming_years": "How many years have you been programming?",
       "programming_practice": "How many hours in a week do you practice programming?",

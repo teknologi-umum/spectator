@@ -12,6 +12,7 @@ export const PersonalInfoSchema = yup.object().shape({
   email: yup.string().label("Email").email().ensure().required(),
   gender: yup.string().label("Gender").oneOf(["M", "F"]).required(),
   age: yup.number().label("Age").transform(transformRequired).min(1).required(),
+  nationality: yup.string().label("Nationality").oneOf(["indonesia", "malaysia", "other"]).ensure().required(),
   studentNumber: yup
     .string()
     .label("Student Number")
