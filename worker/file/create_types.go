@@ -3,15 +3,16 @@ package file
 // UserEvents provides the struct for collecting data regarding
 // a specific user.
 type UserEvents struct {
-	PersonalInfo                    *PersonalInfo          `json:"personal_info" csv:"personal_info"`
-	SelfAssessmentManekinBeforeTest *SelfAssessmentManekin `json:"self_assessment_manekin_before_test" csv:"self_assessment_manekin_before_test"`
-	SelfAssessmentManekinAfterTest  *SelfAssessmentManekin `json:"self_assessment_manekin_after_test" csv:"self_assessment_manekin_after_test"`
-	ExamStarted                     *ExamStarted           `json:"exam_started" csv:"exam_started"`
-	ExamEnded                       *ExamEvent             `json:"exam_ended" csv:"exam_ended"`
-	ExamForfeited                   *ExamEvent             `json:"exam_forfeited" csv:"exam_forfeited"`
-	ExamIDEReloaded                 []ExamEvent            `json:"exam_ide_reloaded" csv:"exam_ide_reloaded"`
-	Funfact                         *Funfact               `json:"funfact" csv:"funfact"`
-	DeadlinePassed                  *DeadlinePassed        `json:"deadline_passed" csv:"deadline_passed"`
+	PersonalInfo                    *PersonalInfo                            `json:"personal_info" csv:"personal_info"`
+	SelfAssessmentManekinBeforeTest *SelfAssessmentManekin                   `json:"self_assessment_manekin_before_test" csv:"self_assessment_manekin_before_test"`
+	SelfAssessmentManekinAfterTest  *SelfAssessmentManekin                   `json:"self_assessment_manekin_after_test" csv:"self_assessment_manekin_after_test"`
+	SelfAssessmentSolutionSubmitted []SolutionSelfAssessmentManekinSubmitted `json:"self_assessment_manekin_solution_submitted" csv:"self_assessment_manekin_solution_submitted"`
+	ExamStarted                     *ExamStarted                             `json:"exam_started" csv:"exam_started"`
+	ExamEnded                       *ExamEvent                               `json:"exam_ended" csv:"exam_ended"`
+	ExamForfeited                   *ExamEvent                               `json:"exam_forfeited" csv:"exam_forfeited"`
+	ExamIDEReloaded                 []ExamEvent                              `json:"exam_ide_reloaded" csv:"exam_ide_reloaded"`
+	Funfact                         *Funfact                                 `json:"funfact" csv:"funfact"`
+	DeadlinePassed                  *DeadlinePassed                          `json:"deadline_passed" csv:"deadline_passed"`
 }
 
 type KeystrokeEvents struct {

@@ -205,6 +205,10 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           />
         )
       });
+
+      if (submissionResult.accepted && currentQuestionNumber !== 0) {
+        navigate("/sam-test");
+      }
     } catch (err) {
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);

@@ -124,7 +124,36 @@ function PersonalInfoPage() {
 
           <Box>
             <FormControl
-              id="email"
+              mt="6"
+              isInvalid={errors.email !== undefined}
+            >
+              <FormLabel>{t("personal_info.email")}</FormLabel>
+              <Input
+                type="text"
+                {...register("email")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.email?.message}!
+              </FormErrorMessage>
+            </FormControl>
+
+            <FormControl
+              mt="6"
+              isInvalid={errors.age !== undefined}
+            >
+              <FormLabel>{t("personal_info.age")}</FormLabel>
+              <Input
+                type="text"
+                {...register("age")}
+                autoComplete="off"
+              />
+              <FormErrorMessage>
+                {errors?.age?.message}!
+              </FormErrorMessage>
+            </FormControl>
+            
+            <FormControl
               mt="6"
               isInvalid={errors.studentNumber !== undefined}
             >
@@ -145,7 +174,7 @@ function PersonalInfoPage() {
             >
               <FormLabel>{t("personal_info.programming_years")}</FormLabel>
               <Input
-                type="number"
+                type="text"
                 {...register("yearsOfExperience")}
                 autoComplete="off"
               />
@@ -160,7 +189,7 @@ function PersonalInfoPage() {
             >
               <FormLabel>{t("personal_info.programming_practice")}</FormLabel>
               <Input
-                type="number"
+                type="text"
                 {...register("hoursOfPractice")}
                 autoComplete="off"
               />

@@ -1,4 +1,7 @@
 export interface PersonalInfo {
+  email: string;
+  age: number;
+  gender: "M" | "F";
   studentNumber: string;
   yearsOfExperience: number;
   hoursOfPractice: number;

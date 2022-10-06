@@ -72,7 +72,7 @@ export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
   return (
     <Box p="4" overflowY="auto" flex="1" h="full">
       <Heading size="lg" color={fg}>
-        {t(`${currentQuestionNumber - 1}.title`)} {"  "}
+        {t(`${currentQuestionNumber}.title`)} {"  "}
         {!snapshot?.submissionSubmitted && (
           <Badge fontSize="1rem" variant="outline">
             NO ATTEMPT
@@ -98,7 +98,7 @@ export default function QuestionPane({ fg, fgDarker }: QuestionPaneProps) {
             pre: buildPre(codeBg, fg)
           }}
         >
-          {t(`${currentQuestionNumber - 1}.question`)}
+          {t(`${currentQuestionNumber}.question`)}
         </ReactMarkdown>
       </Box>
     </Box>

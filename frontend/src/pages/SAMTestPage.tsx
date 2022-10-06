@@ -20,10 +20,7 @@ import {
 import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
-import {
-  markFirstSAMSubmitted,
-  markSecondSAMSubmitted
-} from "@/store/slices/sessionSlice";
+import { markFirstSAMSubmitted } from "@/store/slices/sessionSlice";
 import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
@@ -38,6 +35,9 @@ const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
   pleasure: import.meta.globEager("../images/pleasure/pleasure-*.svg")
 };
+
+// we have 6 questions
+const MAX_QUESTION_NUMBER = 6;
 
 function getResponseOptions(
   icons: Record<string, FC<SVGProps<SVGSVGElement>>>[]
@@ -71,10 +71,9 @@ function SAMTest() {
     (state) => state.session
   );
   const { examResult } = useAppSelector((state) => state.examResult);
+  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
 
-  const samTranslationKey = firstSAMSubmitted
-    ? "sam_test_after"
-    : "sam_test_before";
+  const samTranslationKey = "sam_test_before";
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -114,7 +113,6 @@ function SAMTest() {
         arousedLevel,
         pleasedLevel
       });
-      dispatch(markSecondSAMSubmitted());
       navigate("/fun-fact");
       return;
     }
@@ -125,7 +123,13 @@ function SAMTest() {
       arousedLevel,
       pleasedLevel
     });
-    navigate("/coding-test");
+
+    // TODO(elianiva): is it ok to leave this magic number???
+    if (currentQuestionNumber === MAX_QUESTION_NUMBER) {
+      navigate("/fun-fact");
+    } else {
+      navigate("/coding-test");
+    }
   }
 
   useEffect(() => {

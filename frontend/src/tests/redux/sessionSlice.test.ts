@@ -2,7 +2,6 @@ import { describe, expect } from "vitest";
 import reducer, {
   allowVideoPermission,
   markFirstSAMSubmitted,
-  markSecondSAMSubmitted,
   markTourCompleted,
   setAccessToken,
   setVideoDeviceId
@@ -13,7 +12,6 @@ const initialState: SessionState = {
   sessionId: null,
   accessToken: null,
   firstSAMSubmitted: false,
-  secondSAMSubmitted: false,
   hasPermission: false,
   deviceId: null,
   tourCompleted: {
@@ -43,13 +41,6 @@ describe("SAM Test", (it) => {
     expect(reducer(initialState, markFirstSAMSubmitted())).toEqual({
       ...initialState,
       firstSAMSubmitted: true
-    });
-  });
-
-  it("should be able to submit the second sam test", () => {
-    expect(reducer(initialState, markSecondSAMSubmitted())).toEqual({
-      ...initialState,
-      secondSAMSubmitted: true
     });
   });
 });
@@ -101,4 +92,3 @@ describe("Video", (it) => {
     });
   });
 });
-

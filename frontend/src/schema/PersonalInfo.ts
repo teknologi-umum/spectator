@@ -9,6 +9,9 @@ const transformRequired = (_?: string, origin?: string) => {
 
 // Labels might come from i18n translations
 export const PersonalInfoSchema = yup.object().shape({
+  email: yup.string().label("Email").email().ensure().required(),
+  gender: yup.string().label("Gender").oneOf(["M", "F"]).required(),
+  age: yup.number().label("Age").transform(transformRequired).min(1).required(),
   studentNumber: yup
     .string()
     .label("Student Number")
@@ -20,7 +23,9 @@ export const PersonalInfoSchema = yup.object().shape({
       //    the first 2 character must be the number 12, the rest is number
       // 3. 17188939/1
       //    the first 8 characters must be number, the last 2 character is `/` and a number
-      /([a-z]{3}\d{6}|\d{10}|\d{8}\/\d)/,
+      // 4. S2018499/1
+      //    the first 1 character must be alphabet, the last 2 character is `/` and a number
+      /([a-z]{3}\d{6}|\d{10}|\d{8}\/\d|S20\d{5}\/\d)/,
       "Invalid student number format"
     )
     .ensure()
@@ -29,11 +34,13 @@ export const PersonalInfoSchema = yup.object().shape({
     .number()
     .label("Years of Experience")
     .transform(transformRequired)
+    .min(0)
     .required(),
   hoursOfPractice: yup
     .number()
     .label("Hours of Practice")
     .transform(transformRequired)
+    .min(0)
     .required(),
   familiarLanguages: yup
     .string()

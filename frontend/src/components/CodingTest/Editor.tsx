@@ -44,7 +44,7 @@ export default function Editor({ bg }: EditorProps) {
     useAppSelector((state) => state.editor);
 
   const boilerplate = useMemo(
-    () => t(`${currentQuestionNumber - 1}.templates.${currentLanguage}`),
+    () => t(`${currentQuestionNumber}.templates.${currentLanguage}`),
     [currentQuestionNumber, currentLanguage]
   );
 

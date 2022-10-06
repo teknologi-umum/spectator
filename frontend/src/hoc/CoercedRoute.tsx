@@ -7,7 +7,6 @@ export default function CoercedRoute() {
   const {
     accessToken,
     firstSAMSubmitted,
-    secondSAMSubmitted,
     hasPermission,
     deviceId
   } = useAppSelector((state) => state.session);
@@ -39,7 +38,8 @@ export default function CoercedRoute() {
       // has no questions
       questions === null ||
       // haven't done the question SAM test
-      snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null
+      (snapshotByQuestionNumber[currentQuestionNumber]?.submissionAccepted &&
+        snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null)
     ) {
       return "/sam-test";
     }
@@ -52,9 +52,6 @@ export default function CoercedRoute() {
     // filled out the prerequisites and is currently doing the test
     if (examResult === null) return "/coding-test";
 
-    // has finished the coding test but haven't done the last SAM test
-    if (!secondSAMSubmitted) return "/sam-test";
-
     // has done everything
     return "/fun-fact";
   }, [
@@ -64,8 +61,8 @@ export default function CoercedRoute() {
     deadlineUtc,
     questions,
     examResult,
-    secondSAMSubmitted,
-    hasPermission
+    hasPermission,
+    deviceId
   ]);
 
   if (location.pathname !== validPath) {

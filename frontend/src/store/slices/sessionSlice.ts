@@ -5,7 +5,6 @@ const initialState: SessionState = {
   accessToken: null,
   sessionId: null,
   firstSAMSubmitted: false,
-  secondSAMSubmitted: false,
   hasPermission: false,
   deviceId: null,
   tourCompleted: {
@@ -34,9 +33,6 @@ export const sessionSlice = createSlice({
     markFirstSAMSubmitted: (state) => {
       state.firstSAMSubmitted = true;
     },
-    markSecondSAMSubmitted: (state) => {
-      state.secondSAMSubmitted = true;
-    },
     markTourCompleted: (
       state,
       action: PayloadAction<"personalInfo" | "samTest" | "codingTest">
@@ -56,7 +52,6 @@ export const {
   setAccessToken,
   removeAccessToken,
   markFirstSAMSubmitted,
-  markSecondSAMSubmitted,
   markTourCompleted,
   setSessionId,
   removeSessionId,
