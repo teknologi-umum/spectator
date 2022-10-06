@@ -9,7 +9,7 @@ import { defaultEditorSnapshot } from "@/store/entity/EditorSnapshot";
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
-  currentQuestionNumber: 1,
+  currentQuestionNumber: 0,
   lockedToCurrentQuestion: false,
   currentLanguage: "javascript",
   fontSize: 14,
