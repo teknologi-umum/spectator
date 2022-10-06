@@ -34,12 +34,16 @@ message SessionReply {
 
 message SubmitPersonalInfoRequest {
 	string access_token = 1;
-	string student_number = 2;
-	int32 years_of_experience = 3;
-	int32 hours_of_practice = 4;
-	string familiar_languages = 5;
-	string wallet_number = 6;
-	string wallet_type = 7;
+	string email = 2;
+	int32 age = 3;
+	string gender = 4;
+	string nationality = 5;
+	string student_number = 6;
+	int32 years_of_experience = 7;
+	int32 hours_of_practice = 8;
+	string familiar_languages = 9;
+	string wallet_number = 10;
+	string wallet_type = 11;
 }
 
 message SubmitSAMRequest {

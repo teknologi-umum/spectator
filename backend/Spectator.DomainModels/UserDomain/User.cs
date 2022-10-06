@@ -3,6 +3,10 @@ using Spectator.DomainEvents.SessionDomain;
 
 namespace Spectator.DomainModels.UserDomain {
 	public record User {
+		public string Email { get; }
+		public int Age { get;  }
+		public string Gender { get; }
+		public string Nationality { get; }
 		public string StudentNumber { get; }
 		public int YearsOfExperience { get; }
 		public int HoursOfPractice { get; }
@@ -13,6 +17,10 @@ namespace Spectator.DomainModels.UserDomain {
 		public DateTimeOffset UpdatedAt { get; private init; }
 
 		private User(
+			string email,
+			int age,
+			string gender,
+			string nationality,
 			string studentNumber,
 			int yearsOfExperience,
 			int hoursOfPractice,
@@ -22,6 +30,10 @@ namespace Spectator.DomainModels.UserDomain {
 			DateTimeOffset createdAt,
 			DateTimeOffset updatedAt
 		) {
+			Email = email;
+			Age = age;
+			Gender = gender;
+			Nationality = nationality;
 			StudentNumber = studentNumber;
 			YearsOfExperience = yearsOfExperience;
 			HoursOfPractice = hoursOfPractice;
@@ -33,6 +45,10 @@ namespace Spectator.DomainModels.UserDomain {
 		}
 
 		public static User From(PersonalInfoSubmittedEvent @event) => new(
+			email: @event.Email,
+			age: @event.Age,
+			gender: @event.Gender,
+			nationality: @event.Nationality,
 			studentNumber: @event.StudentNumber,
 			yearsOfExperience: @event.YearsOfExperience,
 			hoursOfPractice: @event.HoursOfPractice,
