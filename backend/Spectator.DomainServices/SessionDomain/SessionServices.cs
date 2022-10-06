@@ -72,6 +72,10 @@ namespace Spectator.DomainServices.SessionDomain {
 
 		public async Task SubmitPersonalInfoAsync(
 			Guid sessionId,
+			string email,
+			int age,
+			string gender,
+			string nationality,
 			string studentNumber,
 			int yearsOfExperience,
 			int hoursOfPractice,
@@ -86,6 +90,10 @@ namespace Spectator.DomainServices.SessionDomain {
 			var @event = new PersonalInfoSubmittedEvent(
 				SessionId: sessionId,
 				Timestamp: DateTimeOffset.UtcNow,
+				Email: email,
+				Age: age,
+				Gender: gender,
+				Nationality: nationality,
 				StudentNumber: studentNumber,
 				YearsOfExperience: yearsOfExperience,
 				HoursOfPractice: hoursOfPractice,
