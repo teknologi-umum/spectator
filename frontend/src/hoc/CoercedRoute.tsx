@@ -4,12 +4,8 @@ import { useAppSelector } from "@/store";
 import { useMemo } from "react";
 
 export default function CoercedRoute() {
-  const {
-    accessToken,
-    firstSAMSubmitted,
-    hasPermission,
-    deviceId
-  } = useAppSelector((state) => state.session);
+  const { accessToken, firstSAMSubmitted, hasPermission, deviceId } =
+    useAppSelector((state) => state.session);
   const { studentNumber } = useAppSelector((state) => state.personalInfo);
   const {
     deadlineUtc,
@@ -19,6 +15,10 @@ export default function CoercedRoute() {
   } = useAppSelector((state) => state.editor);
   const { examResult } = useAppSelector((state) => state.examResult);
   const location = useLocation();
+  const isCurrentSubmissionAccepted =
+    snapshotByQuestionNumber[currentQuestionNumber]?.submissionAccepted;
+  const currentQuestionHasNoSAMResult =
+    snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null;
 
   const validPath = useMemo(() => {
     // new user
@@ -38,8 +38,7 @@ export default function CoercedRoute() {
       // has no questions
       questions === null ||
       // haven't done the question SAM test
-      (snapshotByQuestionNumber[currentQuestionNumber]?.submissionAccepted &&
-        snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null)
+      (isCurrentSubmissionAccepted && currentQuestionHasNoSAMResult)
     ) {
       return "/sam-test";
     }
@@ -60,9 +59,11 @@ export default function CoercedRoute() {
     firstSAMSubmitted,
     deadlineUtc,
     questions,
-    examResult,
+    isCurrentSubmissionAccepted,
+    currentQuestionHasNoSAMResult,
     hasPermission,
-    deviceId
+    deviceId,
+    examResult
   ]);
 
   if (location.pathname !== validPath) {
