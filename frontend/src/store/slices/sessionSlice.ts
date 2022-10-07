@@ -42,7 +42,7 @@ export const sessionSlice = createSlice({
     allowVideoPermission: (state) => {
       state.hasPermission = true;
     },
-    setVideoDeviceId: (state, action: PayloadAction<string>) => {
+    setVideoDeviceId: (state, action: PayloadAction<string | null>) => {
       state.deviceId = action.payload;
     }
   }

@@ -53,7 +53,7 @@ export default function VideoTestPage() {
   }, [isAllowed]);
 
   const activeSourceName = useMemo(() => {
-    if (videoStream === null || videoStream === undefined) return null;
+    if (videoStream === null || videoStream === undefined) return "Unknown";
     const sourceName = videoStream.getTracks()?.[0].label;
     return sourceName;
   }, [videoStream]);
@@ -80,6 +80,7 @@ export default function VideoTestPage() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
       const stream = await getUserMedia();
+      setVideoStream(stream);
       // eslint-disable-next-line no-console
       console.debug(
         "Acquired video stream, please open the arrow on the right.",
@@ -93,6 +94,11 @@ export default function VideoTestPage() {
   }
 
   async function changeVideoSource(deviceId: string) {
+    if (deviceId === "unknown") {
+      dispatch(setVideoDeviceId(null));
+      setVideoStream(null);
+    }
+
     const newStream = await getUserMedia(deviceId);
     setVideoStream(newStream);
     dispatch(setVideoDeviceId(deviceId));
@@ -167,7 +173,11 @@ export default function VideoTestPage() {
                     // no need to handle `string[]` since deviceId will never be an array of string
                     changeVideoSource(deviceId as string);
                   }}
+                  value={deviceId ?? "unknown"}
                 >
+                  <MenuItemOption textTransform="capitalize" value="unknown">
+                    <span>Unknown</span>
+                  </MenuItemOption>
                   {videoSources.map((source) => (
                     <MenuItemOption
                       key={source.deviceId}
