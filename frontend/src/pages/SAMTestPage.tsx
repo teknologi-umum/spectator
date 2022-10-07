@@ -21,7 +21,10 @@ import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { markFirstSAMSubmitted } from "@/store/slices/sessionSlice";
-import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
+import {
+  setDeadlineAndQuestions,
+  setSAMTestResult
+} from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 import SAMRadioGroup from "@/components/SAMTest/SAMRadioGroup";
@@ -123,6 +126,7 @@ function SAMTest() {
       arousedLevel,
       pleasedLevel
     });
+    dispatch(setSAMTestResult({ arousedLevel, pleasedLevel }));
 
     // TODO(elianiva): is it ok to leave this magic number???
     if (currentQuestionNumber === MAX_QUESTION_NUMBER) {

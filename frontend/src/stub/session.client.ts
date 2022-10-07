@@ -4,6 +4,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { SessionService } from "./session";
+import type { SubmitSolutionSAMRequest } from "./session";
 import type { SubmissionResult } from "./session";
 import type { SubmissionRequest } from "./session";
 import type { ExamResult } from "./session";
@@ -59,9 +60,9 @@ export interface ISessionServiceClient {
      */
     submitAfterExamSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply>;
     /**
-     * @generated from protobuf rpc: SubmitSolutionSAM(session.SubmitSAMRequest) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitSolutionSAM(session.SubmitSolutionSAMRequest) returns (session.EmptyReply);
      */
-    submitSolutionSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply>;
+    submitSolutionSAM(input: SubmitSolutionSAMRequest, options?: RpcOptions): UnaryCall<SubmitSolutionSAMRequest, EmptyReply>;
 }
 /**
  * @generated from protobuf service session.SessionService
@@ -136,10 +137,10 @@ export class SessionServiceClient implements ISessionServiceClient, ServiceInfo 
         return stackIntercept<SubmitSAMRequest, EmptyReply>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SubmitSolutionSAM(session.SubmitSAMRequest) returns (session.EmptyReply);
+     * @generated from protobuf rpc: SubmitSolutionSAM(session.SubmitSolutionSAMRequest) returns (session.EmptyReply);
      */
-    submitSolutionSAM(input: SubmitSAMRequest, options?: RpcOptions): UnaryCall<SubmitSAMRequest, EmptyReply> {
+    submitSolutionSAM(input: SubmitSolutionSAMRequest, options?: RpcOptions): UnaryCall<SubmitSolutionSAMRequest, EmptyReply> {
         const method = this.methods[9], opt = this._transport.mergeOptions(options);
-        return stackIntercept<SubmitSAMRequest, EmptyReply>("unary", this._transport, method, opt, input);
+        return stackIntercept<SubmitSolutionSAMRequest, EmptyReply>("unary", this._transport, method, opt, input);
     }
 }

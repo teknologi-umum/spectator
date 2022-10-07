@@ -80,7 +80,8 @@ export default function VideoTestPage() {
     // this is using the old way of checking permission since firefox doesn't support permissions API for camera
     try {
       const stream = await getUserMedia();
-      setVideoStream(stream);
+      setVideoStream(null);
+      dispatch(setVideoDeviceId(null));
       // eslint-disable-next-line no-console
       console.debug(
         "Acquired video stream, please open the arrow on the right.",
