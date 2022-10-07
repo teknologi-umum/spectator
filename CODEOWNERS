@@ -1,9 +1,10 @@
 # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 /frontend/ @elianiva 
-/rce/ @aldy505
+/rce/ @aldy505 @elianiva
 /logger/ @aldy505
 /backend/ @ronnygunawan
 /proto/ @ronnygunawan
-/worker/ @artileda
-/data/ @artileda
+/worker/ @aldy505
+/data/ @vmasdani
 /dummy/ @herlangga72
+/video/ @aldy505
