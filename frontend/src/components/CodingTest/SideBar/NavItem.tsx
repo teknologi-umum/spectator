@@ -39,7 +39,7 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
 
   const isActive = currentQuestionNumber === questionNumber;
   const isLocked =
-    lockedToCurrentQuestion || !snapshotByQuestionNumber[0].submissionAccepted;
+    lockedToCurrentQuestion || !snapshotByQuestionNumber[0]?.submissionAccepted;
 
   useEffect(() => {
     setCurrentQuestion({
