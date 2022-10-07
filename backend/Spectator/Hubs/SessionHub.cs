@@ -68,6 +68,10 @@ namespace Spectator.Hubs {
 			// Submit personal info and map results
 			return _sessionServices.SubmitPersonalInfoAsync(
 				sessionId: session.Id,
+				email: request.Email,
+				age: request.Age,
+				gender: request.Gender,
+				nationality: request.Nationality,
 				studentNumber: request.StudentNumber,
 				yearsOfExperience: request.YearsOfExperience,
 				hoursOfPractice: request.HoursOfPractice,
@@ -195,7 +199,7 @@ namespace Spectator.Hubs {
 					select testResult switch {
 						PassingTestResult passing => new TestResult {
 							TestNumber = passing.TestNumber,
-							PassingTest = new TestResult.Types.PassingTest { 
+							PassingTest = new TestResult.Types.PassingTest {
 								ExpectedStdout = passing.ExpectedStdout,
 								ActualStdout = passing.ActualStdout,
 								ArgumentsStdout = passing.ArgumentsStdout
@@ -257,7 +261,7 @@ namespace Spectator.Hubs {
 					select testResult switch {
 						PassingTestResult passing => new TestResult {
 							TestNumber = passing.TestNumber,
-							PassingTest = new TestResult.Types.PassingTest { 
+							PassingTest = new TestResult.Types.PassingTest {
 								ExpectedStdout = passing.ExpectedStdout,
 								ActualStdout = passing.ActualStdout,
 								ArgumentsStdout = passing.ArgumentsStdout
@@ -268,7 +272,7 @@ namespace Spectator.Hubs {
 							FailingTest = new TestResult.Types.FailingTest {
 								ExpectedStdout = failing.ExpectedStdout,
 								ActualStdout = failing.ActualStdout,
-								ArgumentsStdout = failing.ArgumentsStdout 
+								ArgumentsStdout = failing.ArgumentsStdout
 							}
 						},
 						CompileErrorResult compileError => new TestResult {
@@ -400,6 +404,22 @@ namespace Spectator.Hubs {
 			// Submit SAM and map results
 			return _sessionServices.SubmitAfterExamSAMAsync(
 				sessionId: session.Id,
+				arousedLevel: request.ArousedLevel,
+				pleasedLevel: request.PleasedLevel
+			);
+		}
+
+		public Task SubmitSolutionSAMASync(SubmitSolutionSAMRequest request) {
+			// Authenticate
+			var session = _poormansAuthentication.Authenticate(request.AccessToken);
+
+			// Authorize: Exam must be in progress and has a result
+			if (session is not RegisteredSession registeredSession) throw new UnauthorizedAccessException("Personal Info not yet submitted");
+			if (registeredSession.ExamEndedAt is not null) throw new UnauthorizedAccessException("Exam has ended");
+
+			return _sessionServices.SubmitSolutionSAMAsync(
+				sessionId: session.Id,
+				questionNumber: request.QuestionNumber,
 				arousedLevel: request.ArousedLevel,
 				pleasedLevel: request.PleasedLevel
 			);

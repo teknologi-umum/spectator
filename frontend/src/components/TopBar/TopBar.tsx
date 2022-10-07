@@ -180,7 +180,8 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           submissionSubmitted: currentSnapshot.submissionSubmitted
             ? true // don't change the value if it's already set to true
             : submissionType === "submit",
-          testResults: submissionResult.testResults
+          testResults: submissionResult.testResults,
+          samTestResult: currentSnapshot.samTestResult
         })
       );
 
@@ -204,6 +205,14 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           />
         )
       });
+
+      if (
+        submissionType === "submit" &&
+        submissionResult.accepted &&
+        currentQuestionNumber !== 0
+      ) {
+        navigate("/sam-test");
+      }
     } catch (err) {
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);

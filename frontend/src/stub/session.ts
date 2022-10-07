@@ -54,27 +54,43 @@ export interface SubmitPersonalInfoRequest {
      */
     accessToken: string;
     /**
-     * @generated from protobuf field: string student_number = 2;
+     * @generated from protobuf field: string email = 2;
+     */
+    email: string;
+    /**
+     * @generated from protobuf field: int32 age = 3;
+     */
+    age: number;
+    /**
+     * @generated from protobuf field: string gender = 4;
+     */
+    gender: string;
+    /**
+     * @generated from protobuf field: string nationality = 5;
+     */
+    nationality: string;
+    /**
+     * @generated from protobuf field: string student_number = 6;
      */
     studentNumber: string;
     /**
-     * @generated from protobuf field: int32 years_of_experience = 3;
+     * @generated from protobuf field: int32 years_of_experience = 7;
      */
     yearsOfExperience: number;
     /**
-     * @generated from protobuf field: int32 hours_of_practice = 4;
+     * @generated from protobuf field: int32 hours_of_practice = 8;
      */
     hoursOfPractice: number;
     /**
-     * @generated from protobuf field: string familiar_languages = 5;
+     * @generated from protobuf field: string familiar_languages = 9;
      */
     familiarLanguages: string;
     /**
-     * @generated from protobuf field: string wallet_number = 6;
+     * @generated from protobuf field: string wallet_number = 10;
      */
     walletNumber: string;
     /**
-     * @generated from protobuf field: string wallet_type = 7;
+     * @generated from protobuf field: string wallet_type = 11;
      */
     walletType: string;
 }
@@ -92,6 +108,27 @@ export interface SubmitSAMRequest {
     arousedLevel: number;
     /**
      * @generated from protobuf field: int32 pleased_level = 3;
+     */
+    pleasedLevel: number;
+}
+/**
+ * @generated from protobuf message session.SubmitSolutionSAMRequest
+ */
+export interface SubmitSolutionSAMRequest {
+    /**
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
+    /**
+     * @generated from protobuf field: int32 question_number = 2;
+     */
+    questionNumber: number;
+    /**
+     * @generated from protobuf field: int32 aroused_level = 3;
+     */
+    arousedLevel: number;
+    /**
+     * @generated from protobuf field: int32 pleased_level = 4;
      */
     pleasedLevel: number;
 }
@@ -480,16 +517,20 @@ class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoReque
     constructor() {
         super("session.SubmitPersonalInfoRequest", [
             { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 4, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 5, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "wallet_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 7, name: "wallet_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "age", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "gender", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "nationality", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "student_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "years_of_experience", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 8, name: "hours_of_practice", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 9, name: "familiar_languages", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 10, name: "wallet_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 11, name: "wallet_type", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<SubmitPersonalInfoRequest>): SubmitPersonalInfoRequest {
-        const message = { accessToken: "", studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "", walletNumber: "", walletType: "" };
+        const message = { accessToken: "", email: "", age: 0, gender: "", nationality: "", studentNumber: "", yearsOfExperience: 0, hoursOfPractice: 0, familiarLanguages: "", walletNumber: "", walletType: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<SubmitPersonalInfoRequest>(this, message, value);
@@ -503,22 +544,34 @@ class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoReque
                 case /* string access_token */ 1:
                     message.accessToken = reader.string();
                     break;
-                case /* string student_number */ 2:
+                case /* string email */ 2:
+                    message.email = reader.string();
+                    break;
+                case /* int32 age */ 3:
+                    message.age = reader.int32();
+                    break;
+                case /* string gender */ 4:
+                    message.gender = reader.string();
+                    break;
+                case /* string nationality */ 5:
+                    message.nationality = reader.string();
+                    break;
+                case /* string student_number */ 6:
                     message.studentNumber = reader.string();
                     break;
-                case /* int32 years_of_experience */ 3:
+                case /* int32 years_of_experience */ 7:
                     message.yearsOfExperience = reader.int32();
                     break;
-                case /* int32 hours_of_practice */ 4:
+                case /* int32 hours_of_practice */ 8:
                     message.hoursOfPractice = reader.int32();
                     break;
-                case /* string familiar_languages */ 5:
+                case /* string familiar_languages */ 9:
                     message.familiarLanguages = reader.string();
                     break;
-                case /* string wallet_number */ 6:
+                case /* string wallet_number */ 10:
                     message.walletNumber = reader.string();
                     break;
-                case /* string wallet_type */ 7:
+                case /* string wallet_type */ 11:
                     message.walletType = reader.string();
                     break;
                 default:
@@ -536,24 +589,36 @@ class SubmitPersonalInfoRequest$Type extends MessageType<SubmitPersonalInfoReque
         /* string access_token = 1; */
         if (message.accessToken !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
-        /* string student_number = 2; */
+        /* string email = 2; */
+        if (message.email !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.email);
+        /* int32 age = 3; */
+        if (message.age !== 0)
+            writer.tag(3, WireType.Varint).int32(message.age);
+        /* string gender = 4; */
+        if (message.gender !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.gender);
+        /* string nationality = 5; */
+        if (message.nationality !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.nationality);
+        /* string student_number = 6; */
         if (message.studentNumber !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.studentNumber);
-        /* int32 years_of_experience = 3; */
+            writer.tag(6, WireType.LengthDelimited).string(message.studentNumber);
+        /* int32 years_of_experience = 7; */
         if (message.yearsOfExperience !== 0)
-            writer.tag(3, WireType.Varint).int32(message.yearsOfExperience);
-        /* int32 hours_of_practice = 4; */
+            writer.tag(7, WireType.Varint).int32(message.yearsOfExperience);
+        /* int32 hours_of_practice = 8; */
         if (message.hoursOfPractice !== 0)
-            writer.tag(4, WireType.Varint).int32(message.hoursOfPractice);
-        /* string familiar_languages = 5; */
+            writer.tag(8, WireType.Varint).int32(message.hoursOfPractice);
+        /* string familiar_languages = 9; */
         if (message.familiarLanguages !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.familiarLanguages);
-        /* string wallet_number = 6; */
+            writer.tag(9, WireType.LengthDelimited).string(message.familiarLanguages);
+        /* string wallet_number = 10; */
         if (message.walletNumber !== "")
-            writer.tag(6, WireType.LengthDelimited).string(message.walletNumber);
-        /* string wallet_type = 7; */
+            writer.tag(10, WireType.LengthDelimited).string(message.walletNumber);
+        /* string wallet_type = 11; */
         if (message.walletType !== "")
-            writer.tag(7, WireType.LengthDelimited).string(message.walletType);
+            writer.tag(11, WireType.LengthDelimited).string(message.walletType);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -625,6 +690,74 @@ class SubmitSAMRequest$Type extends MessageType<SubmitSAMRequest> {
  * @generated MessageType for protobuf message session.SubmitSAMRequest
  */
 export const SubmitSAMRequest = new SubmitSAMRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SubmitSolutionSAMRequest$Type extends MessageType<SubmitSolutionSAMRequest> {
+    constructor() {
+        super("session.SubmitSolutionSAMRequest", [
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "question_number", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "aroused_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "pleased_level", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SubmitSolutionSAMRequest>): SubmitSolutionSAMRequest {
+        const message = { accessToken: "", questionNumber: 0, arousedLevel: 0, pleasedLevel: 0 };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<SubmitSolutionSAMRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SubmitSolutionSAMRequest): SubmitSolutionSAMRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                case /* int32 question_number */ 2:
+                    message.questionNumber = reader.int32();
+                    break;
+                case /* int32 aroused_level */ 3:
+                    message.arousedLevel = reader.int32();
+                    break;
+                case /* int32 pleased_level */ 4:
+                    message.pleasedLevel = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SubmitSolutionSAMRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
+        /* int32 question_number = 2; */
+        if (message.questionNumber !== 0)
+            writer.tag(2, WireType.Varint).int32(message.questionNumber);
+        /* int32 aroused_level = 3; */
+        if (message.arousedLevel !== 0)
+            writer.tag(3, WireType.Varint).int32(message.arousedLevel);
+        /* int32 pleased_level = 4; */
+        if (message.pleasedLevel !== 0)
+            writer.tag(4, WireType.Varint).int32(message.pleasedLevel);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message session.SubmitSolutionSAMRequest
+ */
+export const SubmitSolutionSAMRequest = new SubmitSolutionSAMRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Question$Type extends MessageType<Question> {
     constructor() {
@@ -1465,10 +1598,11 @@ export const SessionService = new ServiceType("session.SessionService", [
     { name: "StartSession", options: {}, I: StartSessionRequest, O: SessionReply },
     { name: "SetLocale", options: {}, I: SetLocaleRequest, O: EmptyReply },
     { name: "SubmitPersonalInfo", options: {}, I: SubmitPersonalInfoRequest, O: EmptyReply },
-    { name: "SubmitBeforeCodeSAM", options: {}, I: SubmitSAMRequest, O: EmptyReply },
+    { name: "SubmitBeforeExamSAM", options: {}, I: SubmitSAMRequest, O: EmptyReply },
     { name: "StartExam", options: {}, I: EmptyRequest, O: Exam },
     { name: "ResumeExam", options: {}, I: EmptyRequest, O: Exam },
     { name: "EndExam", options: {}, I: EmptyRequest, O: ExamResult },
     { name: "SubmitSolution", options: {}, I: SubmissionRequest, O: SubmissionResult },
-    { name: "SubmitAfterCodeSAM", options: {}, I: SubmitSAMRequest, O: EmptyReply }
+    { name: "SubmitAfterExamSAM", options: {}, I: SubmitSAMRequest, O: EmptyReply },
+    { name: "SubmitSolutionSAM", options: {}, I: SubmitSolutionSAMRequest, O: EmptyReply }
 ]);

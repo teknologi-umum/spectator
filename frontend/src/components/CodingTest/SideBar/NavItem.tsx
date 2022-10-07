@@ -26,9 +26,11 @@ interface NavItemProps {
 export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
-  const { currentQuestionNumber, lockedToCurrentQuestion } = useAppSelector(
-    (state) => state.editor
-  );
+  const {
+    currentQuestionNumber,
+    lockedToCurrentQuestion,
+    snapshotByQuestionNumber
+  } = useAppSelector((state) => state.editor);
   const bg = useColorModeValue("teal.50", "teal.500");
   const fg = useColorModeValue("teal.700", "teal.200");
   const { t } = useTranslation("question", {
@@ -36,13 +38,15 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
   });
 
   const isActive = currentQuestionNumber === questionNumber;
+  const isLocked =
+    lockedToCurrentQuestion || !snapshotByQuestionNumber[0]?.submissionAccepted;
 
   useEffect(() => {
     setCurrentQuestion({
       questionNumber: currentQuestionNumber,
-      title: t(`${currentQuestionNumber - 1}.title`),
-      instruction: t(`${currentQuestionNumber - 1}.title`),
-      templateByLanguage: t(`${currentQuestionNumber - 1}.templates`)
+      title: t(`${currentQuestionNumber}.title`),
+      instruction: t(`${currentQuestionNumber}.title`),
+      templateByLanguage: t(`${currentQuestionNumber}.templates`)
     });
   }, [currentQuestionNumber]);
 
@@ -56,14 +60,12 @@ export default function NavItem({ questionNumber, title, icon }: NavItemProps) {
           py="2"
           borderRadius="md"
           w="full"
-          css={{
-            opacity: lockedToCurrentQuestion ? 0.5 : 1
-          }}
+          css={{ opacity: isLocked ? 0.5 : 1 }}
           _hover={{ textDecoration: "none" }}
           onClick={() => {
             // don't allow the user to navigate to other question
             // when they're submitting/testing their submission for the current question
-            if (lockedToCurrentQuestion) return;
+            if (isLocked) return;
             dispatch(setCurrentQuestionNumber(questionNumber));
           }}
         >

@@ -18,6 +18,7 @@ namespace Spectator.Observables.SessionDomain {
 			RegisteredSession s => @event switch {
 				BeforeExamSAMSubmittedEvent e => s.Apply(e),
 				AfterExamSAMSubmittedEvent e => s.Apply(e),
+				SolutionSAMSubmittedEvent e => s.Apply(e),
 				ExamStartedEvent e => s.Apply(e),
 				ExamEndedEvent e => s.Apply(e),
 				ExamIDEReloadedEvent e => s,

@@ -16,7 +16,8 @@ import {
   FormErrorMessage,
   InputGroup,
   Select,
-  InputRightElement
+  InputRightElement,
+  HStack
 } from "@chakra-ui/react";
 import Layout from "@/components/Layout";
 import { useColorModeValue } from "@/hooks";
@@ -100,7 +101,7 @@ function PersonalInfoPage() {
 
   return (
     <Layout display="flex">
-      <SettingsDropdown data-tour='step-1' />
+      <SettingsDropdown data-tour="step-1" />
       <Box
         display="flex"
         alignItems="center"
@@ -123,11 +124,51 @@ function PersonalInfoPage() {
           </Heading>
 
           <Box>
-            <FormControl
-              id="email"
-              mt="6"
-              isInvalid={errors.studentNumber !== undefined}
-            >
+            <FormControl mt="6" isInvalid={errors.email !== undefined}>
+              <FormLabel>{t("personal_info.email")}</FormLabel>
+              <Input type="text" {...register("email")} autoComplete="off" />
+              <FormErrorMessage>{errors?.email?.message}!</FormErrorMessage>
+            </FormControl>
+
+            <FormControl mt="6" isInvalid={errors.age !== undefined}>
+              <FormLabel>{t("personal_info.age")}</FormLabel>
+              <Input type="text" {...register("age")} autoComplete="off" />
+              <FormErrorMessage>{errors?.age?.message}!</FormErrorMessage>
+            </FormControl>
+
+            <HStack mt="6">
+              <FormControl isInvalid={errors.gender !== undefined}>
+                <FormLabel>{t("personal_info.gender")}</FormLabel>
+
+                <Select
+                  {...register("gender")}
+                  size="md"
+                  variant="outline"
+                  defaultValue="M"
+                >
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                </Select>
+                <FormErrorMessage>{errors?.gender?.message}!</FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={errors.nationality !== undefined}>
+                <FormLabel>{t("personal_info.nationality")}</FormLabel>
+
+                <Select
+                  {...register("nationality")}
+                  size="md"
+                  variant="outline"
+                  defaultValue="M"
+                >
+                  <option value="indonesia">Indonesia</option>
+                  <option value="malaysia">Malaysia</option>
+                  <option value="other">Other</option>
+                </Select>
+                <FormErrorMessage>{errors?.gender?.message}!</FormErrorMessage>
+              </FormControl>
+            </HStack>
+
+            <FormControl mt="6" isInvalid={errors.studentNumber !== undefined}>
               <FormLabel>{t("personal_info.student_number")}</FormLabel>
               <Input
                 type="text"
@@ -145,12 +186,11 @@ function PersonalInfoPage() {
             >
               <FormLabel>{t("personal_info.programming_years")}</FormLabel>
               <Input
-                type="number"
+                type="text"
                 {...register("yearsOfExperience")}
                 autoComplete="off"
               />
               <FormErrorMessage>
-                {errors?.yearsOfExperience?.message}!
               </FormErrorMessage>
             </FormControl>
 
@@ -160,7 +200,7 @@ function PersonalInfoPage() {
             >
               <FormLabel>{t("personal_info.programming_practice")}</FormLabel>
               <Input
-                type="number"
+                type="text"
                 {...register("hoursOfPractice")}
                 autoComplete="off"
               />
@@ -205,9 +245,7 @@ function PersonalInfoPage() {
                     bg={darkerBg}
                     defaultValue="grabpay"
                   >
-                    <option value="grabpay">
-                      GrabPay
-                    </option>
+                    <option value="grabpay">GrabPay</option>
                     <option value="gopay">GoPay</option>
                   </Select>
                 </InputRightElement>

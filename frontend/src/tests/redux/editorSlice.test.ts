@@ -9,7 +9,7 @@ import type { EditorState } from "@/models/EditorState";
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
-  currentQuestionNumber: 1,
+  currentQuestionNumber: 0,
   lockedToCurrentQuestion: false,
   currentLanguage: "javascript",
   fontSize: 14,
@@ -26,9 +26,10 @@ describe("Editor related state", (it) => {
       ...initialState,
       currentLanguage: "cpp",
       snapshotByQuestionNumber: {
-        1: {
+        0: {
           language: "cpp",
-          questionNumber: 1,
+          samTestResult: null,
+          questionNumber: 0,
           scratchPad: "",
           solutionByLanguage: {
             javascript: "",

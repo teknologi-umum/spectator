@@ -1,24 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface SessionState {
-  sessionId: string | null;
-  accessToken: string | null;
-  firstSAMSubmitted: boolean;
-  secondSAMSubmitted: boolean;
-  hasPermission: boolean;
-  deviceId: string | null;
-  tourCompleted: {
-    personalInfo: boolean;
-    samTest: boolean;
-    codingTest: boolean;
-  };
-}
+import type { SessionState } from "@/models/Session";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: SessionState = {
   accessToken: null,
   sessionId: null,
   firstSAMSubmitted: false,
-  secondSAMSubmitted: false,
   hasPermission: false,
   deviceId: null,
   tourCompleted: {
@@ -47,9 +33,6 @@ export const sessionSlice = createSlice({
     markFirstSAMSubmitted: (state) => {
       state.firstSAMSubmitted = true;
     },
-    markSecondSAMSubmitted: (state) => {
-      state.secondSAMSubmitted = true;
-    },
     markTourCompleted: (
       state,
       action: PayloadAction<"personalInfo" | "samTest" | "codingTest">
@@ -59,7 +42,7 @@ export const sessionSlice = createSlice({
     allowVideoPermission: (state) => {
       state.hasPermission = true;
     },
-    setVideoDeviceId: (state, action: PayloadAction<string>) => {
+    setVideoDeviceId: (state, action: PayloadAction<string | null>) => {
       state.deviceId = action.payload;
     }
   }
@@ -69,7 +52,6 @@ export const {
   setAccessToken,
   removeAccessToken,
   markFirstSAMSubmitted,
-  markSecondSAMSubmitted,
   markTourCompleted,
   setSessionId,
   removeSessionId,

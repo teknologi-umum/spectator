@@ -8,6 +8,7 @@ namespace Spectator.Protos.HubInterfaces {
 		Task SubmitPersonalInfoAsync(SubmitPersonalInfoRequest request);
 		Task SubmitBeforeExamSAMAsync(SubmitSAMRequest request);
 		Task SubmitAfterExamSAMAsync(SubmitSAMRequest request);
+		Task SubmitSolutionSAMASync(SubmitSolutionSAMRequest request);
 		Task<Exam> StartExamAsync(EmptyRequest request);
 		Task<Exam> ResumeExamAsync(EmptyRequest request);
 		Task<ExamResult> EndExamAsync(EmptyRequest request);

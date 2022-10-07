@@ -20,11 +20,11 @@ import {
 import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
+import { markFirstSAMSubmitted } from "@/store/slices/sessionSlice";
 import {
-  markFirstSAMSubmitted,
-  markSecondSAMSubmitted
-} from "@/store/slices/sessionSlice";
-import { setDeadlineAndQuestions } from "@/store/slices/editorSlice";
+  setDeadlineAndQuestions,
+  setSAMTestResult
+} from "@/store/slices/editorSlice";
 import { useColorModeValue } from "@/hooks/";
 import { useTranslation } from "react-i18next";
 import SAMRadioGroup from "@/components/SAMTest/SAMRadioGroup";
@@ -38,6 +38,9 @@ const ICONS = {
   arousal: import.meta.globEager("../images/arousal/arousal-*.svg"),
   pleasure: import.meta.globEager("../images/pleasure/pleasure-*.svg")
 };
+
+// we have 6 questions
+const MAX_QUESTION_NUMBER = 6;
 
 function getResponseOptions(
   icons: Record<string, FC<SVGProps<SVGSVGElement>>>[]
@@ -64,15 +67,16 @@ function SAMTest() {
   const fgDarker = useColorModeValue("gray.700", "gray.400", "gray.400");
 
   const [currentPage, setCurrentPage] = useState(Page.FIRST);
-  const [arousal, setArousal] = useState(1);
-  const [pleasure, setPleasure] = useState(1);
+  const [arousedLevel, setArousedLevel] = useState(1);
+  const [pleasedLevel, setPleasedLevel] = useState(1);
 
   const { accessToken, firstSAMSubmitted, tourCompleted } = useAppSelector(
     (state) => state.session
   );
-  const samTranslationKey = firstSAMSubmitted
-    ? "sam_test_after"
-    : "sam_test_before";
+  const { examResult } = useAppSelector((state) => state.examResult);
+  const { currentQuestionNumber } = useAppSelector((state) => state.editor);
+
+  const samTranslationKey = "sam_test_before";
 
   function goto(kind: "next" | "prev") {
     if (kind === "prev") {
@@ -86,19 +90,12 @@ function SAMTest() {
   async function finishSAMTest() {
     if (accessToken === null) return;
 
-    if (firstSAMSubmitted) {
-      await sessionSpoke.submitAfterExamSAM({
-        accessToken,
-        arousedLevel: arousal,
-        pleasedLevel: pleasure
-      });
-      dispatch(markSecondSAMSubmitted());
-      navigate("/fun-fact");
-    } else {
+    // submit SAM test before starting the exam
+    if (!firstSAMSubmitted) {
       await sessionSpoke.submitBeforeExamSAM({
         accessToken,
-        arousedLevel: arousal,
-        pleasedLevel: pleasure
+        arousedLevel,
+        pleasedLevel
       });
       const exam = await sessionSpoke.startExam({ accessToken });
       dispatch(
@@ -109,6 +106,33 @@ function SAMTest() {
       );
       dispatch(markFirstSAMSubmitted());
       navigate("/video-test");
+      return;
+    }
+
+    // submit SAM test after finishing the exam
+    if (examResult !== null) {
+      await sessionSpoke.submitAfterExamSAM({
+        accessToken,
+        arousedLevel,
+        pleasedLevel
+      });
+      navigate("/fun-fact");
+      return;
+    }
+
+    // submit SAM test after each question
+    await sessionSpoke.submitSolutionSAM({
+      accessToken,
+      arousedLevel,
+      pleasedLevel
+    });
+    dispatch(setSAMTestResult({ arousedLevel, pleasedLevel }));
+
+    // TODO(elianiva): is it ok to leave this magic number???
+    if (currentQuestionNumber === MAX_QUESTION_NUMBER) {
+      navigate("/fun-fact");
+    } else {
+      navigate("/coding-test");
     }
   }
 
@@ -154,9 +178,9 @@ function SAMTest() {
                     }}
                   ></Text>
                   <SAMRadioGroup
-                    value={arousal}
-                    onChange={(v) => setArousal(parseInt(v))}
-                    name="arousal"
+                    value={arousedLevel}
+                    onChange={(v) => setArousedLevel(parseInt(v))}
+                    name="arousedLevel"
                     items={getResponseOptions(Object.values(ICONS.arousal))}
                   />
                 </Box>
@@ -177,9 +201,9 @@ function SAMTest() {
                     }}
                   ></Text>
                   <SAMRadioGroup
-                    value={pleasure}
-                    onChange={(v) => setPleasure(parseInt(v))}
-                    name="pleasure"
+                    value={pleasedLevel}
+                    onChange={(v) => setPleasedLevel(parseInt(v))}
+                    name="pleasedLevel"
                     items={getResponseOptions(Object.values(ICONS.pleasure))}
                   />
                 </Box>

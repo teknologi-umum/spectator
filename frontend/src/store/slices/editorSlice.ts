@@ -1,14 +1,15 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Language } from "@/models/Language";
 import type { Question } from "@/models/Question";
 import type { EditorState } from "@/models/EditorState";
 import type { EditorSnapshot } from "@/models/EditorSnapshot";
+import type { SAMTestResult } from "@/models/SAMTestResult";
 import { defaultEditorSnapshot } from "@/store/entity/EditorSnapshot";
 
 const initialState: EditorState = {
   deadlineUtc: null,
   questions: null,
-  currentQuestionNumber: 1,
+  currentQuestionNumber: 0,
   lockedToCurrentQuestion: false,
   currentLanguage: "javascript",
   fontSize: 14,
@@ -73,6 +74,11 @@ export const editorSlice = createSlice({
         state.currentQuestionNumber
       ].solutionByLanguage[state.currentLanguage] = action.payload;
     },
+    setSAMTestResult: (state, action: PayloadAction<SAMTestResult>) => {
+      state.snapshotByQuestionNumber[
+        state.currentQuestionNumber
+      ].samTestResult = action.payload;
+    },
     setSnapshot: (state, action: PayloadAction<EditorSnapshot>) => {
       state.snapshotByQuestionNumber[state.currentQuestionNumber] = {
         language: action.payload.language,
@@ -82,7 +88,8 @@ export const editorSlice = createSlice({
         submissionAccepted: action.payload.submissionAccepted,
         submissionRefactored: action.payload.submissionRefactored,
         submissionSubmitted: action.payload.submissionSubmitted,
-        testResults: action.payload.testResults
+        testResults: action.payload.testResults,
+        samTestResult: action.payload.samTestResult
       };
     },
     setScratchPad: (state, action: PayloadAction<string>) => {
@@ -106,7 +113,8 @@ export const {
   setSolution,
   setScratchPad,
   setDeadlineAndQuestions,
-  setSnapshot
+  setSnapshot,
+  setSAMTestResult
 } = editorSlice.actions;
 
 export default editorSlice.reducer;

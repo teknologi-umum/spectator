@@ -108,7 +108,14 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 		return
 	}
 
+	// TODO: is this still needed?
 	outputSamAfterTest, err := d.QueryAfterExamSam(ctx, queryAPI, sessionID)
+	if err != nil {
+		cfDeps.sendErrorLog(err, "failed to query after exam sam", requestID, sessionID)
+		return
+	}
+
+	outputSamSolutionSubmitted, err := d.QuerySolutionSubmittedSam(ctx, queryAPI, sessionID)
 	if err != nil {
 		cfDeps.sendErrorLog(err, "failed to query after exam sam", requestID, sessionID)
 		return
@@ -194,6 +201,7 @@ func (d *Dependency) CreateFile(requestID string, sessionID uuid.UUID) {
 	userEvents := &UserEvents{
 		SelfAssessmentManekinBeforeTest: outputSamBeforeTest,
 		SelfAssessmentManekinAfterTest:  outputSamAfterTest,
+		SelfAssessmentSolutionSubmitted: outputSamSolutionSubmitted,
 		PersonalInfo:                    outputPersonalInfo,
 		ExamStarted:                     outputExamStarted,
 		ExamEnded:                       outputExamEnded,

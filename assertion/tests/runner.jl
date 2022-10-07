@@ -38,6 +38,7 @@ mappedcmd = Dict(
 )
 
 twinkle = "Twinkle twinkle little star\nHow I wonder what you are\nUp above the world so high\nLike a diamond in the sky\nTwinkle twinkle little star\nHow I wonder what you are"
+helloworld = "Hello world"
 
 function normalassertion(result::String)
     # split each string by new line
@@ -114,7 +115,19 @@ for walkedpath in walkdir(dirpath)
                     println(result)
                 end
 
-                if questionnumber == "question1"
+                if questionnumber == "question0"
+                    if strip(result) == helloworld
+                        println("   ✅ Test passed: " * file)
+                    else
+                        if contains(file, "fail")
+                            println("   🚸 Test intentionally failed: " * file)
+                        else
+                            println("   ❌ Test failed: " * file)
+                            println(result)
+                            global failedresults += 1
+                        end
+                    end
+                elseif questionnumber == "question1"
                     if strip(result) == twinkle
                         println("   ✅ Test passed: " * file)
                     else

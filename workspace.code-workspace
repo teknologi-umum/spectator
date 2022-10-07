@@ -1,26 +1,37 @@
 {
 	"folders": [
 		{
-			"path": "worker"
+			"name": "Project Root",
+			"path": "."
 		},
 		{
-			"path": "dummy"
-		},
-		{
+			"name": "Backend - C#",
 			"path": "backend"
 		},
 		{
+			"name": "Frontend - Typescript",
 			"path": "frontend"
 		},
 		{
-			"path": "proto"
-		},
-		{
+			"name": "RCE - Typescript",
 			"path": "rce"
 		},
 		{
+			"name": "Logger - Go",
 			"path": "logger"
-		}
+		},
+		{
+			"name": "Worker - Go",
+			"path": "worker"
+		},
+		{
+			"name": "Dummy - Python",
+			"path": "dummy"
+		},
+		{
+			"name": "Proto Definitions",
+			"path": "proto"
+		},
 	],
 	"settings": {}
 }

@@ -18,6 +18,7 @@ export function defaultEditorSnapshot<StateDraft extends EditorState>(
     submissionAccepted: false,
     submissionSubmitted: false,
     submissionRefactored: false,
-    testResults: null
+    testResults: null,
+    samTestResult: null
   };
 }

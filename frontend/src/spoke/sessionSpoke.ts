@@ -14,7 +14,9 @@ import { SESSION_HUB_URL } from "@/constants";
 import { SubmissionResult } from "@/models/SubmissionResult";
 
 class SessionSpoke extends SpokeBase {
-  public async startSession(request: StartSessionRequest): Promise<SessionReply> {
+  public async startSession(
+    request: StartSessionRequest
+  ): Promise<SessionReply> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("StartSessionAsync", request);
   }
@@ -28,7 +30,9 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("SetLocaleAsync", request);
   }
 
-  public async submitPersonalInfo(request: SubmitPersonalInfoRequest): Promise<void> {
+  public async submitPersonalInfo(
+    request: SubmitPersonalInfoRequest
+  ): Promise<void> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SubmitPersonalInfoAsync", request);
   }
@@ -48,12 +52,16 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("ResumeExamAsync", request);
   }
 
-  public async submitSolution(request: SubmissionRequest): Promise<SubmissionResult> {
+  public async submitSolution(
+    request: SubmissionRequest
+  ): Promise<SubmissionResult> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SubmitSolutionAsync", request);
   }
 
-  public async testSolution(request: SubmissionRequest): Promise<SubmissionResult> {
+  public async testSolution(
+    request: SubmissionRequest
+  ): Promise<SubmissionResult> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("TestSolutionAsync", request);
   }
@@ -76,6 +84,11 @@ class SessionSpoke extends SpokeBase {
   public async submitAfterExamSAM(request: SubmitSAMRequest): Promise<void> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SubmitAfterExamSAMAsync", request);
+  }
+
+  public async submitSolutionSAM(request: SubmitSAMRequest): Promise<void> {
+    await super._startIfDisconnected();
+    return this._hubConnection.invoke("SubmitSolutionSAMAsync", request);
   }
 }
 

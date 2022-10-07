@@ -8,6 +8,7 @@ namespace Spectator.DomainModels.SubmissionDomain {
 		string Solution,
 		string ScratchPad,
 		ImmutableArray<TestResultBase> TestResults,
+		SelfAssessmentManikin? SAMTestResult,
 		bool Accepted
 	);
 }

@@ -13,6 +13,7 @@ export class Logger implements ILogger {
   }
 
   public async log(logLevel: LogLevel, message: string): Promise<void> {
+    return; // TODO: remove
     let level: "error" | "warning" | "info" | "debug";
     switch (logLevel) {
       case LogLevel.Critical:

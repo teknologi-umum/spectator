@@ -284,6 +284,61 @@ def printLyrics():
 			submission.TestResults.Length.Should().Be(1);
 			submission.TestResults[0].Should().BeOfType<FailingTestResult>();
 		}
+
+		[Fact]
+		public async Task CanCheckHelloWorldQuestionUsingHardcodedCheckAsync() {
+			const string correctCode = @"
+def printLyrics():
+    print(""Hello world"")
+";
+
+			const string incorrectCode = @"
+def printLyrics():
+    print(""Haha"")
+";
+
+			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
+
+			// Only wait piston API for 5 seconds to save github CI quota
+			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+			// Wait 500ms to avoid HTTP 429
+			await Task.Delay(TimeSpan.FromMilliseconds(500));
+
+			var submission = await submissionServices.EvaluateSubmissionAsync(
+				questionNumber: 0,
+				locale: Locale.EN,
+				language: Language.Python,
+				directives: "",
+				solution: correctCode,
+				scratchPad: "Lorem ipsum",
+				cancellationToken: timeoutSource.Token
+			);
+
+			submission.Accepted.Should().BeTrue();
+			submission.Language.Should().Be(Language.Python);
+			submission.Solution.Should().Be(correctCode);
+			submission.ScratchPad.Should().Be("Lorem ipsum");
+			submission.TestResults.Length.Should().Be(1);
+			submission.TestResults[0].Should().BeOfType<PassingTestResult>();
+
+			submission = await submissionServices.EvaluateSubmissionAsync(
+				questionNumber: 0,
+				locale: Locale.EN,
+				language: Language.Python,
+				directives: "",
+				solution: incorrectCode,
+				scratchPad: "Lorem ipsum",
+				cancellationToken: timeoutSource.Token
+			);
+
+			submission.Accepted.Should().BeFalse();
+			submission.Language.Should().Be(Language.Python);
+			submission.Solution.Should().Be(incorrectCode);
+			submission.ScratchPad.Should().Be("Lorem ipsum");
+			submission.TestResults.Length.Should().Be(1);
+			submission.TestResults[0].Should().BeOfType<FailingTestResult>();
+		}
 	}
 }
 #endif
