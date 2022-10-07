@@ -46,11 +46,6 @@ export default function VideoTestPage() {
   const [isAllowed, setAllowed] = useState(hasPermission);
   const videoSources = useVideoSources({ isAllowed });
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
-  // if it's allowed previously, set the initial video stream
-  useEffect(() => {
-    // get initial videostream when it's already allowed
-    getUserMedia(deviceId).then((stream) => setVideoStream(stream));
-  }, [isAllowed]);
 
   const activeSourceName = useMemo(() => {
     if (videoStream === null || videoStream === undefined) return "Unknown";
@@ -190,7 +185,7 @@ export default function VideoTestPage() {
                   ))}
                 </MenuOptionGroup>
               </MenuDropdown>
-              <Button colorScheme="blue" onClick={startCodingTest}>
+              <Button colorScheme="blue" onClick={startCodingTest} isDisabled={videoStream === null || deviceId === null || deviceId === ""}>
                 {t("start_coding_test")}
               </Button>
             </HStack>
