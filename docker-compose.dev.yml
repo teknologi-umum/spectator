@@ -1,99 +1,167 @@
 services:
-  caddy:
-    image: caddy:2.4.6-alpine
-    restart: on-failure:10
-    volumes:
-      - ./data/caddy/Caddyfile.dev:/etc/caddy/Caddyfile
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - default
-      - host_pub
-
   backend:
-    image: ${DOCKER_REGISTRY-}backend
-    build: ./backend/Spectator/
+    build:
+      context: .
+      dockerfile: ./backend/Spectator/Dockerfile
+    restart: on-failure:5
+    hostname: backend
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_InfluxDbOptions__Url=http://influx:8086
-      - ASPNETCORE_InfluxDbOptions__Token=H76G7mEgcyeV2ffM%E#Vd8U^eA6ZY8GH
+      - ASPNETCORE_InfluxDbOptions__Token=nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
       - ASPNETCORE_InfluxDbOptions__SessionEventsBucket=session_events
       - ASPNETCORE_InfluxDbOptions__InputEventsBucket=input_events
       - ASPNETCORE_InfluxDbOptions__Org=teknum_spectator
-      - ASPNETCORE_RceOptions__BaseUrl=http://rce/
+      - ASPNETCORE_JwtAuthentication__Secret=WjwYAUMbH0mZfLBmOmELCg==
+      - ASPNETCORE_LoggerOptions__AccessToken=PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+      - ASPNETCORE_LoggerOptions__Address=http://logger:3000
+      - ASPNETCORE_JwtAuthentication__Secret=q6r+MfCs2qAjFe6z2vfrIXtDrTc7uNwPzZwE1RNFFM2IQ6n84zOMUFbwmPtguZwAP5kgCZ803iJgmXkbRzGCbQ==
+      - ASPNETCORE_JwtAuthentication__Issuer=https://teknologiumum.com
+      - ASPNETCORE_JwtAuthentication__Audience=https://teknologiumum.com
+      - ASPNETCORE_JwtAuthentication__Lifetime=31536000
+      - ASPNETCORE_MinioOptions__Url=minio:9000
+      - ASPNETCORE_MinioOptions__AccessKey=teknum
+      - ASPNETCORE_MinioOptions__SecretKey=c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      - ASPNETCORE_PistonOptions__Address=http://rce:50051
+      - ASPNETCORE_PistonOptions__MaxConcurrentExecution=2
+      - ASPNETCORE_PistonOptions__CompileTimeout=5000
+      - ASPNETCORE_PistonOptions__RunTimeout=10000
+      - ASPNETCORE_PistonOptions__MemoryLimit=2000000000
+      - ASPNETCORE_WorkerOptions__Address=http://worker:3000
+      - ASPNETCORE_VideoOptions__Address=http://video:3000
+      - VITE_SESSION_HUB_URL=/hubs/session
+      - VITE_EVENT_HUB_URL=/hubs/event
+      - VITE_LOGGER_URL=/log
+      - VITE_VIDEO_STREAM_URL=/video
+      - VITE_ADMIN_URL=/admin
+      - VITE_MINIO_URL=http://localhost:9000
     ports:
-      - 5000:80
+      - 127.0.0.1:5000:80
+    healthcheck:
+      test: curl -f http://localhost:80/ || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
-      - worker
-      - logger
-      - influx
-      - minio
-    networks:
-      - host_pub
-
-  frontend:
-    build: ./frontend/
-    restart: always
-    depends_on:
-      - backend
-      - minio
-    networks:
-      - host_pub
+      worker:
+        condition: service_started
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2021-12-10T23-03-39Z
+    image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
     command: server /data --console-address ":9001"
     restart: on-failure:10
     ports:
-      - 29483:9001
-      - 29482:9000
+      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9001:9001
+    hostname: minio
     environment:
       MINIO_ROOT_USER: teknum
       MINIO_ROOT_PASSWORD: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
-      MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
       MINIO_SECRET_KEY: xLxBHSp2vAdX2TJSy6EptamrNk5ZXzXo
+      MINIO_ACCESS_KEY: diPj59zJzm2kwUZxcg5QRAUtpbVx5Uxd
+    healthcheck:
+      test: "curl -f http://localhost:9000/minio/health/live"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
       - ./data/minio:/data
-    networks:
-      - host_pub
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
 
   influx:
-    image: influxdb:2.1.1-alpine
+    image: influxdb:2.3.0-alpine
+    hostname: influx
     restart: on-failure:10
+    ports:
+      - 127.0.0.1:8086:8086
     environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: teknum
       DOCKER_INFLUXDB_INIT_PASSWORD: ESHVeXGynXR73942AmAkCNseenwcQVqKu
       DOCKER_INFLUXDB_INIT_ORG: teknum_spectator
       DOCKER_INFLUXDB_INIT_BUCKET: teknum_bucket
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+    healthcheck:
+      test: "influx ping"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     volumes:
-      - ./data/influx:/var/lib/influxdb
-    networks:
-      - host_pub
+      - ./data/influx/data2:/var/lib/influxdb2
+      - ./data/influx/data1:/var/lib/influxdb
+      - ./data/influx/etc:/etc/influxdb2
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
 
   rce:
-    build: ./rce/
+    build:
+      context: .
+      dockerfile: ./rce/Dockerfile
     restart: on-failure:5
+    hostname: rce
     ports:
-      - 47727:50051
+      - 127.0.0.1:50051:50051
+    healthcheck:
+      test: grpcurl  -d '{}' -import-path . -proto rce.proto -plaintext localhost:50051 rce.CodeExecutionEngineService.Ping
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     environment:
+      ENVIRONMENT: development
+      PORT: 50051
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
       LOGGER_SERVER_ADDRESS: logger:3000
-    networks:
-      - host_pub
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
+    depends_on:
+      logger:
+        condition: service_started
 
   worker:
-    build: ./worker/
-    restart: on-failure:10
+    build:
+      context: .
+      dockerfile: ./worker/Dockerfile
+    restart: on-failure:5
+    hostname: worker
     ports:
-      - 50909:3000
+      - 127.0.0.1:27297:3000
+    healthcheck:
+      test: grpcurl  -d '{}' -import-path . -proto worker.proto -plaintext localhost:3000 worker_proto.Worker.Ping
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     environment:
-      ENVIRONMENT: production
+      ENVIRONMENT: development
       PORT: 3000
       INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
       INFLUX_HOST: http://influx:8086
@@ -104,16 +172,72 @@ services:
       MINIO_TOKEN: ''
       LOGGER_SERVER_ADDRESS: logger:3000
       LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
-      - logger
-      - influx
-      - minio
-    networks:
-      - host_pub
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  video:
+    build:
+      context: .
+      dockerfile: ./video/Dockerfile
+    restart: on-failure:5
+    hostname: video
+    ports:
+      - 127.0.0.1:29354:3000
+    healthcheck:
+      test: grpcurl  -d '{}' -import-path . -proto video.proto -plaintext localhost:3000 video.VideoService.Ping
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    environment:
+      ENVIRONMENT: development
+      PORT: 3000
+      INFLUX_TOKEN: nMfrRYVcTyqFwDARAdqB92Ywj6GNMgPEd
+      INFLUX_HOST: http://influx:8086
+      INFLUX_ORG: teknum_spectator
+      MINIO_HOST: minio:9000
+      MINIO_ACCESS_ID: teknum
+      MINIO_SECRET_KEY: c2N9Xz8bzHPkgNcgDtKgwGPTdb76GjD48
+      MINIO_TOKEN: ''
+      LOGGER_SERVER_ADDRESS: logger:3000
+      LOGGER_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
+    depends_on:
+      logger:
+        condition: service_started
+      influx:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   logger:
-    build: ./logger/
-    restart: always
+    build:
+      context: .
+      dockerfile: ./logger/Dockerfile
+    restart: on-failure:5
+    hostname: logger
+    ports:
+      - 127.0.0.1:25594:3000
+    healthcheck:
+      test: grpcurl  -d '{}' -import-path . -proto logger.proto -plaintext localhost:3000 logger.Logger.Ping
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     environment:
       ENVIRONMENT: development
       PORT: 3000
@@ -121,11 +245,11 @@ services:
       INFLUX_URL: http://influx:8086
       INFLUX_ORG: teknum_spectator
       ACCESS_TOKEN: PHyavsmpWQz8Q4jgcFH2S24dwJoVkASG
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+        max-file: 3
     depends_on:
-      - influx
-    networks:
-      - host_pub
-
-networks:
-  host_pub:
-    driver: "bridge"
+      influx:
+        condition: service_healthy

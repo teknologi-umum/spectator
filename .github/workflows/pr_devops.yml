@@ -3,8 +3,8 @@ name: Check
 on:
   pull_request:
     paths:
-      - 'docker-compose*.yml'
-      - 'ansible.yml'
+      - "docker-compose*.yml"
+      - "ansible.yml"
 
 jobs:
   devops:
@@ -32,6 +32,5 @@ jobs:
           && docker-compose --file docker-compose.influx.yml config
           && docker-compose --file docker-compose.caddy.yml config
           && docker-compose --file docker-compose.minio.yml config
-          && docker-compose --file docker-compose.override.yml config
       - name: Lint ansible
         run: ansible-lint -v -f rich ansible.yml
