@@ -10,7 +10,7 @@
         "java": "class HelloWorld {\n   public static oid helloWorld() {\n      // tulis kode kamu disini\n   }\n}",
         "javascript": "function helloWorld() {\n  // tulis kode kamu disini\n}",
         "php": "function helloWorld() {\n   // tulis kode kamu disini\n}",
-        "python": "def helloWorld():\n  // tulis kode kamu disini"
+        "python": "def helloWorld():\n    # tulis kode kamu disini"
       }
     },
     {
