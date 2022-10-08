@@ -7,7 +7,7 @@
       "templates": {
         "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
         "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
-        "java": "class HelloWorld {\n   public static oid helloWorld() {\n      // write your code here\n   }\n}",
+        "java": "class HelloWorld {\n   public static void helloWorld() {\n      // write your code here\n   }\n}",
         "javascript": "function helloWorld() {\n  // write your code here\n}",
         "php": "function helloWorld() {\n   // write your code here\n}",
         "python": "def helloWorld():\n    # write your code here"
