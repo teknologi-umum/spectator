@@ -4,6 +4,7 @@ export * from "./ChevronDownIcon"; //
 export * from "./ClockIcon"; //
 export * from "./CrossIcon"; //
 export * from "./EqualIcon"; //
+export * from "./GradeIcon"; //
 export * from "./HamburgerIcon"; //
 export * from "./IndonesiaFlagIcon"; //
 export * from "./InfoIcon"; //

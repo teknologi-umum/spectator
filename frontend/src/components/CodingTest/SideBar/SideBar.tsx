@@ -11,7 +11,8 @@ import {
   MumbleIcon,
   StarIcon,
   TemperatureIcon,
-  EarthIcon
+  EarthIcon,
+  GradeIcon
 } from "@/icons";
 
 interface SideBarProps {
@@ -19,13 +20,15 @@ interface SideBarProps {
   fg: string;
 }
 
+// there are 7 different questions, hence there are 7 icons
 const icons = [
   EarthIcon,
   StarIcon,
   TemperatureIcon,
   EqualIcon,
   SumIcon,
-  MumbleIcon
+  MumbleIcon,
+  GradeIcon
 ];
 
 export function SideBar({ bg, fg }: SideBarProps) {
