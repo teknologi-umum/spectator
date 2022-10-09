@@ -100,8 +100,7 @@ function CodingTest() {
     windowResizeHandler(currentQuestionNumber, accessToken)
   );
 
-  // TODO(elianiva): uncomment this on production, disable right click
-  // useEventListener("contextmenu", (e) => e.preventDefault());
+  useEventListener("contextmenu", (e) => e.preventDefault());
 
   useEffect(() => {
     document.title = "Coding Test | Spectator";
