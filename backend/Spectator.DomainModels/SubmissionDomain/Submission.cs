@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Spectator.DomainEvents.SessionDomain;
 using Spectator.Primitives;
 
 namespace Spectator.DomainModels.SubmissionDomain {
@@ -10,5 +11,9 @@ namespace Spectator.DomainModels.SubmissionDomain {
 		ImmutableArray<TestResultBase> TestResults,
 		SelfAssessmentManikin? SAMTestResult,
 		bool Accepted
-	);
+	) {
+		public Submission Apply(SolutionSAMSubmittedEvent @event) => this with {
+			SAMTestResult = @event.SelfAssessmentManikin
+		};
+	}
 }

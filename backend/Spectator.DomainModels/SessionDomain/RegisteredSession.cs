@@ -57,14 +57,11 @@ namespace Spectator.DomainModels.SessionDomain {
 			if (@event.SessionId != Id) throw new ArgumentException("Applied event has different SessionId", nameof(@event));
 			if (SubmissionByQuestionNumber == null) throw new InvalidOperationException("There are no submissions yet");
 
-			var submission = SubmissionByQuestionNumber[@event.QuestionNumber];
-			if (submission == null) throw new InvalidOperationException($"There is no submission for question number: {@event.QuestionNumber}");
+			if (!SubmissionByQuestionNumber.TryGetValue(@event.QuestionNumber, out var submission)) throw new InvalidOperationException($"There is no submission for question number: {@event.QuestionNumber}");
 
 			return this with {
 				UpdatedAt = @event.Timestamp,
-				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, submission with {
-					SAMTestResult = @event.SelfAssessmentManikin
-				})
+				SubmissionByQuestionNumber = SubmissionByQuestionNumber.SetItem(@event.QuestionNumber, submission.Apply(@event))
 			};
 		}
 
