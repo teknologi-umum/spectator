@@ -49,21 +49,15 @@ export default function Editor({ bg }: EditorProps) {
   );
 
   const currentSolution =
-    currentQuestionNumber === null
-      ? null
-      : snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
-        currentLanguage
-      ];
+    snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+      currentLanguage
+    ] ?? "";
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    if (
-      currentSolution !== null &&
-      currentSolution !== undefined &&
-      currentSolution !== ""
-    ) {
+    if (currentSolution !== "") {
       setCode(currentSolution);
       return;
     }

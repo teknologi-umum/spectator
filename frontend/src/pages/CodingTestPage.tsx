@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
 import "react-reflex/styles.css";
 import {
@@ -55,10 +55,7 @@ function CodingTest() {
   const { tourCompleted, accessToken } = useAppSelector(
     (state) => state.session
   );
-  const isTokenEmpty = useMemo(
-    () => accessToken === null || accessToken === undefined,
-    [accessToken]
-  );
+  const isTokenEmpty = accessToken === null;
 
   const gray = useColorModeValue("gray.100", "gray.800", "gray.900");
   const bg = useColorModeValue("white", "gray.700", "gray.800");
