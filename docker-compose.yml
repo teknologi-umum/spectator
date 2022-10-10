@@ -23,7 +23,7 @@ services:
       - ASPNETCORE_MinioOptions__AccessKey=${MINIO_ACCESS_KEY}
       - ASPNETCORE_MinioOptions__SecretKey=${MINIO_SECRET_KEY}
       - ASPNETCORE_PistonOptions__Address=http://rce:50051
-      - ASPNETCORE_PistonOptions__MaxConcurrentExecution=2
+      - ASPNETCORE_PistonOptions__MaxConcurrentExecution=100
       - ASPNETCORE_PistonOptions__CompileTimeout=5000
       - ASPNETCORE_PistonOptions__RunTimeout=10000
       - ASPNETCORE_PistonOptions__MemoryLimit=2000000000
