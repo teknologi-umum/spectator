@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: ./backend/Spectator/Dockerfile
-    restart: on-failure:5
     hostname: backend
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -60,11 +59,17 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
 
   minio:
     image: quay.io/minio/minio:RELEASE.2022-02-05T04-40-59Z
     command: server /data --console-address ":9001"
-    restart: on-failure:10
     ports:
       - 127.0.0.1:9000:9000
       - 127.0.0.1:9001:9001
@@ -87,11 +92,16 @@ services:
       options:
         max-size: 100M
         max-file: 3
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
 
   influx:
     image: influxdb:2.3.0-alpine
     hostname: influx
-    restart: on-failure:10
     ports:
       - 127.0.0.1:8086:8086
     environment:
@@ -116,12 +126,17 @@ services:
       options:
         max-size: 100M
         max-file: 3
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
 
   rce:
     build:
       context: .
       dockerfile: ./rce/Dockerfile
-    restart: on-failure:5
     hostname: rce
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto rce.proto -plaintext localhost:50051 rce.CodeExecutionEngineService.Ping
@@ -142,12 +157,18 @@ services:
     depends_on:
       logger:
         condition: service_started
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
 
   worker:
     build:
       context: .
       dockerfile: ./worker/Dockerfile
-    restart: on-failure:5
     hostname: worker
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto worker.proto -plaintext localhost:3000 worker_proto.Worker.Ping
@@ -179,12 +200,18 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
 
   video:
     build:
       context: .
       dockerfile: ./video/Dockerfile
-    restart: on-failure:5
     hostname: video
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto video.proto -plaintext localhost:3000 video.VideoService.Ping
@@ -216,12 +243,18 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
 
   logger:
     build:
       context: .
       dockerfile: ./logger/Dockerfile
-    restart: on-failure:5
     hostname: logger
     healthcheck:
       test: grpcurl  -d '{}' -import-path . -proto logger.proto -plaintext localhost:3000 logger.Logger.Ping
@@ -244,3 +277,10 @@ services:
     depends_on:
       influx:
         condition: service_healthy
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 10
+        window: 60s
