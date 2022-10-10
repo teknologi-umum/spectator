@@ -241,12 +241,12 @@ namespace Spectator.Piston {
 		private static bool IsTwinkleTwinkleLittleStarLyrics(string text) {
 			var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			if (lines.Length != 6) return false;
-			if (lines[0] != "Twinkle twinkle little star") return false;
-			if (lines[1] != "How I wonder what you are") return false;
-			if (lines[2] != "Up above the world so high") return false;
-			if (lines[3] != "Like a diamond in the sky") return false;
-			if (lines[4] != "Twinkle twinkle little star") return false;
-			if (lines[5] != "How I wonder what you are") return false;
+			if (lines[0].Trim().ToLowerInvariant() != "twinkle twinkle little star") return false;
+			if (lines[1].Trim().ToLowerInvariant() != "how i wonder what you are") return false;
+			if (lines[2].Trim().ToLowerInvariant() != "up above the world so high") return false;
+			if (lines[3].Trim().ToLowerInvariant() != "like a diamond in the sky") return false;
+			if (lines[4].Trim().ToLowerInvariant() != "twinkle twinkle little star") return false;
+			if (lines[5].Trim().ToLowerInvariant() != "how i wonder what you are") return false;
 			return true;
 		}
 	}
