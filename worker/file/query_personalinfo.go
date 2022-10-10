@@ -15,6 +15,10 @@ import (
 type PersonalInfo struct {
 	Measurement       string    `json:"_measurement" csv:"_measurement"`
 	SessionID         string    `json:"session_id" csv:"session_id"`
+	Email             string    `json:"email" csv:"email"`
+	Age               int64     `json:"age" csv:"age"`
+	Gender            string    `json:"gender" csv:"gender"`
+	Nationality       string    `json:"nationality" csv:"nationality"`
 	StudentNumber     string    `json:"student_number" csv:"student_number"`
 	HoursOfPractice   int64     `json:"hours_of_practice" csv:"hours_of_experience"`
 	YearsOfExperience int64     `json:"years_of_experience" csv:"years_of_experience"`
@@ -65,6 +69,26 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 			studentNumber = ""
 		}
 
+		email, ok := record.ValueByKey("email").(string)
+		if !ok {
+			email = ""
+		}
+
+		age, ok := record.ValueByKey("age").(int64)
+		if !ok {
+			age = 0
+		}
+
+		gender, ok := record.ValueByKey("gender").(string)
+		if !ok {
+			gender = ""
+		}
+
+		nationality, ok := record.ValueByKey("nationality").(string)
+		if !ok {
+			nationality = ""
+		}
+
 		hoursOfPractice, ok := record.ValueByKey("hours_of_practice").(int64)
 		if !ok {
 			hoursOfPractice = 0
@@ -93,6 +117,10 @@ func (d *Dependency) QueryPersonalInfo(ctx context.Context, queryAPI api.QueryAP
 		personalInfo = PersonalInfo{
 			Measurement:       common.MeasurementPersonalInfoSubmitted,
 			SessionID:         sessionId,
+			Email:             email,
+			Age:               age,
+			Gender:            gender,
+			Nationality:       nationality,
 			StudentNumber:     studentNumber,
 			HoursOfPractice:   hoursOfPractice,
 			YearsOfExperience: yearsOfExperience,
