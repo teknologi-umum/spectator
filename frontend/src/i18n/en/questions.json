@@ -2,15 +2,15 @@
   "questions": [
     {
       "id": 0,
-      "question": "Before we begin our awesome journey, we should introduce ourself to the world.\n\nSimply fill the function with a code that prints \"Hello world\" (without the double quotes).\n\n**Pseudocode example:**\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nAnyway, pseudocode means \"fake code\", an informal and naive way to write a program in which we don't actually adhere with any existing programming language, but we write the steps, actions, and instruction in a form that a human can easily understand.",
+      "question": "Before we begin our awesome journey, we should introduce ourself to the world.\n\nSimply fill the function with a code that prints \"Hello world\" (without the double quotes).\n\n**Pseudocode example:**\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nHere's a gentle reminder to code only on the section that is pointed by the \"Write your code here\" comment. The test cases might break, and you might not get the correct result if you try to change anything outside of the boilerplate.\nIf you did change something and wish to go back, you can always press the Reset button above to start over (your code will be lost, be careful!).\n\nAnyway, pseudocode means \"fake code\", an informal and naive way to write a program in which we don't actually adhere with any existing programming language, but we write the steps, actions, and instruction in a form that a human can easily understand.",
       "title": "Hello, world!",
       "templates": {
-        "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
-        "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // write your code here\n}",
-        "java": "class HelloWorld {\n   public static void helloWorld() {\n      // write your code here\n   }\n}",
-        "javascript": "function helloWorld() {\n  // write your code here\n}",
-        "php": "function helloWorld() {\n   // write your code here\n}",
-        "python": "def helloWorld():\n    # write your code here"
+        "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // Write your code here! Please DO NOT change or remove anything other than these comment.\n  // Leave the boilerplate as it is. This applies for all further questions.\n  // Good luck!\n}",
+        "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // Write your code here! Please DO NOT change or remove anything other than these comment.\n  // Leave the boilerplate as it is. This applies for all further questions.\n  // Good luck!\n}",
+        "java": "class HelloWorld {\n   public static void helloWorld() {\n      // Write your code here! Please DO NOT change or remove anything other than these comment.\n      // Leave the boilerplate as it is. This applies for all further questions.\n      // Good luck!\n   }\n}",
+        "javascript": "function helloWorld() {\n  // Write your code here! Please DO NOT change or remove anything other than these comment.\n  // Leave the boilerplate as it is. This applies for all further questions.\n  // Good luck!\n}",
+        "php": "function helloWorld() {\n   // Write your code here! Please DO NOT change or remove anything other than these comment.\n  // Leave the boilerplate as it is. This applies for all further questions.\n  // Good luck!\n}",
+        "python": "def helloWorld():\n    # Write your code here! Please DO NOT change or remove anything other than these comment.\n  # Leave the boilerplate as it is. This applies for all further questions.\n  # Good luck!"
       }
     },
     {

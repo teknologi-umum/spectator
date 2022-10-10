@@ -2,15 +2,15 @@
   "questions": [
     {
       "id": 0,
-      "question": "Sebelum kita mulai perjalan kita yang luar biasa, kita sebaiknya memperkenalkan diri dulu ke dunia.\n\nKamu hanya perlu mengisi fungsi dengan kode yang mengeluarkan output (atau men-print) \"Hello world\" (tanpa tanda kutip).\n\n**Contoh pseudocode:**\n\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nNgomong-ngomong, pseudocode berarti \"kode palsu\", sebuah cara yang informal dan gamblang untuk menulis sebuah program yang tidak peduli atau terikat dengan bahasa pemrograman apapun, namun kita menulis langkah, cara, dan instruksi dalam bentuk yang dapat dimengerti dengan mudah oleh manusia.",
+      "question": "Sebelum kita mulai perjalan kita yang luar biasa, kita sebaiknya memperkenalkan diri dulu ke dunia.\n\nKamu hanya perlu mengisi fungsi dengan kode yang mengeluarkan output (atau men-print) \"Hello world\" (tanpa tanda kutip).\n\n**Contoh pseudocode:**\n\n```\nfunction helloWorld()\n  print(\"Hello world\")\nend\n```\n\nJangan lupa untuk hanya mengubah kode di bagian yang ada tulisan \"Tulis kode kamu disini\". Test-nya bisa gagal atau error kalau kamu mencoba mengubah kode diluar template yang sudah ada.\nKalau kamu terlanjut mengubah dan ingin kembali lagi dari awal, kamu selalu bisa menklik tombol Reset untuk mulai lagi dari awal (kode kamu akan hilang, hati-hati!).\n\nNgomong-ngomong, pseudocode berarti \"kode palsu\", sebuah cara yang informal dan gamblang untuk menulis sebuah program yang tidak peduli atau terikat dengan bahasa pemrograman apapun, namun kita menulis langkah, cara, dan instruksi dalam bentuk yang dapat dimengerti dengan mudah oleh manusia.",
       "title": "Hello, world!",
       "templates": {
-        "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // tulis kode kamu disini\n}",
-        "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // tulis kode kamu disini\n}",
-        "java": "class HelloWorld {\n   public static void helloWorld() {\n      // tulis kode kamu disini\n   }\n}",
-        "javascript": "function helloWorld() {\n  // tulis kode kamu disini\n}",
-        "php": "function helloWorld() {\n   // tulis kode kamu disini\n}",
-        "python": "def helloWorld():\n    # tulis kode kamu disini"
+        "c": "#include <stdio.h>\n\nvoid helloWorld() {\n  // Tulis kode kamu disini! Mohon JANGAN ubah atau hapus apapun selain komentar-komentar ini.\n  // Biarkan template kode nya seperti ini, atau eksekusi kodenya akan gagal. Ini berlaku untuk semua soal berikutnya.\n  // Semoga berhasil!\n}",
+        "cpp": "#include <stdio.h>\n\nvoid helloWorld() {\n  // Tulis kode kamu disini! Mohon JANGAN ubah atau hapus apapun selain komentar-komentar ini.\n  // Biarkan template kode nya seperti ini, atau eksekusi kodenya akan gagal. Ini berlaku untuk semua soal berikutnya.\n  // Semoga berhasil!\n}",
+        "java": "class HelloWorld {\n   public static void helloWorld() {\n      // Tulis kode kamu disini! Mohon JANGAN ubah atau hapus apapun selain komentar-komentar ini.\n      // Biarkan template kode nya seperti ini, atau eksekusi kodenya akan gagal. Ini berlaku untuk semua soal berikutnya.\n      // Semoga berhasil!\n   }\n}",
+        "javascript": "function helloWorld() {\n  /// Tulis kode kamu disini! Mohon JANGAN ubah atau hapus apapun selain komentar-komentar ini.\n  // Biarkan template kode nya seperti ini, atau eksekusi kodenya akan gagal. Ini berlaku untuk semua soal berikutnya.\n  // Semoga berhasil!\n}",
+        "php": "function helloWorld() {\n   // Tulis kode kamu disini! Mohon JANGAN ubah atau hapus apapun selain komentar-komentar ini.\n  // Biarkan template kode nya seperti ini, atau eksekusi kodenya akan gagal. Ini berlaku untuk semua soal berikutnya.\n  // Semoga berhasil!\n}",
+        "python": "def helloWorld():\n    # Tulis kode kamu disini! Mohon JANGAN ubah atau hapus apapun selain komentar-komentar ini.\n  # Biarkan template kode nya seperti ini, atau eksekusi kodenya akan gagal. Ini berlaku untuk semua soal berikutnya.\n  # Semoga berhasil!"
       }
     },
     {
