@@ -7,7 +7,8 @@ import {
   EmptyRequest,
   SubmissionRequest,
   Exam,
-  ExamResult
+  ExamResult,
+  SubmitSolutionSAMRequest
 } from "@/stub/session";
 import SpokeBase from "@/spoke/spokeBase";
 import { SESSION_HUB_URL } from "@/constants";
@@ -86,7 +87,7 @@ class SessionSpoke extends SpokeBase {
     return this._hubConnection.invoke("SubmitAfterExamSAMAsync", request);
   }
 
-  public async submitSolutionSAM(request: SubmitSAMRequest): Promise<void> {
+  public async submitSolutionSAM(request: SubmitSolutionSAMRequest): Promise<void> {
     await super._startIfDisconnected();
     return this._hubConnection.invoke("SubmitSolutionSAMAsync", request);
   }

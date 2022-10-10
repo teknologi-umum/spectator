@@ -124,7 +124,8 @@ function SAMTest() {
     await sessionSpoke.submitSolutionSAM({
       accessToken,
       arousedLevel,
-      pleasedLevel
+      pleasedLevel,
+      questionNumber: currentQuestionNumber
     });
     dispatch(setSAMTestResult({ arousedLevel, pleasedLevel }));
 
