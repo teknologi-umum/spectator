@@ -10,6 +10,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import {
+  setBoilerplate,
   setFontSize,
   setLanguage,
   setLockedToCurrentQuestion,
@@ -53,6 +54,9 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation("translation", {
     keyPrefix: "translations.ui"
+  });
+  const { t: getTranslatedQuestion } = useTranslation("question", {
+    keyPrefix: "questions"
   });
   const {
     currentQuestionNumber,
@@ -220,6 +224,21 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
     }
   }
 
+  function getBoilerplate(questionNumber: number) {
+    return getTranslatedQuestion(
+      `${questionNumber}.templates.${currentLanguage}`
+    );
+  }
+
+  function resetBoilerplate() {
+    dispatch(
+      setBoilerplate({
+        language: currentLanguage,
+        boilerplate: getBoilerplate(currentQuestionNumber)
+      })
+    );
+  }
+
   return (
     <>
       <FinishedModal isOpen={isModalOpen} />
@@ -299,6 +318,19 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           <LocaleButton bg={bg} fg={fg} data-tour="topbar-step-5" />
         </Flex>
         <Flex alignItems="center" gap="3" ml="auto">
+          <Button
+            px="4"
+            colorScheme="teal"
+            opacity="75%"
+            _hover={{
+              opacity: "100%"
+            }}
+            h="full"
+            onClick={resetBoilerplate}
+            data-tour="topbar-step-6"
+          >
+            {t("reset")}
+          </Button>
           <Button
             px="4"
             colorScheme="red"

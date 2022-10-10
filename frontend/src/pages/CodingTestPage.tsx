@@ -52,7 +52,9 @@ function CodingTest() {
   const dispatch = useAppDispatch();
   const { isCollapsed } = useAppSelector((state) => state.codingTest);
   const { currentQuestionNumber } = useAppSelector((state) => state.editor);
-  const { tourCompleted, accessToken } = useAppSelector((state) => state.session);
+  const { tourCompleted, accessToken } = useAppSelector(
+    (state) => state.session
+  );
   const isTokenEmpty = useMemo(
     () => accessToken === null || accessToken === undefined,
     [accessToken]

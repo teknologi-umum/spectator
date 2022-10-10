@@ -48,14 +48,12 @@ export default function Editor({ bg }: EditorProps) {
     [currentQuestionNumber, currentLanguage]
   );
 
-  const currentSolution = useMemo(() => {
-    if (currentQuestionNumber === null) {
-      return null;
-    }
-
-    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
-    return currentSnapshot?.solutionByLanguage[currentLanguage];
-  }, [currentQuestionNumber, currentLanguage]);
+  const currentSolution =
+    currentQuestionNumber === null
+      ? null
+      : snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+        currentLanguage
+      ];
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
@@ -72,7 +70,7 @@ export default function Editor({ bg }: EditorProps) {
 
     setCode(boilerplate);
     dispatch(setSolution(boilerplate));
-  }, [currentQuestionNumber, currentLanguage]);
+  }, [currentSolution, boilerplate]);
 
   useEffect(() => {
     dispatch(setSolution(debouncedCode));

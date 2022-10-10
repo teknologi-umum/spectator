@@ -15,7 +15,8 @@
       "output": "Output",
       "begin_test": "Mulai Test",
       "language": "Bahasa",
-      "theme": "Tema"
+      "theme": "Tema",
+      "reset": "Reset"
     },
     "tour": {
       "sam_test": {
@@ -45,6 +46,7 @@
           "Jika ukuran font terlalu kecil atau terlalu besar, kamu bisa mengubahnya dengan memilih salah satu opsi ini.",
           "Kamu bisa mengubah bahasa pada User Interface dengan memilih salah satu opsi ini.",
           "Jika kamu tidak mengingatkan kamu bisa menekan tombol ini. Mohon jangan menekannya kecuali kamu yakin.",
+          "Kamu bisa menekan tombol ini untuk me-reset jawabanmu. Pastikan kamu benar-benar ingin me-reset ulang solusimu karena tidak ada pembatalan",
           "Kamu bisa menekan tombol ini untuk menguji jawabanmu. Ini tidak akan mengirimkan jawabanmu, jadi kamu bisa menekan tombol ini sebanyak mungkin untuk menguji jawabanmu.",
           "Kamu bisa menekan tombol ini untuk mengirimkan jawabanmu. Harap uji jawabanmu beberapa kali dengan menekan tombol Test sebelum mengirimkan jawabanmu."
         ],
