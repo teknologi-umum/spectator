@@ -48,31 +48,23 @@ export default function Editor({ bg }: EditorProps) {
     [currentQuestionNumber, currentLanguage]
   );
 
-  const currentSolution = useMemo(() => {
-    if (currentQuestionNumber === null) {
-      return null;
-    }
-
-    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
-    return currentSnapshot?.solutionByLanguage[currentLanguage];
-  }, [currentQuestionNumber, currentLanguage]);
+  const currentSolution =
+    snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+      currentLanguage
+    ] ?? "";
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    if (
-      currentSolution !== null &&
-      currentSolution !== undefined &&
-      currentSolution !== ""
-    ) {
+    if (currentSolution !== "") {
       setCode(currentSolution);
       return;
     }
 
     setCode(boilerplate);
     dispatch(setSolution(boilerplate));
-  }, [currentQuestionNumber, currentLanguage]);
+  }, [currentSolution, boilerplate]);
 
   useEffect(() => {
     dispatch(setSolution(debouncedCode));
