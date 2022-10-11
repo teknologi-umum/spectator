@@ -100,15 +100,6 @@ export const editorSlice = createSlice({
 
       state.snapshotByQuestionNumber[state.currentQuestionNumber].scratchPad =
         action.payload;
-    },
-    setBoilerplate: (
-      state,
-      action: PayloadAction<{ language: Language; boilerplate: string }>
-    ) => {
-      state.snapshotByQuestionNumber[
-        state.currentQuestionNumber
-      ].solutionByLanguage[action.payload.language] =
-        action.payload.boilerplate;
     }
   }
 });
@@ -123,8 +114,7 @@ export const {
   setScratchPad,
   setDeadlineAndQuestions,
   setSnapshot,
-  setSAMTestResult,
-  setBoilerplate
+  setSAMTestResult
 } = editorSlice.actions;
 
 export default editorSlice.reducer;
