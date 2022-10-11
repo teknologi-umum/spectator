@@ -31,14 +31,9 @@ interface EditorProps {
 
 export default function Editor({ bg }: EditorProps) {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation("question", {
-    keyPrefix: "questions"
-  });
+  const { t } = useTranslation("question", { keyPrefix: "questions" });
   const [theme, highlightTheme] = useCodemirrorTheme();
   const borderBg = useColorModeValue("gray.300", "gray.500", "gray.600");
-
-  const [code, setCode] = useState("");
-  const debouncedCode = useDebounce(code, 500);
 
   const { currentQuestionNumber, currentLanguage, snapshotByQuestionNumber } =
     useAppSelector((state) => state.editor);
@@ -48,32 +43,41 @@ export default function Editor({ bg }: EditorProps) {
     [currentQuestionNumber, currentLanguage]
   );
 
+  // TODO(elianiva): this doesn't seem right..., but it works for now
+  //                 we basically want `currentSolution` to update ONLY when it has been set from other place
+  //                 if we don't add `useMemo`, it will get updated on each render
+  //                 which is basically everytime the user type
+  //                 idk, this seems way to complex for what it tries to do
   const currentSolution = useMemo(() => {
-    if (currentQuestionNumber === null) {
-      return null;
-    }
+    return (
+      snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+        currentLanguage
+      ] ?? ""
+    );
+  }, [
+    snapshotByQuestionNumber[currentQuestionNumber]?.solutionByLanguage[
+      currentLanguage
+    ]
+  ]);
 
-    const currentSnapshot = snapshotByQuestionNumber[currentQuestionNumber];
-    return currentSnapshot?.solutionByLanguage[currentLanguage];
-  }, [currentQuestionNumber, currentLanguage]);
+  const [code, setCode] = useState(currentSolution);
+  const debouncedCode = useDebounce(code, 500);
 
   // at first render, we have to check if the data of current solution
   // already persisted. If so, we assign it with setCode.
   // else, we assign it with boilerplate and dispatch to persist store at the same time
   useEffect(() => {
-    if (
-      currentSolution !== null &&
-      currentSolution !== undefined &&
-      currentSolution !== ""
-    ) {
-      setCode(currentSolution);
+    // prevent the solution from being empty
+    if (currentSolution === "") {
+      setCode(boilerplate);
+      dispatch(setSolution(boilerplate));
       return;
     }
 
-    setCode(boilerplate);
-    dispatch(setSolution(boilerplate));
-  }, [currentQuestionNumber, currentLanguage]);
+    setCode(currentSolution);
+  }, [currentQuestionNumber, currentLanguage, currentSolution]);
 
+  // we use debounce to dispatch the solution into the global store within an interval
   useEffect(() => {
     dispatch(setSolution(debouncedCode));
   }, [debouncedCode]);

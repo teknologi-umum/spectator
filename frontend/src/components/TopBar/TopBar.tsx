@@ -10,11 +10,11 @@ import {
   useToast
 } from "@chakra-ui/react";
 import {
-  setBoilerplate,
   setFontSize,
   setLanguage,
   setLockedToCurrentQuestion,
-  setSnapshot
+  setSnapshot,
+  setSolution
 } from "@/store/slices/editorSlice";
 import type { EditorSnapshot } from "@/models/EditorSnapshot";
 import { LANGUAGES, Language } from "@/models/Language";
@@ -54,9 +54,6 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation("translation", {
     keyPrefix: "translations.ui"
-  });
-  const { t: getTranslatedQuestion } = useTranslation("question", {
-    keyPrefix: "questions"
   });
   const {
     currentQuestionNumber,
@@ -178,9 +175,8 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
           scratchPad: currentSnapshot.scratchPad,
           solutionByLanguage: currentSnapshot.solutionByLanguage,
           submissionAccepted: submissionResult.accepted,
-          submissionRefactored: currentSnapshot.submissionSubmitted
-            ? true // mark as refactored only if it has been submitted before
-            : false,
+          // mark as refactored only if it has been submitted before
+          submissionRefactored: currentSnapshot.submissionSubmitted,
           submissionSubmitted: currentSnapshot.submissionSubmitted
             ? true // don't change the value if it's already set to true
             : submissionType === "submit",
@@ -224,19 +220,9 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
     }
   }
 
-  function getBoilerplate(questionNumber: number) {
-    return getTranslatedQuestion(
-      `${questionNumber}.templates.${currentLanguage}`
-    );
-  }
-
   function resetBoilerplate() {
-    dispatch(
-      setBoilerplate({
-        language: currentLanguage,
-        boilerplate: getBoilerplate(currentQuestionNumber)
-      })
-    );
+    // we set it to empty because the editor will fill it with the boilerplate when it's empty
+    dispatch(setSolution(""));
   }
 
   return (
