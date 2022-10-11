@@ -210,7 +210,11 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
         )
       });
 
-      if (submissionType === "submit" && currentQuestionNumber !== 0) {
+      if (
+        submissionType === "submit" &&
+        submissionResult.accepted &&
+        currentQuestionNumber !== 0
+      ) {
         navigate("/sam-test");
       }
     } catch (err) {
