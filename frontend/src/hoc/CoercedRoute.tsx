@@ -15,6 +15,8 @@ export default function CoercedRoute() {
   } = useAppSelector((state) => state.editor);
   const { examResult } = useAppSelector((state) => state.examResult);
   const location = useLocation();
+  const isCurrentSubmissionAccepted =
+    snapshotByQuestionNumber[currentQuestionNumber]?.submissionAccepted;
   const currentQuestionHasNoSAMResult =
     snapshotByQuestionNumber[currentQuestionNumber]?.samTestResult === null;
 
@@ -36,7 +38,7 @@ export default function CoercedRoute() {
       // has no questions
       questions === null ||
       // haven't done the question SAM test
-      currentQuestionHasNoSAMResult
+      (isCurrentSubmissionAccepted && currentQuestionHasNoSAMResult)
     ) {
       return "/sam-test";
     }
@@ -57,6 +59,7 @@ export default function CoercedRoute() {
     firstSAMSubmitted,
     deadlineUtc,
     questions,
+    isCurrentSubmissionAccepted,
     currentQuestionHasNoSAMResult,
     hasPermission,
     deviceId,
