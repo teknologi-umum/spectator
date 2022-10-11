@@ -52,7 +52,7 @@ function main(): void {
     for ($i = 0; $i < 5; $i++) {
         $from = $temperatures[rand(0, count($temperatures) - 1)];
         $to = $temperatures[rand(0, count($temperatures) - 1)];
-        $n = rand(-500, 500);
+        $n = rand(0, 1000);
         $expected = $working_answer($n, $from, $to);
         $got = calculateTemperature($n, $from, $to);
         $arguments = "calculateTemperature($n, \"$from\", \"$to\")";

@@ -55,7 +55,7 @@ function main() {
     // Create 5 random tests
     const from = temperatures[randomNumber(0, temperatures.length - 1)];
     const to = temperatures[randomNumber(0, temperatures.length - 1)];
-    const n = randomNumber(-500, 500);
+    const n = randomNumber(0, 1000);
     const arguments = `calculateTemperature(${n}, "${from}", "${to}")`;
     const expected = workingAnswer(n, from, to);
     const got = calculateTemperature(n, from, to);

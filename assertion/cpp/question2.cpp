@@ -78,7 +78,7 @@ int main()
     for (unsigned int i = 0; testCases.size() < 10; i++)
     {
         // Generate random test cases
-        float randNum = (float)__randomNumber(-500, 500);
+        float randNum = (float)__randomNumber(0, 1000);
         std::string from = temperatures.at(__randomNumber(0, 2));
         std::string to = temperatures.at(__randomNumber(0, 2));
 

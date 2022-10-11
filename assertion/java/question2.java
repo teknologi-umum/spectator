@@ -60,7 +60,7 @@ public class question2 {
         for (int i = 0; i < numberOfTestCases; i++) {
             var from = temperatures[getRandomNumber(0, 2)];
             var to = temperatures[getRandomNumber(0, 2)];
-            int randomTemperature = getRandomNumber(-500, 500);
+            int randomTemperature = getRandomNumber(0, 1000);
 
             double expected = workingAnswer(randomTemperature, from, to);
             double got = Temperature.calculateTemperature(randomTemperature, from, to);
