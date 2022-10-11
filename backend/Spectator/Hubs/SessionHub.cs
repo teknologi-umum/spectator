@@ -409,7 +409,7 @@ namespace Spectator.Hubs {
 			);
 		}
 
-		public Task SubmitSolutionSAMASync(SubmitSolutionSAMRequest request) {
+		public Task SubmitSolutionSAMAsync(SubmitSolutionSAMRequest request) {
 			// Authenticate
 			var session = _poormansAuthentication.Authenticate(request.AccessToken);
 
