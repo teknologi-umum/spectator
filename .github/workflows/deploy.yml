@@ -327,8 +327,8 @@ jobs:
           -i /root/.ssh/id_ed25519
           -p ${{ secrets.SSH_PORT }}
           -t ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }}
-          "ssh spectator '\"'echo ${{ secrets.SUDO_PASSWORD }} | sudo -S bash -c 'tmux new -d -t 0 -e '\"'cd ${{ secrets.SSH_WORKDIR }} &&
+          "ssh spectator '\"'echo ${{ secrets.SUDO_PASSWORD }} | sudo -S nohup bash -c 'tmux new -d -t 0 -e '\"'cd ${{ secrets.SSH_WORKDIR }} &&
           docker compose -f docker-compose.override.yml up -d --build backend worker rce video logger &&
           docker container prune -f &&
           docker image prune -f &&
-          docker container prune -f'\"' &' '\"' "
+          docker builder prune -f'\"' ' '\"' "
