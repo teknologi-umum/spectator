@@ -317,9 +317,9 @@ jobs:
           -i /root/.ssh/id_ed25519
           -p ${{ secrets.SSH_PORT }}
           -t ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }}
-          "ssh spectator -f 'echo ${{ secrets.SUDO_PASSWORD }} | sudo -S bash -c '\"'cd ${{ secrets.SSH_WORKDIR }} &&
+          "ssh spectator '\"'tmux new -d -t 0 -e 'echo ${{ secrets.SUDO_PASSWORD }} | sudo -S bash -c '\''cd ${{ secrets.SSH_WORKDIR }} &&
           git remote set-url origin https://${{ github.actor }}:${{ github.token }}@github.com/teknologi-umum/spectator.git &&
           git pull &&
           git remote set-url origin https://github.com/teknologi-umum/spectator.git &&
-          docker compose -f docker-compose.override.yml up -d --build backend worker rce video logger &&
-          exit'\"' ' "
+          docker compose -f docker-compose.override.yml up -d --build backend worker rce video logger
+          '\'' ' '\"'  "
