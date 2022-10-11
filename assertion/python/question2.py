@@ -55,7 +55,7 @@ def main():
     for _ in range(5):
         fromTemperature = __random.choice(temperatures)
         toTemperature = __random.choice(temperatures)
-        n = __random.randint(-500, 500)
+        n = __random.randint(0, 1000)
         expected = workingAnswer(n, fromTemperature, toTemperature)
         got = calculateTemperature(n, fromTemperature, toTemperature)
         arguments = f"calculateTemperature({n}, '{fromTemperature}', '{toTemperature}')"

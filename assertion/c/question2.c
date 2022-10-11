@@ -79,7 +79,7 @@ int main()
         TestCase *test = &testCases[i];
 
         // Generate random test cases
-        float randNum = (float)__randomNumber(-500, 500);
+        float randNum = (float)__randomNumber(0, 1000);
 
         char *from = temperatures[__randomNumber(0, 2)];
         char *to = temperatures[__randomNumber(0, 2)];
