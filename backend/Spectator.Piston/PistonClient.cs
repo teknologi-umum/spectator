@@ -10,6 +10,7 @@ using Spectator.Piston.Internals;
 using Spectator.Primitives;
 using Spectator.Protos.Rce;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Logging;
 
 namespace Spectator.Piston {
 	public class PistonClient {
@@ -19,14 +20,19 @@ namespace Spectator.Piston {
 		private readonly GrpcChannel _grpcChannel;
 		private readonly CodeExecutionEngineService.CodeExecutionEngineServiceClient _rceClient;
 		private readonly PistonOptions _pistonOptions;
+		private readonly int _maxConcurrentExecutions;
+		private readonly ILogger<PistonClient> _logger;
 
 		public PistonClient(
-			IOptions<PistonOptions> pistonOptionsAccessor
+			IOptions<PistonOptions> pistonOptionsAccessor,
+			ILogger<PistonClient> logger
 		) {
 			_pistonOptions = pistonOptionsAccessor.Value;
-			_semaphore ??= new SemaphoreSlim(_pistonOptions.MaxConcurrentExecutions, _pistonOptions.MaxConcurrentExecutions);
+			_maxConcurrentExecutions = _pistonOptions.MaxConcurrentExecutions;
+			_semaphore ??= new SemaphoreSlim(_maxConcurrentExecutions, _maxConcurrentExecutions);
 			_grpcChannel = GrpcChannel.ForAddress(_pistonOptions.Address);
 			_rceClient = new(_grpcChannel);
+			_logger = logger;
 		}
 
 		private async Task<Runtime?> GetRuntimeAsync(string language, CancellationToken cancellationToken) {
@@ -203,6 +209,7 @@ namespace Spectator.Piston {
 
 		internal async Task<CodeResponse> ExecuteAsync(string language, string version, string code, CancellationToken cancellationToken) {
 			await _semaphore!.WaitAsync(cancellationToken);
+			_logger.LogInformation($"Concurrent executions: {_maxConcurrentExecutions - _semaphore.CurrentCount}");
 			try {
 				// HACK: java is expensive, they need more RAM than anything else
 				var memoryLimit = language.ToLowerInvariant() switch {
@@ -234,6 +241,7 @@ namespace Spectator.Piston {
 				);
 			} finally {
 				_semaphore!.Release();
+				_logger.LogInformation($"Concurrent executions: {_maxConcurrentExecutions - _semaphore.CurrentCount}");
 			}
 		}
 
