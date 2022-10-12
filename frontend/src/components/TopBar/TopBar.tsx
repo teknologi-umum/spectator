@@ -185,10 +185,6 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
         })
       );
 
-      dispatch(setLockedToCurrentQuestion(false));
-      setSubmitting(false);
-      setTesting(false);
-
       // move to the result tab
       dispatch(setQuestionTabIndex("result"));
 
@@ -213,6 +209,11 @@ export default function TopBar({ bg, fg, forfeitExam }: TopBarProps) {
       if (err instanceof Error) {
         loggerInstance.log(LogLevel.Error, err.message);
       }
+    } finally {
+      // cleanup locked state
+      dispatch(setLockedToCurrentQuestion(false));
+      setSubmitting(false);
+      setTesting(false);
     }
   }
 
