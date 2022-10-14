@@ -170,9 +170,9 @@ namespace Spectator.Piston.Tests {
 			const string stdout =
 				"/code/code_executor_64101/code.py:7: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?\n  kelvin = (5/9(suhu-32)+273)\n Suhu : ";
 
-			var testResults = ResultParser.ParseTestResults(stdout);
-			testResults.Length.Should().Be(1);
-			testResults[0].Should().BeOfType<FailingTestResult>();
+			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
+			testResults.Length.Should().Be(3);
+			testResults[0..2].Should().BeOfType<FailingTestResult>().Which.ActualStdout.Should().Be(stdout);
 		}
 
 		[Fact]
@@ -180,9 +180,9 @@ namespace Spectator.Piston.Tests {
 			const string stdout =
 				"# 0 PASSING\nTraceback (most recent call last):\n  File \"/code/code_executor_64101/code.py\", line 83, in \u003cmodule\u003e\n    main()\n  File \"/code/code_executor_64101/code.py\", line 11, in main\n    \"got\": calculateTemperature(100, \"Celcius\", \"Fahrenheit\"),\nNameError: name 'calculateTemperature' is not defined\n";
 
-			var testResults = ResultParser.ParseTestResults(stdout);
-			testResults.Length.Should().Be(1);
-			testResults[0].Should().BeOfType<FailingTestResult>();
+			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
+			testResults.Length.Should().Be(6);
+			testResults[0..5].Should().BeOfType<FailingTestResult>().Which.ActualStdout.Should().Be(stdout);
 		}
 	}
 }
