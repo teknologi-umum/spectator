@@ -104,11 +104,11 @@ namespace Spectator.Piston.Tests {
 
 			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
 			testResults.Length.Should().Be(5);
-			testResults[0].Should().BeOfType<PassingTestResult>();
-			testResults[1].Should().BeOfType<PassingTestResult>();
+			testResults[0].Should().BeOfType<FailingTestResult>();
+			testResults[1].Should().BeOfType<FailingTestResult>();
 			testResults[2].Should().BeOfType<FailingTestResult>();
-			testResults[3].Should().BeOfType<PassingTestResult>();
-			testResults[4].Should().BeOfType<PassingTestResult>();
+			testResults[3].Should().BeOfType<FailingTestResult>();
+			testResults[4].Should().BeOfType<FailingTestResult>();
 		}
 
 		[Fact]
@@ -179,7 +179,7 @@ namespace Spectator.Piston.Tests {
 		public void CannotParseTestResultsFromForcedSuccessPrint() {
 			const string stdout =
 				"# 0 PASSING\nTraceback (most recent call last):\n  File \"/code/code_executor_64101/code.py\", line 83, in \u003cmodule\u003e\n    main()\n  File \"/code/code_executor_64101/code.py\", line 11, in main\n    \"got\": calculateTemperature(100, \"Celcius\", \"Fahrenheit\"),\nNameError: name 'calculateTemperature' is not defined\n";
-			
+
 			var testResults = ResultParser.ParseTestResults(stdout);
 			testResults.Length.Should().Be(1);
 			testResults[0].Should().BeOfType<FailingTestResult>();
