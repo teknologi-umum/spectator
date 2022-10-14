@@ -40,7 +40,12 @@ namespace Spectator.Piston.Internals {
 					continue;
 				}
 
-				throw new ArgumentException("Cannot parse stdout", nameof(stdout));
+				testResults.Add(new FailingTestResult(
+					TestNumber: 0,
+					ExpectedStdout: "",
+					ActualStdout: stdout,
+					ArgumentsStdout: ""
+				));
 			}
 
 			return testResults.ToImmutableArray();
