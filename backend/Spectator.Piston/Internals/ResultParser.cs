@@ -21,7 +21,6 @@ namespace Spectator.Piston.Internals {
 						ExpectedStdout: passingExpectedGroups[1].Value,
 						ActualStdout: passingActualGroups[1].Value,
 						ArgumentsStdout: passingArgumentsGroups[1].Value
-
 					));
 					continue;
 				}

@@ -87,7 +87,7 @@ namespace Spectator.Piston.Tests {
 				"# 5 PASSING\n";
 
 			var testResults = ResultParser.ParseTestResults(stdout);
-			testResults.Length.Should().Be(5);
+			testResults.Length.Should().Be(3);
 		}
 
 		[Fact]
@@ -103,14 +103,12 @@ namespace Spectator.Piston.Tests {
 				"# 6 PUSING";
 
 			var testResults = ResultParser.ParseTestResults(stdout);
-			testResults.Length.Should().Be(6);
+			testResults.Length.Should().Be(5);
 			testResults[0].Should().BeOfType<PassingTestResult>();
 			testResults[1].Should().BeOfType<PassingTestResult>();
-			testResults[2].Should().BeOfType<PassingTestResult>();
+			testResults[2].Should().BeOfType<FailingTestResult>();
 			testResults[3].Should().BeOfType<PassingTestResult>();
 			testResults[4].Should().BeOfType<PassingTestResult>();
-			testResults[5].Should().BeOfType<FailingTestResult>();
-			testResults[5].TestNumber.Should().Be(6);
 		}
 
 		[Fact]
@@ -156,7 +154,6 @@ namespace Spectator.Piston.Tests {
 				"> ARGUMENTS wkwkwk\n" +
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n";
-
 
 			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
 			testResults.Length.Should().Be(10);
