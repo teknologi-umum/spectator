@@ -84,7 +84,8 @@ namespace Spectator.Piston {
 				);
 			}
 
-			return ResultParser.ParseTestResults(executeResult.Runtime.Stdout);
+			var stdout = executeResult.Runtime.Output_ ?? executeResult.Runtime.Stdout ?? "";
+			return ResultParser.ParseTestResults(stdout);
 		}
 
 		// HACK: Hard coded check for zeroth question
