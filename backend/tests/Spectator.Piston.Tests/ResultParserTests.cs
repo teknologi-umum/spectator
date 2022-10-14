@@ -86,8 +86,8 @@ namespace Spectator.Piston.Tests {
 				"# 4 PASSING\n" +
 				"# 5 PASSING\n";
 
-			new Action(() => ResultParser.ParseTestResults(stdout)).Should().Throw<ArgumentException>()
-				.And.Message.Should().Be("Cannot parse stdout (Parameter 'stdout')");
+			var testResults = ResultParser.ParseTestResults(stdout);
+			testResults.Length.Should().Be(5);
 		}
 
 		[Fact]
@@ -102,8 +102,15 @@ namespace Spectator.Piston.Tests {
 				"# 5 PASSING\n" +
 				"# 6 PUSING";
 
-			new Action(() => ResultParser.ParseTestResults(stdout)).Should().Throw<ArgumentException>()
-				.And.Message.Should().Be("Cannot parse stdout (Parameter 'stdout')");
+			var testResults = ResultParser.ParseTestResults(stdout);
+			testResults.Length.Should().Be(6);
+			testResults[0].Should().BeOfType<PassingTestResult>();
+			testResults[1].Should().BeOfType<PassingTestResult>();
+			testResults[2].Should().BeOfType<PassingTestResult>();
+			testResults[3].Should().BeOfType<PassingTestResult>();
+			testResults[4].Should().BeOfType<PassingTestResult>();
+			testResults[5].Should().BeOfType<FailingTestResult>();
+			testResults[5].TestNumber.Should().Be(6);
 		}
 
 		[Fact]
