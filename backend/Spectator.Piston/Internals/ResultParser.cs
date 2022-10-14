@@ -41,7 +41,7 @@ namespace Spectator.Piston.Internals {
 				}
 
 				testResults.Add(new FailingTestResult(
-					TestNumber: 0,
+					TestNumber: -1,
 					ExpectedStdout: "",
 					ActualStdout: stdout,
 					ArgumentsStdout: ""
