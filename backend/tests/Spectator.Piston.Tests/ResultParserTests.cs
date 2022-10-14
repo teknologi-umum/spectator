@@ -102,7 +102,7 @@ namespace Spectator.Piston.Tests {
 				"# 5 PASSING\n" +
 				"# 6 PUSING";
 
-			var testResults = ResultParser.ParseTestResults(stdout);
+			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
 			testResults.Length.Should().Be(5);
 			testResults[0].Should().BeOfType<PassingTestResult>();
 			testResults[1].Should().BeOfType<PassingTestResult>();
@@ -163,6 +163,26 @@ namespace Spectator.Piston.Tests {
 				its.ActualStdout.Should().Be("-153.0");
 			});
 			testResults[8..9].Should().AllBeOfType<PassingTestResult>();
+		}
+
+		[Fact]
+		public void CannotParseTestResultsFromIliterateStudents() {
+			const string stdout =
+				"/code/code_executor_64101/code.py:7: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?\n  kelvin = (5/9(suhu-32)+273)\n Suhu : ";
+
+			var testResults = ResultParser.ParseTestResults(stdout);
+			testResults.Length.Should().Be(1);
+			testResults[0].Should().BeOfType<FailingTestResult>();
+		}
+
+		[Fact]
+		public void CannotParseTestResultsFromForcedSuccessPrint() {
+			const string stdout =
+				"# 0 PASSING\nTraceback (most recent call last):\n  File \"/code/code_executor_64101/code.py\", line 83, in \u003cmodule\u003e\n    main()\n  File \"/code/code_executor_64101/code.py\", line 11, in main\n    \"got\": calculateTemperature(100, \"Celcius\", \"Fahrenheit\"),\nNameError: name 'calculateTemperature' is not defined\n";
+			
+			var testResults = ResultParser.ParseTestResults(stdout);
+			testResults.Length.Should().Be(1);
+			testResults[0].Should().BeOfType<FailingTestResult>();
 		}
 	}
 }
