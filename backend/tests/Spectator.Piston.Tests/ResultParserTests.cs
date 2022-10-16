@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using Spectator.DomainModels.SubmissionDomain;
+using Spectator.Piston.Exceptions;
 using Spectator.Piston.Internals;
 using Spectator.Piston.Tests.Utilities;
 using Xunit;
@@ -32,7 +33,7 @@ namespace Spectator.Piston.Tests {
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n";
 
-			var testResults = ResultParser.ParseTestResults(stdout);
+			var testResults = ResultParser.ParseTestResults(stdout, "");
 			testResults.Length.Should().Be(5);
 			testResults[0].Should().BeOfType<PassingTestResult>().Which.TestNumber.Should().Be(1);
 			testResults[1].Should().BeOfType<PassingTestResult>().Which.TestNumber.Should().Be(2);
@@ -64,7 +65,7 @@ namespace Spectator.Piston.Tests {
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n";
 
-			var testResults = ResultParser.ParseTestResults(stdout);
+			var testResults = ResultParser.ParseTestResults(stdout, "");
 			testResults.Length.Should().Be(5);
 			testResults.Length.Should().Be(5);
 			testResults[0].Should().BeOfType<PassingTestResult>().Which.TestNumber.Should().Be(1);
@@ -86,8 +87,8 @@ namespace Spectator.Piston.Tests {
 				"# 4 PASSING\n" +
 				"# 5 PASSING\n";
 
-			var testResults = ResultParser.ParseTestResults(stdout);
-			testResults.Length.Should().Be(3);
+			new Action(() => ResultParser.ParseTestResults(stdout, ""))
+				.Should().Throw<CannotParseStdoutException>();
 		}
 
 		[Fact]
@@ -102,13 +103,8 @@ namespace Spectator.Piston.Tests {
 				"# 5 PASSING\n" +
 				"# 6 PUSING";
 
-			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
-			testResults.Length.Should().Be(5);
-			testResults[0].Should().BeOfType<FailingTestResult>();
-			testResults[1].Should().BeOfType<FailingTestResult>();
-			testResults[2].Should().BeOfType<FailingTestResult>();
-			testResults[3].Should().BeOfType<FailingTestResult>();
-			testResults[4].Should().BeOfType<FailingTestResult>();
+			new Action(() => ResultParser.ParseTestResults(stdout, ""))
+				.Should().Throw<CannotParseStdoutException>();
 		}
 
 		[Fact]
@@ -155,7 +151,7 @@ namespace Spectator.Piston.Tests {
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n";
 
-			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
+			var testResults = ResultParser.ParseTestResults(stdout, "").ToArray();
 			testResults.Length.Should().Be(10);
 			testResults[0..6].Should().AllBeOfType<PassingTestResult>();
 			testResults[7].Should().BeOfType<FailingTestResult>().Which.Should(its => {
@@ -169,20 +165,22 @@ namespace Spectator.Piston.Tests {
 		public void CannotParseTestResultsFromIliterateStudents() {
 			const string stdout =
 				"/code/code_executor_64101/code.py:7: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?\n  kelvin = (5/9(suhu-32)+273)\n Suhu : ";
-
-			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
-			testResults.Length.Should().Be(3);
-			testResults[0..2].Should().BeOfType<FailingTestResult>().Which.ActualStdout.Should().Be(stdout);
+			const string stderr =
+				"/code/code_executor_64101/code.py:7: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?\n  kelvin = (5/9(suhu-32)+273)\n";
+			new Action(() => ResultParser.ParseTestResults(stdout, stderr))
+				.Should().Throw<CannotParseStdoutException>()
+				.And.Stderr.Should().Be(stderr);
 		}
 
 		[Fact]
 		public void CannotParseTestResultsFromForcedSuccessPrint() {
 			const string stdout =
 				"# 0 PASSING\nTraceback (most recent call last):\n  File \"/code/code_executor_64101/code.py\", line 83, in \u003cmodule\u003e\n    main()\n  File \"/code/code_executor_64101/code.py\", line 11, in main\n    \"got\": calculateTemperature(100, \"Celcius\", \"Fahrenheit\"),\nNameError: name 'calculateTemperature' is not defined\n";
-
-			var testResults = ResultParser.ParseTestResults(stdout).ToArray();
-			testResults.Length.Should().Be(6);
-			testResults[0..5].Should().BeOfType<FailingTestResult>().Which.ActualStdout.Should().Be(stdout);
+			const string stderr =
+				"Traceback (most recent call last):\n  File \"/code/code_executor_64101/code.py\", line 83, in \u003cmodule\u003e\n    main()\n  File \"/code/code_executor_64101/code.py\", line 11, in main\n    \"got\": calculateTemperature(100, \"Celcius\", \"Fahrenheit\"),\nNameError: name 'calculateTemperature' is not defined\n";
+			new Action(() => ResultParser.ParseTestResults(stdout, stderr))
+				.Should().Throw<CannotParseStdoutException>()
+				.And.Stdout.Should().Be(stdout);
 		}
 	}
 }

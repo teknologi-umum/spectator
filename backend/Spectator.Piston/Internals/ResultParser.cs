@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Spectator.DomainModels.SubmissionDomain;
+using Spectator.Piston.Exceptions;
 
 namespace Spectator.Piston.Internals {
 	internal static class ResultParser {
-		public static ImmutableArray<TestResultBase> ParseTestResults(string stdout) {
+		public static ImmutableArray<TestResultBase> ParseTestResults(string stdout, string stderr) {
 			var lines = stdout.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			var testResults = new List<TestResultBase>();
 
@@ -39,12 +40,7 @@ namespace Spectator.Piston.Internals {
 					continue;
 				}
 
-				testResults.Add(new FailingTestResult(
-					TestNumber: i,
-					ExpectedStdout: "",
-					ActualStdout: stdout,
-					ArgumentsStdout: ""
-				));
+				throw new CannotParseStdoutException(stdout, stderr);
 			}
 
 			return testResults.ToImmutableArray();
