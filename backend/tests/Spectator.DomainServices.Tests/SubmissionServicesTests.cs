@@ -16,7 +16,6 @@ using Xunit.Abstractions;
 namespace Spectator.DomainServices.Tests {
 	[Collection("PistonConsumer")]
 	public class SubmissionServicesTests {
-		private readonly ITestOutputHelper _testOutputHelper;
 		private IServiceProvider ServiceProvider { get; }
 
 		public SubmissionServicesTests(ITestOutputHelper testOutputHelper) {
@@ -309,10 +308,6 @@ def helloWorld():
 		[Fact]
 		public async Task CanReturnFailingTestOnInvalidInput() {
 			const string code = @"
-# `calculateTemperature` is a function that accepts 3 arguments as its input:
-# `temp` as integer, `from` as string, `to` as string. It returns a float as
-# its output (it does not accept manual user inputs and print output).
-# If there are any errors during running the test, please recheck your code and read the instructions carefully.
 temp = int(input(""Temp : ""))
 def calculateTemperature(temp, From, To):
 	if  From == ""Celcius"" and To == ""Fahrenheit"":
@@ -321,7 +316,6 @@ def calculateTemperature(temp, From, To):
 	elif From == ""Fahrenheit"" and To == ""Celcius"":
 		temp = (temp - 32) * 5/9
 		print(temp)
-		# write your code here
 ";
 
 			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
