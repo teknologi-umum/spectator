@@ -132,7 +132,7 @@
       "failing": "Failing means that you have submitted the wrong answer.",
       "runtime_error": "Runtime Error means that you have submitted the answer but the program throws an error when we try to run it. This usually happens when you have used a variable that is not declared or something like that. Please check your code and try again.",
       "compile_error": "Compile Error means that you have submitted the answer but the program throws an error when we try to compile it. This usually happens when you have a syntax error in your code. Please check your code and try again.",
-      "invalid_input": "Please don't call any function that interacts with stdin or stdout! You don't need to print the result, just return it."
+      "invalid_input": "Uh.. I think you have modified the solution code to something that we can't understand. If your code contains some code that asks for user input, you should delete that part and use the value from the function argument. If your code is printing a value as the output, please do a function return instead. Please read the instructions carefully once more."
     }
   }
 }
