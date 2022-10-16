@@ -11,13 +11,16 @@ using Spectator.Piston;
 using Spectator.Primitives;
 using Spectator.RepositoryDALs;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Spectator.DomainServices.Tests {
 	[Collection("PistonConsumer")]
 	public class SubmissionServicesTests {
+		private readonly ITestOutputHelper _testOutputHelper;
 		private IServiceProvider ServiceProvider { get; }
 
-		public SubmissionServicesTests() {
+		public SubmissionServicesTests(ITestOutputHelper testOutputHelper) {
+			_testOutputHelper = testOutputHelper;
 			var configuration = new ConfigurationBuilder()
 				.AddKeyPerFile("/run/secrets", optional: true)
 				.AddEnvironmentVariables("ASPNETCORE_")
@@ -37,37 +40,31 @@ namespace Spectator.DomainServices.Tests {
 		[Fact]
 		public async Task CanAcceptCorrectSolutionAsync() {
 			const string code = @"
-				const std::string CELCIUS = ""Celcius"";
-				const std::string FAHRENHEIT = ""Fahrenheit"";
-				const std::string KELVIN = ""Kelvin"";
+def calculateTemperature(n, a, b):
+	if a == ""Celcius"" and b == ""Fahrenheit"":
+		return (n * 9 / 5) + 32
+	elif a == ""Celcius"" and b == ""Kelvin"":
+		return n + 273.15
+	elif a == ""Fahrenheit"" and b == ""Celcius"":
+		return (n - 32) * 5 / 9
+	elif a == ""Fahrenheit"" and b == ""Kelvin"":
+		return (n - 32) * 5 / 9 + 273.15
+	elif a == ""Kelvin"" and b == ""Celcius"":
+		return n - 273.15
+	elif a == ""Kelvin"" and b == ""Fahrenheit"":
+		return (n - 273.15) * 9 / 5 + 32
 
-				bool isCelcius(std::string unit) { return unit.compare(CELCIUS) == 0; }
-				bool isFahrenheit(std::string unit) { return unit.compare(FAHRENHEIT) == 0; }
-				bool isKelvin(std::string unit) { return unit.compare(KELVIN) == 0; }
-
-				int calculateTemperature(int n, std::string from, std::string to) {
-					if (isCelcius(from) && isFahrenheit(to)) return (n * 9 / 5) + 32;
-					if (isCelcius(from) && isKelvin(to)) return n + 273.15;
-					if (isFahrenheit(from) && isCelcius(to)) return (n - 32) * 5 / 9;
-					if (isFahrenheit(from) && isKelvin(to)) return (n - 32) * 5 / 9 + 273.15;
-					if (isKelvin(from) && isCelcius(to)) return n - 273.15;
-					if (isKelvin(from) && isFahrenheit(to)) return (n - 273.15) * 9 / 5 + 32;
-					return n;
-				}
-			";
+	return n";
 
 			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
-			// Wait 500ms to avoid HTTP 429
-			await Task.Delay(TimeSpan.FromMilliseconds(500));
-
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
-				language: Language.CPP,
+				language: Language.Python,
 				directives: "",
 				solution: code,
 				scratchPad: "wkwkwkwk",
@@ -75,7 +72,7 @@ namespace Spectator.DomainServices.Tests {
 			);
 
 			submission.Accepted.Should().BeTrue();
-			submission.Language.Should().Be(Language.CPP);
+			submission.Language.Should().Be(Language.Python);
 			submission.Solution.Should().Be(code);
 			submission.ScratchPad.Should().Be("wkwkwkwk");
 			submission.TestResults.Length.Should().Be(10);
@@ -85,23 +82,21 @@ namespace Spectator.DomainServices.Tests {
 		[Fact]
 		public async Task CanRejectIncorrectSolutionAsync() {
 			const string code = @"
-				const std::string CELCIUS = ""Celcius"";
-				const std::string FAHRENHEIT = ""Fahrenheit"";
-				const std::string KELVIN = ""Kelvin"";
+def calculateTemperature(n, a, b):
+	if a == ""Celcius"" and b == ""Fahrenheit"":
+		return (n * 9 / 5) + 32
+	elif a == ""Celcius"" and b == ""Kelvin"":
+		return n + 200 #                       <-- wrong formula
+	elif a == ""Fahrenheit"" and b == ""Celcius"":
+		return (n - 32) * 5 / 9
+	elif a == ""Fahrenheit"" and b == ""Kelvin"":
+		return (n - 32) * 5 / 9 + 273.15
+	elif a == ""Kelvin"" and b == ""Celcius"":
+		return n - 273.15
+	elif a == ""Kelvin"" and b == ""Fahrenheit"":
+		return (n - 273.15) * 9 / 5 + 32
 
-				bool isCelcius(std::string unit) { return unit.compare(CELCIUS) == 0; }
-				bool isFahrenheit(std::string unit) { return unit.compare(FAHRENHEIT) == 0; }
-				bool isKelvin(std::string unit) { return unit.compare(KELVIN) == 0; }
-
-				int calculateTemperature(int n, std::string from, std::string to) {
-					if (isCelcius(from) && isFahrenheit(to)) return (n * 9 / 5) + 32;
-					if (isCelcius(from) && isKelvin(to)) return n + 272.15; //                   <-- wrong formula
-					if (isFahrenheit(from) && isCelcius(to)) return (n - 32) * 5 / 9;
-					if (isFahrenheit(from) && isKelvin(to)) return (n - 32) * 5 / 9 + 273.15;
-					if (isKelvin(from) && isCelcius(to)) return n - 273.15;
-					if (isKelvin(from) && isFahrenheit(to)) return (n - 273.15) * 9 / 5 + 32;
-					return n;
-				}
+	return n
 			";
 
 			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
@@ -109,13 +104,10 @@ namespace Spectator.DomainServices.Tests {
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
-			// Wait 500ms to avoid HTTP 429
-			await Task.Delay(TimeSpan.FromMilliseconds(500));
-
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
-				language: Language.CPP,
+				language: Language.Python,
 				directives: "",
 				solution: code,
 				scratchPad: "wlwlwlwl",
@@ -123,13 +115,13 @@ namespace Spectator.DomainServices.Tests {
 			);
 
 			submission.Accepted.Should().BeFalse();
-			submission.Language.Should().Be(Language.CPP);
+			submission.Language.Should().Be(Language.Python);
 			submission.Solution.Should().Be(code);
 			submission.ScratchPad.Should().Be("wlwlwlwl");
 			submission.TestResults.Length.Should().Be(10);
 			submission.TestResults[0].Should().BeOfType<PassingTestResult>();
 			submission.TestResults[1].Should().BeOfType<PassingTestResult>();
-			submission.TestResults[2].Should().BeOfType<FailingTestResult>().Which.ExpectedStdout.Should().Be("273");
+			submission.TestResults[2].Should().BeOfType<FailingTestResult>().Which.ExpectedStdout.Should().Be("273.15");
 			submission.TestResults[3].Should().BeOfType<PassingTestResult>();
 			submission.TestResults[4].Should().BeOfType<PassingTestResult>();
 		}
@@ -161,9 +153,6 @@ namespace Spectator.DomainServices.Tests {
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
-			// Wait 500ms to avoid HTTP 429
-			await Task.Delay(TimeSpan.FromMilliseconds(500));
-
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
@@ -185,23 +174,9 @@ namespace Spectator.DomainServices.Tests {
 		[Fact]
 		public async Task CanRejectSolutionWithRuntimeErrorAsync() {
 			const string code = @"
-				const std::string CELCIUS = ""Celcius"";
-				const std::string FAHRENHEIT = ""Fahrenheit"";
-				const std::string KELVIN = ""Kelvin"";
-
-				bool isCelcius(std::string unit) { return unit.compare(CELCIUS) == 0; }
-				bool isFahrenheit(std::string unit) { return unit.compare(FAHRENHEIT) == 0; }
-				bool isKelvin(std::string unit) { return unit.compare(KELVIN) == 0; }
-
-				int calculateTemperature(int n, std::string from, std::string to) {
-					if (isCelcius(from) && isFahrenheit(to)) return (n * 9 / 5) + 32;
-					if (isCelcius(NULL) && isKelvin(to)) return n + 273.15; //                   <-- pass NULL pointer
-					if (isFahrenheit(from) && isCelcius(to)) return (n - 32) * 5 / 9;
-					if (isFahrenheit(from) && isKelvin(to)) return (n - 32) * 5 / 9 + 273.15;
-					if (isKelvin(from) && isCelcius(to)) return n - 273.15;
-					if (isKelvin(from) && isFahrenheit(to)) return (n - 273.15) * 9 / 5 + 32;
-					return n;
-				}
+function calculateTemperature(n, from, to) {
+	return a / 0;
+}
 			";
 
 			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
@@ -209,13 +184,10 @@ namespace Spectator.DomainServices.Tests {
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
-			// Wait 500ms to avoid HTTP 429
-			await Task.Delay(TimeSpan.FromMilliseconds(500));
-
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 2,
 				locale: Locale.EN,
-				language: Language.CPP,
+				language: Language.Javascript,
 				directives: "",
 				solution: code,
 				scratchPad: "wkwkwkk",
@@ -223,11 +195,11 @@ namespace Spectator.DomainServices.Tests {
 			);
 
 			submission.Accepted.Should().BeFalse();
-			submission.Language.Should().Be(Language.CPP);
+			submission.Language.Should().Be(Language.Javascript);
 			submission.Solution.Should().Be(code);
 			submission.ScratchPad.Should().Be("wkwkwkk");
 			submission.TestResults.Length.Should().Be(1);
-			submission.TestResults[0].Should().BeOfType<RuntimeErrorResult>().Which.Stderr.Should().Contain("basic_string::_M_construct null not valid");
+			submission.TestResults[0].Should().BeOfType<RuntimeErrorResult>().Which.Stderr.Should().Contain("ReferenceError: a is not defined");
 		}
 
 		[Fact]
@@ -246,9 +218,6 @@ def printLyrics():
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-
-			// Wait 500ms to avoid HTTP 429
-			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 1,
@@ -288,12 +257,12 @@ def printLyrics():
 		[Fact]
 		public async Task CanCheckHelloWorldQuestionUsingHardcodedCheckAsync() {
 			const string correctCode = @"
-def printLyrics():
+def helloWorld():
     print(""Hello world"")
 ";
 
 			const string incorrectCode = @"
-def printLyrics():
+def helloWorld():
     print(""Haha"")
 ";
 
@@ -301,9 +270,6 @@ def printLyrics():
 
 			// Only wait piston API for 5 seconds to save github CI quota
 			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-
-			// Wait 500ms to avoid HTTP 429
-			await Task.Delay(TimeSpan.FromMilliseconds(500));
 
 			var submission = await submissionServices.EvaluateSubmissionAsync(
 				questionNumber: 0,
@@ -338,6 +304,47 @@ def printLyrics():
 			submission.ScratchPad.Should().Be("Lorem ipsum");
 			submission.TestResults.Length.Should().Be(1);
 			submission.TestResults[0].Should().BeOfType<FailingTestResult>();
+		}
+
+		[Fact]
+		public async Task CanReturnFailingTestOnInvalidInput() {
+			const string code = @"
+# `calculateTemperature` is a function that accepts 3 arguments as its input:
+# `temp` as integer, `from` as string, `to` as string. It returns a float as
+# its output (it does not accept manual user inputs and print output).
+# If there are any errors during running the test, please recheck your code and read the instructions carefully.
+temp = int(input(""Temp : ""))
+def calculateTemperature(temp, From, To):
+	if  From == ""Celcius"" and To == ""Fahrenheit"":
+		temp = (temp*9/5) + 32
+		print(temp)
+	elif From == ""Fahrenheit"" and To == ""Celcius"":
+		temp = (temp - 32) * 5/9
+		print(temp)
+		# write your code here
+";
+
+			var submissionServices = ServiceProvider.GetRequiredService<SubmissionServices>();
+
+			// Only wait piston API for 30 seconds to save github CI quota
+			using var timeoutSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+			var submission = await submissionServices.EvaluateSubmissionAsync(
+				questionNumber: 2,
+				locale: Locale.EN,
+				language: Language.Python,
+				directives: "",
+				solution: code,
+				scratchPad: "Lorem ipsum",
+				cancellationToken: timeoutSource.Token
+			);
+
+			submission.Accepted.Should().BeFalse();
+			submission.Language.Should().Be(Language.Python);
+			submission.Solution.Should().Be(code);
+			submission.ScratchPad.Should().Be("Lorem ipsum");
+			submission.TestResults.Length.Should().Be(1);
+			submission.TestResults[0].Should().BeOfType<InvalidInputResult>();
 		}
 	}
 }
