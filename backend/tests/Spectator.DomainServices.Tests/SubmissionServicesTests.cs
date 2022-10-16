@@ -11,15 +11,13 @@ using Spectator.Piston;
 using Spectator.Primitives;
 using Spectator.RepositoryDALs;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Spectator.DomainServices.Tests {
 	[Collection("PistonConsumer")]
 	public class SubmissionServicesTests {
 		private IServiceProvider ServiceProvider { get; }
 
-		public SubmissionServicesTests(ITestOutputHelper testOutputHelper) {
-			_testOutputHelper = testOutputHelper;
+		public SubmissionServicesTests() {
 			var configuration = new ConfigurationBuilder()
 				.AddKeyPerFile("/run/secrets", optional: true)
 				.AddEnvironmentVariables("ASPNETCORE_")
