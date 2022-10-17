@@ -79,7 +79,8 @@ export default function Result({ fg, fgDarker }: ResultProps) {
     [ResultCase.Passing]: "green",
     [ResultCase.Failing]: "red",
     [ResultCase.RuntimeError]: "orange",
-    [ResultCase.CompileError]: "yellow"
+    [ResultCase.CompileError]: "yellow",
+    [ResultCase.InvalidInput]: "orange"
   };
 
   const resultIcons = {
@@ -102,6 +103,11 @@ export default function Result({ fg, fgDarker }: ResultProps) {
       <Box color={yellow}>
         <WarningIcon />
       </Box>
+    ),
+    [ResultCase.InvalidInput]: (
+      <Box color={orange}>
+        <CrossIcon />
+      </Box>
     )
   };
 
@@ -109,7 +115,8 @@ export default function Result({ fg, fgDarker }: ResultProps) {
     [ResultCase.Passing]: "Passing",
     [ResultCase.Failing]: "Failing",
     [ResultCase.RuntimeError]: "Runtime Error",
-    [ResultCase.CompileError]: "Compile Error"
+    [ResultCase.CompileError]: "Compile Error",
+    [ResultCase.InvalidInput]: "Invalid Input"
   };
 
   return (
@@ -177,6 +184,10 @@ export default function Result({ fg, fgDarker }: ResultProps) {
 
                   {testResult.resultCase === ResultCase.CompileError && (
                     <Text>{testResult.compileError.stderr}</Text>
+                  )}
+
+                  {testResult.resultCase === ResultCase.InvalidInput && (
+                    <Text>{t("error_type.invalid_input")}</Text>
                   )}
 
                   {testResult.resultCase === ResultCase.Failing && (

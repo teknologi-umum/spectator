@@ -11,6 +11,7 @@ using Spectator.Primitives;
 using Spectator.Protos.Rce;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
+using Spectator.Piston.Exceptions;
 
 namespace Spectator.Piston {
 	public class PistonClient {
@@ -84,8 +85,14 @@ namespace Spectator.Piston {
 				);
 			}
 
-			var stdout = executeResult.Runtime.Output_ ?? executeResult.Runtime.Stdout ?? "";
-			return ResultParser.ParseTestResults(stdout);
+			try {
+				var stdout = executeResult.Runtime.Output_ ?? executeResult.Runtime.Stdout ?? "";
+				return ResultParser.ParseTestResults(stdout, executeResult.Runtime.Stderr);
+			} catch (CannotParseStdoutException e) {
+				return ImmutableArray.Create<TestResultBase>(
+					new InvalidInputResult(e.Stderr)
+				);
+			}
 		}
 
 		// HACK: Hard coded check for zeroth question

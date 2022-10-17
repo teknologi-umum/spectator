@@ -1,10 +1,11 @@
-// these are not arbitrary numbers, refer to protos/Spectator.Protos/session.proto#L102-L105
+// these are not arbitrary numbers, refer to protos/Spectator.Protos/session.proto#L121-L125
 // this enum is used to map the result of `oneofKind` from the protobuf file
 export enum ResultCase {
   Passing = 2,
   Failing = 3,
   CompileError = 4,
   RuntimeError = 5,
+  InvalidInput = 6,
 }
 
 interface PassingTest {
@@ -39,11 +40,13 @@ interface RuntimeError {
   };
 }
 
+interface InvalidInput {
+  resultCase: ResultCase.InvalidInput;
+  invalidInput: {
+    stderr: string;
+  };
+}
+
 export type TestResult = {
   testNumber: number;
-} & (
-  | PassingTest
-  | FailingTest
-  | CompileError
-  | RuntimeError
-);
+} & (PassingTest | FailingTest | CompileError | RuntimeError | InvalidInput);

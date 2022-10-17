@@ -278,6 +278,12 @@ namespace Spectator.Hubs {
 									Stderr = runtimeError.Stderr
 								}
 							},
+							InvalidInputResult invalidInput => new TestResult {
+								TestNumber = invalidInput.TestNumber,
+								InvalidInput = new TestResult.Types.InvalidInput {
+									Stderr = invalidInput.Stderr
+								}
+							},
 							_ => throw new InvalidProgramException("Unhandled TestResult type")
 						}
 					}
@@ -347,6 +353,12 @@ namespace Spectator.Hubs {
 								TestNumber = runtimeError.TestNumber,
 								RuntimeError = new TestResult.Types.RuntimeError {
 									Stderr = runtimeError.Stderr
+								}
+							},
+							InvalidInputResult invalidInput => new TestResult {
+								TestNumber = invalidInput.TestNumber,
+								InvalidInput = new TestResult.Types.InvalidInput {
+									Stderr = invalidInput.Stderr
 								}
 							},
 							_ => throw new InvalidProgramException("Unhandled TestResult type")

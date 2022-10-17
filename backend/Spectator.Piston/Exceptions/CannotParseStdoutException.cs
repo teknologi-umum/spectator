@@ -2,11 +2,11 @@
 
 namespace Spectator.Piston.Exceptions; 
 
-public class CannotParseStdoutException : ArgumentException {
+public class CannotParseStdoutException : Exception {
 	public string Stdout { get; }
 	public string Stderr { get; }
 
-	CannotParseStdoutException(string message, string stdout, string stderr) : base(message) {
+	public CannotParseStdoutException(string stdout, string stderr) {
 		Stderr = stderr;
 		Stdout = stdout;
 	}

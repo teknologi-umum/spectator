@@ -113,12 +113,16 @@ message TestResult {
 	message RuntimeError {
 		string stderr = 1;
 	}
+	message InvalidInput {
+		string stderr = 1;
+	}
 	int32 test_number = 1;
 	oneof result {
 		PassingTest passing_test = 2;
 		FailingTest failing_test = 3;
 		CompileError compile_error = 4;
 		RuntimeError runtime_error = 5;
+		InvalidInput invalid_input = 6;
 	}
 }
 

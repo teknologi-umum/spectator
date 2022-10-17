@@ -47,6 +47,7 @@ namespace Spectator.DomainModels.SubmissionDomain {
 					"Failing" => JsonSerializer.Deserialize<FailingTestResult>(ref reader),
 					"CompileError" => JsonSerializer.Deserialize<CompileErrorResult>(ref reader),
 					"RuntimeError" => JsonSerializer.Deserialize<RuntimeErrorResult>(ref reader),
+					"InvalidInput" => JsonSerializer.Deserialize<InvalidInputResult>(ref reader),
 					_ => throw new JsonException($"Unknown test status {testStatus}")
 				};
 
@@ -70,6 +71,7 @@ namespace Spectator.DomainModels.SubmissionDomain {
 					FailingTestResult => "Failing",
 					CompileErrorResult => "CompileError",
 					RuntimeErrorResult => "RuntimeError",
+					InvalidInputResult => "InvalidInput",
 					_ => throw new JsonException($"Unsupported type {value.GetType().Name}")
 				});
 
