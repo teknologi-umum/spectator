@@ -5,18 +5,18 @@ It hosts SignalR endpoints to interact with frontend and logs every event to Inf
 
 ## Structure
 
-| Project | Description |
-| ------- | ----------- |
-| Spectator | ASP.NET Core web server |
-| Spectator.Primitives | Contains enums and primitive types to be shared across all .NET projects |
-| Spectator.DomainModels | Contains domain models which represent current state of entities |
-| Spectator.DomainEvents | Contains domain events which represent state mutation of entities |
-| Spectator.DomainServices | Contains business logic of each domain |
-| Spectator.Observables | Reactive in-memory stores for storing state of entities |
-| Spectator.Repositories | Contains repository interfaces |
-| Spectator.RepositoryDALs | Contains repository DAL implementations |
-| Spectator.JwtAuthentication | Contains authentication and authorization logic |
-| Spectator.Piston | Contains piston client implementation |
+| Project                     | Description                                                              |
+| --------------------------- | ------------------------------------------------------------------------ |
+| Spectator                   | ASP.NET Core web server                                                  |
+| Spectator.Primitives        | Contains enums and primitive types to be shared across all .NET projects |
+| Spectator.DomainModels      | Contains domain models which represent current state of entities         |
+| Spectator.DomainEvents      | Contains domain events which represent state mutation of entities        |
+| Spectator.DomainServices    | Contains business logic of each domain                                   |
+| Spectator.Observables       | Reactive in-memory stores for storing state of entities                  |
+| Spectator.Repositories      | Contains repository interfaces                                           |
+| Spectator.RepositoryDALs    | Contains repository DAL implementations                                  |
+| Spectator.JwtAuthentication | Contains authentication and authorization logic                          |
+| Spectator.Piston            | Contains piston client implementation                                    |
 
 ## Visual Studio development setup
 

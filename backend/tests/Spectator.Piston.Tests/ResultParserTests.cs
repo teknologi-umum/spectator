@@ -28,7 +28,7 @@ namespace Spectator.Piston.Tests {
 				"> ARGUMENTS wkwkwk\n" +
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n" +
-				"# 5 PASSING\n"+
+				"# 5 PASSING\n" +
 				"> ARGUMENTS wkwkwk\n" +
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n";
@@ -61,7 +61,8 @@ namespace Spectator.Piston.Tests {
 				"> ARGUMENTS wkwkwk\n" +
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n" +
-				"# 5 PASSING\n"+ "> ARGUMENTS wkwkwk\n" +
+				"# 5 PASSING\n" +
+				"> ARGUMENTS wkwkwk\n" +
 				"> EXPECTED wkwkwkwk\n" +
 				"> GOT wkwkwk\n";
 

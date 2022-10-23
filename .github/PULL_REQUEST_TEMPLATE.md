@@ -1,13 +1,13 @@
-Reminder: jangan lupa pasang label & assignee di pull request.
+Reminder: don't forget to put labels and assignees upon opening pull request.
 
-Backend bisa minta ke: Reinaldy, Ronny, Raymond, Valian
-Frontend bisa minta ke: Rubi, Dicha, Jedidta
-Infra/Devops bisa minta ke: Reinaldy, Valian, Artileda
+For backend stuff, you can ask: Reinaldy, Ronny, Raymond Valian
+For frontend stuff, you can ask: Rubi, Dicha, Jedidta
+For infrastructure/devops, you can ask: Reinaldy, Valian, Artileda
 
-Kalo belom siap di merge, kasih label "do not merge".
-Kalo udah siap, kasih label "ready to merge".
+If it's not ready to merge, please put "do not merge" label.
+If it's ready to merge, please put "ready to merge" label.
 
-Kalo ini tujuannya ngerjain suatu issue, kasih deskripsi:
-Closes #nomor_issue
+If this is meant to tackle on an issue, please put:
+Closes #issue_number
 
 Thanks.
