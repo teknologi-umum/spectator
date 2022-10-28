@@ -1,6 +1,6 @@
 Reminder: don't forget to put labels and assignees upon opening pull request.
 
-For backend stuff, you can ask: Reinaldy, Ronny, Raymond Valian
+For backend stuff, you can ask: Reinaldy, Ronny, Raymond, Valian
 For frontend stuff, you can ask: Rubi, Dicha, Jedidta
 For infrastructure/devops, you can ask: Reinaldy, Valian, Artileda
 
