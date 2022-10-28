@@ -18,7 +18,7 @@ that executes user's code.
 The design of this repository is based on a 
 [Service Oriented Architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture)
 pattern, in which we are not exactly doing microservice, instead we focuses on services that
-are wrriten on the appropriate language that solves the problem. The list of services and
+are written on the appropriate language that solves the problem. The list of services and
 the language of choice that are used for each services is explained below. Communication between
 services are done with using gRPC (regular RPC, without streaming request/response), whilst
 communication between the frontend and the core backend is done using REST (for sending video
