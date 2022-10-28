@@ -8,7 +8,7 @@ webm (for backups) and MP4 (with H264 codec) file format.
 | Package      | Description                                            |
 | ------------ | ------------------------------------------------------ |
 | samples      | Sample video files for unit testing purposes           |
-| logger_porto | Contains protocol buffers stub for the logger service. |
+| logger_proto | Contains protocol buffers stub for the logger service. |
 | worker_proto | Contains protocol buffers stub for the worker service. |
 
 ## Visual Studio Code development setup
