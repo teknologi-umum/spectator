@@ -1,5 +1,12 @@
 # Spectator
 
+<p align="center">
+    <img width="720" height="360" src="https://user-images.githubusercontent.com/51877647/224472763-4140881a-60bf-42e6-81b6-0c53bbb0333f.jpg" />
+    <p align="center">
+        <em>Spectator exam page</em>
+    </p>
+</p>
+
 A thesis project to measure a non-invasive stress detection on students' programming activity
 through machine learning based on keystroke dynamics, mouse movement and facial expression.
 This repository provides the data collection for the thesis.
